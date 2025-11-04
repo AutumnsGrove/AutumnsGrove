@@ -1,0 +1,13 @@
+{
+  "name": "autumnsgrove",
+  "version": "1.0.0",
+  "description": "A personal website for blogging, demonstrating projects, and sharing articles. Built with Python, JavaScript, and HTML/CSS.",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
