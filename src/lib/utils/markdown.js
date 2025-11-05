@@ -3,7 +3,8 @@ import matter from 'gray-matter';
 
 // Use Vite's import.meta.glob to load markdown files at build time
 // This works in both dev and production (including Cloudflare Workers)
-const modules = import.meta.glob('/posts/*.md', { eager: true, query: '?raw', import: 'default' });
+// Path is relative to project root
+const modules = import.meta.glob('../../../posts/*.md', { eager: true, query: '?raw', import: 'default' });
 
 /**
  * Get all markdown posts from the posts directory
@@ -12,8 +13,8 @@ const modules = import.meta.glob('/posts/*.md', { eager: true, query: '?raw', im
 export function getAllPosts() {
 	const posts = Object.entries(modules)
 		.map(([filepath, content]) => {
-			// Extract slug from filepath: /posts/example.md -> example
-			const slug = filepath.replace('/posts/', '').replace('.md', '');
+			// Extract slug from filepath: ../../../posts/example.md -> example
+			const slug = filepath.split('/').pop().replace('.md', '');
 			const { data } = matter(content);
 
 			return {
@@ -35,12 +36,17 @@ export function getAllPosts() {
  * @returns {Object|null} Post object with content and metadata
  */
 export function getPostBySlug(slug) {
-	const filepath = `/posts/${slug}.md`;
-	const content = modules[filepath];
+	// Find the matching module by slug
+	const entry = Object.entries(modules).find(([filepath]) => {
+		const fileSlug = filepath.split('/').pop().replace('.md', '');
+		return fileSlug === slug;
+	});
 
-	if (!content) {
+	if (!entry) {
 		return null;
 	}
+
+	const content = entry[1];
 
 	const { data, content: markdown } = matter(content);
 	const htmlContent = marked(markdown);
