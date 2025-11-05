@@ -151,8 +151,8 @@
 	}
 
 	.tag {
-		background: #f0f0f0;
-		color: #555;
+		background: #e8d5f2;
+		color: #6a3d9a;
 		padding: 0.25rem 0.75rem;
 		border-radius: 12px;
 		font-size: 0.85rem;
@@ -160,8 +160,8 @@
 	}
 
 	:global(.dark) .tag {
-		background: #333;
-		color: #aaa;
+		background: #4a2d5e;
+		color: #d4b5e8;
 	}
 
 	.description {

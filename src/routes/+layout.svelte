@@ -2,18 +2,18 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 
-	let darkMode = $state(false);
+	let darkMode = $state(true); // Default to dark mode
 
 	onMount(() => {
 		// Check localStorage or system preference
 		const savedTheme = localStorage.getItem('theme');
-		if (savedTheme === 'dark') {
-			darkMode = true;
-		} else if (savedTheme === 'light') {
+		if (savedTheme === 'light') {
 			darkMode = false;
+		} else if (savedTheme === 'dark') {
+			darkMode = true;
 		} else {
-			// Use system preference
-			darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+			// Default to dark mode (no system preference check)
+			darkMode = true;
 		}
 		applyTheme();
 	});

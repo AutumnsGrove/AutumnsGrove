@@ -49,7 +49,7 @@ export function getPostBySlug(slug) {
 	const content = entry[1];
 
 	const { data, content: markdown } = matter(content);
-	const htmlContent = marked(markdown);
+	const htmlContent = marked.parse(markdown);
 
 	return {
 		slug,
