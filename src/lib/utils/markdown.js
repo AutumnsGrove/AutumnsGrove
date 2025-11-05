@@ -1,40 +1,32 @@
 import { marked } from 'marked';
 import matter from 'gray-matter';
-import { readFileSync, readdirSync } from 'fs';
-import { join } from 'path';
 
-const postsDirectory = 'posts';
+// Use Vite's import.meta.glob to load markdown files at build time
+// This works in both dev and production (including Cloudflare Workers)
+const modules = import.meta.glob('/posts/*.md', { eager: true, query: '?raw', import: 'default' });
 
 /**
  * Get all markdown posts from the posts directory
  * @returns {Array} Array of post objects with metadata and slug
  */
 export function getAllPosts() {
-	try {
-		const fileNames = readdirSync(postsDirectory);
-		const posts = fileNames
-			.filter(fileName => fileName.endsWith('.md'))
-			.map(fileName => {
-				const slug = fileName.replace(/\.md$/, '');
-				const fullPath = join(postsDirectory, fileName);
-				const fileContents = readFileSync(fullPath, 'utf8');
-				const { data } = matter(fileContents);
+	const posts = Object.entries(modules)
+		.map(([filepath, content]) => {
+			// Extract slug from filepath: /posts/example.md -> example
+			const slug = filepath.replace('/posts/', '').replace('.md', '');
+			const { data } = matter(content);
 
-				return {
-					slug,
-					title: data.title || 'Untitled',
-					date: data.date || new Date().toISOString(),
-					tags: data.tags || [],
-					description: data.description || ''
-				};
-			})
-			.sort((a, b) => new Date(b.date) - new Date(a.date));
+			return {
+				slug,
+				title: data.title || 'Untitled',
+				date: data.date || new Date().toISOString(),
+				tags: data.tags || [],
+				description: data.description || ''
+			};
+		})
+		.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-		return posts;
-	} catch (error) {
-		console.error('Error reading posts:', error);
-		return [];
-	}
+	return posts;
 }
 
 /**
@@ -43,23 +35,22 @@ export function getAllPosts() {
  * @returns {Object|null} Post object with content and metadata
  */
 export function getPostBySlug(slug) {
-	try {
-		const fullPath = join(postsDirectory, `${slug}.md`);
-		const fileContents = readFileSync(fullPath, 'utf8');
-		const { data, content } = matter(fileContents);
+	const filepath = `/posts/${slug}.md`;
+	const content = modules[filepath];
 
-		const htmlContent = marked(content);
-
-		return {
-			slug,
-			title: data.title || 'Untitled',
-			date: data.date || new Date().toISOString(),
-			tags: data.tags || [],
-			description: data.description || '',
-			content: htmlContent
-		};
-	} catch (error) {
-		console.error(`Error reading post ${slug}:`, error);
+	if (!content) {
 		return null;
 	}
+
+	const { data, content: markdown } = matter(content);
+	const htmlContent = marked(markdown);
+
+	return {
+		slug,
+		title: data.title || 'Untitled',
+		date: data.date || new Date().toISOString(),
+		tags: data.tags || [],
+		description: data.description || '',
+		content: htmlContent
+	};
 }
