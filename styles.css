@@ -1,195 +1,25 @@
-/**
- * Autumn's Grove - Coming Soon
- * Minimal ASCII Art Design
- */
-
-:root {
-  /* Color Palette - Warm Autumn */
-  --color-burnt-orange: #D2691E;
-  --color-forest-green: #3A5F0B;
-  --color-cream: #F5F3F0;
-  --color-text-dark: #2C1810;
-  --color-text-gray: #5C4033;
-
-  /* Typography */
-  --font-serif: Georgia, "Iowan Old Style", serif;
-  --font-mono: "Courier New", Courier, monospace;
-
-  /* Spacing */
-  --space-md: 1.5rem;
-  --space-lg: 2rem;
-  --space-xl: 3rem;
-}
-
-/* Reset */
-*,
-*::before,
-*::after {
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Base Styles */
-html {
-  font-size: 16px;
-}
-
 body {
-  font-family: var(--font-serif);
-  color: var(--color-text-dark);
-  background-color: var(--color-cream);
-  line-height: 1.6;
-  min-height: 100vh;
+  font-family: monospace;
   display: flex;
-  flex-direction: column;
-}
-
-/* Main Layout - Centered Everything */
-.coming-soon {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  padding: var(--space-lg);
-  gap: var(--space-xl);
+  align-items: center;
+  min-height: 100vh;
+  background: #fafafa;
+}
+
+main {
   text-align: center;
 }
 
-.content-center {
-  max-width: 600px;
-}
-
-/* ASCII Art Styling */
 pre {
-  font-family: var(--font-mono);
+  font-family: monospace;
   line-height: 1.2;
-  margin: 0;
-}
-
-.ascii-art {
-  color: var(--color-forest-green);
-  font-size: 0.9rem;
-}
-
-.ascii-tree {
-  animation: gentle-sway 4s ease-in-out infinite;
-}
-
-.ascii-leaf {
-  color: var(--color-burnt-orange);
-  animation: gentle-float 3s ease-in-out infinite;
-}
-
-@keyframes gentle-sway {
-  0%, 100% { transform: rotate(-1deg); }
-  50% { transform: rotate(1deg); }
-}
-
-@keyframes gentle-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-5px); }
-}
-
-.ascii-title {
-  color: var(--color-burnt-orange);
-  font-size: 0.85rem;
-  margin-bottom: var(--space-md);
-  font-weight: bold;
-}
-
-.ascii-divider {
-  color: var(--color-forest-green);
-  margin: var(--space-md) 0;
-  opacity: 0.7;
-}
-
-/* Typography */
-h1 {
-  font-size: 2.5rem;
-  color: var(--color-text-dark);
-  margin: var(--space-md) 0;
-  font-weight: 600;
-}
-
-.tagline {
-  font-size: 1.25rem;
-  color: var(--color-burnt-orange);
-  font-style: italic;
-  margin-bottom: var(--space-md);
-}
-
-.subtitle {
-  font-size: 1rem;
-  color: var(--color-text-gray);
-  line-height: 1.8;
-  margin: var(--space-lg) 0;
-}
-
-/* Links */
-.links {
-  margin-top: var(--space-xl);
-}
-
-.links a {
   display: inline-block;
-  font-family: var(--font-mono);
-  color: var(--color-burnt-orange);
-  text-decoration: none;
-  font-size: 1.1rem;
-  padding: 0.5rem 1rem;
-  transition: all 0.2s ease;
-}
-
-.links a:hover {
-  color: var(--color-forest-green);
-  transform: scale(1.05);
-}
-
-.links a:focus-visible {
-  outline: 2px solid var(--color-burnt-orange);
-  outline-offset: 4px;
-}
-
-/* Footer */
-footer {
-  padding: var(--space-lg);
-  text-align: center;
-}
-
-.ascii-footer {
-  color: var(--color-forest-green);
-  font-size: 0.75rem;
-  opacity: 0.8;
-}
-
-/* Responsive */
-@media (max-width: 640px) {
-  h1 {
-    font-size: 2rem;
-  }
-
-  .tagline {
-    font-size: 1rem;
-  }
-
-  .ascii-art {
-    font-size: 0.75rem;
-  }
-
-  .ascii-title {
-    font-size: 0.7rem;
-  }
-}
-
-/* Respect motion preferences */
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+  text-align: left;
 }
