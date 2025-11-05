@@ -13,7 +13,14 @@ const config = {
 			}
 		}),
 		prerender: {
-			entries: ['*']
+			entries: ['*'],
+			handleHttpError: ({ path, referrer, message }) => {
+				// Ignore 404s for favicon
+				if (path === '/favicon.png') {
+					return;
+				}
+				throw new Error(message);
+			}
 		}
 	}
 };
