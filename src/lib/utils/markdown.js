@@ -11,23 +11,34 @@ const modules = import.meta.glob('../../../posts/*.md', { eager: true, query: '?
  * @returns {Array} Array of post objects with metadata and slug
  */
 export function getAllPosts() {
-	const posts = Object.entries(modules)
-		.map(([filepath, content]) => {
-			// Extract slug from filepath: ../../../posts/example.md -> example
-			const slug = filepath.split('/').pop().replace('.md', '');
-			const { data } = matter(content);
+	try {
+		const posts = Object.entries(modules)
+			.map(([filepath, content]) => {
+				try {
+					// Extract slug from filepath: ../../../posts/example.md -> example
+					const slug = filepath.split('/').pop().replace('.md', '');
+					const { data } = matter(content);
 
-			return {
-				slug,
-				title: data.title || 'Untitled',
-				date: data.date || new Date().toISOString(),
-				tags: data.tags || [],
-				description: data.description || ''
-			};
-		})
-		.sort((a, b) => new Date(b.date) - new Date(a.date));
+					return {
+						slug,
+						title: data.title || 'Untitled',
+						date: data.date || new Date().toISOString(),
+						tags: data.tags || [],
+						description: data.description || ''
+					};
+				} catch (err) {
+					console.error(`Error processing post ${filepath}:`, err);
+					return null;
+				}
+			})
+			.filter(Boolean)
+			.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-	return posts;
+		return posts;
+	} catch (err) {
+		console.error('Error in getAllPosts:', err);
+		return [];
+	}
 }
 
 /**

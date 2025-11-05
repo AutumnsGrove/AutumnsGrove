@@ -6,21 +6,9 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		adapter: adapter({
-			routes: {
-				include: ['/*'],
-				exclude: ['<all>']
-			}
-		}),
+		adapter: adapter(),
 		prerender: {
-			entries: ['*'],
-			handleHttpError: ({ path, referrer, message }) => {
-				// Ignore 404s for favicon
-				if (path === '/favicon.png') {
-					return;
-				}
-				throw new Error(message);
-			}
+			entries: ['*']
 		}
 	}
 };
