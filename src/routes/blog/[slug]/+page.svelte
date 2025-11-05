@@ -49,14 +49,27 @@
 		transition: color 0.2s;
 	}
 
+	:global(.dark) .back-link {
+		color: #5cb85f;
+	}
+
 	.back-link:hover {
 		color: #4a9d4f;
+	}
+
+	:global(.dark) .back-link:hover {
+		color: #7cd97f;
 	}
 
 	.post-header {
 		margin-bottom: 3rem;
 		padding-bottom: 2rem;
 		border-bottom: 2px solid #e0e0e0;
+		transition: border-color 0.3s ease;
+	}
+
+	:global(.dark) .post-header {
+		border-bottom: 2px solid #333;
 	}
 
 	.post-header h1 {
@@ -64,6 +77,11 @@
 		color: #2c5f2d;
 		margin: 0 0 1rem 0;
 		line-height: 1.2;
+		transition: color 0.3s ease;
+	}
+
+	:global(.dark) .post-header h1 {
+		color: #5cb85f;
 	}
 
 	.post-meta {
@@ -76,6 +94,11 @@
 	time {
 		color: #888;
 		font-size: 1rem;
+		transition: color 0.3s ease;
+	}
+
+	:global(.dark) time {
+		color: #999;
 	}
 
 	.tags {
@@ -90,11 +113,22 @@
 		padding: 0.25rem 0.75rem;
 		border-radius: 12px;
 		font-size: 0.9rem;
+		transition: background-color 0.3s ease, color 0.3s ease;
+	}
+
+	:global(.dark) .tag {
+		background: #333;
+		color: #aaa;
 	}
 
 	.post-content {
 		line-height: 1.8;
 		color: #333;
+		transition: color 0.3s ease;
+	}
+
+	:global(.dark) .post-content {
+		color: #e0e0e0;
 	}
 
 	:global(.post-content h2) {
@@ -102,6 +136,11 @@
 		margin-top: 2.5rem;
 		margin-bottom: 1rem;
 		font-size: 1.75rem;
+		transition: color 0.3s ease;
+	}
+
+	:global(.dark .post-content h2) {
+		color: #5cb85f;
 	}
 
 	:global(.post-content h3) {
@@ -109,6 +148,11 @@
 		margin-top: 2rem;
 		margin-bottom: 0.75rem;
 		font-size: 1.4rem;
+		transition: color 0.3s ease;
+	}
+
+	:global(.dark .post-content h3) {
+		color: #5cb85f;
 	}
 
 	:global(.post-content p) {
@@ -118,10 +162,19 @@
 	:global(.post-content a) {
 		color: #2c5f2d;
 		text-decoration: underline;
+		transition: color 0.3s ease;
+	}
+
+	:global(.dark .post-content a) {
+		color: #5cb85f;
 	}
 
 	:global(.post-content a:hover) {
 		color: #4a9d4f;
+	}
+
+	:global(.dark .post-content a:hover) {
+		color: #7cd97f;
 	}
 
 	:global(.post-content code) {
@@ -130,6 +183,12 @@
 		border-radius: 3px;
 		font-family: 'Courier New', monospace;
 		font-size: 0.9em;
+		transition: background-color 0.3s ease, color 0.3s ease;
+	}
+
+	:global(.dark .post-content code) {
+		background: #2a2a2a;
+		color: #e0e0e0;
 	}
 
 	:global(.post-content pre) {
@@ -138,6 +197,11 @@
 		border-radius: 6px;
 		overflow-x: auto;
 		margin-bottom: 1.5rem;
+		transition: background-color 0.3s ease;
+	}
+
+	:global(.dark .post-content pre) {
+		background: #2a2a2a;
 	}
 
 	:global(.post-content pre code) {
@@ -160,6 +224,12 @@
 		margin: 1.5rem 0;
 		color: #666;
 		font-style: italic;
+		transition: border-color 0.3s ease, color 0.3s ease;
+	}
+
+	:global(.dark .post-content blockquote) {
+		border-left: 4px solid #5cb85f;
+		color: #aaa;
 	}
 
 	:global(.post-content img) {

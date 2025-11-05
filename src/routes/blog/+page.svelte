@@ -57,11 +57,21 @@
 		font-size: 2.5rem;
 		color: #2c5f2d;
 		margin-bottom: 0.5rem;
+		transition: color 0.3s ease;
+	}
+
+	:global(.dark) .blog-header h1 {
+		color: #5cb85f;
 	}
 
 	.blog-header p {
 		color: #666;
 		font-size: 1.1rem;
+		transition: color 0.3s ease;
+	}
+
+	:global(.dark) .blog-header p {
+		color: #aaa;
 	}
 
 	.no-posts {
@@ -82,12 +92,21 @@
 		border-radius: 8px;
 		padding: 2rem;
 		border: 1px solid #e0e0e0;
-		transition: transform 0.2s, box-shadow 0.2s;
+		transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease, border-color 0.3s ease;
+	}
+
+	:global(.dark) .post-card {
+		background: #242424;
+		border: 1px solid #333;
 	}
 
 	.post-card:hover {
 		transform: translateY(-4px);
 		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	}
+
+	:global(.dark) .post-card:hover {
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 	}
 
 	.post-link {
@@ -100,6 +119,11 @@
 		margin: 0 0 1rem 0;
 		color: #2c5f2d;
 		font-size: 1.5rem;
+		transition: color 0.3s ease;
+	}
+
+	:global(.dark) .post-card h2 {
+		color: #5cb85f;
 	}
 
 	.post-meta {
@@ -113,6 +137,11 @@
 	time {
 		color: #888;
 		font-size: 0.9rem;
+		transition: color 0.3s ease;
+	}
+
+	:global(.dark) time {
+		color: #999;
 	}
 
 	.tags {
@@ -127,12 +156,23 @@
 		padding: 0.25rem 0.75rem;
 		border-radius: 12px;
 		font-size: 0.85rem;
+		transition: background-color 0.3s ease, color 0.3s ease;
+	}
+
+	:global(.dark) .tag {
+		background: #333;
+		color: #aaa;
 	}
 
 	.description {
 		color: #666;
 		line-height: 1.6;
 		margin: 0;
+		transition: color 0.3s ease;
+	}
+
+	:global(.dark) .description {
+		color: #aaa;
 	}
 
 	@media (max-width: 768px) {
