@@ -1,0 +1,116 @@
+name: Sync Posts to CloudFlare D1
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'posts/**'
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  sync-posts:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: |
+        npm install gray-matter marked
+        
+    - name: Read and process posts
+      id: process-posts
+      run: |
+        node << 'EOF'
+        const fs = require('fs');
+        const path = require('path');
+        const matter = require('gray-matter');
+        
+        const postsDir = './posts';
+        const posts = [];
+        
+        // Read all markdown files
+        const files = fs.readdirSync(postsDir).filter(file => file.endsWith('.md'));
+        
+        for (const file of files) {
+          const filePath = path.join(postsDir, file);
+          const content = fs.readFileSync(filePath, 'utf8');
+          const slug = file.replace('.md', '');
+          
+          posts.push({
+            slug,
+            content,
+            filePath
+          });
+        }
+        
+        // Output posts as JSON for the next step
+        console.log(`::set-output name=posts::${JSON.stringify(posts)}`);
+        console.log(`::set-output name=post-count::${posts.length}`);
+        EOF
+        
+    - name: Sync posts to CloudFlare D1
+      env:
+        WORKER_URL: ${{ secrets.CLOUDFLARE_WORKER_URL }}
+        SYNC_API_KEY: ${{ secrets.CLOUDFLARE_SYNC_API_KEY }}
+      run: |
+        POSTS='${{ steps.process-posts.outputs.posts }}'
+        
+        echo "Syncing ${{ steps.process-posts.outputs.post-count }} posts to CloudFlare D1..."
+        
+        # Call the CloudFlare Worker sync endpoint
+        RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
+          "$WORKER_URL/sync" \
+          -H "Authorization: Bearer $SYNC_API_KEY" \
+          -H "Content-Type: application/json" \
+          -d "$POSTS")
+        
+        # Extract response body and status code
+        HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+        RESPONSE_BODY=$(echo "$RESPONSE" | sed '$d')
+        
+        echo "Response Status: $HTTP_STATUS"
+        echo "Response Body: $RESPONSE_BODY"
+        
+        # Check if the request was successful
+        if [ "$HTTP_STATUS" -eq 200 ]; then
+          echo "✅ Posts synced successfully!"
+          
+          # Parse and display results
+          SYNCED=$(echo "$RESPONSE_BODY" | jq -r '.synced // 0')
+          ERRORS=$(echo "$RESPONSE_BODY" | jq -r '.errors // []')
+          
+          echo "Posts synced: $SYNCED"
+          
+          if [ "$(echo "$ERRORS" | jq 'length')" -gt 0 ]; then
+            echo "⚠️  Some posts had errors:"
+            echo "$ERRORS" | jq -r '.[] | "  - \(.slug): \(.error)"'
+            exit 1
+          fi
+        else
+          echo "❌ Failed to sync posts"
+          echo "Error: $RESPONSE_BODY"
+          exit 1
+        fi
+        
+    - name: Update sync status
+      if: success()
+      run: |
+        echo "✅ All posts have been successfully synced to CloudFlare D1 database!"
+        echo "📊 Sync Summary:"
+        echo "  - Total posts processed: ${{ steps.process-posts.outputs.post-count }}"
+        echo "  - Sync completed at: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+        
+    - name: Handle sync failure
+      if: failure()
+      run: |
+        echo "❌ Post sync failed!"
+        echo "Please check the logs above for details."
+        echo "You can also manually trigger the sync from the Actions tab."

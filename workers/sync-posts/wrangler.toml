@@ -1,0 +1,22 @@
+name = "autumnsgrove-sync-posts"
+main = "index.js"
+compatibility_date = "2025-01-01"
+
+[env.production]
+vars = { ENVIRONMENT = "production" }
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "autumnsgrove-posts"
+database_id = "510badf3-457a-4892-bf2a-45d4bfd7a7bb"
+
+[env.staging]
+vars = { ENVIRONMENT = "staging" }
+
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "autumnsgrove-posts"
+database_id = "510badf3-457a-4892-bf2a-45d4bfd7a7bb"
+
+# Secrets (set these using wrangler secret put)
+# SYNC_API_KEY - API key for authentication
