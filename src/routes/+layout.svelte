@@ -40,6 +40,7 @@
 			<div class="nav-links">
 				<a href="/" class:active={$page.url.pathname === '/'}>Home</a>
 				<a href="/blog" class:active={$page.url.pathname.startsWith('/blog')}>Blog</a>
+				<a href="/recipes" class:active={$page.url.pathname.startsWith('/recipes')}>Recipes</a>
 			</div>
 			<button class="theme-toggle" onclick={toggleTheme} aria-label="Toggle dark mode">
 				{#if darkMode}

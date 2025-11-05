@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <rect width="400" height="300" fill="#fff5ee"/>
+  <circle cx="150" cy="150" r="40" fill="#d2691e"/>
+  <circle cx="250" cy="150" r="40" fill="#d2691e"/>
+  <circle cx="200" cy="120" r="40" fill="#d2691e"/>
+  <circle cx="200" cy="180" r="40" fill="#d2691e"/>
+  <circle cx="170" cy="140" r="8" fill="#654321"/>
+  <circle cx="230" cy="160" r="8" fill="#654321"/>
+  <circle cx="190" cy="130" r="8" fill="#654321"/>
+  <circle cx="210" cy="170" r="8" fill="#654321"/>
+  <text x="200" y="250" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#666">Chocolate Chip Cookies</text>
+</svg>

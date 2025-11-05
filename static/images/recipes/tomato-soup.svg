@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" width="400" height="300">
+  <rect width="400" height="300" fill="#fff8dc"/>
+  <circle cx="200" cy="150" r="80" fill="#ff6347" opacity="0.8"/>
+  <circle cx="180" cy="140" r="60" fill="#ff6347"/>
+  <path d="M 160 120 Q 200 100, 240 120" stroke="#228b22" stroke-width="3" fill="none"/>
+  <ellipse cx="200" cy="150" rx="70" ry="10" fill="#8b4513" opacity="0.3"/>
+  <text x="200" y="250" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#666">Tomato Soup</text>
+</svg>
