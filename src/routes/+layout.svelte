@@ -36,7 +36,8 @@
 <div class="layout">
 	<header>
 		<nav>
-			<a href="/" class="logo">The Garden</a>
+			<!-- TITLE AREA -->
+			<a href="/" class="logo">The Grove</a>
 			<div class="nav-links">
 				<a href="/" class:active={$page.url.pathname === '/'}>Home</a>
 				<a href="/blog" class:active={$page.url.pathname.startsWith('/blog')}>Blog</a>
