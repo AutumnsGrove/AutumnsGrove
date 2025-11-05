@@ -1,5 +1,21 @@
+# Secrets
 secrets.json
+
+# Logs
 *.log
-__pycache__/
+
+# System files
 .DS_Store
+
+# Claude Code
 .claude/
+
+# SvelteKit
+.svelte-kit/
+build/
+node_modules/
+
+# Environment variables
+.env
+.env.*
+!.env.example

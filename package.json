@@ -1,13 +1,22 @@
 {
   "name": "autumnsgrove",
   "version": "1.0.0",
-  "description": "A personal website for blogging, demonstrating projects, and sharing articles. Built with Python, JavaScript, and HTML/CSS.",
-  "main": "script.js",
+  "description": "A personal website for blogging, demonstrating projects, and sharing articles. Built with SvelteKit and deployed to Cloudflare Pages.",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite dev",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs"
+  "devDependencies": {
+    "@sveltejs/adapter-cloudflare": "^4.7.2",
+    "@sveltejs/kit": "^2.5.28",
+    "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "svelte": "^5.1.9",
+    "vite": "^5.4.10"
+  },
+  "dependencies": {
+    "gray-matter": "^4.0.3",
+    "marked": "^14.1.2"
+  }
 }
