@@ -70,6 +70,23 @@
 
 **Examples:**
 
+- **https://マリウス.com/collection/make/**:
+  - I LOVE the simple but hacker-like aesthetic. I _LOVE_ the header. Theres a LOT ... but yet, not too overwhelming? I also really like how it handles images (see: the stickerbombed pixel 8)
+  - I also like the icon in the tabs bar
+  - https://マリウス.com/never-click-on-a-link-that-looks-like-that/
+  - Just realized that the URL is in JAPANESE. wild.
+  - I dont know mich of what I'd implement here because it looks like a pretty simple site design. But I like it!
+  - found via: kagi Small Web
+
+- **https://joshtronic.com/2025/11/02/move-fast-make-noise/**:
+  - Incredible simple. Literally just text but with some light design elements thrown in.
+  - Very straightforward posts.
+  - Found via: Kagi Small Web (https://kagi.com/smallweb/?url=https%3A%2F%2Fjoshtronic.com%2F2025%2F11%2F02%2Fmove-fast-make-noise%2F)
+
+- **https://bagerbach.com/books/building-generative-ai-services-with-fastapi/**:
+  - Another simple Blog. I guess I am just drawn to them.
+  - Found via: Kagi Small Web
+
 ---
 
 ## Learning Resources
