@@ -27,3 +27,19 @@
 - [ ] Choose hosting platform
 - [ ] Set up deployment pipeline
 - [ ] Configure domain (if applicable)
+
+## Git Dashboard Integration
+- [ ] Configure GitHub token in secrets.json (requires GH CLI login)
+- [ ] Install GitDashboard backend dependencies (uv sync)
+- [ ] Test GitDashboard backend locally
+- [ ] Integrate GitDashboard as a section/route on the main website
+- [ ] Update navigation to include Git Dashboard link
+- [ ] Style GitDashboard to match overall site theme
+
+## Git Dashboard - Cloudflare D1 Storage
+- [ ] Create new Cloudflare D1 database for git stats
+- [ ] Design schema for storing historical commit data
+- [ ] Build worker to sync GitHub stats to D1
+- [ ] Create API endpoints for querying historical data
+- [ ] Implement visualizations for historical trends
+- [ ] Set up scheduled sync for periodic data collection

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Git Dashboard - Hand-Drawn Style</title>
+    <link rel="stylesheet" href="static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Patrick+Hand&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">~~ Git Dashboard ~~</h1>
+            <p class="subtitle">Your coding journey, visualized!</p>
+        </header>
+
+        <div class="input-section">
+            <div class="input-box">
+                <label for="username">GitHub Username:</label>
+                <input type="text" id="username" value="AutumnsGrove" placeholder="Enter username...">
+                <button id="fetchBtn" onclick="fetchStats()">Fetch Stats!</button>
+            </div>
+        </div>
+
+        <div id="loading" class="loading hidden">
+            <div class="spinner"></div>
+            <p>Fetching your awesome stats...</p>
+        </div>
+
+        <div id="error" class="error hidden"></div>
+
+        <div id="dashboard" class="dashboard hidden">
+            <!-- User Info Card -->
+            <div class="card user-card">
+                <h2>~~ About You ~~</h2>
+                <div id="userInfo"></div>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">📝</div>
+                    <div class="stat-value" id="totalCommits">-</div>
+                    <div class="stat-label">Total Commits</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">➕</div>
+                    <div class="stat-value" id="totalAdditions">-</div>
+                    <div class="stat-label">Lines Added</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">➖</div>
+                    <div class="stat-value" id="totalDeletions">-</div>
+                    <div class="stat-label">Lines Deleted</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">📦</div>
+                    <div class="stat-value" id="reposAnalyzed">-</div>
+                    <div class="stat-label">Repos Analyzed</div>
+                </div>
+            </div>
+
+            <!-- Active Hours Chart -->
+            <div class="card chart-card">
+                <h2>~~ When Do You Code? ~~</h2>
+                <canvas id="hoursChart"></canvas>
+            </div>
+
+            <!-- Day of Week Chart -->
+            <div class="card chart-card">
+                <h2>~~ Which Days Are You Most Active? ~~</h2>
+                <canvas id="daysChart"></canvas>
+            </div>
+
+            <!-- Top Repos -->
+            <div class="card">
+                <h2>~~ Your Most Active Repos ~~</h2>
+                <div id="topRepos"></div>
+            </div>
+
+            <!-- Recent Commits -->
+            <div class="card">
+                <h2>~~ Recent Commits ~~</h2>
+                <div id="recentCommits"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/roughjs@4.5.2/bundled/rough.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-rough@0.3.0/dist/chartjs-plugin-rough.min.js"></script>
+    <script src="static/js/app.js"></script>
+</body>
+</html>
