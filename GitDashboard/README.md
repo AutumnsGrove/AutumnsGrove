@@ -28,7 +28,8 @@ The dashboard features a playful, hand-drawn aesthetic with:
 **Backend:**
 - FastAPI (Python web framework)
 - httpx (async HTTP client)
-- GitHub REST API
+- GitHub GraphQL API (primary, for efficiency)
+- GitHub REST API (fallback)
 
 **Frontend:**
 - Vanilla JavaScript
@@ -72,7 +73,7 @@ cp secrets_template.json secrets.json
 ### 4. Install Dependencies
 
 ```bash
-cd Projects/GitDashboard/backend
+cd GitDashboard/backend
 uv sync
 ```
 
@@ -81,7 +82,7 @@ uv sync
 ### Start the Server
 
 ```bash
-cd Projects/GitDashboard/backend
+cd GitDashboard/backend
 uv run python main.py
 ```
 

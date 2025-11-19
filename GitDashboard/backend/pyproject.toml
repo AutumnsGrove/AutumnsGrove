@@ -1,7 +1,7 @@
 [project]
 name = "backend"
 version = "0.1.0"
-description = "Add your description here"
+description = "GitDashboard - GitHub statistics visualization"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
@@ -9,4 +9,5 @@ dependencies = [
     "httpx>=0.28.1",
     "python-dotenv>=1.2.1",
     "uvicorn>=0.38.0",
+    "slowapi>=0.1.9",
 ]
