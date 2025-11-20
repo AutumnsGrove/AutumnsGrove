@@ -1,0 +1,37 @@
+name = "autumnsgrove"
+main = ".svelte-kit/cloudflare/_worker.js"
+compatibility_date = "2025-01-01"
+
+[assets]
+binding = "ASSETS"
+directory = ".svelte-kit/cloudflare"
+
+# KV Namespace for API caching
+[[kv_namespaces]]
+binding = "CACHE_KV"
+id = "6bc72b16c721401e8b9a848a7ae4e0ca"
+
+# R2 Bucket for images
+[[r2_buckets]]
+binding = "IMAGES"
+bucket_name = "autumnsgrove-images"
+
+# D1 Database for historical git stats
+[[d1_databases]]
+binding = "GIT_STATS_DB"
+database_name = "autumnsgrove-git-stats"
+database_id = "0ca4036f-93f7-4c8a-98a5-5353263acd44"
+
+# Non-sensitive environment variables
+[vars]
+GITHUB_API_URL = "https://api.github.com/graphql"
+CACHE_TTL_SECONDS = "3600"
+AI_CACHE_TTL_SECONDS = "21600"
+
+# Cron triggers for scheduled sync
+[triggers]
+crons = ["0 */6 * * *"]
+
+# Secrets (set via: npx wrangler secret put SECRET_NAME)
+# GITHUB_TOKEN - GitHub token with 'repo' scope
+# ANTHROPIC_API_KEY - API key for Claude

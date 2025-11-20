@@ -2,6 +2,8 @@
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 
+	let { children } = $props();
+
 	let darkMode = $state(true); // Default to dark mode
 
 	onMount(() => {
@@ -42,12 +44,13 @@
 				<a href="/" class:active={$page.url.pathname === '/'}>Home</a>
 				<a href="/blog" class:active={$page.url.pathname.startsWith('/blog')}>Blog</a>
 				<a href="/recipes" class:active={$page.url.pathname.startsWith('/recipes')}>Recipes</a>
+				<a href="/dashboard" class:active={$page.url.pathname.startsWith('/dashboard')}>Dashboard</a>
 			</div>
 		</nav>
 	</header>
 
 	<main>
-		<slot />
+		{@render children()}
 	</main>
 
 	<footer>
