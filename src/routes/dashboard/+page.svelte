@@ -266,7 +266,7 @@
 <div class="dashboard">
 	<header class="dashboard-header">
 		<h1>Git Dashboard</h1>
-		<p>Visualize your GitHub commit activity</p>
+		<p>My GitHub commit activity</p>
 	</header>
 
 	{#if loading}
@@ -314,7 +314,7 @@
 			<div class="stats-grid">
 				<div class="stat-card">
 					<div class="stat-value">{formatNumber(stats.total_commits)}</div>
-					<div class="stat-label">Total Commits</div>
+					<div class="stat-label">Commits (Top {stats.repos_analyzed} Repos)</div>
 				</div>
 				<div class="stat-card">
 					<div class="stat-value additions">+{formatNumber(stats.total_additions)}</div>
@@ -333,14 +333,14 @@
 			<!-- Charts -->
 			<div class="charts-grid">
 				<section class="card chart-card">
-					<h3>When Do You Code?</h3>
+					<h3>When Do I Code?</h3>
 					<div class="chart-container">
 						<canvas bind:this={hoursCanvas}></canvas>
 					</div>
 				</section>
 
 				<section class="card chart-card">
-					<h3>Which Days Are Most Active?</h3>
+					<h3>Most Active Days</h3>
 					<div class="chart-container">
 						<canvas bind:this={daysCanvas}></canvas>
 					</div>

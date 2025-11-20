@@ -76,6 +76,36 @@
 
 ## 🔲 Remaining Tasks
 
+### HIGH PRIORITY: Dashboard Data Expansion
+
+**Goal:** Show stats from ALL repos with time range filtering
+
+**Current limitation:** Only fetches 15 most recently updated repos, 100 commits each (max ~1500 commits)
+
+**What needs to happen:**
+
+1. **Paginate API calls** - Fetch all repos, not just 15
+   - GitHub GraphQL allows pagination with cursors
+   - May need multiple API calls to get all repos
+   - Consider background sync to D1 database for performance
+
+2. **Add time range selector UI**
+   - Options: Last 30 days, Last 6 months, All time
+   - Selector component above stats cards
+   - Filter commits by date in GraphQL query using `since` parameter
+
+3. **Update stats API**
+   - Accept `since` date parameter
+   - Modify GraphQL query: `history(first: 100, since: "2024-05-01T00:00:00Z")`
+   - Return commits within selected time range
+
+**Implementation notes:**
+- GraphQL pagination: use `after: $cursor` and `hasNextPage`
+- May need to increase API call budget for full repo coverage
+- Consider caching strategies for all-time data
+
+---
+
 ### MEDIUM PRIORITY: Dashboard Visualizations
 
 **Goal:** Add advanced visualizations to make the dashboard more informative
