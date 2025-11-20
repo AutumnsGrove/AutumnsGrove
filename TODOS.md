@@ -1,103 +1,252 @@
 # TODOs for AutumnsGrove
 
-## Initial Setup
+> **Last Updated:** November 2024 - Git Dashboard integration complete, visualizations pending
+
+---
+
+## ✅ Completed
+
+### Initial Setup
 - [x] Project initialized from BaseProject template
 - [x] Dependencies configured (Python UV, npm)
 - [x] Git hooks installed for code quality
+- [x] SvelteKit with Cloudflare Pages adapter configured
 
-## Core Features
-- [ ] Choose and set up web framework (Flask or FastAPI)
-- [ ] Design and implement homepage layout
-- [ ] Create blog post system (create, edit, display)
-- [ ] Build project showcase section
-- [ ] Implement article sharing functionality
+### Core Website
+- [x] Homepage layout implemented
+- [x] Blog system with markdown rendering
+- [x] Recipes section
+- [x] Navigation menu with dark mode toggle
+- [x] Responsive design
 
-## Design & Frontend
-- [ ] Design responsive website layout
-- [ ] Create CSS styling and theme
-- [ ] Add navigation menu
-- [ ] Implement blog post templates
+### Cloudflare Infrastructure
+- [x] R2 bucket created: `autumnsgrove-images`
+- [x] KV namespace created: `CACHE_KV` (ID: 6bc72b16c721401e8b9a848a7ae4e0ca)
+- [x] D1 database created: `autumnsgrove-git-stats` (ID: 0ca4036f-93f7-4c8a-98a5-5353263acd44)
+- [x] Wrangler.toml configured with all bindings
+- [x] Secrets configured in Cloudflare Dashboard (GITHUB_TOKEN, ANTHROPIC_API_KEY)
 
-## Content Management
-- [ ] Set up blog post storage (file-based or database)
-- [ ] Create markdown rendering for blog posts
-- [ ] Add metadata support (dates, tags, categories)
+### Git Dashboard - Core Integration
+- [x] API routes created:
+  - `/api/git/user/[username]` - User info
+  - `/api/git/repos/[username]` - Repositories
+  - `/api/git/stats/[username]` - Commit statistics
+  - `/api/git/health` - Health check
+  - `/api/git/todos/[username]/[repo]` - TODO extraction
+  - `/api/git/sync` - Scheduled sync endpoint
+  - `/api/git/history/[username]/[repo]` - Historical data
+  - `/api/ai/analyze/[username]/[repo]` - AI analysis
+- [x] Dashboard page at `/dashboard` with:
+  - User info card
+  - Stats cards (commits, additions, deletions, repos)
+  - Hour-of-day bar chart
+  - Day-of-week bar chart
+  - Top repositories list
+  - Recent commits list
+- [x] Auto-loads AutumnsGrove account on page visit
+- [x] 3-hour KV caching for all API responses
+- [x] Navigation updated with Dashboard link
 
-## Deployment
-- [ ] Choose hosting platform
-- [ ] Set up deployment pipeline
-- [ ] Configure domain (if applicable)
+### Backend Systems
+- [x] D1 schema designed (src/lib/db/schema.sql)
+- [x] Claude Haiku 4.5 integration for AI analysis
+- [x] TODO parsing from code comments and TODOS.md files
 
-## Git Dashboard Integration
-- [ ] Configure GitHub token in secrets.json (requires GH CLI login)
-- [ ] Install GitDashboard backend dependencies (uv sync)
-- [ ] Test GitDashboard backend locally
-- [ ] Integrate GitDashboard as a section/route on the main website
-- [ ] Update navigation to include Git Dashboard link
-- [ ] Style GitDashboard to match overall site theme
+---
 
-## Image Hosting (Cloudflare R2)
-- [ ] Create R2 bucket `autumnsgrove-images`
-- [ ] Connect custom domain (cdn.autumnsgrove.com or similar)
-- [ ] Test image upload/access workflow
-- [ ] Document upload process in ClaudeUsage/
+## 🔲 Remaining Tasks
 
-## Secrets & Environment Setup
-- [ ] Update secrets_template.json with all required keys
-- [ ] Configure GITHUB_TOKEN with `repo` scope (for private repos)
-- [ ] Configure ANTHROPIC_API_KEY
-- [ ] Create KV namespace for API response caching
-- [ ] Set up Cloudflare AI Gateway instance
+### HIGH PRIORITY: Image Hosting Setup
 
-## Git Dashboard - SvelteKit Integration
-- [ ] Create /src/routes/api/git/user/+server.js
-- [ ] Create /src/routes/api/git/repos/+server.js
-- [ ] Create /src/routes/api/git/stats/+server.js
-- [ ] Port GraphQL query logic from FastAPI backend
-- [ ] Add KV caching to all endpoints
-- [ ] Create /src/routes/dashboard/+page.svelte
-- [ ] Port Chart.js + rough.js visualizations
-- [ ] Style dashboard to match site theme (green/teal, dark mode)
-- [ ] Update navigation to include Dashboard link
+**Goal:** Use R2 bucket to host images instead of committing to GitHub
 
-## Git Dashboard - New Visualizations
-- [ ] Add commit history heatmap (GitHub contribution graph style)
-- [ ] Add interactive timeline for commit history
-- [ ] Add date range filtering
-- [ ] Build project comparison side-by-side charts
-- [ ] Add radar chart for multi-dimensional repo comparison
-- [ ] Implement weekly/monthly activity graph
+**Steps to complete:**
 
-## TODO Tracking System
-- [ ] Create /src/routes/api/git/todos/+server.js
-- [ ] Parse TODO/FIXME from code comments
-- [ ] Parse TODOS.md files from repositories
-- [ ] Categorize by file, status, age, priority
-- [ ] Build frontend TODO list with filtering/search
-- [ ] Add progress bars (completed vs pending)
-- [ ] Group TODOs by project
-- [ ] Show TODO aging (how long they've existed)
+1. **Connect custom domain to R2 bucket**
+   - Go to: Cloudflare Dashboard → R2 → `autumnsgrove-images` → Settings → Custom Domains
+   - Add domain: `cdn.autumnsgrove.com` (or `images.autumnsgrove.com`)
+   - This requires the domain to be in your Cloudflare account
 
-## AI-Powered Analysis (Claude Haiku 4.5)
-- [ ] Set up Anthropic integration via AI Gateway
-- [ ] Create /src/routes/api/ai/analyze/+server.js
-- [ ] Implement project health score calculation
-- [ ] Add progress assessment (completion %)
-- [ ] Generate AI insights and recommendations
-- [ ] Cache AI results in KV (6-hour TTL)
+2. **Test upload workflow**
+   ```bash
+   # Upload a test image
+   npx wrangler r2 object put autumnsgrove-images/test/hello.jpg --file ./path/to/image.jpg
 
-## Git Dashboard - Cloudflare D1 Historical Storage
-- [ ] Create D1 database for git stats
-- [ ] Design schema: commits, repo_stats, todos, snapshots
-- [ ] Build scheduled sync worker (6-hour cron)
-- [ ] Create API endpoints for historical data
-- [ ] Add line charts for commit trends over time
-- [ ] Add TODO completion trend visualization
-- [ ] Add project activity trend charts
+   # Verify it's accessible
+   curl https://cdn.autumnsgrove.com/test/hello.jpg
+   ```
 
-## Security & Performance
-- [ ] Validate all inputs server-side
-- [ ] Add rate limiting to API endpoints
-- [ ] Ensure secrets never leak to client-side
-- [ ] Optimize chart loading (lazy-load)
-- [ ] Mobile optimization
+3. **Create upload helper script** (optional)
+   - Consider creating a CLI script to make uploads easier
+   - Or use the Cloudflare Dashboard for manual uploads
+
+4. **Reference images in your site**
+
+   In Svelte components:
+   ```svelte
+   <img src="https://cdn.autumnsgrove.com/blog/my-post/hero.jpg" alt="..." />
+   ```
+
+   In Markdown files (posts/recipes):
+   ```markdown
+   ![Alt text](https://cdn.autumnsgrove.com/blog/my-post/image.jpg)
+
+   Or with a caption:
+   ![My cool project screenshot](https://cdn.autumnsgrove.com/posts/2024-11-20/screenshot.png)
+   ```
+
+5. **Suggested folder structure in R2**
+   ```
+   autumnsgrove-images/
+   ├── blog/
+   │   └── post-slug/
+   │       ├── hero.jpg
+   │       └── diagram.png
+   ├── recipes/
+   │   └── recipe-slug/
+   │       └── finished-dish.jpg
+   └── projects/
+       └── project-name/
+           └── screenshot.png
+   ```
+
+6. **Document the process**
+   - Create `ClaudeUsage/image_hosting.md` with upload instructions
+
+---
+
+### MEDIUM PRIORITY: Dashboard Visualizations
+
+**Goal:** Add advanced visualizations to make the dashboard more informative
+
+#### Commit History Heatmap (GitHub contribution graph style)
+- [ ] Create new component: `src/routes/dashboard/Heatmap.svelte`
+- [ ] Use the `/api/git/history/[username]/[repo]` endpoint for data
+- [ ] Display 52 weeks of commit activity
+- [ ] Color intensity based on commit count
+- [ ] Libraries to consider: D3.js or custom SVG
+
+#### Interactive Timeline
+- [ ] Show commits over time with scrollable timeline
+- [ ] Click to see commit details
+- [ ] Filter by date range
+
+#### Project Comparison Charts
+- [ ] Side-by-side bar charts for multiple repos
+- [ ] Compare: commits, additions, deletions, activity
+- [ ] Radar chart for multi-dimensional comparison
+- [ ] Select which repos to compare
+
+#### Historical Trends
+- [ ] Line charts showing commits over weeks/months
+- [ ] TODO completion trends
+- [ ] Requires D1 data to be populated first
+
+---
+
+### MEDIUM PRIORITY: Initialize D1 Database
+
+**Goal:** Set up the database schema for historical tracking
+
+**Steps:**
+
+1. **Run the schema migration**
+   ```bash
+   npx wrangler d1 execute autumnsgrove-git-stats --file=src/lib/db/schema.sql
+   ```
+
+2. **Trigger initial sync** (after deployment)
+   ```bash
+   curl -X POST https://autumnsgrove.com/api/git/sync \
+     -H "Content-Type: application/json" \
+     -d '{"username": "AutumnsGrove", "limit": 20}'
+   ```
+
+3. **Set up cron trigger** (in Cloudflare Dashboard)
+   - Workers & Pages → autumnsgrove → Settings → Triggers
+   - Add cron: `0 */6 * * *` (every 6 hours)
+   - This calls `/api/git/sync` automatically
+
+---
+
+### LOW PRIORITY: Dashboard UI Improvements
+
+**Based on your design feedback (to be discussed):**
+- [ ] Layout adjustments
+- [ ] Color scheme tweaks
+- [ ] Typography changes
+- [ ] Mobile responsiveness improvements
+- [ ] Loading states and animations
+
+---
+
+### LOW PRIORITY: Security & Performance
+
+- [ ] Add rate limiting to API endpoints (use Cloudflare's built-in)
+- [ ] Input validation hardening
+- [ ] Lazy-load Chart.js (reduce initial bundle size)
+- [ ] Mobile optimization for charts
+- [ ] Add error boundaries for graceful failures
+
+---
+
+## 📝 Quick Reference
+
+### Local Development
+```bash
+# Start with Cloudflare bindings
+npx wrangler pages dev -- npm run dev
+
+# Access at http://localhost:8788
+```
+
+### Key Files
+- **Dashboard page:** `src/routes/dashboard/+page.svelte`
+- **GitHub utilities:** `src/lib/utils/github.js`
+- **API routes:** `src/routes/api/git/`
+- **D1 schema:** `src/lib/db/schema.sql`
+- **Wrangler config:** `wrangler.toml`
+- **Local secrets:** `.dev.vars` (gitignored)
+
+### Cloudflare Resources
+- **R2 Bucket:** `autumnsgrove-images`
+- **KV Namespace:** `CACHE_KV`
+- **D1 Database:** `autumnsgrove-git-stats`
+
+### API Endpoints
+| Endpoint | Description | Cache |
+|----------|-------------|-------|
+| `/api/git/user/[username]` | User profile | 3 hours |
+| `/api/git/stats/[username]` | Commit stats | 3 hours |
+| `/api/git/repos/[username]` | Repositories | 3 hours |
+| `/api/git/todos/[username]/[repo]` | TODO extraction | 30 min |
+| `/api/git/history/[username]/[repo]` | Historical data | 30 min |
+| `/api/ai/analyze/[username]/[repo]` | AI analysis | 6 hours |
+| `/api/git/sync` | Trigger data sync | N/A |
+| `/api/git/health` | Health check | N/A |
+
+---
+
+## 🚀 Next Session Checklist
+
+When you return to work on this project:
+
+1. **First, deploy current changes:**
+   ```bash
+   git push origin main
+   ```
+
+2. **Initialize D1 database:**
+   ```bash
+   npx wrangler d1 execute autumnsgrove-git-stats --file=src/lib/db/schema.sql
+   ```
+
+3. **Set up R2 custom domain** (Cloudflare Dashboard)
+
+4. **Test the deployed dashboard** at https://autumnsgrove.com/dashboard
+
+5. **Continue with visualizations** or address design feedback
+
+---
+
+*Last updated: November 2024*
