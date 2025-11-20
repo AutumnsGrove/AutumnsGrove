@@ -1,53 +1,66 @@
-import { marked } from 'marked';
-import matter from 'gray-matter';
-import mermaid from 'mermaid';
+import { marked } from "marked";
+import matter from "gray-matter";
+import mermaid from "mermaid";
 
 // Configure Mermaid
-mermaid.initialize({ 
-	startOnLoad: false,
-	theme: 'default',
-	securityLevel: 'loose'
+mermaid.initialize({
+  startOnLoad: false,
+  theme: "default",
+  securityLevel: "loose",
 });
 
 // Use Vite's import.meta.glob to load markdown files at build time
 // This works in both dev and production (including Cloudflare Workers)
 // Path is relative to project root
-const modules = import.meta.glob('../../../posts/*.md', { eager: true, query: '?raw', import: 'default' });
-const recipeModules = import.meta.glob('../../../recipes/*.md', { eager: true, query: '?raw', import: 'default' });
+const modules = import.meta.glob("../../../posts/*.md", {
+  eager: true,
+  query: "?raw",
+  import: "default",
+});
+const recipeModules = import.meta.glob("../../../recipes/*.md", {
+  eager: true,
+  query: "?raw",
+  import: "default",
+});
+
+// Load recipe sidecar JSON files for instruction icons
+const recipeSidecarModules = import.meta.glob("../../../recipes/*-grove.json", {
+  eager: true,
+});
 
 /**
  * Get all markdown posts from the posts directory
  * @returns {Array} Array of post objects with metadata and slug
  */
 export function getAllPosts() {
-	try {
-		const posts = Object.entries(modules)
-			.map(([filepath, content]) => {
-				try {
-					// Extract slug from filepath: ../../../posts/example.md -> example
-					const slug = filepath.split('/').pop().replace('.md', '');
-					const { data } = matter(content);
+  try {
+    const posts = Object.entries(modules)
+      .map(([filepath, content]) => {
+        try {
+          // Extract slug from filepath: ../../../posts/example.md -> example
+          const slug = filepath.split("/").pop().replace(".md", "");
+          const { data } = matter(content);
 
-					return {
-						slug,
-						title: data.title || 'Untitled',
-						date: data.date || new Date().toISOString(),
-						tags: data.tags || [],
-						description: data.description || ''
-					};
-				} catch (err) {
-					console.error(`Error processing post ${filepath}:`, err);
-					return null;
-				}
-			})
-			.filter(Boolean)
-			.sort((a, b) => new Date(b.date) - new Date(a.date));
+          return {
+            slug,
+            title: data.title || "Untitled",
+            date: data.date || new Date().toISOString(),
+            tags: data.tags || [],
+            description: data.description || "",
+          };
+        } catch (err) {
+          console.error(`Error processing post ${filepath}:`, err);
+          return null;
+        }
+      })
+      .filter(Boolean)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
 
-		return posts;
-	} catch (err) {
-		console.error('Error in getAllPosts:', err);
-		return [];
-	}
+    return posts;
+  } catch (err) {
+    console.error("Error in getAllPosts:", err);
+    return [];
+  }
 }
 
 /**
@@ -55,34 +68,34 @@ export function getAllPosts() {
  * @returns {Array} Array of recipe objects with metadata and slug
  */
 export function getAllRecipes() {
-	try {
-		const recipes = Object.entries(recipeModules)
-			.map(([filepath, content]) => {
-				try {
-					// Extract slug from filepath: ../../../recipes/example.md -> example
-					const slug = filepath.split('/').pop().replace('.md', '');
-					const { data } = matter(content);
+  try {
+    const recipes = Object.entries(recipeModules)
+      .map(([filepath, content]) => {
+        try {
+          // Extract slug from filepath: ../../../recipes/example.md -> example
+          const slug = filepath.split("/").pop().replace(".md", "");
+          const { data } = matter(content);
 
-					return {
-						slug,
-						title: data.title || 'Untitled Recipe',
-						date: data.date || new Date().toISOString(),
-						tags: data.tags || [],
-						description: data.description || ''
-					};
-				} catch (err) {
-					console.error(`Error processing recipe ${filepath}:`, err);
-					return null;
-				}
-			})
-			.filter(Boolean)
-			.sort((a, b) => new Date(b.date) - new Date(a.date));
+          return {
+            slug,
+            title: data.title || "Untitled Recipe",
+            date: data.date || new Date().toISOString(),
+            tags: data.tags || [],
+            description: data.description || "",
+          };
+        } catch (err) {
+          console.error(`Error processing recipe ${filepath}:`, err);
+          return null;
+        }
+      })
+      .filter(Boolean)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
 
-		return recipes;
-	} catch (err) {
-		console.error('Error in getAllRecipes:', err);
-		return [];
-	}
+    return recipes;
+  } catch (err) {
+    console.error("Error in getAllRecipes:", err);
+    return [];
+  }
 }
 
 /**
@@ -91,29 +104,52 @@ export function getAllRecipes() {
  * @returns {Object|null} Post object with content and metadata
  */
 export function getPostBySlug(slug) {
-	// Find the matching module by slug
-	const entry = Object.entries(modules).find(([filepath]) => {
-		const fileSlug = filepath.split('/').pop().replace('.md', '');
-		return fileSlug === slug;
-	});
+  // Find the matching module by slug
+  const entry = Object.entries(modules).find(([filepath]) => {
+    const fileSlug = filepath.split("/").pop().replace(".md", "");
+    return fileSlug === slug;
+  });
 
-	if (!entry) {
-		return null;
-	}
+  if (!entry) {
+    return null;
+  }
 
-	const content = entry[1];
+  const content = entry[1];
 
-	const { data, content: markdown } = matter(content);
-	const htmlContent = marked.parse(markdown);
+  const { data, content: markdown } = matter(content);
+  const htmlContent = marked.parse(markdown);
 
-	return {
-		slug,
-		title: data.title || 'Untitled',
-		date: data.date || new Date().toISOString(),
-		tags: data.tags || [],
-		description: data.description || '',
-		content: htmlContent
-	};
+  return {
+    slug,
+    title: data.title || "Untitled",
+    date: data.date || new Date().toISOString(),
+    tags: data.tags || [],
+    description: data.description || "",
+    content: htmlContent,
+  };
+}
+
+/**
+ * Get sidecar JSON data for a recipe by slug
+ * @param {string} slug - The recipe slug (e.g., 'focaccia-recipe')
+ * @returns {Object|null} Sidecar data with instruction icons
+ */
+export function getRecipeSidecar(slug) {
+  // Try to find a matching sidecar file
+  // Sidecar files are named like: recipe-name-grove.json
+  const entry = Object.entries(recipeSidecarModules).find(([filepath]) => {
+    // Extract the base name: ../../../recipes/focaccia-recipe-grove.json -> focaccia-recipe
+    const filename = filepath.split("/").pop();
+    const sidecarSlug = filename.replace("-grove.json", "");
+    return sidecarSlug === slug;
+  });
+
+  if (!entry) {
+    return null;
+  }
+
+  // The module is already parsed JSON
+  return entry[1].default || entry[1];
 }
 
 /**
@@ -122,32 +158,36 @@ export function getPostBySlug(slug) {
  * @returns {Object|null} Recipe object with content and metadata
  */
 export function getRecipeBySlug(slug) {
-	// Find the matching module by slug
-	const entry = Object.entries(recipeModules).find(([filepath]) => {
-		const fileSlug = filepath.split('/').pop().replace('.md', '');
-		return fileSlug === slug;
-	});
+  // Find the matching module by slug
+  const entry = Object.entries(recipeModules).find(([filepath]) => {
+    const fileSlug = filepath.split("/").pop().replace(".md", "");
+    return fileSlug === slug;
+  });
 
-	if (!entry) {
-		return null;
-	}
+  if (!entry) {
+    return null;
+  }
 
-	const content = entry[1];
+  const content = entry[1];
 
-	const { data, content: markdown } = matter(content);
-	
-	// Process Mermaid diagrams in the content
-	const processedContent = processMermaidDiagrams(markdown);
-	const htmlContent = marked.parse(processedContent);
+  const { data, content: markdown } = matter(content);
 
-	return {
-		slug,
-		title: data.title || 'Untitled Recipe',
-		date: data.date || new Date().toISOString(),
-		tags: data.tags || [],
-		description: data.description || '',
-		content: htmlContent
-	};
+  // Process Mermaid diagrams in the content
+  const processedContent = processMermaidDiagrams(markdown);
+  const htmlContent = marked.parse(processedContent);
+
+  // Get sidecar data if available
+  const sidecar = getRecipeSidecar(slug);
+
+  return {
+    slug,
+    title: data.title || "Untitled Recipe",
+    date: data.date || new Date().toISOString(),
+    tags: data.tags || [],
+    description: data.description || "",
+    content: htmlContent,
+    sidecar: sidecar,
+  };
 }
 
 /**
@@ -156,11 +196,14 @@ export function getRecipeBySlug(slug) {
  * @returns {string} Processed markdown with Mermaid diagrams
  */
 function processMermaidDiagrams(markdown) {
-	// Replace Mermaid code blocks with special divs that will be processed later
-	return markdown.replace(/```mermaid\n([\s\S]*?)```/g, (match, diagramCode) => {
-		const diagramId = 'mermaid-' + Math.random().toString(36).substr(2, 9);
-		return `<div class="mermaid-container" id="${diagramId}" data-diagram="${encodeURIComponent(diagramCode.trim())}"></div>`;
-	});
+  // Replace Mermaid code blocks with special divs that will be processed later
+  return markdown.replace(
+    /```mermaid\n([\s\S]*?)```/g,
+    (match, diagramCode) => {
+      const diagramId = "mermaid-" + Math.random().toString(36).substr(2, 9);
+      return `<div class="mermaid-container" id="${diagramId}" data-diagram="${encodeURIComponent(diagramCode.trim())}"></div>`;
+    },
+  );
 }
 
 /**
@@ -168,16 +211,16 @@ function processMermaidDiagrams(markdown) {
  * This should be called after the content is mounted
  */
 export async function renderMermaidDiagrams() {
-	const containers = document.querySelectorAll('.mermaid-container');
-	
-	for (const container of containers) {
-		try {
-			const diagramCode = decodeURIComponent(container.dataset.diagram);
-			const { svg } = await mermaid.render(container.id, diagramCode);
-			container.innerHTML = svg;
-		} catch (error) {
-			console.error('Error rendering Mermaid diagram:', error);
-			container.innerHTML = '<p class="error">Error rendering diagram</p>';
-		}
-	}
+  const containers = document.querySelectorAll(".mermaid-container");
+
+  for (const container of containers) {
+    try {
+      const diagramCode = decodeURIComponent(container.dataset.diagram);
+      const { svg } = await mermaid.render(container.id, diagramCode);
+      container.innerHTML = svg;
+    } catch (error) {
+      console.error("Error rendering Mermaid diagram:", error);
+      container.innerHTML = '<p class="error">Error rendering diagram</p>';
+    }
+  }
 }

@@ -1,0 +1,44 @@
+{
+  "recipe": "Focaccia_Recipe",
+  "version": "1.0",
+  "theme": "rustic Italian bread with garlic butter",
+  "cuisine": "Italian",
+  "icons_used": ["mix", "marinate", "bake", "stovetop", "chop", "serve"],
+  "steps": [
+    {
+      "step": 1,
+      "icons": ["mix"],
+      "text": "Whisk yeast, honey, and 2½ cups lukewarm water in a medium bowl. Let sit 5 minutes until foamy or creamy."
+    },
+    {
+      "step": 2,
+      "icons": ["mix"],
+      "text": "Add flour and salt. Mix with a rubber spatula until a shaggy dough forms with no dry streaks."
+    },
+    {
+      "step": 3,
+      "icons": ["marinate"],
+      "text": "Pour 4 Tbsp. olive oil into a large bowl. Transfer dough to bowl and turn to coat in oil. Cover and chill until doubled in size, at least 8 hours and up to 1 day."
+    },
+    {
+      "step": 4,
+      "icons": ["marinate"],
+      "text": "Generously butter a 13×9\" baking pan. Transfer dough to prepared pan. Let rise uncovered in a warm spot until doubled in size, at least 1½ hours."
+    },
+    {
+      "step": 5,
+      "icons": ["bake"],
+      "text": "Preheat oven to 450°. Dimple focaccia all over with your fingers. Drizzle with olive oil and sprinkle with flaky sea salt. Bake until puffed and golden brown, 20-30 minutes."
+    },
+    {
+      "step": 6,
+      "icons": ["stovetop", "chop"],
+      "text": "Melt butter in a small saucepan over medium heat. Grate in garlic cloves and cook until lightly toasted, 30-45 seconds."
+    },
+    {
+      "step": 7,
+      "icons": ["serve"],
+      "text": "Brush garlic butter all over focaccia. Slice into squares or rectangles."
+    }
+  ]
+}

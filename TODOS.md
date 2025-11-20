@@ -150,7 +150,9 @@ Additions:   ██████████ AutumnsGrove (5000)
 ### LOW PRIORITY: Dashboard Enhancements
 
 #### Heatmap Component (Backlog)
-- [ ] Debug existing component - likely Svelte 5 reactivity issue with `$derived`
+- [x] Debug existing component - fixed Svelte 5 reactivity issue with `$derived`
+  - Changed from destructured props to `const props = $props()` with derived accessors
+  - Updated `generateDateGrid` to accept `days` as parameter
 - Component exists at `src/routes/dashboard/Heatmap.svelte`
 - API works: `/api/git/contributions/[username]` returns data
 - Grid displays 7 rows (days) × 52 columns (weeks)

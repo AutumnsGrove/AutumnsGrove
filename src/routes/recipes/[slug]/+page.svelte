@@ -1,13 +1,57 @@
 <script>
 	import { onMount } from 'svelte';
 	import { renderMermaidDiagrams } from '$lib/utils/markdown.js';
-	
+	import IconLegend from '$lib/components/IconLegend.svelte';
+
 	export let data;
+
+	// Extract sidecar data if available
+	$: sidecar = data.recipe.sidecar;
+	$: iconsUsed = sidecar?.icons_used || [];
 
 	onMount(async () => {
 		// Render Mermaid diagrams after component mounts
 		await renderMermaidDiagrams();
+
+		// Inject instruction icons into step headings
+		if (sidecar?.steps) {
+			injectStepIcons();
+		}
 	});
+
+	function injectStepIcons() {
+		// Find all h3 elements that contain step information
+		const stepHeadings = document.querySelectorAll('.recipe-content h3');
+
+		stepHeadings.forEach((heading) => {
+			const text = heading.textContent || '';
+			// Match "Step N:" pattern
+			const match = text.match(/Step\s+(\d+)/i);
+
+			if (match) {
+				const stepNumber = parseInt(match[1], 10);
+				const stepData = sidecar.steps.find(s => s.step === stepNumber);
+
+				if (stepData?.icons && stepData.icons.length > 0) {
+					// Create icon container
+					const iconContainer = document.createElement('span');
+					iconContainer.className = 'step-icons';
+
+					stepData.icons.forEach(iconKey => {
+						const img = document.createElement('img');
+						img.src = `/icons/instruction/${iconKey}.webp`;
+						img.alt = iconKey;
+						img.className = 'step-icon';
+						img.title = iconKey.charAt(0).toUpperCase() + iconKey.slice(1);
+						iconContainer.appendChild(img);
+					});
+
+					// Insert icons before the heading text
+					heading.insertBefore(iconContainer, heading.firstChild);
+				}
+			}
+		});
+	}
 </script>
 
 <svelte:head>
@@ -36,6 +80,10 @@
 			{/if}
 		</div>
 	</header>
+
+	{#if iconsUsed.length > 0}
+		<IconLegend {iconsUsed} />
+	{/if}
 
 	<div class="recipe-content">
 		{@html data.recipe.content}
@@ -282,6 +330,33 @@
 		border: 1px solid #4a2c2c;
 	}
 
+	/* Step instruction icons */
+	:global(.step-icons) {
+		display: inline-flex;
+		gap: 0.35rem;
+		margin-right: 0.5rem;
+		vertical-align: middle;
+	}
+
+	:global(.step-icon) {
+		width: 24px;
+		height: 24px;
+		vertical-align: middle;
+		transition: transform 0.2s;
+	}
+
+	:global(.step-icon:hover) {
+		transform: scale(1.15);
+	}
+
+	/* Style step headings to accommodate icons */
+	:global(.recipe-content h3) {
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+	}
+
 	@media (max-width: 768px) {
 		.recipe-header h1 {
 			font-size: 2rem;
@@ -293,6 +368,13 @@
 
 		:global(.recipe-content h3) {
 			font-size: 1.25rem;
+		}
+
+		:global(.step-icons) {
+			display: flex;
+			margin-right: 0;
+			margin-bottom: 0.5rem;
+			width: 100%;
 		}
 	}
 </style>
