@@ -1,3 +1,45 @@
+<script>
+	import { ImageGallery } from '$lib/components';
+
+	const willowImages = [
+		{
+			url: 'https://cdn.autumnsgrove.com/Willow_walking_happy.jpeg',
+			alt: 'Willow walking happily',
+			caption: 'Willow walking happy'
+		},
+		{
+			url: 'https://cdn.autumnsgrove.com/willow_close.jpeg',
+			alt: 'Close-up of Willow',
+			caption: 'Close-up of Willow'
+		},
+		{
+			url: 'https://cdn.autumnsgrove.com/willow_couch.jpeg',
+			alt: 'Willow relaxing on the couch',
+			caption: 'Willow on the couch'
+		},
+		{
+			url: 'https://cdn.autumnsgrove.com/willow_full_face_in_bowl.jpeg',
+			alt: 'Willow with face in bowl',
+			caption: "Willow's full face in bowl"
+		},
+		{
+			url: 'https://cdn.autumnsgrove.com/willow_laying_on_floor.jpeg',
+			alt: 'Willow laying on the floor',
+			caption: 'Willow laying on the floor'
+		},
+		{
+			url: 'https://cdn.autumnsgrove.com/willow_stretch.jpeg',
+			alt: 'Willow stretching',
+			caption: 'Willow stretching'
+		},
+		{
+			url: 'https://cdn.autumnsgrove.com/willow_wants_your_food.jpeg',
+			alt: 'Willow looking at food',
+			caption: 'Willow wants your food'
+		}
+	];
+</script>
+
 <svelte:head>
 	<title>AutumnsGrove - Home</title>
 	<meta name="description" content="A personal website for blogging, demonstrating projects, and sharing articles." />
@@ -15,6 +57,11 @@
 		AutumnsGrove is a personal blog where I share my thoughts, projects, and articles.
 		This is a place for exploration, learning, and sharing knowledge with the world.
 	</p>
+</div>
+
+<div class="willow-section">
+	<h2>Meet Willow</h2>
+	<ImageGallery images={willowImages} />
 </div>
 
 <style>
@@ -102,6 +149,24 @@
 
 	:global(.dark) .intro p {
 		color: #aaa;
+	}
+
+	.willow-section {
+		margin-top: 3rem;
+		max-width: 800px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.willow-section h2 {
+		color: #333;
+		margin-bottom: 1rem;
+		text-align: center;
+		transition: color 0.3s ease;
+	}
+
+	:global(.dark) .willow-section h2 {
+		color: #e0e0e0;
 	}
 
 	@media (max-width: 768px) {

@@ -9,7 +9,7 @@
 	 *   { url: 'https://...', alt: 'Description', caption: 'Photo caption' }
 	 * ]} />
 	 */
-	export let images = [];
+	let { images = [] } = $props();
 
 	let currentIndex = $state(0);
 	let touchStartX = $state(0);
