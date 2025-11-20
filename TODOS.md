@@ -101,6 +101,39 @@
 
 ---
 
+### HIGH PRIORITY: Multi-Image Gallery Component
+
+**Goal:** Create a reusable image gallery component similar to The Verge's implementation
+
+**Features:**
+- Left/right circular navigation buttons
+- Progress indicator showing current/total (e.g., "1/9")
+- Progress dots/bars at bottom
+- Caption support below images
+- Keyboard navigation (arrow keys)
+- Dark mode support
+- Responsive design
+
+**Implementation:**
+- [x] Create `src/lib/components/ImageGallery.svelte`
+- [x] Navigation arrows with hover states
+- [x] Progress indicator and dots
+- [x] Caption display below gallery
+- [x] Keyboard and touch support
+- [x] Dark mode styling
+
+**Usage Example:**
+```svelte
+<ImageGallery
+  images={[
+    { url: 'https://cdn.autumnsgrove.com/...', alt: 'Description', caption: 'Photo caption here' },
+    { url: '...', alt: '...', caption: '...' }
+  ]}
+/>
+```
+
+---
+
 ### MEDIUM PRIORITY: Dashboard Visualizations
 
 **Goal:** Add advanced visualizations to make the dashboard more informative
