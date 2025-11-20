@@ -54,7 +54,7 @@
 	</main>
 
 	<footer>
-		<p>&copy; {new Date().getFullYear()} AutumnsGrove. Built with SvelteKit.</p>
+		<p>&copy; {new Date().getFullYear()} AutumnsGrove. <a href="https://github.com/AutumnsGrove/AutumnsGrove" target="_blank" rel="noopener noreferrer">Built</a> with SvelteKit.</p>
 		<button class="theme-toggle" onclick={toggleTheme} aria-label="Toggle dark mode">
 			{#if darkMode}
 				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
