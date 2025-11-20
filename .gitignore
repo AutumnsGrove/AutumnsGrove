@@ -6,6 +6,7 @@ secrets.json
 
 # System files
 .DS_Store
+__pycache__/
 
 # Claude Code
 .claude/
