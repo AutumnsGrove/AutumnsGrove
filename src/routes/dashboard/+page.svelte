@@ -19,21 +19,43 @@
 	let clickCount = $state(0);
 	let clickTimer = null;
 
+	// Track all timers for cleanup on unmount
+	let timerIds = $state(new Set());
+	let abortController = $state(null);
+	let isMounted = $state(false);
+
+	function scheduleTimeout(callback, delay) {
+		const id = setTimeout(() => {
+			callback();
+			// Self-cleanup: remove from tracking set when completed
+			timerIds.delete(id);
+		}, delay);
+		timerIds.add(id);
+		return id;
+	}
+
+	function clearAllTimers() {
+		timerIds.forEach(id => clearTimeout(id));
+		timerIds.clear();
+	}
+
 	function handleAvatarClick() {
 		clickCount++;
 
 		if (clickTimer) {
 			clearTimeout(clickTimer);
+			timerIds.delete(clickTimer);
 		}
 
-		clickTimer = setTimeout(() => {
+		clickTimer = scheduleTimeout(() => {
 			clickCount = 0;
+			clickTimer = null;
 		}, 800);
 
 		if (clickCount === 3) {
 			attemptRefresh();
 			// Reset after a brief moment to show full circle
-			setTimeout(() => {
+			scheduleTimeout(() => {
 				clickCount = 0;
 			}, 300);
 		}
@@ -51,7 +73,7 @@
 			if (timeRemaining > 0) {
 				const minutesLeft = Math.ceil(timeRemaining / 60000);
 				refreshMessage = `Rate limited. Try again in ${minutesLeft} minute${minutesLeft !== 1 ? 's' : ''}.`;
-				setTimeout(() => { refreshMessage = ''; }, 3000);
+				scheduleTimeout(() => { refreshMessage = ''; }, 3000);
 				console.log(`[Dashboard Refresh] Blocked - ${minutesLeft}m remaining`);
 				return;
 			}
@@ -70,7 +92,7 @@
 		refreshMessage = 'Refreshing...';
 		fetchStats().then(() => {
 			refreshMessage = 'Refreshed!';
-			setTimeout(() => { refreshMessage = ''; }, 2000);
+			scheduleTimeout(() => { refreshMessage = ''; }, 2000);
 		});
 	}
 
@@ -80,51 +102,62 @@
 	let daysCanvas = $state(null);
 
 	async function fetchStats() {
+		// Abort any in-flight requests
+		if (abortController) {
+			abortController.abort();
+		}
+		abortController = new AbortController();
+		const signal = abortController.signal;
+
 		loading = true;
 		error = '';
-		userData = null;
-		stats = null;
-		reposData = [];
-		activityData = [];
 
 		try {
-			// Fetch user info
-			const userResponse = await fetch(`/api/git/user/${USERNAME}`);
+			// Fetch all data in parallel for better performance
+			const [userResponse, statsResponse, reposResponse, contributionsResponse] = await Promise.all([
+				fetch(`/api/git/user/${USERNAME}`, { signal }),
+				fetch(`/api/git/stats/${USERNAME}?limit=15`, { signal }),
+				fetch(`/api/git/repos/${USERNAME}`, { signal }),
+				fetch(`/api/git/contributions/${USERNAME}`, { signal })
+			]);
+
+			// Process user response (required)
 			if (!userResponse.ok) {
 				const errorData = await userResponse.json().catch(() => ({}));
 				throw new Error(errorData.message || 'User not found');
 			}
 			userData = await userResponse.json();
 
-			// Fetch stats
-			const statsResponse = await fetch(`/api/git/stats/${USERNAME}?limit=15`);
+			// Process stats response (required)
 			if (!statsResponse.ok) {
 				const errorData = await statsResponse.json().catch(() => ({}));
 				throw new Error(errorData.message || 'Failed to fetch stats');
 			}
 			stats = await statsResponse.json();
 
-			// Fetch repos for descriptions
-			const reposResponse = await fetch(`/api/git/repos/${USERNAME}`);
+			// Process repos response (optional)
 			if (reposResponse.ok) {
 				reposData = await reposResponse.json();
 			}
 
-			// Fetch contributions for heatmap (directly from GitHub)
-			const contributionsResponse = await fetch(`/api/git/contributions/${USERNAME}`);
+			// Process contributions response (optional)
 			if (contributionsResponse.ok) {
 				const contributionsResult = await contributionsResponse.json();
 				activityData = contributionsResult.activity || [];
 			}
 
-			// Render charts after stats are loaded
-			setTimeout(() => {
-				if (stats) {
+			// Render charts after stats are loaded using microtask for better performance
+			queueMicrotask(() => {
+				if (stats && isMounted) {
 					renderHoursChart(stats.commits_by_hour);
 					renderDaysChart(stats.commits_by_day);
 				}
-			}, 0);
+			});
 		} catch (e) {
+			// Ignore abort errors
+			if (e.name === 'AbortError') {
+				return;
+			}
 			error = e.message || 'An error occurred';
 		} finally {
 			loading = false;
@@ -248,10 +281,19 @@
 	}
 
 	onMount(() => {
+		isMounted = true;
 		// Auto-load stats on page mount
 		fetchStats();
 
 		return () => {
+			isMounted = false;
+			// Abort any in-flight fetch requests
+			if (abortController) {
+				abortController.abort();
+			}
+			// Clear all tracked timers
+			clearAllTimers();
+			// Destroy chart instances
 			if (hoursChartInstance) hoursChartInstance.destroy();
 			if (daysChartInstance) daysChartInstance.destroy();
 		};
