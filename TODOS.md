@@ -120,22 +120,85 @@
 **Goal:** Add advanced visualizations to make the dashboard more informative
 
 #### Commit History Heatmap (GitHub contribution graph style)
-- [ ] Create new component: `src/routes/dashboard/Heatmap.svelte`
-- [ ] Use the `/api/git/history/[username]/[repo]` endpoint for data
-- [ ] Display 52 weeks of commit activity
-- [ ] Color intensity based on commit count
-- [ ] Libraries to consider: D3.js or custom SVG
+
+**What it should look like:** GitHub's green contribution graph - 52 weeks of squares, darker = more commits
+
+**Implementation steps:**
+1. Create new component: `src/routes/dashboard/Heatmap.svelte`
+2. Fetch data from `/api/git/history/AutumnsGrove/[repo]?days=365`
+3. The `commit_activity` table in D1 has: `activity_date`, `hour`, `day_of_week`, `commit_count`
+4. Build a grid: 7 rows (days) × 52 columns (weeks)
+5. Color scale: light green (1-2 commits) → dark green (5+ commits)
+6. Tooltip on hover showing date and commit count
+
+**Libraries to consider:**
+- Custom SVG (most control, recommended)
+- D3.js (powerful but heavier)
+- cal-heatmap (pre-built but less customizable)
+
+**Example structure:**
+```svelte
+<div class="heatmap">
+  {#each weeks as week, weekIndex}
+    <div class="week">
+      {#each week as day}
+        <div
+          class="day"
+          style="background: {getColor(day.count)}"
+          title="{day.date}: {day.count} commits"
+        />
+      {/each}
+    </div>
+  {/each}
+</div>
+```
+
+---
+
+#### Project Comparison Charts
+
+**Goal:** Compare multiple repos side-by-side to see which get the most love
+
+**Implementation steps:**
+1. Create component: `src/routes/dashboard/Comparison.svelte`
+2. Let user select 2-5 repos to compare from dropdown
+3. Fetch stats for each selected repo
+4. Display comparison visualizations
+
+**Visualizations to include:**
+
+**Bar Chart Comparison:**
+```
+Commits:     ████████ AutumnsGrove (150)
+             ████ BaseProject (80)
+             ██ Sounds (40)
+
+Additions:   ██████████ AutumnsGrove (5000)
+             ████ BaseProject (2000)
+             ██ Sounds (800)
+```
+
+**Radar/Spider Chart:**
+- Axes: Commits, Additions, Deletions, Recent Activity, TODO Progress
+- Each repo is a different colored polygon
+- Shows which projects are most "complete" or active
+
+**Activity Timeline:**
+- Line chart with one line per repo
+- X-axis: time (weeks/months)
+- Y-axis: commit count
+- See which projects had bursts of activity
+
+**Data needed:**
+- Use existing `/api/git/stats/AutumnsGrove?limit=50` to get all repos
+- Then fetch individual stats or use the D1 historical data
+
+---
 
 #### Interactive Timeline
 - [ ] Show commits over time with scrollable timeline
 - [ ] Click to see commit details
 - [ ] Filter by date range
-
-#### Project Comparison Charts
-- [ ] Side-by-side bar charts for multiple repos
-- [ ] Compare: commits, additions, deletions, activity
-- [ ] Radar chart for multi-dimensional comparison
-- [ ] Select which repos to compare
 
 #### Historical Trends
 - [ ] Line charts showing commits over weeks/months
