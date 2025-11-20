@@ -1,6 +1,6 @@
 # TODOs for AutumnsGrove
 
-> **Last Updated:** November 20, 2024 - Image hosting setup complete
+> **Last Updated:** November 20, 2025 - TODOS cleanup and reorganization
 
 ---
 
@@ -82,69 +82,28 @@
 
 **Current limitation:** Only fetches 15 most recently updated repos, 100 commits each (max ~1500 commits)
 
-**What needs to happen:**
+---
 
-1. **Paginate API calls** - Fetch all repos, not just 15
-   - GitHub GraphQL allows pagination with cursors
-   - May need multiple API calls to get all repos
-   - Consider background sync to D1 database for performance
+#### Task A: Add Time Range Selector UI
+- [ ] Create dropdown component with options: Last 30 days, Last 6 months, All time
+- [ ] Place selector above stats cards on dashboard
+- [ ] Store selected range in component state
 
-2. **Add time range selector UI**
-   - Options: Last 30 days, Last 6 months, All time
-   - Selector component above stats cards
-   - Filter commits by date in GraphQL query using `since` parameter
+#### Task B: Add Date Filtering to Stats API
+- [ ] Accept `since` query parameter in `/api/git/stats/[username]`
+- [ ] Modify GraphQL query: `history(first: 100, since: "2024-05-01T00:00:00Z")`
+- [ ] Return only commits within selected time range
 
-3. **Update stats API**
-   - Accept `since` date parameter
-   - Modify GraphQL query: `history(first: 100, since: "2024-05-01T00:00:00Z")`
-   - Return commits within selected time range
-
-**Implementation notes:**
-- GraphQL pagination: use `after: $cursor` and `hasNextPage`
-- May need to increase API call budget for full repo coverage
-- Consider caching strategies for all-time data
+#### Task C: Paginate to Fetch All Repos (can defer)
+- [ ] Use GraphQL cursor pagination (`after: $cursor`, `hasNextPage`)
+- [ ] May need multiple API calls for full repo coverage
+- [ ] Consider background sync to D1 for performance
 
 ---
 
 ### MEDIUM PRIORITY: Dashboard Visualizations
 
 **Goal:** Add advanced visualizations to make the dashboard more informative
-
-#### Commit History Heatmap (GitHub contribution graph style)
-
-**STATUS: NEEDS DEBUGGING** - Component created, API endpoint works (`/api/git/contributions/[username]` returns 1127 commits), but grid not displaying data. Likely Svelte 5 reactivity issue with `$derived`.
-
-**What it should look like:** GitHub's green contribution graph - 52 weeks of squares, darker = more commits
-
-**Implementation steps:**
-1. ~~Create new component: `src/routes/dashboard/Heatmap.svelte`~~ ✅ Done
-2. ~~Fetch data from GitHub contributions API~~ ✅ Done - `/api/git/contributions/[username]`
-3. The `commit_activity` table in D1 has: `activity_date`, `hour`, `day_of_week`, `commit_count`
-4. Build a grid: 7 rows (days) × 52 columns (weeks)
-5. Color scale: light green (1-2 commits) → dark green (5+ commits)
-6. Tooltip on hover showing date and commit count
-
-**Libraries to consider:**
-- Custom SVG (most control, recommended)
-- D3.js (powerful but heavier)
-- cal-heatmap (pre-built but less customizable)
-
-**Example structure:**
-```svelte
-<div class="heatmap">
-  {#each weeks as week, weekIndex}
-    <div class="week">
-      {#each week as day}
-        <div
-          class="day"
-          style="background: {getColor(day.count)}"
-          title="{day.date}: {day.count} commits"
-        />
-      {/each}
-    </div>
-  {/each}
-</div>
-```
 
 ---
 
@@ -188,52 +147,20 @@ Additions:   ██████████ AutumnsGrove (5000)
 
 ---
 
-#### Interactive Timeline
-- [ ] Show commits over time with scrollable timeline
-- [ ] Click to see commit details
-- [ ] Filter by date range
+### LOW PRIORITY: Dashboard Enhancements
 
-#### Historical Trends
-- [ ] Line charts showing commits over weeks/months
-- [ ] TODO completion trends
-- [ ] Requires D1 data to be populated first
+#### Heatmap Component (Backlog)
+- [ ] Debug existing component - likely Svelte 5 reactivity issue with `$derived`
+- Component exists at `src/routes/dashboard/Heatmap.svelte`
+- API works: `/api/git/contributions/[username]` returns data
+- Grid displays 7 rows (days) × 52 columns (weeks)
 
----
-
-### MEDIUM PRIORITY: Initialize D1 Database
-
-**Goal:** Set up the database schema for historical tracking
-
-**Steps:**
-
-1. **Run the schema migration**
-   ```bash
-   npx wrangler d1 execute autumnsgrove-git-stats --file=src/lib/db/schema.sql
-   ```
-
-2. **Trigger initial sync** (after deployment)
-   ```bash
-   curl -X POST https://autumnsgrove.com/api/git/sync \
-     -H "Content-Type: application/json" \
-     -d '{"username": "AutumnsGrove", "limit": 20}'
-   ```
-
-3. **Set up cron trigger** (in Cloudflare Dashboard)
-   - Workers & Pages → autumnsgrove → Settings → Triggers
-   - Add cron: `0 */6 * * *` (every 6 hours)
-   - This calls `/api/git/sync` automatically
-
----
-
-### LOW PRIORITY: Dashboard UI Improvements
-
-**Based on your design feedback (to be discussed):**
+#### UI Improvements
 - [ ] Layout adjustments
 - [ ] Color scheme tweaks
-- [ ] Typography changes
 - [ ] Mobile responsiveness improvements
 - [ ] Loading states and animations
-- [ ] Add icons throughout the website (navigation, stats cards, sections, etc.)
+- [ ] Add icons throughout (navigation, stats cards, sections)
 
 ---
 
@@ -288,21 +215,20 @@ npx wrangler pages dev -- npm run dev
 
 When you return to work on this project:
 
-1. **First, deploy current changes:**
+1. **Deploy current changes:**
    ```bash
    git push origin main
    ```
 
-2. **Test image hosting** - Upload and verify images work:
-   ```bash
-   ./scripts/upload-image.sh ./test.jpg test
-   curl -I https://cdn.autumnsgrove.com/test/test.jpg
-   ```
+2. **Test the deployed dashboard** at https://autumnsgrove.com/dashboard
 
-3. **Test the deployed dashboard** at https://autumnsgrove.com/dashboard
+3. **Pick a task from HIGH PRIORITY:**
+   - Task A: Time range selector UI
+   - Task B: Date filtering in stats API
+   - Task C: Repo pagination (can defer)
 
-4. **Continue with visualizations** or address design feedback
+4. **Optional:** Work on Project Comparison Charts if time allows
 
 ---
 
-*Last updated: November 2024*
+*Last updated: November 2025*

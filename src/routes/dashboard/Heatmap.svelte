@@ -1,5 +1,9 @@
 <script>
-	let { activity = [], days = 365 } = $props();
+	const props = $props();
+
+	// Derived props for proper Svelte 5 reactivity
+	let activity = $derived(props.activity ?? []);
+	let days = $derived(props.days ?? 365);
 
 	// Format date as YYYY-MM-DD in local timezone
 	function formatDateKey(date) {
@@ -10,11 +14,11 @@
 	}
 
 	// Generate dates for the past year
-	function generateDateGrid(activityData) {
+	function generateDateGrid(activityData, numDays) {
 		const grid = [];
 		const today = new Date();
 		const startDate = new Date(today);
-		startDate.setDate(startDate.getDate() - days);
+		startDate.setDate(startDate.getDate() - numDays);
 
 		// Adjust to start on Sunday
 		const dayOfWeek = startDate.getDay();
@@ -74,8 +78,8 @@
 		});
 	}
 
-	// Explicit dependency on activity for proper reactivity
-	let grid = $derived(generateDateGrid(activity));
+	// Derived values that react to prop changes
+	let grid = $derived(generateDateGrid(activity, days));
 	let totalCommits = $derived(activity.reduce((sum, item) => sum + item.commit_count, 0));
 </script>
 

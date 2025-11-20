@@ -3,7 +3,13 @@
 declare global {
   namespace App {
     // interface Error {}
-    // interface Locals {}
+    interface Locals {
+      user: {
+        id: string;
+        username: string;
+        avatar: string;
+      } | null;
+    }
     // interface PageData {}
     // interface PageState {}
     interface Platform {
@@ -17,6 +23,11 @@ declare global {
         // Secrets
         GITHUB_TOKEN: string;
         ANTHROPIC_API_KEY: string;
+        // OAuth secrets
+        GITHUB_CLIENT_ID: string;
+        GITHUB_CLIENT_SECRET: string;
+        SESSION_SECRET: string;
+        ADMIN_GITHUB_USERNAMES: string;
       };
       context: {
         waitUntil(promise: Promise<unknown>): void;
