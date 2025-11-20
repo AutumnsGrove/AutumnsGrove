@@ -2,6 +2,43 @@
 
 > Use this guide to generate WebP icons via EmojiKitchen
 
+## Quick Start - Adding New Icons
+
+### Step 1: Generate the Icon
+
+Use EmojiKitchen to combine two emojis. You can use:
+- **EmojiKitchen website**: https://emojikitchen.dev/
+- **EmojiKitchen CLI** (if installed in RecipeGrove)
+
+### Step 2: Download/Save as WebP
+
+Save the generated icon as a 24x24 WebP file.
+
+### Step 3: Name the File
+
+Use the semantic name that matches the icon key in code:
+- `stovetop.webp` (not `1f373_1f525.webp`)
+- `mix.webp`
+- `bake.webp`
+- etc.
+
+### Step 4: Place in This Folder
+
+Copy the WebP file to `static/icons/instruction/`
+
+### Step 5: Update the Sidecar JSON
+
+In your recipe's `-grove.json` file, add the icon key to the step:
+```json
+{
+  "step": 1,
+  "icons": ["mix", "chop"],
+  "text": "Combine and chop the ingredients..."
+}
+```
+
+---
+
 ## Icon Specifications
 
 - **Size**: 24px × 24px
@@ -128,8 +165,57 @@ When to use each icon in recipe instructions:
 
 The current `.svg` files in this directory are placeholders for testing. Replace them with the generated `.webp` files once available.
 
-The website code will look for icons by their semantic key (e.g., `stovetop.svg`) during development, and you can later switch to the WebP filenames.
+---
+
+## Troubleshooting
+
+### Icon Shows Wrong Image (e.g., Minion Face)
+
+Some emoji combinations don't exist in EmojiKitchen and return a fallback image. Try alternative emoji pairs:
+
+**Example - knead icon failed with 🍞 + 💪:**
+- Try: 🍞 + 🖐️ (bread + hand)
+- Try: 🥖 + 💪 (baguette + muscle)
+- Try: 🫓 + 🤲 (flatbread + palms)
+
+### Icon Not Displaying
+
+1. Check the filename matches the icon key exactly (e.g., `mix.webp`)
+2. Verify the file is in `static/icons/instruction/`
+3. Check the sidecar JSON has the correct icon key in `icons_used`
+
+### Adding a New Icon Type
+
+1. Choose a semantic name (e.g., `fold`, `toast`, `garnish`)
+2. Find a good emoji combination
+3. Generate and save as `{name}.webp`
+4. Add to `IconLegend.svelte`'s `iconMeanings` object:
+   ```javascript
+   fold: { name: 'Fold', meaning: 'Fold ingredients together' },
+   ```
 
 ---
 
-*Generated: 2025-11-20*
+## Current Icon Status
+
+| Icon | Status | Notes |
+|------|--------|-------|
+| stovetop | ✅ WebP | 🍳 + 🔥 |
+| mix | ✅ WebP | 🥄 + ⭐ |
+| spicy | ✅ WebP | 🌶️ + 🔥 |
+| chop | ✅ WebP | 🔪 + 🥬 |
+| simmer | ✅ WebP | ♨️ + ⏱️ |
+| chill | ✅ WebP | 🧊 + ❄️ |
+| serve | ✅ WebP | 🍽️ + ✨ |
+| boil | ✅ WebP | 🥣 + 🔥 |
+| bake | ✅ WebP | 🥧 + 🔥 |
+| marinate | ✅ WebP | 🥩 + ⏰ |
+| blend | ✅ WebP | 🥤 + 🌀 |
+| season | ✅ WebP | 🧂 + ⭐ |
+| grill | ✅ WebP | 🥩 + 🔥 |
+| steam | ✅ WebP | 🥟 + ♨️ |
+| knead | ⚠️ SVG placeholder | 🍞 + 💪 failed - needs alternative |
+
+---
+
+*Last updated: 2025-11-20*
