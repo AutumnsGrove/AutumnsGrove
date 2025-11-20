@@ -8,6 +8,7 @@ Building things, learning in public, and exploring ideas.
     - [AutumnsGrove](https://github.com/AutumnsGrove/AutumnsGrove) - my personal blog
     - [ProjectReminder](https://github.com/AutumnsGrove/ProjectReminder) - A very personalized Reminders app
     - [OmniParser](https://github.com/AutumnsGrove/OmniParser) - Universal parser, anything -> markdown
+    - [RecipeGrove](https://github.com/AutumnsGrove/RecipeGrove) - Smart Recipe documents with [EmojiKitchen](https://github.com/AutumnsGrove/EmojiKitchen)
 - 💭 Thinking about software simplicity and design
 - 📝 Writing about tech, projects, and ideas
 
