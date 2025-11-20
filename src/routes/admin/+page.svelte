@@ -80,6 +80,10 @@
         <span class="action-icon">&#x1F4DD;</span>
         <span class="action-label">Manage Blog Posts</span>
       </a>
+      <a href="/admin/images" class="action-card">
+        <span class="action-icon">&#x1F4F7;</span>
+        <span class="action-label">Upload Images</span>
+      </a>
       <a href="/admin/analytics" class="action-card">
         <span class="action-icon">&#x1F4CA;</span>
         <span class="action-label">View Analytics</span>

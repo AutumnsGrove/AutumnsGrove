@@ -21,6 +21,10 @@
         <span class="nav-icon">&#x1F4DD;</span>
         Blog Posts
       </a>
+      <a href="/admin/images" class="nav-item">
+        <span class="nav-icon">&#x1F4F7;</span>
+        Images
+      </a>
       <a href="/admin/analytics" class="nav-item">
         <span class="nav-icon">&#x1F4CA;</span>
         Analytics
