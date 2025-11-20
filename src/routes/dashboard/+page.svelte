@@ -20,27 +20,23 @@
 	let clickTimer = null;
 
 	// Track all timers for cleanup on unmount
-	let timerIds = [];
-	let abortController = null;
-	let isMounted = false;
+	let timerIds = $state(new Set());
+	let abortController = $state(null);
+	let isMounted = $state(false);
 
 	function scheduleTimeout(callback, delay) {
 		const id = setTimeout(() => {
 			callback();
-			// Self-cleanup: remove from tracking array when completed
-			timerIds = timerIds.filter(t => t !== id);
+			// Self-cleanup: remove from tracking set when completed
+			timerIds.delete(id);
 		}, delay);
-		timerIds.push(id);
+		timerIds.add(id);
 		return id;
 	}
 
 	function clearAllTimers() {
 		timerIds.forEach(id => clearTimeout(id));
-		timerIds = [];
-		if (clickTimer) {
-			clearTimeout(clickTimer);
-			clickTimer = null;
-		}
+		timerIds.clear();
 	}
 
 	function handleAvatarClick() {
@@ -48,10 +44,12 @@
 
 		if (clickTimer) {
 			clearTimeout(clickTimer);
+			timerIds.delete(clickTimer);
 		}
 
-		clickTimer = setTimeout(() => {
+		clickTimer = scheduleTimeout(() => {
 			clickCount = 0;
+			clickTimer = null;
 		}, 800);
 
 		if (clickCount === 3) {
