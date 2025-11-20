@@ -39,7 +39,7 @@
 
 					stepData.icons.forEach(iconKey => {
 						const img = document.createElement('img');
-						img.src = `/icons/instruction/${iconKey}.svg`;
+						img.src = `/icons/instruction/${iconKey}.webp`;
 						img.alt = iconKey;
 						img.className = 'step-icon';
 						img.title = iconKey.charAt(0).toUpperCase() + iconKey.slice(1);

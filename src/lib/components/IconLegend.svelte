@@ -44,7 +44,7 @@
 					{#if iconMeanings[iconKey]}
 						<div class="legend-item">
 							<img
-								src="/icons/instruction/{iconKey}.svg"
+								src="/icons/instruction/{iconKey}.webp"
 								alt={iconMeanings[iconKey].name}
 								class="legend-icon"
 							/>
