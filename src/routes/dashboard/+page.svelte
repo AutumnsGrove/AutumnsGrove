@@ -1,6 +1,7 @@
 <script>
 	import { onMount } from 'svelte';
 	import Chart from 'chart.js/auto';
+	import Heatmap from './Heatmap.svelte';
 
 	// Hardcoded to your account
 	const USERNAME = 'AutumnsGrove';
@@ -9,6 +10,69 @@
 	let error = $state('');
 	let userData = $state(null);
 	let stats = $state(null);
+	let reposData = $state([]);
+	let activityData = $state([]);
+
+	// Refresh rate limiting (5 minutes = 300000ms)
+	const REFRESH_COOLDOWN = 5 * 60 * 1000;
+	let refreshMessage = $state('');
+	let clickCount = $state(0);
+	let clickTimer = null;
+
+	function handleAvatarClick() {
+		clickCount++;
+
+		if (clickTimer) {
+			clearTimeout(clickTimer);
+		}
+
+		clickTimer = setTimeout(() => {
+			clickCount = 0;
+		}, 800);
+
+		if (clickCount === 3) {
+			attemptRefresh();
+			// Reset after a brief moment to show full circle
+			setTimeout(() => {
+				clickCount = 0;
+			}, 300);
+		}
+	}
+
+	function attemptRefresh() {
+		const lastRefresh = localStorage.getItem('dashboard_last_refresh');
+		const refreshCount = parseInt(localStorage.getItem('dashboard_refresh_count') || '0');
+		const now = Date.now();
+
+		if (lastRefresh) {
+			const timeSince = now - parseInt(lastRefresh);
+			const timeRemaining = REFRESH_COOLDOWN - timeSince;
+
+			if (timeRemaining > 0) {
+				const minutesLeft = Math.ceil(timeRemaining / 60000);
+				refreshMessage = `Rate limited. Try again in ${minutesLeft} minute${minutesLeft !== 1 ? 's' : ''}.`;
+				setTimeout(() => { refreshMessage = ''; }, 3000);
+				console.log(`[Dashboard Refresh] Blocked - ${minutesLeft}m remaining`);
+				return;
+			}
+		}
+
+		// Log refresh event
+		const newCount = refreshCount + 1;
+		localStorage.setItem('dashboard_last_refresh', now.toString());
+		localStorage.setItem('dashboard_refresh_count', newCount.toString());
+
+		// Estimate cost: 3 API calls (user, stats, repos)
+		// GitHub API: free, but rate limited to 5000/hour with token
+		console.log(`[Dashboard Refresh] #${newCount} at ${new Date().toISOString()}`);
+		console.log(`[Dashboard Refresh] Est. cost: 3 GitHub API calls`);
+
+		refreshMessage = 'Refreshing...';
+		fetchStats().then(() => {
+			refreshMessage = 'Refreshed!';
+			setTimeout(() => { refreshMessage = ''; }, 2000);
+		});
+	}
 
 	let hoursChartInstance = null;
 	let daysChartInstance = null;
@@ -20,6 +84,8 @@
 		error = '';
 		userData = null;
 		stats = null;
+		reposData = [];
+		activityData = [];
 
 		try {
 			// Fetch user info
@@ -37,6 +103,19 @@
 				throw new Error(errorData.message || 'Failed to fetch stats');
 			}
 			stats = await statsResponse.json();
+
+			// Fetch repos for descriptions
+			const reposResponse = await fetch(`/api/git/repos/${USERNAME}`);
+			if (reposResponse.ok) {
+				reposData = await reposResponse.json();
+			}
+
+			// Fetch contributions for heatmap (directly from GitHub)
+			const contributionsResponse = await fetch(`/api/git/contributions/${USERNAME}`);
+			if (contributionsResponse.ok) {
+				const contributionsResult = await contributionsResponse.json();
+				activityData = contributionsResult.activity || [];
+			}
 
 			// Render charts after stats are loaded
 			setTimeout(() => {
@@ -63,10 +142,18 @@
 		const hours = Array.from({ length: 24 }, (_, i) => i);
 		const data = hours.map((hour) => commitsByHour[hour] || 0);
 
+		// Convert to 12-hour format with AM/PM
+		const formatHour = (h) => {
+			if (h === 0) return '12 AM';
+			if (h === 12) return '12 PM';
+			if (h < 12) return `${h} AM`;
+			return `${h - 12} PM`;
+		};
+
 		hoursChartInstance = new Chart(ctx, {
 			type: 'bar',
 			data: {
-				labels: hours.map((h) => `${h}:00`),
+				labels: hours.map(formatHour),
 				datasets: [
 					{
 						label: 'Commits',
@@ -149,9 +236,15 @@
 		return date.toLocaleDateString('en-US', {
 			month: 'short',
 			day: 'numeric',
-			hour: '2-digit',
-			minute: '2-digit'
+			hour: 'numeric',
+			minute: '2-digit',
+			hour12: true
 		});
+	}
+
+	function getRepoDescription(repoName) {
+		const repo = reposData.find(r => r.name === repoName);
+		return repo?.description || '';
 	}
 
 	onMount(() => {
@@ -176,15 +269,9 @@
 		<p>Visualize your GitHub commit activity</p>
 	</header>
 
-	<div class="refresh-section">
-		<button onclick={fetchStats} disabled={loading}>
-			{#if loading}
-				Loading...
-			{:else}
-				Refresh Stats
-			{/if}
-		</button>
-	</div>
+	{#if loading}
+		<div class="loading-indicator">Loading...</div>
+	{/if}
 
 	{#if error}
 		<div class="error">{error}</div>
@@ -192,18 +279,35 @@
 
 	{#if userData && stats}
 		<div class="results">
-			<!-- User Info Card -->
-			<section class="card user-card">
-				<h2>User Info</h2>
-				<div class="user-info">
-					<p><strong>Name:</strong> {userData.name || userData.login}</p>
-					<p><strong>Username:</strong> @{userData.login}</p>
-					<p><strong>Public Repos:</strong> {userData.public_repos}</p>
-					<p><strong>Followers:</strong> {userData.followers} | <strong>Following:</strong> {userData.following}</p>
-					{#if userData.bio}
-						<p><strong>Bio:</strong> {userData.bio}</p>
-					{/if}
+			<!-- User Info Card - Compact -->
+			<section class="user-card-compact">
+				<button
+					class="avatar-button"
+					onclick={handleAvatarClick}
+					title="Triple-click to refresh"
+					aria-label="Triple-click to refresh stats"
+				>
+					<div class="avatar-wrapper">
+						<svg class="progress-ring" viewBox="0 0 48 48">
+							<circle
+								class="progress-ring-circle"
+								cx="24"
+								cy="24"
+								r="22"
+								stroke-dasharray="138.23"
+								stroke-dashoffset={138.23 - (clickCount / 3) * 138.23}
+							/>
+						</svg>
+						<img src={userData.avatar_url} alt="{userData.login}" class="user-avatar" />
+					</div>
+				</button>
+				<div class="user-details">
+					<span class="user-name">{userData.name || userData.login}</span>
+					<span class="user-meta">@{userData.login} · {userData.public_repos} repos · {userData.followers} followers</span>
 				</div>
+				{#if refreshMessage}
+					<span class="refresh-message">{refreshMessage}</span>
+				{/if}
 			</section>
 
 			<!-- Stats Cards -->
@@ -243,6 +347,9 @@
 				</section>
 			</div>
 
+			<!-- Heatmap -->
+			<Heatmap activity={activityData} days={365} />
+
 			<!-- Top Repos -->
 			<section class="card">
 				<h3>Top Repositories</h3>
@@ -250,7 +357,12 @@
 					<div class="repo-list">
 						{#each Object.entries(stats.commits_by_repo) as [repo, commits]}
 							<div class="repo-item">
-								<span class="repo-name">{repo}</span>
+								<div class="repo-info">
+									<span class="repo-name">{repo}</span>
+									{#if getRepoDescription(repo)}
+										<span class="repo-description">{getRepoDescription(repo)}</span>
+									{/if}
+								</div>
 								<span class="repo-commits">{commits} commits</span>
 							</div>
 						{/each}
@@ -264,13 +376,13 @@
 			<section class="card">
 				<h3>Recent Commits</h3>
 				{#if stats.recent_commits && stats.recent_commits.length > 0}
-					<div class="commits-list">
+					<div class="commits-list-container">
 						{#each stats.recent_commits as commit}
 							<div class="commit-item">
-								<div class="commit-meta">
+								<div class="commit-header">
 									<span class="commit-sha">{commit.sha}</span>
-									<span class="commit-repo">{commit.repo}</span>
 									<span class="commit-date">{formatDate(commit.date)}</span>
+									<span class="commit-repo-name"><em>{commit.repo}</em></span>
 								</div>
 								<div class="commit-message">{commit.message}</div>
 								<div class="commit-stats">
@@ -284,6 +396,16 @@
 					<p>No recent commits found.</p>
 				{/if}
 			</section>
+
+			<!-- Footer with Source Link and Attribution -->
+			<footer class="dashboard-footer">
+				<p>
+					<a href="https://github.com/AutumnsGrove/AutumnsGrove" target="_blank" rel="noopener noreferrer">
+						View Source Code
+					</a>
+				</p>
+				<p class="attribution">Stats analyzed with Claude AI</p>
+			</footer>
 		</div>
 	{/if}
 </div>
@@ -317,35 +439,121 @@
 		color: #aaa;
 	}
 
-	.refresh-section {
+	.loading-indicator {
+		text-align: center;
+		padding: 1rem;
+		color: #666;
+		font-style: italic;
+	}
+
+	:global(.dark) .loading-indicator {
+		color: #aaa;
+	}
+
+	/* Compact User Card */
+	.user-card-compact {
 		display: flex;
-		justify-content: center;
-		margin-bottom: 2rem;
-	}
-
-	.refresh-section button {
-		padding: 0.75rem 1.5rem;
-		background: #2c5f2d;
-		color: white;
-		border: none;
+		align-items: center;
+		gap: 1rem;
+		padding: 0.75rem 1rem;
+		background: white;
 		border-radius: 8px;
-		font-size: 1rem;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		margin-bottom: 1.5rem;
+	}
+
+	:global(.dark) .user-card-compact {
+		background: #2a2a2a;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+	}
+
+	.avatar-button {
+		background: none;
+		border: none;
+		padding: 0;
 		cursor: pointer;
-		transition: background-color 0.2s;
+		border-radius: 50%;
+		transition: transform 0.15s ease;
 	}
 
-	:global(.dark) .refresh-section button {
-		background: #5cb85f;
-		color: #1a1a1a;
+	.avatar-button:hover {
+		transform: scale(1.05);
 	}
 
-	.refresh-section button:hover:not(:disabled) {
-		background: #4a9d4f;
+	.avatar-button:active {
+		transform: scale(0.95);
 	}
 
-	.refresh-section button:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
+	.avatar-wrapper {
+		position: relative;
+		width: 48px;
+		height: 48px;
+	}
+
+	.progress-ring {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 48px;
+		height: 48px;
+		transform: rotate(-90deg);
+	}
+
+	.progress-ring-circle {
+		fill: none;
+		stroke: #5cb85f;
+		stroke-width: 3;
+		stroke-linecap: round;
+		transition: stroke-dashoffset 0.2s ease;
+	}
+
+	.user-avatar {
+		position: absolute;
+		top: 4px;
+		left: 4px;
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		display: block;
+	}
+
+	.refresh-message {
+		margin-left: auto;
+		font-size: 0.8rem;
+		padding: 0.25rem 0.5rem;
+		border-radius: 4px;
+		background: #e8f5e9;
+		color: #2c5f2d;
+	}
+
+	:global(.dark) .refresh-message {
+		background: #1b3a1b;
+		color: #5cb85f;
+	}
+
+	.user-details {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+	}
+
+	.user-name {
+		font-weight: 600;
+		font-size: 1rem;
+		color: #2c5f2d;
+	}
+
+	:global(.dark) .user-name {
+		color: #5cb85f;
+	}
+
+	.user-meta {
+		font-size: 0.8rem;
+		color: #666;
+	}
+
+	:global(.dark) .user-meta {
+		color: #aaa;
 	}
 
 	.error {
@@ -375,13 +583,11 @@
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 	}
 
-	.card h2,
 	.card h3 {
 		margin: 0 0 1rem;
 		color: #2c5f2d;
 	}
 
-	:global(.dark) .card h2,
 	:global(.dark) .card h3 {
 		color: #5cb85f;
 	}
@@ -464,7 +670,7 @@
 	.repo-item {
 		display: flex;
 		justify-content: space-between;
-		align-items: center;
+		align-items: flex-start;
 		padding: 0.75rem;
 		background: #f5f5f5;
 		border-radius: 8px;
@@ -474,23 +680,68 @@
 		background: #333;
 	}
 
+	.repo-info {
+		display: flex;
+		flex-direction: column;
+		gap: 0.25rem;
+		flex: 1;
+		margin-right: 1rem;
+	}
+
 	.repo-name {
 		font-weight: 500;
+	}
+
+	.repo-description {
+		font-size: 0.8rem;
+		color: #666;
+		line-height: 1.3;
+	}
+
+	:global(.dark) .repo-description {
+		color: #999;
 	}
 
 	.repo-commits {
 		color: #666;
 		font-size: 0.9rem;
+		white-space: nowrap;
 	}
 
 	:global(.dark) .repo-commits {
 		color: #aaa;
 	}
 
-	.commits-list {
+	/* Scrollable commits container */
+	.commits-list-container {
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+		max-height: 520px;
+		overflow-y: auto;
+		padding-right: 0.5rem;
+	}
+
+	.commits-list-container::-webkit-scrollbar {
+		width: 6px;
+	}
+
+	.commits-list-container::-webkit-scrollbar-track {
+		background: #f1f1f1;
+		border-radius: 3px;
+	}
+
+	.commits-list-container::-webkit-scrollbar-thumb {
+		background: #ccc;
+		border-radius: 3px;
+	}
+
+	:global(.dark) .commits-list-container::-webkit-scrollbar-track {
+		background: #333;
+	}
+
+	:global(.dark) .commits-list-container::-webkit-scrollbar-thumb {
+		background: #555;
 	}
 
 	.commit-item {
@@ -503,10 +754,11 @@
 		background: #333;
 	}
 
-	.commit-meta {
+	.commit-header {
 		display: flex;
-		gap: 1rem;
+		gap: 0.75rem;
 		flex-wrap: wrap;
+		align-items: center;
 		margin-bottom: 0.5rem;
 		font-size: 0.85rem;
 	}
@@ -516,18 +768,18 @@
 		background: #e0e0e0;
 		padding: 0.2rem 0.5rem;
 		border-radius: 4px;
+		font-size: 0.75rem;
 	}
 
 	:global(.dark) .commit-sha {
 		background: #444;
 	}
 
-	.commit-repo {
+	.commit-repo-name {
 		color: #2c5f2d;
-		font-weight: 500;
 	}
 
-	:global(.dark) .commit-repo {
+	:global(.dark) .commit-repo-name {
 		color: #5cb85f;
 	}
 
@@ -541,6 +793,8 @@
 
 	.commit-message {
 		margin-bottom: 0.5rem;
+		line-height: 1.4;
+		word-break: break-word;
 	}
 
 	.commit-stats {
@@ -548,6 +802,42 @@
 		gap: 1rem;
 		font-size: 0.85rem;
 		font-family: monospace;
+	}
+
+	/* Footer styles */
+	.dashboard-footer {
+		text-align: center;
+		padding: 1.5rem 0;
+		margin-top: 1rem;
+		border-top: 1px solid #e0e0e0;
+	}
+
+	:global(.dark) .dashboard-footer {
+		border-top-color: #444;
+	}
+
+	.dashboard-footer a {
+		color: #2c5f2d;
+		text-decoration: none;
+		font-weight: 500;
+	}
+
+	.dashboard-footer a:hover {
+		text-decoration: underline;
+	}
+
+	:global(.dark) .dashboard-footer a {
+		color: #5cb85f;
+	}
+
+	.dashboard-footer .attribution {
+		font-size: 0.8rem;
+		color: #888;
+		margin-top: 0.5rem;
+	}
+
+	:global(.dark) .dashboard-footer .attribution {
+		color: #666;
 	}
 
 	.additions {
@@ -559,15 +849,6 @@
 	}
 
 	@media (max-width: 600px) {
-		.search-section {
-			flex-direction: column;
-			align-items: stretch;
-		}
-
-		.search-section input {
-			width: 100%;
-		}
-
 		.stats-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}

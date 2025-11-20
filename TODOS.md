@@ -1,6 +1,6 @@
 # TODOs for AutumnsGrove
 
-> **Last Updated:** November 2024 - Git Dashboard integration complete, visualizations pending
+> **Last Updated:** November 20, 2024 - Dashboard UI improvements complete, heatmap needs debugging
 
 ---
 
@@ -36,16 +36,30 @@
   - `/api/git/sync` - Scheduled sync endpoint
   - `/api/git/history/[username]/[repo]` - Historical data
   - `/api/ai/analyze/[username]/[repo]` - AI analysis
+  - `/api/git/contributions/[username]` - GitHub contribution calendar data
+  - `/api/git/activity/[username]` - Aggregated commit activity
 - [x] Dashboard page at `/dashboard` with:
-  - User info card
+  - Compact user info card with avatar
   - Stats cards (commits, additions, deletions, repos)
-  - Hour-of-day bar chart
+  - Hour-of-day bar chart (12-hour AM/PM format)
   - Day-of-week bar chart
-  - Top repositories list
-  - Recent commits list
+  - Top repositories list with descriptions
+  - Scrollable recent commits list (shows 5 commits)
+  - Source code link + Claude attribution footer
 - [x] Auto-loads AutumnsGrove account on page visit
 - [x] 3-hour KV caching for all API responses
 - [x] Navigation updated with Dashboard link
+- [x] Triple-click avatar to refresh (5-min rate limit, logged to console)
+- [x] D1 database initialized and synced (10 repos, 342 commits)
+
+### Git Dashboard - UI Improvements (Nov 20, 2024)
+- [x] Shrunk user info card to compact horizontal layout
+- [x] Changed time chart to 12-hour format with AM/PM
+- [x] Added repository descriptions to Top Repos
+- [x] Added source code link and "Stats analyzed with Claude AI" footer
+- [x] Removed public refresh button (security)
+- [x] Redesigned recent commits with scrollable container
+- [x] Created Heatmap component (needs debugging)
 
 ### Backend Systems
 - [x] D1 schema designed (src/lib/db/schema.sql)
@@ -121,11 +135,13 @@
 
 #### Commit History Heatmap (GitHub contribution graph style)
 
+**STATUS: NEEDS DEBUGGING** - Component created, API endpoint works (`/api/git/contributions/[username]` returns 1127 commits), but grid not displaying data. Likely Svelte 5 reactivity issue with `$derived`.
+
 **What it should look like:** GitHub's green contribution graph - 52 weeks of squares, darker = more commits
 
 **Implementation steps:**
-1. Create new component: `src/routes/dashboard/Heatmap.svelte`
-2. Fetch data from `/api/git/history/AutumnsGrove/[repo]?days=365`
+1. ~~Create new component: `src/routes/dashboard/Heatmap.svelte`~~ ✅ Done
+2. ~~Fetch data from GitHub contributions API~~ ✅ Done - `/api/git/contributions/[username]`
 3. The `commit_activity` table in D1 has: `activity_date`, `hour`, `day_of_week`, `commit_count`
 4. Build a grid: 7 rows (days) × 52 columns (weeks)
 5. Color scale: light green (1-2 commits) → dark green (5+ commits)
@@ -240,6 +256,7 @@ Additions:   ██████████ AutumnsGrove (5000)
 - [ ] Typography changes
 - [ ] Mobile responsiveness improvements
 - [ ] Loading states and animations
+- [ ] Add icons throughout the website (navigation, stats cards, sections, etc.)
 
 ---
 
