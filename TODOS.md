@@ -1,6 +1,6 @@
 # TODOs for AutumnsGrove
 
-> **Last Updated:** November 20, 2024 - Dashboard UI improvements complete, heatmap needs debugging
+> **Last Updated:** November 20, 2024 - Image hosting setup complete
 
 ---
 
@@ -66,68 +66,15 @@
 - [x] Claude Haiku 4.5 integration for AI analysis
 - [x] TODO parsing from code comments and TODOS.md files
 
+### Image Hosting (Nov 20, 2024)
+- [x] R2 bucket created: `autumnsgrove-images`
+- [x] Custom domain connected: `cdn.autumnsgrove.com`
+- [x] Upload helper script created: `scripts/upload-image.sh`
+- [x] Documentation created: `ClaudeUsage/image_hosting.md`
+
 ---
 
 ## 🔲 Remaining Tasks
-
-### HIGH PRIORITY: Image Hosting Setup
-
-**Goal:** Use R2 bucket to host images instead of committing to GitHub
-
-**Steps to complete:**
-
-1. **Connect custom domain to R2 bucket**
-   - Go to: Cloudflare Dashboard → R2 → `autumnsgrove-images` → Settings → Custom Domains
-   - Add domain: `cdn.autumnsgrove.com` (or `images.autumnsgrove.com`)
-   - This requires the domain to be in your Cloudflare account
-
-2. **Test upload workflow**
-   ```bash
-   # Upload a test image
-   npx wrangler r2 object put autumnsgrove-images/test/hello.jpg --file ./path/to/image.jpg
-
-   # Verify it's accessible
-   curl https://cdn.autumnsgrove.com/test/hello.jpg
-   ```
-
-3. **Create upload helper script** (optional)
-   - Consider creating a CLI script to make uploads easier
-   - Or use the Cloudflare Dashboard for manual uploads
-
-4. **Reference images in your site**
-
-   In Svelte components:
-   ```svelte
-   <img src="https://cdn.autumnsgrove.com/blog/my-post/hero.jpg" alt="..." />
-   ```
-
-   In Markdown files (posts/recipes):
-   ```markdown
-   ![Alt text](https://cdn.autumnsgrove.com/blog/my-post/image.jpg)
-
-   Or with a caption:
-   ![My cool project screenshot](https://cdn.autumnsgrove.com/posts/2024-11-20/screenshot.png)
-   ```
-
-5. **Suggested folder structure in R2**
-   ```
-   autumnsgrove-images/
-   ├── blog/
-   │   └── post-slug/
-   │       ├── hero.jpg
-   │       └── diagram.png
-   ├── recipes/
-   │   └── recipe-slug/
-   │       └── finished-dish.jpg
-   └── projects/
-       └── project-name/
-           └── screenshot.png
-   ```
-
-6. **Document the process**
-   - Create `ClaudeUsage/image_hosting.md` with upload instructions
-
----
 
 ### MEDIUM PRIORITY: Dashboard Visualizations
 
@@ -316,16 +263,15 @@ When you return to work on this project:
    git push origin main
    ```
 
-2. **Initialize D1 database:**
+2. **Test image hosting** - Upload and verify images work:
    ```bash
-   npx wrangler d1 execute autumnsgrove-git-stats --file=src/lib/db/schema.sql
+   ./scripts/upload-image.sh ./test.jpg test
+   curl -I https://cdn.autumnsgrove.com/test/test.jpg
    ```
 
-3. **Set up R2 custom domain** (Cloudflare Dashboard)
+3. **Test the deployed dashboard** at https://autumnsgrove.com/dashboard
 
-4. **Test the deployed dashboard** at https://autumnsgrove.com/dashboard
-
-5. **Continue with visualizations** or address design feedback
+4. **Continue with visualizations** or address design feedback
 
 ---
 
