@@ -22,9 +22,14 @@
 	// Track all timers for cleanup on unmount
 	let timerIds = [];
 	let abortController = null;
+	let isMounted = false;
 
 	function scheduleTimeout(callback, delay) {
-		const id = setTimeout(callback, delay);
+		const id = setTimeout(() => {
+			callback();
+			// Self-cleanup: remove from tracking array when completed
+			timerIds = timerIds.filter(t => t !== id);
+		}, delay);
 		timerIds.push(id);
 		return id;
 	}
@@ -108,36 +113,36 @@
 
 		loading = true;
 		error = '';
-		userData = null;
-		stats = null;
-		reposData = [];
-		activityData = [];
 
 		try {
-			// Fetch user info
-			const userResponse = await fetch(`/api/git/user/${USERNAME}`, { signal });
+			// Fetch all data in parallel for better performance
+			const [userResponse, statsResponse, reposResponse, contributionsResponse] = await Promise.all([
+				fetch(`/api/git/user/${USERNAME}`, { signal }),
+				fetch(`/api/git/stats/${USERNAME}?limit=15`, { signal }),
+				fetch(`/api/git/repos/${USERNAME}`, { signal }),
+				fetch(`/api/git/contributions/${USERNAME}`, { signal })
+			]);
+
+			// Process user response (required)
 			if (!userResponse.ok) {
 				const errorData = await userResponse.json().catch(() => ({}));
 				throw new Error(errorData.message || 'User not found');
 			}
 			userData = await userResponse.json();
 
-			// Fetch stats
-			const statsResponse = await fetch(`/api/git/stats/${USERNAME}?limit=15`, { signal });
+			// Process stats response (required)
 			if (!statsResponse.ok) {
 				const errorData = await statsResponse.json().catch(() => ({}));
 				throw new Error(errorData.message || 'Failed to fetch stats');
 			}
 			stats = await statsResponse.json();
 
-			// Fetch repos for descriptions
-			const reposResponse = await fetch(`/api/git/repos/${USERNAME}`, { signal });
+			// Process repos response (optional)
 			if (reposResponse.ok) {
 				reposData = await reposResponse.json();
 			}
 
-			// Fetch contributions for heatmap (directly from GitHub)
-			const contributionsResponse = await fetch(`/api/git/contributions/${USERNAME}`, { signal });
+			// Process contributions response (optional)
 			if (contributionsResponse.ok) {
 				const contributionsResult = await contributionsResponse.json();
 				activityData = contributionsResult.activity || [];
@@ -145,7 +150,7 @@
 
 			// Render charts after stats are loaded using microtask for better performance
 			queueMicrotask(() => {
-				if (stats) {
+				if (stats && isMounted) {
 					renderHoursChart(stats.commits_by_hour);
 					renderDaysChart(stats.commits_by_day);
 				}
@@ -278,10 +283,12 @@
 	}
 
 	onMount(() => {
+		isMounted = true;
 		// Auto-load stats on page mount
 		fetchStats();
 
 		return () => {
+			isMounted = false;
 			// Abort any in-flight fetch requests
 			if (abortController) {
 				abortController.abort();
