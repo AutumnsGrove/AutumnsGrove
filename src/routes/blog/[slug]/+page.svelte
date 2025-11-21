@@ -1,5 +1,32 @@
 <script>
+	import TableOfContents from '$lib/components/TableOfContents.svelte';
+	import LeftGutter from '$lib/components/LeftGutter.svelte';
+	import GutterItem from '$lib/components/GutterItem.svelte';
+	import { onMount } from 'svelte';
+
 	export let data;
+
+	// Add IDs to headers in the rendered content for scroll tracking
+	onMount(() => {
+		if (data.post.headers && data.post.headers.length > 0) {
+			const contentEl = document.querySelector('.post-content');
+			if (contentEl) {
+				const headerElements = contentEl.querySelectorAll('h1, h2, h3, h4, h5, h6');
+				headerElements.forEach((el) => {
+					const text = el.textContent.trim();
+					const matchingHeader = data.post.headers.find(h => h.text === text);
+					if (matchingHeader) {
+						el.id = matchingHeader.id;
+					}
+				});
+			}
+		}
+	});
+
+	// Check if we have content for gutters
+	$: hasLeftGutter = data.post.gutterContent && data.post.gutterContent.length > 0;
+	$: hasRightGutter = data.post.headers && data.post.headers.length > 0;
+	$: hasGutters = hasLeftGutter || hasRightGutter;
 </script>
 
 <svelte:head>
@@ -7,37 +34,126 @@
 	<meta name="description" content={data.post.description || data.post.title} />
 </svelte:head>
 
-<article class="post">
-	<header class="post-header">
-		<a href="/blog" class="back-link">&larr; Back to Blog</a>
-		<h1>{data.post.title}</h1>
-		<div class="post-meta">
-			<time datetime={data.post.date}>
-				{new Date(data.post.date).toLocaleDateString('en-US', {
-					year: 'numeric',
-					month: 'long',
-					day: 'numeric'
-				})}
-			</time>
-			{#if data.post.tags.length > 0}
-				<div class="tags">
-					{#each data.post.tags as tag}
-						<span class="tag">{tag}</span>
-					{/each}
-				</div>
-			{/if}
+<div class="post-layout" class:has-gutters={hasGutters}>
+	<!-- Left Gutter - Comments/Photos -->
+	{#if hasLeftGutter}
+		<div class="left-gutter-container desktop-only">
+			<LeftGutter items={data.post.gutterContent} headers={data.post.headers || []} />
 		</div>
-	</header>
+	{/if}
 
-	<div class="post-content">
-		{@html data.post.content}
-	</div>
-</article>
+	<!-- Main Content -->
+	<article class="post">
+		<header class="post-header">
+			<a href="/blog" class="back-link">&larr; Back to Blog</a>
+			<h1>{data.post.title}</h1>
+			<div class="post-meta">
+				<time datetime={data.post.date}>
+					{new Date(data.post.date).toLocaleDateString('en-US', {
+						year: 'numeric',
+						month: 'long',
+						day: 'numeric'
+					})}
+				</time>
+				{#if data.post.tags.length > 0}
+					<div class="tags">
+						{#each data.post.tags as tag}
+							<span class="tag">{tag}</span>
+						{/each}
+					</div>
+				{/if}
+			</div>
+		</header>
+
+		<!-- Mobile inline gutter content at top -->
+		{#if hasLeftGutter}
+			<div class="mobile-gutter-content">
+				{#each data.post.gutterContent as item}
+					<GutterItem {item} />
+				{/each}
+			</div>
+		{/if}
+
+		<div class="post-content">
+			{@html data.post.content}
+		</div>
+	</article>
+
+	<!-- Right Gutter - Table of Contents -->
+	{#if hasRightGutter}
+		<div class="right-gutter-container desktop-only">
+			<TableOfContents headers={data.post.headers} />
+		</div>
+	{/if}
+</div>
 
 <style>
-	.post {
+	.post-layout {
 		max-width: 800px;
 		margin: 0 auto;
+	}
+
+	.post-layout.has-gutters {
+		display: grid;
+		grid-template-columns: 1fr;
+		max-width: 1400px;
+		gap: 2rem;
+	}
+
+	@media (min-width: 1200px) {
+		.post-layout.has-gutters {
+			grid-template-columns: 200px 1fr 200px;
+		}
+	}
+
+	@media (min-width: 769px) and (max-width: 1199px) {
+		.post-layout.has-gutters {
+			grid-template-columns: 1fr 200px;
+			max-width: 1000px;
+		}
+
+		.left-gutter-container {
+			display: none;
+		}
+	}
+
+	.desktop-only {
+		display: none;
+	}
+
+	@media (min-width: 769px) {
+		.desktop-only {
+			display: block;
+		}
+	}
+
+	.mobile-gutter-content {
+		display: block;
+		margin-bottom: 2rem;
+		padding: 1rem;
+		background: #f5f5f5;
+		border-radius: 8px;
+		transition: background-color 0.3s ease;
+	}
+
+	:global(.dark) .mobile-gutter-content {
+		background: #1a1a1a;
+	}
+
+	@media (min-width: 769px) {
+		.mobile-gutter-content {
+			display: none;
+		}
+	}
+
+	.left-gutter-container,
+	.right-gutter-container {
+		min-width: 0;
+	}
+
+	.post {
+		max-width: 800px;
+		min-width: 0;
 	}
 
 	.back-link {

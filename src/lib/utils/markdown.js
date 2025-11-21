@@ -28,6 +28,25 @@ const recipeSidecarModules = import.meta.glob("../../../recipes/*-grove.json", {
   eager: true,
 });
 
+// Load gutter manifest files for blog posts
+const gutterManifestModules = import.meta.glob("../../../posts/*/gutter/manifest.json", {
+  eager: true,
+});
+
+// Load gutter markdown content files
+const gutterMarkdownModules = import.meta.glob("../../../posts/*/gutter/*.md", {
+  eager: true,
+  query: "?raw",
+  import: "default",
+});
+
+// Load gutter image files
+const gutterImageModules = import.meta.glob("../../../posts/*/gutter/*.{jpg,jpeg,png,gif,webp}", {
+  eager: true,
+  query: "?url",
+  import: "default",
+});
+
 /**
  * Get all markdown posts from the posts directory
  * @returns {Array} Array of post objects with metadata and slug
@@ -119,6 +138,12 @@ export function getPostBySlug(slug) {
   const { data, content: markdown } = matter(content);
   const htmlContent = marked.parse(markdown);
 
+  // Extract headers for table of contents
+  const headers = extractHeaders(markdown);
+
+  // Get gutter content for this post
+  const gutterContent = getGutterContent(slug);
+
   return {
     slug,
     title: data.title || "Untitled",
@@ -126,7 +151,101 @@ export function getPostBySlug(slug) {
     tags: data.tags || [],
     description: data.description || "",
     content: htmlContent,
+    headers,
+    gutterContent,
   };
+}
+
+/**
+ * Extract headers from markdown content for table of contents
+ * @param {string} markdown - The raw markdown content
+ * @returns {Array} Array of header objects with level, text, and id
+ */
+export function extractHeaders(markdown) {
+  const headers = [];
+  const headerRegex = /^(#{1,6})\s+(.+)$/gm;
+
+  let match;
+  while ((match = headerRegex.exec(markdown)) !== null) {
+    const level = match[1].length;
+    const text = match[2].trim();
+    // Create a slug-style ID from the header text
+    const id = text
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .trim();
+
+    headers.push({
+      level,
+      text,
+      id,
+    });
+  }
+
+  return headers;
+}
+
+/**
+ * Get gutter content for a blog post by slug
+ * @param {string} slug - The post slug
+ * @returns {Array} Array of gutter items with content and position info
+ */
+export function getGutterContent(slug) {
+  // Find the manifest file for this post
+  const manifestEntry = Object.entries(gutterManifestModules).find(([filepath]) => {
+    // Path format: ../../../posts/Post Name/gutter/manifest.json
+    const parts = filepath.split('/');
+    const postFolder = parts[parts.length - 3]; // Get the folder name
+    return postFolder === slug;
+  });
+
+  if (!manifestEntry) {
+    return [];
+  }
+
+  const manifest = manifestEntry[1].default || manifestEntry[1];
+
+  if (!manifest.items || !Array.isArray(manifest.items)) {
+    return [];
+  }
+
+  // Process each gutter item
+  return manifest.items.map(item => {
+    const basePath = `../../../posts/${slug}/gutter/`;
+
+    if (item.type === 'comment' || item.type === 'markdown') {
+      // Find the markdown content file
+      const mdEntry = Object.entries(gutterMarkdownModules).find(([filepath]) => {
+        return filepath.includes(`/${slug}/gutter/${item.file}`);
+      });
+
+      if (mdEntry) {
+        const markdownContent = mdEntry[1];
+        const htmlContent = marked.parse(markdownContent);
+
+        return {
+          ...item,
+          content: htmlContent,
+        };
+      }
+    } else if (item.type === 'photo' || item.type === 'image') {
+      // Find the image file
+      const imgEntry = Object.entries(gutterImageModules).find(([filepath]) => {
+        return filepath.includes(`/${slug}/gutter/${item.file}`);
+      });
+
+      if (imgEntry) {
+        return {
+          ...item,
+          src: imgEntry[1],
+        };
+      }
+    }
+
+    return item;
+  }).filter(item => item.content || item.src); // Filter out items that weren't found
 }
 
 /**

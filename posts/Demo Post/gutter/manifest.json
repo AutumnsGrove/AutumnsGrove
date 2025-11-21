@@ -1,0 +1,14 @@
+{
+  "items": [
+    {
+      "type": "comment",
+      "file": "willow-1.md",
+      "anchor": "## About Willow"
+    },
+    {
+      "type": "comment",
+      "file": "willow-2.md",
+      "anchor": "## Photos Section"
+    }
+  ]
+}
