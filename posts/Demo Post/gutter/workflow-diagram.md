@@ -1,35 +1,27 @@
-# Building with Claude Code - The Workflow
+# Building with Claude Code
 
 ```mermaid
 flowchart TD
-    subgraph "The Modern Development Loop"
-        A["🎨 Describe Your Vision"]
-        B["📸 Share Screenshots & Sketches"]
-        C["🤖 Claude Plans & Builds"]
-        D["🚀 Push to Live"]
-        E["👀 Review Result"]
-        F{"Happy?"}
-        G["✨ Done!"]
-        H["💬 Give Feedback"]
-    end
+    A["Describe"]
+    B["Screenshot"]
+    C["Claude Builds"]
+    D["Review"]
+    E{"Done?"}
+    F["Ship It!"]
 
     A --> B
     B --> C
     C --> D
     D --> E
-    E --> F
-    F -->|"Yes!"| G
-    F -->|"Almost..."| H
-    H --> C
+    E -->|No| A
+    E -->|Yes| F
 
     style A fill:#e8f5e9,stroke:#2c5f2d,color:#1a1a1a
     style B fill:#e8f5e9,stroke:#2c5f2d,color:#1a1a1a
     style C fill:#fff3e0,stroke:#f57c00,color:#1a1a1a
     style D fill:#e3f2fd,stroke:#1976d2,color:#1a1a1a
-    style E fill:#f3e5f5,stroke:#7b1fa2,color:#1a1a1a
-    style F fill:#fce4ec,stroke:#c2185b,color:#1a1a1a
-    style G fill:#c8e6c9,stroke:#388e3c,color:#1a1a1a
-    style H fill:#fff8e1,stroke:#ffa000,color:#1a1a1a
+    style E fill:#fce4ec,stroke:#c2185b,color:#1a1a1a
+    style F fill:#c8e6c9,stroke:#388e3c,color:#1a1a1a
 ```
 
 ## How We Built the Gutter Feature
