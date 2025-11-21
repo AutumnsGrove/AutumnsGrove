@@ -65,12 +65,22 @@
 	// Handle time range change
 	function handleTimeRangeChange(event) {
 		timeRange = event.target.value;
+		// Immediately clear commits to avoid showing stale data during loading
+		commits = [];
+		commitsPage = 1;
+		commitsHasMore = true;
+		commitsLimitReached = false;
 		fetchStats();
 	}
 
 	// Handle repo limit change
 	function handleRepoLimitChange(event) {
 		repoLimit = parseInt(event.target.value, 10);
+		// Immediately clear commits to avoid showing stale data during loading
+		commits = [];
+		commitsPage = 1;
+		commitsHasMore = true;
+		commitsLimitReached = false;
 		fetchStats();
 	}
 
@@ -83,6 +93,7 @@
 	// Track all timers for cleanup on unmount
 	let timerIds = $state(new Set());
 	let abortController = $state(null);
+	let commitsAbortController = $state(null);
 	let isMounted = $state(false);
 
 	function scheduleTimeout(callback, delay) {
@@ -378,13 +389,19 @@
 
 	// Fetch paginated commits
 	async function fetchCommits(page = 1, reset = false) {
-		if (commitsLoading) return;
 		if (!reset && !commitsHasMore) return;
 		if (page > MAX_PAGES) {
 			commitsLimitReached = true;
 			commitsHasMore = false;
 			return;
 		}
+
+		// Abort any in-flight commits requests to prevent race conditions
+		if (commitsAbortController) {
+			commitsAbortController.abort();
+		}
+		commitsAbortController = new AbortController();
+		const signal = commitsAbortController.signal;
 
 		commitsLoading = true;
 
@@ -395,7 +412,7 @@
 				url += `&since=${encodeURIComponent(since)}`;
 			}
 
-			const response = await fetch(url, { signal: abortController?.signal });
+			const response = await fetch(url, { signal });
 			if (!response.ok) {
 				throw new Error('Failed to fetch commits');
 			}
@@ -453,6 +470,11 @@
 	$effect(() => {
 		if (sentinelElement && isMounted) {
 			setupIntersectionObserver();
+			return () => {
+				if (observer) {
+					observer.disconnect();
+				}
+			};
 		}
 	});
 
@@ -466,6 +488,9 @@
 			// Abort any in-flight fetch requests
 			if (abortController) {
 				abortController.abort();
+			}
+			if (commitsAbortController) {
+				commitsAbortController.abort();
 			}
 			// Clear all tracked timers
 			clearAllTimers();
