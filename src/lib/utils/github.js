@@ -272,7 +272,32 @@ export function getCacheKey(type, username, params = {}) {
   return `github:${type}:${username}${paramStr ? ":" + paramStr : ""}`;
 }
 
-// GraphQL query for fetching commits with pagination support
+/**
+ * GraphQL query for fetching commits with pagination support
+ *
+ * @description Fetches commit history from user's repositories for client-side pagination.
+ * Note: This query fetches up to 100 commits per repo from the top N repos,
+ * then sorts and paginates client-side. Consider cursor-based pagination for
+ * very active users.
+ *
+ * @variables
+ * - username: String! - GitHub username
+ * - first: Int! - Number of repositories to fetch (repo limit)
+ * - since: GitTimestamp - Optional ISO date string to filter commits after this date
+ *
+ * @returns {Object} User data with repositories containing commit history
+ * @returns {Array} user.repositories.nodes - Array of repository objects
+ * @returns {Object} user.repositories.nodes[].defaultBranchRef.target.history - Commit history
+ * @returns {Array} user.repositories.nodes[].defaultBranchRef.target.history.nodes - Commits array
+ *
+ * @example
+ * // Variables example:
+ * {
+ *   username: "octocat",
+ *   first: 15,
+ *   since: "2024-01-01T00:00:00Z"
+ * }
+ */
 export const GRAPHQL_COMMITS_PAGINATED_QUERY = `
 query($username: String!, $first: Int!, $since: GitTimestamp) {
   user(login: $username) {
@@ -404,7 +429,13 @@ export async function fetchCommitsPaginated(username, repoLimit, token, page = 1
   }
 
   // Sort all commits by date (newest first)
-  allCommits.sort((a, b) => new Date(b.date) - new Date(a.date));
+  // Use string comparison since ISO dates sort lexicographically correctly
+  // This avoids creating Date objects for every comparison
+  allCommits.sort((a, b) => {
+    if (b.date > a.date) return 1;
+    if (b.date < a.date) return -1;
+    return 0;
+  });
 
   // Calculate pagination
   const totalCommits = allCommits.length;

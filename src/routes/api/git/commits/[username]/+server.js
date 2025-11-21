@@ -9,7 +9,11 @@ import {
 
 export const prerender = false;
 
+// Pagination constants
 const CACHE_TTL = 10800; // 3 hours
+const MAX_PAGES = 10; // Maximum number of pages to prevent abuse
+const MAX_PER_PAGE = 50; // Maximum items per page
+const DEFAULT_PER_PAGE = 20; // Default items per page
 
 /**
  * Get paginated commits for a GitHub user
@@ -32,11 +36,11 @@ export async function GET({ params, url, platform }) {
 
     // Parse page parameter (1-indexed)
     let page = parseInt(url.searchParams.get("page") || "1", 10);
-    page = Math.max(1, Math.min(page, 10)); // Limit to 10 pages max
+    page = Math.max(1, Math.min(page, MAX_PAGES));
 
     // Parse per_page parameter
-    let perPage = parseInt(url.searchParams.get("per_page") || "20", 10);
-    perPage = Math.max(1, Math.min(perPage, 50)); // Limit to 50 per page
+    let perPage = parseInt(url.searchParams.get("per_page") || String(DEFAULT_PER_PAGE), 10);
+    perPage = Math.max(1, Math.min(perPage, MAX_PER_PAGE));
 
     // Parse since parameter (ISO date string for time range filtering)
     const since = url.searchParams.get("since") || null;
@@ -70,16 +74,21 @@ export async function GET({ params, url, platform }) {
     return json({ ...result, cached: false });
   } catch (e) {
     if (e.status) throw e;
+    // Log full error server-side for debugging
     console.error("Error fetching commits:", e);
 
-    // Provide more specific error messages
+    // Provide sanitized error messages to clients
     if (e.message?.includes("User not found")) {
       throw error(404, "User not found");
     }
     if (e.message?.includes("token required")) {
       throw error(401, "GitHub token required for this endpoint");
     }
+    if (e.message?.includes("rate limit")) {
+      throw error(429, "GitHub API rate limit exceeded. Please try again later.");
+    }
 
-    throw error(500, e.message || "Failed to fetch commits");
+    // Return generic message to avoid exposing internal details
+    throw error(500, "Failed to fetch commits");
   }
 }
