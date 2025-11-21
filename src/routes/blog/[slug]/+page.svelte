@@ -102,7 +102,7 @@
 
 	@media (min-width: 1200px) {
 		.post-layout.has-gutters {
-			grid-template-columns: 200px 1fr 200px;
+			grid-template-columns: 240px 1fr 200px;
 		}
 	}
 

@@ -62,9 +62,19 @@
 
 	.gutter-photo img {
 		width: 100%;
+		max-width: 160px;
 		height: auto;
 		border-radius: 6px;
 		display: block;
+	}
+
+	/* Also constrain images in markdown comments */
+	.gutter-comment :global(img) {
+		max-width: 160px;
+		height: auto;
+		border-radius: 6px;
+		display: block;
+		margin-bottom: 0.5rem;
 	}
 
 	.gutter-photo figcaption {
