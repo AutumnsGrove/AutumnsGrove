@@ -214,14 +214,14 @@ export function extractHeaders(markdown) {
 }
 
 /**
- * Generic helper to get gutter content
+ * Get gutter content from specified modules
  * @param {string} slug - The page/post slug
  * @param {Object} manifestModules - The manifest modules to search
  * @param {Object} markdownModules - The markdown modules to search
  * @param {Object} imageModules - The image modules to search
  * @returns {Array} Array of gutter items with content and position info
  */
-function getGutterContentGeneric(slug, manifestModules, markdownModules, imageModules) {
+function getGutterContentFromModules(slug, manifestModules, markdownModules, imageModules) {
   // Find the manifest file for this page/post
   const manifestEntry = Object.entries(manifestModules).find(([filepath]) => {
     const parts = filepath.split('/');
@@ -280,7 +280,7 @@ function getGutterContentGeneric(slug, manifestModules, markdownModules, imageMo
  * @returns {Array} Array of gutter items with content and position info
  */
 export function getGutterContent(slug) {
-  return getGutterContentGeneric(slug, gutterManifestModules, gutterMarkdownModules, gutterImageModules);
+  return getGutterContentFromModules(slug, gutterManifestModules, gutterMarkdownModules, gutterImageModules);
 }
 
 /**
@@ -330,7 +330,7 @@ export function getAboutPage() {
  * @returns {Array} Array of gutter items with content and position info
  */
 export function getAboutGutterContent(slug) {
-  return getGutterContentGeneric(slug, aboutGutterManifestModules, aboutGutterMarkdownModules, aboutGutterImageModules);
+  return getGutterContentFromModules(slug, aboutGutterManifestModules, aboutGutterMarkdownModules, aboutGutterImageModules);
 }
 
 /**
