@@ -129,7 +129,7 @@
 	.mobile-toc-wrapper {
 		display: none;
 		position: fixed;
-		top: 1rem;
+		bottom: 1rem;
 		right: 1rem;
 		z-index: 1000;
 	}
@@ -166,7 +166,7 @@
 
 	.toc-menu {
 		position: absolute;
-		top: 52px;
+		bottom: 52px;
 		right: 0;
 		width: 280px;
 		max-height: 60vh;
@@ -186,7 +186,7 @@
 	@keyframes slideIn {
 		from {
 			opacity: 0;
-			transform: translateY(-8px);
+			transform: translateY(8px);
 		}
 		to {
 			opacity: 1;
