@@ -1,7 +1,7 @@
 <script>
 	import { slide } from 'svelte/transition';
 
-	let { title = '', expanded = $bindable(false) } = $props();
+	let { title = '', expanded = $bindable(false), children } = $props();
 
 	function toggle() {
 		expanded = !expanded;
@@ -20,7 +20,7 @@
 
 	{#if expanded}
 		<div class="collapsible-content" transition:slide={{ duration: 200 }}>
-			<slot />
+			{@render children()}
 		</div>
 	{/if}
 </div>

@@ -1,12 +1,10 @@
 <script>
-	import { onMount } from 'svelte';
+	let { headers = [] } = $props();
 
-	export let headers = [];
-
-	let isOpen = false;
-	let menuRef;
-	let buttonRef;
-	let activeId = '';
+	let isOpen = $state(false);
+	let menuRef = $state();
+	let buttonRef = $state();
+	let activeId = $state('');
 
 	function toggleMenu() {
 		isOpen = !isOpen;
@@ -68,7 +66,7 @@
 		return () => observer.disconnect();
 	}
 
-	onMount(() => {
+	$effect(() => {
 		const cleanup = setupScrollTracking();
 
 		// Add event listeners
@@ -89,7 +87,7 @@
 		<button
 			bind:this={buttonRef}
 			class="toc-button"
-			on:click={toggleMenu}
+			onclick={toggleMenu}
 			aria-label="Toggle table of contents"
 			aria-expanded={isOpen}
 		>
@@ -112,7 +110,7 @@
 						>
 							<button
 								type="button"
-								on:click={() => scrollToHeader(header.id)}
+								onclick={() => scrollToHeader(header.id)}
 								class="toc-link"
 							>
 								{header.text}

@@ -1,6 +1,5 @@
 <script>
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
 
 	let { children } = $props();
@@ -64,7 +63,7 @@
 		}
 	}
 
-	onMount(() => {
+	$effect(() => {
 		// Check localStorage or system preference
 		const savedTheme = localStorage.getItem('theme');
 		if (savedTheme === 'light') {

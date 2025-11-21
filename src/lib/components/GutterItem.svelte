@@ -1,11 +1,11 @@
 <script>
 	import Lightbox from './Lightbox.svelte';
 
-	export let item = {};
+	let { item = {} } = $props();
 
-	let lightboxOpen = false;
-	let lightboxSrc = '';
-	let lightboxAlt = '';
+	let lightboxOpen = $state(false);
+	let lightboxSrc = $state('');
+	let lightboxAlt = $state('');
 
 	function openLightbox(src, alt) {
 		lightboxSrc = src;
@@ -28,12 +28,12 @@
 <div class="gutter-item" data-anchor={item.anchor || ''}>
 	{#if item.type === 'comment' || item.type === 'markdown'}
 		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-		<div class="gutter-comment" on:click={handleContentClick}>
+		<div class="gutter-comment" onclick={handleContentClick}>
 			{@html item.content}
 		</div>
 	{:else if item.type === 'photo' || item.type === 'image'}
 		<figure class="gutter-photo">
-			<button class="image-button" on:click={() => openLightbox(item.src, item.caption || 'Gutter image')}>
+			<button class="image-button" onclick={() => openLightbox(item.src, item.caption || 'Gutter image')}>
 				<img src={item.src} alt={item.caption || 'Gutter image'} />
 			</button>
 			{#if item.caption}

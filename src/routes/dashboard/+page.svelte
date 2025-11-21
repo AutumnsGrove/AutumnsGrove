@@ -1,5 +1,4 @@
 <script>
-	import { onMount } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import Heatmap from './Heatmap.svelte';
 	import CollapsibleSection from '$lib/components/CollapsibleSection.svelte';
@@ -359,7 +358,7 @@
 		return repo?.description || '';
 	}
 
-	onMount(() => {
+	$effect(() => {
 		isMounted = true;
 		// Auto-load stats on page mount
 		fetchStats();

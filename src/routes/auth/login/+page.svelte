@@ -1,6 +1,4 @@
 <script>
-  import { onMount } from 'svelte';
-
   let error = $state('');
   let errorMessage = $state('');
 
@@ -11,7 +9,7 @@
     'server_error': 'Server error. Please try again.'
   };
 
-  onMount(() => {
+  $effect(() => {
     const params = new URLSearchParams(window.location.search);
     error = params.get('error') || '';
     errorMessage = errorMessages[error] || (error ? 'An error occurred.' : '');

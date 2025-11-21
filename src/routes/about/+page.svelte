@@ -3,13 +3,12 @@
 	import MobileTOC from '$lib/components/MobileTOC.svelte';
 	import LeftGutter from '$lib/components/LeftGutter.svelte';
 	import GutterItem from '$lib/components/GutterItem.svelte';
-	import { onMount } from 'svelte';
 	import '$lib/styles/content.css';
 
-	export let data;
+	let { data } = $props();
 
 	// References to mobile gutter containers for each anchor
-	let mobileGutterRefs = {};
+	let mobileGutterRefs = $state({});
 
 	// Group items by their anchor
 	function getItemsForAnchor(anchor) {
@@ -24,7 +23,7 @@
 	}
 
 	// Add IDs to headers and position mobile gutter items
-	onMount(() => {
+	$effect(() => {
 		if (data.page.headers && data.page.headers.length > 0) {
 			const contentEl = document.querySelector('.content-body');
 			if (contentEl) {
@@ -48,9 +47,9 @@
 	});
 
 	// Check if we have content for gutters
-	$: hasLeftGutter = data.page.gutterContent && data.page.gutterContent.length > 0;
-	$: hasRightGutter = data.page.headers && data.page.headers.length > 0;
-	$: hasGutters = hasLeftGutter || hasRightGutter;
+	let hasLeftGutter = $derived(data.page.gutterContent && data.page.gutterContent.length > 0);
+	let hasRightGutter = $derived(data.page.headers && data.page.headers.length > 0);
+	let hasGutters = $derived(hasLeftGutter || hasRightGutter);
 </script>
 
 <svelte:head>

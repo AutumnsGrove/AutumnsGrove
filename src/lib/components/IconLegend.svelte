@@ -1,7 +1,7 @@
 <script>
 	import CollapsibleSection from './CollapsibleSection.svelte';
 
-	export let iconsUsed = [];
+	let { iconsUsed = [] } = $props();
 
 	// Map icon keys to their semantic meanings and display names
 	const iconMeanings = {

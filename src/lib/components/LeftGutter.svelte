@@ -1,13 +1,12 @@
 <script>
-	import { onMount, tick } from 'svelte';
+	import { tick } from 'svelte';
 	import GutterItem from './GutterItem.svelte';
 
-	export let items = [];
-	export let headers = [];
+	let { items = [], headers = [] } = $props();
 
-	let gutterElement;
-	let itemPositions = {};
-	let anchorGroupElements = {};
+	let gutterElement = $state();
+	let itemPositions = $state({});
+	let anchorGroupElements = $state({});
 
 	// Group items by their anchor
 	function getItemsForAnchor(anchor) {
@@ -63,7 +62,7 @@
 		itemPositions = { ...itemPositions }; // Trigger reactivity
 	}
 
-	onMount(() => {
+	$effect(() => {
 		// Initial positioning after content renders
 		setTimeout(updatePositions, 150);
 
