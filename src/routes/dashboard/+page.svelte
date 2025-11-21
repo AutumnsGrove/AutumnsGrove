@@ -40,6 +40,7 @@
 
 	// Debounce timer for filter changes
 	let filterDebounceTimer = $state(null);
+	const FILTER_DEBOUNCE_MS = 300;
 
 	// Time range filter
 	let timeRange = $state('all'); // 'all', '6months', '30days', 'today'
@@ -66,6 +67,18 @@
 		return now.toISOString();
 	}
 
+	// Shared debounced fetch for filter changes
+	function debouncedFetchStats() {
+		if (filterDebounceTimer) {
+			clearTimeout(filterDebounceTimer);
+			timerIds.delete(filterDebounceTimer);
+		}
+		filterDebounceTimer = scheduleTimeout(() => {
+			fetchStats();
+			filterDebounceTimer = null;
+		}, FILTER_DEBOUNCE_MS);
+	}
+
 	// Handle time range change with debounce
 	function handleTimeRangeChange(event) {
 		timeRange = event.target.value;
@@ -75,15 +88,7 @@
 		commitsHasMore = true;
 		commitsLimitReached = false;
 
-		// Debounce the fetch to prevent rapid API calls
-		if (filterDebounceTimer) {
-			clearTimeout(filterDebounceTimer);
-			timerIds.delete(filterDebounceTimer);
-		}
-		filterDebounceTimer = scheduleTimeout(() => {
-			fetchStats();
-			filterDebounceTimer = null;
-		}, 300);
+		debouncedFetchStats();
 	}
 
 	// Handle repo limit change with debounce
@@ -95,15 +100,7 @@
 		commitsHasMore = true;
 		commitsLimitReached = false;
 
-		// Debounce the fetch to prevent rapid API calls
-		if (filterDebounceTimer) {
-			clearTimeout(filterDebounceTimer);
-			timerIds.delete(filterDebounceTimer);
-		}
-		filterDebounceTimer = scheduleTimeout(() => {
-			fetchStats();
-			filterDebounceTimer = null;
-		}, 300);
+		debouncedFetchStats();
 	}
 
 	// Refresh rate limiting (5 minutes = 300000ms)
