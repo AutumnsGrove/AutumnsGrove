@@ -1,6 +1,7 @@
 <script>
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
+	import { fade } from 'svelte/transition';
 
 	let { children } = $props();
 
@@ -72,23 +73,17 @@
 			<!-- Mobile Hamburger Button -->
 			<button
 				class="hamburger-btn"
+				class:open={mobileMenuOpen}
 				onclick={toggleMobileMenu}
 				aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
 				aria-expanded={mobileMenuOpen}
 				aria-controls="mobile-menu"
 			>
-				{#if mobileMenuOpen}
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<line x1="18" y1="6" x2="6" y2="18"></line>
-						<line x1="6" y1="6" x2="18" y2="18"></line>
-					</svg>
-				{:else}
-					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<line x1="3" y1="6" x2="21" y2="6"></line>
-						<line x1="3" y1="12" x2="21" y2="12"></line>
-						<line x1="3" y1="18" x2="21" y2="18"></line>
-					</svg>
-				{/if}
+			<span class="hamburger-icon">
+				<span class="bar"></span>
+				<span class="bar"></span>
+				<span class="bar"></span>
+			</span>
 			</button>
 		</nav>
 
@@ -113,7 +108,11 @@
 	</header>
 
 	<main>
-		{@render children()}
+		{#key $page.url.pathname}
+			<div in:fade={{ duration: 200, delay: 100 }}>
+				{@render children()}
+			</div>
+		{/key}
 	</main>
 
 	<footer>
@@ -345,6 +344,38 @@
 
 	:global(.dark) .hamburger-btn:hover {
 		color: #5cb85f;
+	}
+
+	/* Animated hamburger icon */
+	.hamburger-icon {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		width: 20px;
+		height: 14px;
+	}
+
+	.hamburger-icon .bar {
+		display: block;
+		width: 100%;
+		height: 2px;
+		background: currentColor;
+		border-radius: 1px;
+		transition: transform 0.3s ease, opacity 0.3s ease;
+		transform-origin: center;
+	}
+
+	.hamburger-btn.open .hamburger-icon .bar:nth-child(1) {
+		transform: translateY(6px) rotate(45deg);
+	}
+
+	.hamburger-btn.open .hamburger-icon .bar:nth-child(2) {
+		opacity: 0;
+		transform: scaleX(0);
+	}
+
+	.hamburger-btn.open .hamburger-icon .bar:nth-child(3) {
+		transform: translateY(-6px) rotate(-45deg);
 	}
 
 	/* Mobile menu overlay */

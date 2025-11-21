@@ -68,14 +68,14 @@
 	.hero {
 		text-align: center;
 		padding: 4rem 2rem;
-		background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+		background: linear-gradient(145deg, #f8f9fa 0%, #e8f5e9 50%, #c8e6c9 100%);
 		border-radius: 12px;
 		margin-bottom: 3rem;
 		transition: background 0.3s ease;
 	}
 
 	:global(.dark) .hero {
-		background: linear-gradient(135deg, #2a2a2a 0%, #1f3a1f 100%);
+		background: linear-gradient(145deg, #252525 0%, #1a2f1a 50%, #1f3a1f 100%);
 	}
 
 	h1 {
@@ -119,10 +119,13 @@
 	.cta-button:hover {
 		background: #4a9d4f;
 		transform: translateY(-2px) scale(1.05);
+		filter: brightness(1.1);
+		box-shadow: 0 4px 12px rgba(44, 95, 45, 0.3);
 	}
 
 	:global(.dark) .cta-button:hover {
 		background: #7cd97f;
+		box-shadow: 0 4px 12px rgba(92, 184, 95, 0.4);
 	}
 
 	.intro {
@@ -152,7 +155,7 @@
 	}
 
 	.willow-section {
-		margin-top: 3rem;
+		margin-top: 4.5rem;
 		max-width: 800px;
 		margin-left: auto;
 		margin-right: auto;
