@@ -39,7 +39,7 @@
 	let sentinelElement = $state(null);
 
 	// Debounce timer for filter changes
-	let filterDebounceTimer = $state(null);
+	let filterDebounceTimer = null;
 
 	// Time range filter
 	let timeRange = $state('all'); // 'all', '6months', '30days', 'today'
@@ -113,9 +113,9 @@
 	let clickTimer = null;
 
 	// Track all timers for cleanup on unmount
-	let timerIds = $state(new Set());
-	let abortController = $state(null);
-	let commitsAbortController = $state(null);
+	let timerIds = new Set();
+	let abortController = null;
+	let commitsAbortController = null;
 	let isMounted = $state(false);
 
 	function scheduleTimeout(callback, delay) {

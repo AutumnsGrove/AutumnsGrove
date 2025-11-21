@@ -7,7 +7,6 @@
 	let gutterElement = $state();
 	let itemPositions = $state({});
 	let anchorGroupElements = $state({});
-	let positionTimeout = $state(null);
 
 	// Group items by their anchor
 	function getItemsForAnchor(anchor) {
@@ -62,20 +61,16 @@
 	}
 
 	$effect(() => {
-		// Initial positioning after content renders
-		positionTimeout = setTimeout(updatePositions, 150);
-
 		// Update on resize
 		window.addEventListener('resize', updatePositions);
 		return () => {
-			if (positionTimeout) clearTimeout(positionTimeout);
 			window.removeEventListener('resize', updatePositions);
 		};
 	});
 
-	// Re-calculate positions when items or headers change
+	// Handle initial positioning and re-calculate when items or headers change
 	$effect(() => {
-		// These references establish dependencies
+		// Explicitly reference dependencies to track changes
 		items;
 		headers;
 		// Delay slightly to allow DOM updates

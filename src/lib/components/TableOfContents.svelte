@@ -32,7 +32,7 @@
 		return () => observer.disconnect();
 	}
 
-	// Run setup when component mounts
+	// Set up scroll tracking (runs on mount and when headers change)
 	$effect(() => {
 		const cleanup = setupScrollTracking();
 		return cleanup;
