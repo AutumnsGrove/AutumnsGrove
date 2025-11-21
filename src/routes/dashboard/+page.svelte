@@ -385,6 +385,12 @@
 </svelte:head>
 
 <div class="dashboard">
+	<!-- Temporary Warning Notice -->
+	<div class="site-warning">
+		<strong>Note:</strong> This page has known interactivity issues. If buttons or navigation stop working,
+		please refresh the page. When returning to Home, you may need to refresh again.
+	</div>
+
 	<header class="dashboard-header">
 		<h1>Git Dashboard</h1>
 		<p>My GitHub commit activity</p>
@@ -592,6 +598,23 @@
 </div>
 
 <style>
+	.site-warning {
+		background: #fff3cd;
+		border: 1px solid #ffc107;
+		color: #856404;
+		padding: 0.75rem 1rem;
+		border-radius: 8px;
+		margin-bottom: 1.5rem;
+		font-size: 0.9rem;
+		line-height: 1.4;
+	}
+
+	:global(.dark) .site-warning {
+		background: #3d3200;
+		border-color: #ffc107;
+		color: #ffd54f;
+	}
+
 	.dashboard {
 		max-width: 1000px;
 		margin: 0 auto;
