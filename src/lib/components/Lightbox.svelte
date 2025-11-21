@@ -3,7 +3,7 @@
 	 * Lightbox - Full-screen image viewer
 	 * Click to expand images to full size
 	 */
-	let { src = '', alt = '', isOpen = false, onClose = () => {} } = $props();
+	let { src = '', alt = '', caption = '', isOpen = false, onClose = () => {} } = $props();
 
 	function handleKeydown(event) {
 		if (event.key === 'Escape') {
@@ -34,7 +34,12 @@
 				<line x1="6" y1="6" x2="18" y2="18"></line>
 			</svg>
 		</button>
-		<img {src} {alt} class="lightbox-image" />
+		<div class="lightbox-content">
+			<img {src} {alt} class="lightbox-image" />
+			{#if caption}
+				<div class="lightbox-caption">{caption}</div>
+			{/if}
+		</div>
 	</div>
 {/if}
 
@@ -47,6 +52,7 @@
 		bottom: 0;
 		background: rgba(0, 0, 0, 0.9);
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		z-index: 9999;
@@ -54,12 +60,31 @@
 		padding: 2rem;
 	}
 
-	.lightbox-image {
+	.lightbox-content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 		max-width: 90vw;
 		max-height: 90vh;
+	}
+
+	.lightbox-image {
+		max-width: 90vw;
+		max-height: calc(90vh - 60px);
 		object-fit: contain;
 		cursor: default;
 		border-radius: 4px;
+	}
+
+	.lightbox-caption {
+		margin-top: 1rem;
+		padding: 0.5rem 1rem;
+		color: rgba(255, 255, 255, 0.9);
+		font-size: 0.9rem;
+		font-style: italic;
+		text-align: center;
+		max-width: 90vw;
+		line-height: 1.5;
 	}
 
 	.close-button {

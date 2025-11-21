@@ -7,10 +7,12 @@
 	let lightboxOpen = $state(false);
 	let lightboxSrc = $state('');
 	let lightboxAlt = $state('');
+	let lightboxCaption = $state('');
 
-	function openLightbox(src, alt) {
+	function openLightbox(src, alt, caption = '') {
 		lightboxSrc = src;
 		lightboxAlt = alt;
+		lightboxCaption = caption;
 		lightboxOpen = true;
 	}
 
@@ -34,7 +36,7 @@
 		</div>
 	{:else if item.type === 'photo' || item.type === 'image'}
 		<figure class="gutter-photo">
-			<button class="image-button" onclick={() => openLightbox(item.src, item.caption || 'Gutter image')}>
+			<button class="image-button" onclick={() => openLightbox(item.src, item.caption || 'Gutter image', item.caption || '')}>
 				<img src={item.src} alt={item.caption || 'Gutter image'} />
 			</button>
 			{#if item.caption}
@@ -51,6 +53,7 @@
 <Lightbox
 	src={lightboxSrc}
 	alt={lightboxAlt}
+	caption={lightboxCaption}
 	isOpen={lightboxOpen}
 	onClose={closeLightbox}
 />
