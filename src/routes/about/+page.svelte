@@ -1,4 +1,5 @@
 <script>
+	import { untrack } from 'svelte';
 	import TableOfContents from '$lib/components/TableOfContents.svelte';
 	import MobileTOC from '$lib/components/MobileTOC.svelte';
 	import LeftGutter from '$lib/components/LeftGutter.svelte';
@@ -24,26 +25,28 @@
 
 	// Add IDs to headers and position mobile gutter items
 	$effect(() => {
-		if (data.page.headers && data.page.headers.length > 0) {
-			const contentEl = document.querySelector('.content-body');
-			if (contentEl) {
-				const headerElements = contentEl.querySelectorAll('h1, h2, h3, h4, h5, h6');
-				headerElements.forEach((el) => {
-					const text = el.textContent.trim();
-					const matchingHeader = data.page.headers.find(h => h.text === text);
-					if (matchingHeader) {
-						el.id = matchingHeader.id;
+		untrack(() => {
+			if (data.page.headers && data.page.headers.length > 0) {
+				const contentEl = document.querySelector('.content-body');
+				if (contentEl) {
+					const headerElements = contentEl.querySelectorAll('h1, h2, h3, h4, h5, h6');
+					headerElements.forEach((el) => {
+						const text = el.textContent.trim();
+						const matchingHeader = data.page.headers.find(h => h.text === text);
+						if (matchingHeader) {
+							el.id = matchingHeader.id;
 
-						// Move mobile gutter content after this header
-						const mobileGutterEl = mobileGutterRefs[matchingHeader.id];
-						if (mobileGutterEl && mobileGutterEl.children.length > 0) {
-							// Insert after the header element
-							el.insertAdjacentElement('afterend', mobileGutterEl);
+							// Move mobile gutter content after this header
+							const mobileGutterEl = mobileGutterRefs[matchingHeader.id];
+							if (mobileGutterEl && mobileGutterEl.children.length > 0) {
+								// Insert after the header element
+								el.insertAdjacentElement('afterend', mobileGutterEl);
+							}
 						}
-					}
-				});
+					});
+				}
 			}
-		}
+		});
 	});
 
 	// Check if we have content for gutters

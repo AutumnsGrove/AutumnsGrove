@@ -503,12 +503,13 @@
 	});
 
 	$effect(() => {
-		// Use untrack to prevent isMounted assignment from causing re-execution
+		// Use untrack to prevent this effect from tracking any dependencies
+		// This ensures it only runs once on mount
 		untrack(() => {
 			isMounted = true;
+			// Auto-load stats on page mount
+			fetchStats();
 		});
-		// Auto-load stats on page mount
-		fetchStats();
 
 		return () => {
 			isMounted = false;

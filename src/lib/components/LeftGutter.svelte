@@ -72,6 +72,15 @@
 			window.removeEventListener('resize', updatePositions);
 		};
 	});
+
+	// Re-calculate positions when items or headers change
+	$effect(() => {
+		// These references establish dependencies
+		items;
+		headers;
+		// Delay slightly to allow DOM updates
+		setTimeout(updatePositions, 150);
+	});
 </script>
 
 <aside class="left-gutter" bind:this={gutterElement}>
