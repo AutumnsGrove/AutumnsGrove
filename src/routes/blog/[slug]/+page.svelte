@@ -101,35 +101,7 @@
 		color: #999;
 	}
 
-	.tags {
-		display: flex;
-		gap: 0.5rem;
-		flex-wrap: wrap;
-	}
-
-	.tag {
-		background: #7c4dab;
-		color: white;
-		padding: 0.4rem 1rem;
-		border-radius: 20px;
-		font-size: 0.9rem;
-		font-weight: 500;
-		transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
-	}
-
-	.tag:hover {
-		background: #6a3d9a;
-		transform: scale(1.05);
-	}
-
-	:global(.dark) .tag {
-		background: #6a3d9a;
-		color: white;
-	}
-
-	:global(.dark) .tag:hover {
-		background: #7c4dab;
-	}
+	/* Tags use global styles from +layout.svelte */
 
 	.post-content {
 		line-height: 1.8;

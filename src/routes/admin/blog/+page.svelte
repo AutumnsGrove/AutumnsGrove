@@ -189,7 +189,7 @@
   }
 
   .tag {
-    background: #7c4dab;
+    background: var(--tag-bg);
     color: white;
     padding: 0.25rem 0.75rem;
     border-radius: 20px;
@@ -199,7 +199,7 @@
   }
 
   .tag:hover {
-    background: #6a3d9a;
+    background: var(--tag-bg-hover);
     transform: scale(1.05);
   }
 
