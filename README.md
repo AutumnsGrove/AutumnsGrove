@@ -9,7 +9,7 @@ Building things, learning in public, and exploring ideas.
 - 🌱 [ProjectReminder](https://github.com/AutumnsGrove/ProjectReminder) - A very personalized Reminders app
 - 🌱 [RecipeGrove](https://github.com/AutumnsGrove/RecipeGrove) - Smart Recipe documents with [EmojiKitchen](https://github.com/AutumnsGrove/EmojiKitchen)
 - 💭 Thinking about software simplicity and design
-- 📝 Writing about tech, projects, and ideas
+- 📝 [Writing](https://autumnsgrove.com/blog) about tech, projects, and ideas
 
 ## Web Applications & Projects
 - [AutumnsGrove](https://github.com/AutumnsGrove/AutumnsGrove) - SvelteKit blog deployed to Cloudflare Pages ([docs](WEBSITE.md))
