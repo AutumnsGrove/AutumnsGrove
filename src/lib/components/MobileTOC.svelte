@@ -204,7 +204,7 @@
 	}
 
 	:global(.dark) .toc-title {
-		color: #999;
+		color: var(--color-text-subtle-dark);
 		border-bottom-color: #444;
 	}
 
@@ -235,7 +235,7 @@
 	}
 
 	:global(.dark) .toc-link {
-		color: #999;
+		color: var(--color-text-subtle-dark);
 	}
 
 	.toc-link:hover {

@@ -176,7 +176,7 @@
 	}
 
 	:global(.dark) time {
-		color: #999;
+		color: var(--color-text-subtle-dark);
 	}
 
 	/* Tags use global styles from +layout.svelte */

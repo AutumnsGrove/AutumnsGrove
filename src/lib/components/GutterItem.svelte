@@ -139,6 +139,6 @@
 	}
 
 	:global(.dark) .gutter-photo figcaption {
-		color: #999;
+		color: var(--color-text-subtle-dark);
 	}
 </style>
