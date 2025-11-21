@@ -232,6 +232,25 @@ $effect.pre(() => {
 });
 ```
 
+#### untrack - Read Without Creating Dependencies
+
+Use `untrack()` to read reactive values inside an effect without creating a dependency:
+
+```javascript
+import { untrack } from 'svelte';
+
+let count = $state(0);
+let otherValue = $state('hello');
+
+$effect(() => {
+  console.log(count); // tracked - effect re-runs when count changes
+  const other = untrack(() => otherValue); // not tracked - changes won't trigger re-run
+  console.log(other);
+});
+```
+
+This is useful when you need to reference state for logging, comparisons, or one-time reads without causing unnecessary re-execution.
+
 ### $props - Component Properties
 
 Declares props that a component accepts from its parent.
@@ -771,6 +790,19 @@ import { db } from '$lib/database';
 // Avoid proxying large datasets you won't mutate
 let products = $state.raw(await fetchProducts());
 ```
+
+**Memory implications**: `$state.raw` avoids creating proxies for nested objects, reducing memory overhead. Use it for large arrays, complex nested structures, or data from external APIs that you'll replace entirely rather than mutate.
+
+### Use {@html} Sparingly
+
+The `{@html}` directive renders raw HTML but bypasses Svelte's XSS protection:
+
+```svelte
+<!-- ⚠️ Only use with trusted, sanitized content -->
+{@html trustedHtmlContent}
+```
+
+**Security risk**: Never use `{@html}` with user-provided content. If you must render user HTML, sanitize it with a library like DOMPurify first.
 
 ### Minimize Effect Dependencies
 
