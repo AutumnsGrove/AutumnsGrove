@@ -122,6 +122,21 @@
 	min-width: 0;
 }
 
+/* Explicit grid positioning to handle missing gutters */
+@media (min-width: 1200px) {
+	.content-layout.has-gutters .left-gutter-container {
+		grid-column: 1;
+	}
+
+	.content-layout.has-gutters .content-article {
+		grid-column: 2;
+	}
+
+	.content-layout.has-gutters .right-gutter-container {
+		grid-column: 3;
+	}
+}
+
 /* ==========================================================================
    Content Article
    ========================================================================== */
