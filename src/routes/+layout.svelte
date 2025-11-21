@@ -5,6 +5,18 @@
 	let { children } = $props();
 
 	let darkMode = $state(true); // Default to dark mode
+	let mobileMenuOpen = $state(false);
+
+	// Prevent body scroll when mobile menu is open
+	$effect(() => {
+		if (typeof document !== 'undefined') {
+			if (mobileMenuOpen) {
+				document.body.style.overflow = 'hidden';
+			} else {
+				document.body.style.overflow = '';
+			}
+		}
+	});
 
 	onMount(() => {
 		// Check localStorage or system preference
@@ -33,6 +45,14 @@
 			document.documentElement.classList.remove('dark');
 		}
 	}
+
+	function toggleMobileMenu() {
+		mobileMenuOpen = !mobileMenuOpen;
+	}
+
+	function closeMobileMenu() {
+		mobileMenuOpen = false;
+	}
 </script>
 
 <div class="layout">
@@ -40,13 +60,56 @@
 		<nav>
 			<!-- TITLE AREA -->
 			<a href="/" class="logo">The Grove</a>
-			<div class="nav-links">
+
+			<!-- Desktop Navigation -->
+			<div class="nav-links desktop-nav">
 				<a href="/" class:active={$page.url.pathname === '/'}>Home</a>
 				<a href="/blog" class:active={$page.url.pathname.startsWith('/blog')}>Blog</a>
 				<a href="/recipes" class:active={$page.url.pathname.startsWith('/recipes')}>Recipes</a>
 				<a href="/dashboard" class:active={$page.url.pathname.startsWith('/dashboard')}>Dashboard</a>
 			</div>
+
+			<!-- Mobile Hamburger Button -->
+			<button
+				class="hamburger-btn"
+				onclick={toggleMobileMenu}
+				aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+				aria-expanded={mobileMenuOpen}
+				aria-controls="mobile-menu"
+			>
+				{#if mobileMenuOpen}
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<line x1="18" y1="6" x2="6" y2="18"></line>
+						<line x1="6" y1="6" x2="18" y2="18"></line>
+					</svg>
+				{:else}
+					<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<line x1="3" y1="6" x2="21" y2="6"></line>
+						<line x1="3" y1="12" x2="21" y2="12"></line>
+						<line x1="3" y1="18" x2="21" y2="18"></line>
+					</svg>
+				{/if}
+			</button>
 		</nav>
+
+		<!-- Mobile Menu Overlay -->
+		{#if mobileMenuOpen}
+			<div class="mobile-menu-overlay" onclick={closeMobileMenu} role="presentation"></div>
+		{/if}
+
+		<!-- Mobile Navigation Menu -->
+		<div
+			id="mobile-menu"
+			class="mobile-menu"
+			class:open={mobileMenuOpen}
+			role="navigation"
+			aria-label="Mobile navigation"
+		>
+			<a href="/" class:active={$page.url.pathname === '/'} onclick={closeMobileMenu}>Home</a>
+			<a href="/blog" class:active={$page.url.pathname.startsWith('/blog')} onclick={closeMobileMenu}>Blog</a>
+			<a href="/recipes" class:active={$page.url.pathname.startsWith('/recipes')} onclick={closeMobileMenu}>Recipes</a>
+			<a href="/dashboard" class:active={$page.url.pathname.startsWith('/dashboard')} onclick={closeMobileMenu}>Dashboard</a>
+		</div>
 	</header>
 
 	<main>
@@ -261,17 +324,147 @@
 		margin: 0;
 	}
 
+	/* Hamburger button - hidden on desktop */
+	.hamburger-btn {
+		display: none;
+		background: none;
+		border: none;
+		cursor: pointer;
+		padding: 0.5rem;
+		color: #666;
+		transition: color 0.2s;
+	}
+
+	:global(.dark) .hamburger-btn {
+		color: #aaa;
+	}
+
+	.hamburger-btn:hover {
+		color: #2c5f2d;
+	}
+
+	:global(.dark) .hamburger-btn:hover {
+		color: #5cb85f;
+	}
+
+	/* Mobile menu overlay */
+	.mobile-menu-overlay {
+		display: none;
+	}
+
+	/* Mobile menu - hidden on desktop */
+	.mobile-menu {
+		display: none;
+	}
+
 	@media (max-width: 768px) {
 		header {
 			padding: 1rem;
 		}
 
-		.nav-links {
-			gap: 1rem;
-		}
-
 		main {
 			padding: 1rem;
+		}
+
+		/* Hide desktop nav on mobile */
+		.desktop-nav {
+			display: none;
+		}
+
+		/* Show hamburger button on mobile */
+		.hamburger-btn {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+
+		/* Mobile menu overlay */
+		.mobile-menu-overlay {
+			display: block;
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background: rgba(0, 0, 0, 0.5);
+			z-index: 99;
+		}
+
+		/* Mobile menu */
+		.mobile-menu {
+			display: flex;
+			flex-direction: column;
+			position: absolute;
+			top: 100%;
+			left: 0;
+			right: 0;
+			background: white;
+			border-bottom: 1px solid #e0e0e0;
+			padding: 0;
+			max-height: 0;
+			overflow: hidden;
+			opacity: 0;
+			transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+			z-index: 100;
+		}
+
+		:global(.dark) .mobile-menu {
+			background: #242424;
+			border-bottom: 1px solid #333;
+		}
+
+		.mobile-menu.open {
+			max-height: 300px;
+			opacity: 1;
+			padding: 0.5rem 0;
+		}
+
+		.mobile-menu a {
+			text-decoration: none;
+			color: #666;
+			font-weight: 500;
+			padding: 1rem 1.5rem;
+			transition: background-color 0.2s, color 0.2s;
+			position: relative;
+		}
+
+		:global(.dark) .mobile-menu a {
+			color: #aaa;
+		}
+
+		.mobile-menu a:hover {
+			background: #f5f5f5;
+			color: #2c5f2d;
+		}
+
+		:global(.dark) .mobile-menu a:hover {
+			background: #333;
+			color: #5cb85f;
+		}
+
+		.mobile-menu a.active {
+			color: #2c5f2d;
+			background: #f0f9f0;
+		}
+
+		:global(.dark) .mobile-menu a.active {
+			color: #5cb85f;
+			background: #2a3a2a;
+		}
+
+		/* Active indicator bar for mobile */
+		.mobile-menu a.active::before {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 0;
+			bottom: 0;
+			width: 3px;
+			background: #2c5f2d;
+		}
+
+		:global(.dark) .mobile-menu a.active::before {
+			background: #5cb85f;
 		}
 	}
 </style>
