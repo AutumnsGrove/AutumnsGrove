@@ -1117,5 +1117,99 @@
 		.stats-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
+
+		.dashboard {
+			padding: 0 0.5rem;
+		}
+
+		.user-card-compact {
+			flex-wrap: wrap;
+			padding: 0.75rem;
+			gap: 0.75rem;
+		}
+
+		.user-details {
+			flex: 1;
+			min-width: 0;
+		}
+
+		.user-meta {
+			font-size: 0.75rem;
+			word-break: break-word;
+		}
+
+		.refresh-message {
+			width: 100%;
+			text-align: center;
+			margin-left: 0;
+		}
+
+		.time-range-selector {
+			flex-wrap: wrap;
+			gap: 0.5rem;
+			padding: 0.75rem;
+		}
+
+		.time-range-selector label {
+			font-size: 0.8rem;
+		}
+
+		.time-range-selector select {
+			padding: 0.4rem 0.5rem;
+			font-size: 0.85rem;
+			flex: 1;
+			min-width: 80px;
+		}
+
+		.selector-divider {
+			display: none;
+		}
+
+		.chart-card {
+			height: auto;
+			min-height: 280px;
+		}
+
+		.chart-container {
+			height: 200px;
+		}
+
+		.stat-card {
+			padding: 1rem;
+		}
+
+		.stat-value {
+			font-size: 1.5rem;
+		}
+
+		.stat-label {
+			font-size: 0.75rem;
+		}
+
+		.card {
+			padding: 1rem;
+			border-radius: 8px;
+		}
+
+		.commit-header {
+			font-size: 0.75rem;
+		}
+
+		.commit-sha {
+			font-size: 0.7rem;
+		}
+
+		.repo-item {
+			flex-direction: column;
+			gap: 0.5rem;
+		}
+
+		.repo-info {
+			margin-right: 0;
+		}
+
+		.repo-commits {
+			align-self: flex-start;
+		}
 	}
 </style>
