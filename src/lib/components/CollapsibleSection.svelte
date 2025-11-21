@@ -53,8 +53,8 @@
 	}
 
 	:global(.dark) .collapsible-toggle {
-		background: #2a2a2a;
-		color: #e0e0e0;
+		background: var(--color-bg-tertiary-dark);
+		color: var(--color-text-dark);
 	}
 
 	.collapsible-toggle:hover {

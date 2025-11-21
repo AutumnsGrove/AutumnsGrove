@@ -97,7 +97,7 @@
 	}
 
 	:global(.dark) .subtitle {
-		color: #aaa;
+		color: var(--color-text-muted-dark);
 	}
 
 	.cta-button {
@@ -140,7 +140,7 @@
 	}
 
 	:global(.dark) .intro h2 {
-		color: #e0e0e0;
+		color: var(--color-text-dark);
 	}
 
 	.intro p {
@@ -151,7 +151,7 @@
 	}
 
 	:global(.dark) .intro p {
-		color: #aaa;
+		color: var(--color-text-muted-dark);
 	}
 
 	.willow-section {
@@ -169,7 +169,7 @@
 	}
 
 	:global(.dark) .willow-section h2 {
-		color: #e0e0e0;
+		color: var(--color-text-dark);
 	}
 
 	@media (max-width: 768px) {

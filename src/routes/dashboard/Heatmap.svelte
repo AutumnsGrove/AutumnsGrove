@@ -163,7 +163,7 @@
 	}
 
 	:global(.dark) .total-commits {
-		color: #aaa;
+		color: var(--color-text-muted-dark);
 	}
 
 	.heatmap-wrapper {
@@ -183,7 +183,7 @@
 	}
 
 	:global(.dark) .day-labels {
-		color: #aaa;
+		color: var(--color-text-muted-dark);
 	}
 
 	.day-labels span {
@@ -264,7 +264,7 @@
 	}
 
 	:global(.dark) .heatmap-legend {
-		color: #aaa;
+		color: var(--color-text-muted-dark);
 	}
 
 	.legend-boxes {

@@ -214,7 +214,7 @@
 	}
 
 	:global(.dark body) {
-		color: #e0e0e0;
+		color: var(--color-text-dark);
 		background: #1a1a1a;
 	}
 
@@ -324,7 +324,7 @@
 	}
 
 	:global(.dark) .nav-links a {
-		color: #aaa;
+		color: var(--color-text-muted-dark);
 	}
 
 	:global(.dark) .nav-links a::after {
@@ -369,7 +369,7 @@
 	}
 
 	:global(.dark) .theme-toggle {
-		color: #aaa;
+		color: var(--color-text-muted-dark);
 	}
 
 	.theme-toggle:hover {
@@ -404,8 +404,8 @@
 
 	:global(.dark) footer {
 		background: #242424;
-		border-top: 1px solid #333;
-		color: #aaa;
+		border-top: 1px solid var(--color-border-dark);
+		color: var(--color-text-muted-dark);
 	}
 
 	footer p {
@@ -424,7 +424,7 @@
 	}
 
 	:global(.dark) .hamburger-btn {
-		color: #aaa;
+		color: var(--color-text-muted-dark);
 	}
 
 	.hamburger-btn:hover {
@@ -544,7 +544,7 @@
 		}
 
 		:global(.dark) .mobile-menu a {
-			color: #aaa;
+			color: var(--color-text-muted-dark);
 		}
 
 		.mobile-menu a:hover {
