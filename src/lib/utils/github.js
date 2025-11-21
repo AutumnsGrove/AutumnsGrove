@@ -234,9 +234,11 @@ export async function fetchStatsGraphQL(username, limit, token, since = null) {
       // Add to recent commits (limit to 20)
       if (stats.recent_commits.length < 20) {
         const message = commit.message || "";
+        // Get first 3 lines of commit message
+        const messageLines = message.split("\n").slice(0, 3).join("\n").substring(0, 300);
         stats.recent_commits.push({
           sha: (commit.oid || "").substring(0, 7),
-          message: message.split("\n")[0].substring(0, 60),
+          message: messageLines,
           date: commitDate,
           repo: repoName,
           additions,
