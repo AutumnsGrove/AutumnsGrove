@@ -451,6 +451,13 @@
 					<option value="35">Top 35</option>
 					<option value="50">All (50 max)</option>
 				</select>
+
+				{#if lastRefreshed}
+					<span class="selector-divider"></span>
+					<span class="last-refreshed-inline">
+						<RefreshCw size={14} /> {formatRefreshTime(lastRefreshed)}
+					</span>
+				{/if}
 			</div>
 
 			<!-- Stats Cards -->
@@ -552,11 +559,6 @@
 					</a>
 				</p>
 				<p class="attribution">Stats analyzed with Claude AI</p>
-				{#if lastRefreshed}
-					<p class="last-refreshed">
-						<RefreshCw size={12} /> Last refreshed at {formatRefreshTime(lastRefreshed)}
-					</p>
-				{/if}
 			</footer>
 		</div>
 	{/if}
@@ -755,6 +757,19 @@
 
 	:global(.dark) .selector-divider {
 		background: #444;
+	}
+
+	.last-refreshed-inline {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		font-size: 0.8rem;
+		color: #666;
+		margin-left: auto;
+	}
+
+	:global(.dark) .last-refreshed-inline {
+		color: #888;
 	}
 
 	.user-details {
@@ -1088,19 +1103,6 @@
 
 	:global(.dark) .dashboard-footer .attribution {
 		color: #666;
-	}
-
-	.dashboard-footer .last-refreshed {
-		font-size: 0.75rem;
-		color: #999;
-		margin-top: 0.5rem;
-		display: inline-flex;
-		align-items: center;
-		gap: 0.35rem;
-	}
-
-	:global(.dark) .dashboard-footer .last-refreshed {
-		color: #555;
 	}
 
 	.additions {
