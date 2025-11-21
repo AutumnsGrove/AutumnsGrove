@@ -1,4 +1,6 @@
 <script>
+	import { slide } from 'svelte/transition';
+
 	let { title = '', expanded = $bindable(false) } = $props();
 
 	function toggle() {
@@ -17,7 +19,7 @@
 	</button>
 
 	{#if expanded}
-		<div class="collapsible-content">
+		<div class="collapsible-content" transition:slide={{ duration: 200 }}>
 			<slot />
 		</div>
 	{/if}
@@ -77,21 +79,9 @@
 	.collapsible-content {
 		padding: 1rem;
 		background: #fafafa;
-		animation: slideDown 0.2s ease-out;
 	}
 
 	:global(.dark) .collapsible-content {
 		background: #1f1f1f;
-	}
-
-	@keyframes slideDown {
-		from {
-			opacity: 0;
-			transform: translateY(-10px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
 	}
 </style>
