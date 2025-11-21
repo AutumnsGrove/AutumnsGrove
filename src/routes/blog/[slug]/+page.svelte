@@ -6,7 +6,22 @@
 
 	export let data;
 
-	// Add IDs to headers in the rendered content for scroll tracking
+	// References to mobile gutter containers for each anchor
+	let mobileGutterRefs = {};
+
+	// Group items by their anchor
+	function getItemsForAnchor(anchor) {
+		return data.post.gutterContent.filter(item => item.anchor === anchor);
+	}
+
+	// Get items that don't have a matching anchor (show at top)
+	function getOrphanItems() {
+		if (!data.post.gutterContent || !data.post.headers) return data.post.gutterContent || [];
+		const anchorIds = data.post.headers.map(h => `## ${h.text}`);
+		return data.post.gutterContent.filter(item => !anchorIds.includes(item.anchor));
+	}
+
+	// Add IDs to headers and position mobile gutter items
 	onMount(() => {
 		if (data.post.headers && data.post.headers.length > 0) {
 			const contentEl = document.querySelector('.post-content');
@@ -17,6 +32,13 @@
 					const matchingHeader = data.post.headers.find(h => h.text === text);
 					if (matchingHeader) {
 						el.id = matchingHeader.id;
+
+						// Move mobile gutter content after this header
+						const mobileGutterEl = mobileGutterRefs[matchingHeader.id];
+						if (mobileGutterEl && mobileGutterEl.children.length > 0) {
+							// Insert after the header element
+							el.insertAdjacentElement('afterend', mobileGutterEl);
+						}
 					}
 				});
 			}
@@ -65,13 +87,30 @@
 			</div>
 		</header>
 
-		<!-- Mobile inline gutter content at top -->
-		{#if hasLeftGutter}
+		<!-- Mobile gutter: orphan items at top (no matching anchor) -->
+		{#if hasLeftGutter && getOrphanItems().length > 0}
 			<div class="mobile-gutter-content">
-				{#each data.post.gutterContent as item}
+				{#each getOrphanItems() as item}
 					<GutterItem {item} />
 				{/each}
 			</div>
+		{/if}
+
+		<!-- Mobile gutter containers for each header (will be moved into position) -->
+		{#if hasLeftGutter && data.post.headers}
+			{#each data.post.headers as header}
+				{@const anchorItems = getItemsForAnchor(`## ${header.text}`)}
+				{#if anchorItems.length > 0}
+					<div
+						class="mobile-gutter-content mobile-gutter-inline"
+						bind:this={mobileGutterRefs[header.id]}
+					>
+						{#each anchorItems as item}
+							<GutterItem {item} />
+						{/each}
+					</div>
+				{/if}
+			{/each}
 		{/if}
 
 		<div class="post-content">
@@ -134,6 +173,12 @@
 		background: #f5f5f5;
 		border-radius: 8px;
 		transition: background-color 0.3s ease;
+	}
+
+	/* Inline mobile gutter items (positioned after headers) */
+	:global(.mobile-gutter-inline) {
+		margin-top: 1rem;
+		margin-bottom: 1.5rem;
 	}
 
 	:global(.dark) .mobile-gutter-content {
