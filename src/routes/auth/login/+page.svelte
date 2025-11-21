@@ -1,4 +1,6 @@
 <script>
+  import { untrack } from 'svelte';
+
   let error = $state('');
   let errorMessage = $state('');
 
@@ -10,9 +12,12 @@
   };
 
   $effect(() => {
-    const params = new URLSearchParams(window.location.search);
-    error = params.get('error') || '';
-    errorMessage = errorMessages[error] || (error ? 'An error occurred.' : '');
+    // Initialize error state from URL params - only run once on mount
+    untrack(() => {
+      const params = new URLSearchParams(window.location.search);
+      error = params.get('error') || '';
+      errorMessage = errorMessages[error] || (error ? 'An error occurred.' : '');
+    });
   });
 </script>
 
