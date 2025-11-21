@@ -71,7 +71,7 @@
 	}
 
 	:global(.dark) .recipes-header p {
-		color: #aaa;
+		color: var(--color-text-muted-dark);
 	}
 
 	.no-recipes {
@@ -141,7 +141,7 @@
 	}
 
 	:global(.dark) time {
-		color: #999;
+		color: var(--color-text-subtle-dark);
 	}
 
 	/* Tags use global styles from +layout.svelte */
@@ -154,7 +154,7 @@
 	}
 
 	:global(.dark) .description {
-		color: #aaa;
+		color: var(--color-text-muted-dark);
 	}
 
 	@media (max-width: 768px) {

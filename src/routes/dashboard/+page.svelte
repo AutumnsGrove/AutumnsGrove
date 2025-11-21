@@ -787,7 +787,7 @@
 	}
 
 	:global(.dark) .dashboard-header p {
-		color: #aaa;
+		color: var(--color-text-muted-dark);
 	}
 
 	/* Explanation Content */
@@ -830,7 +830,7 @@
 	}
 
 	:global(.dark) .explanation-item p {
-		color: #999;
+		color: var(--color-text-subtle-dark);
 	}
 
 	.loading-indicator {
@@ -841,7 +841,7 @@
 	}
 
 	:global(.dark) .loading-indicator {
-		color: #aaa;
+		color: var(--color-text-muted-dark);
 	}
 
 	/* Compact User Card */
@@ -1009,7 +1009,7 @@
 	}
 
 	:global(.dark) .last-refreshed-inline {
-		color: #888;
+		color: var(--color-text-subtle-dark);
 	}
 
 	.user-details {
@@ -1034,7 +1034,7 @@
 	}
 
 	:global(.dark) .user-meta {
-		color: #aaa;
+		color: var(--color-text-muted-dark);
 	}
 
 	.error {
@@ -1138,7 +1138,7 @@
 	}
 
 	:global(.dark) .stat-label {
-		color: #aaa;
+		color: var(--color-text-muted-dark);
 	}
 
 	.charts-grid {
@@ -1200,7 +1200,7 @@
 	}
 
 	:global(.dark) .repo-description {
-		color: #999;
+		color: var(--color-text-subtle-dark);
 	}
 
 	.repo-commits {
@@ -1210,7 +1210,7 @@
 	}
 
 	:global(.dark) .repo-commits {
-		color: #aaa;
+		color: var(--color-text-muted-dark);
 	}
 
 	/* Scrollable commits container */
@@ -1254,7 +1254,7 @@
 	}
 
 	:global(.dark) .commits-loading {
-		color: #aaa;
+		color: var(--color-text-muted-dark);
 	}
 
 	.commits-limit-reached {
@@ -1281,7 +1281,7 @@
 	}
 
 	:global(.dark) .commits-end {
-		color: #888;
+		color: var(--color-text-subtle-dark);
 	}
 
 	.commits-sentinel {
@@ -1333,7 +1333,7 @@
 	}
 
 	:global(.dark) .commit-date {
-		color: #aaa;
+		color: var(--color-text-muted-dark);
 	}
 
 	.commit-message {
@@ -1386,7 +1386,7 @@
 	}
 
 	:global(.dark) .dashboard-footer .attribution {
-		color: #666;
+		color: var(--color-text-subtle-dark);
 	}
 
 	.additions {

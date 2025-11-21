@@ -77,7 +77,7 @@
 	}
 
 	:global(.dark) .icon-name {
-		color: #e0e0e0;
+		color: var(--color-text-dark);
 	}
 
 	.icon-meaning {
@@ -86,7 +86,7 @@
 	}
 
 	:global(.dark) .icon-meaning {
-		color: #999;
+		color: var(--color-text-subtle-dark);
 	}
 
 	@media (max-width: 640px) {

@@ -92,8 +92,8 @@
 	}
 
 	:global(.dark) .toc-title {
-		color: #999;
-		border-bottom-color: #333;
+		color: var(--color-text-subtle-dark);
+		border-bottom-color: var(--color-border-dark);
 	}
 
 	.toc-list {
@@ -123,7 +123,7 @@
 	}
 
 	:global(.dark) .toc-link {
-		color: #999;
+		color: var(--color-text-subtle-dark);
 	}
 
 	.toc-link:hover {
