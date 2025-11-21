@@ -1,5 +1,6 @@
 <script>
 	import TableOfContents from '$lib/components/TableOfContents.svelte';
+	import MobileTOC from '$lib/components/MobileTOC.svelte';
 	import LeftGutter from '$lib/components/LeftGutter.svelte';
 	import GutterItem from '$lib/components/GutterItem.svelte';
 	import { onMount } from 'svelte';
@@ -125,6 +126,11 @@
 		</div>
 	{/if}
 </div>
+
+<!-- Mobile TOC Button -->
+{#if hasRightGutter}
+	<MobileTOC headers={data.post.headers} />
+{/if}
 
 <style>
 	.post-layout {
