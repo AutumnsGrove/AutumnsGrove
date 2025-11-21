@@ -1,6 +1,5 @@
 <script>
-	let { title = '', expanded: initialExpanded = false } = $props();
-	let expanded = $state(initialExpanded);
+	let { title = '', expanded = $bindable(false) } = $props();
 
 	function toggle() {
 		expanded = !expanded;
