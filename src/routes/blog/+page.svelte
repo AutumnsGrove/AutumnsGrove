@@ -50,13 +50,15 @@
 <style>
 	.blog-header {
 		text-align: center;
-		margin-bottom: 3rem;
+		margin-top: 1rem;
+		margin-bottom: 4rem;
 	}
 
 	.blog-header h1 {
 		font-size: 2.5rem;
 		color: #2c5f2d;
-		margin-bottom: 0.5rem;
+		margin-bottom: 0.75rem;
+		letter-spacing: -0.02em;
 		transition: color 0.3s ease;
 	}
 
@@ -89,10 +91,10 @@
 
 	.post-card {
 		background: white;
-		border-radius: 8px;
-		padding: 2rem;
+		border-radius: 12px;
+		padding: 2.5rem;
 		border: 1px solid #e0e0e0;
-		transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease, border-color 0.3s ease;
+		transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
 	}
 
 	:global(.dark) .post-card {
@@ -101,12 +103,14 @@
 	}
 
 	.post-card:hover {
-		transform: translateY(-4px);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		transform: translateY(-4px) scale(1.01);
+		box-shadow: 0 8px 24px rgba(44, 95, 45, 0.12);
+		border-color: #c5e1c6;
 	}
 
 	:global(.dark) .post-card:hover {
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+		box-shadow: 0 8px 24px rgba(92, 184, 95, 0.15);
+		border-color: #3d5f3e;
 	}
 
 	.post-link {
@@ -119,6 +123,8 @@
 		margin: 0 0 1rem 0;
 		color: #2c5f2d;
 		font-size: 1.5rem;
+		line-height: 1.4;
+		letter-spacing: -0.01em;
 		transition: color 0.3s ease;
 	}
 
@@ -151,17 +157,20 @@
 	}
 
 	.tag {
-		background: #e8d5f2;
+		background: #f3e8fa;
 		color: #6a3d9a;
-		padding: 0.25rem 0.75rem;
-		border-radius: 12px;
-		font-size: 0.85rem;
-		transition: background-color 0.3s ease, color 0.3s ease;
+		padding: 0.3rem 0.85rem;
+		border-radius: 16px;
+		font-size: 0.8rem;
+		font-weight: 500;
+		border: 1px solid #dcc5ed;
+		transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
 	}
 
 	:global(.dark) .tag {
-		background: #4a2d5e;
+		background: #3d2452;
 		color: #d4b5e8;
+		border-color: #5a3875;
 	}
 
 	.description {
@@ -176,12 +185,16 @@
 	}
 
 	@media (max-width: 768px) {
+		.blog-header {
+			margin-bottom: 3rem;
+		}
+
 		.blog-header h1 {
 			font-size: 2rem;
 		}
 
 		.post-card {
-			padding: 1.5rem;
+			padding: 1.75rem;
 		}
 	}
 </style>

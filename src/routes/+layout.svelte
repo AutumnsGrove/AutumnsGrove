@@ -155,25 +155,11 @@
 		text-decoration: none;
 		color: #666;
 		font-weight: 500;
-		transition: color 0.2s;
+		transition: color 0.2s ease;
 		position: relative;
 	}
 
-	:global(.dark) .nav-links a {
-		color: #aaa;
-	}
-
-	.nav-links a:hover,
-	.nav-links a.active {
-		color: #2c5f2d;
-	}
-
-	:global(.dark) .nav-links a:hover,
-	:global(.dark) .nav-links a.active {
-		color: #5cb85f;
-	}
-
-	.nav-links a.active::after {
+	.nav-links a::after {
 		content: '';
 		position: absolute;
 		bottom: -4px;
@@ -181,10 +167,41 @@
 		right: 0;
 		height: 2px;
 		background: #2c5f2d;
+		transform: scaleX(0);
+		transform-origin: left;
+		transition: transform 0.25s ease;
 	}
 
-	:global(.dark) .nav-links a.active::after {
+	:global(.dark) .nav-links a {
+		color: #aaa;
+	}
+
+	:global(.dark) .nav-links a::after {
 		background: #5cb85f;
+	}
+
+	.nav-links a:hover {
+		color: #2c5f2d;
+	}
+
+	.nav-links a:hover::after {
+		transform: scaleX(1);
+	}
+
+	:global(.dark) .nav-links a:hover {
+		color: #5cb85f;
+	}
+
+	.nav-links a.active {
+		color: #2c5f2d;
+	}
+
+	.nav-links a.active::after {
+		transform: scaleX(1);
+	}
+
+	:global(.dark) .nav-links a.active {
+		color: #5cb85f;
 	}
 
 	.theme-toggle {
