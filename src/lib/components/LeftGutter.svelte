@@ -79,7 +79,8 @@
 		items;
 		headers;
 		// Delay slightly to allow DOM updates
-		setTimeout(updatePositions, 150);
+		const timeout = setTimeout(updatePositions, 150);
+		return () => clearTimeout(timeout);
 	});
 </script>
 

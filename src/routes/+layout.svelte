@@ -65,7 +65,9 @@
 	}
 
 	$effect(() => {
-		// Initialize theme from localStorage - only run once on mount
+		// Use untrack() to prevent this effect from re-running when darkMode changes.
+		// Without untrack(), writing to darkMode inside the effect would cause infinite re-runs.
+		// This ensures initialization code runs only once on component mount.
 		untrack(() => {
 			const savedTheme = localStorage.getItem('theme');
 			if (savedTheme === 'light') {

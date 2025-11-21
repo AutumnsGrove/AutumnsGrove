@@ -25,6 +25,9 @@
 
 	// Add IDs to headers and position mobile gutter items
 	$effect(() => {
+		// Use untrack() to prevent this effect from re-running when mobileGutterRefs changes.
+		// Without untrack(), DOM manipulation and state updates would cause infinite re-runs.
+		// This ensures initialization code runs only once on component mount.
 		untrack(() => {
 			if (data.page.headers && data.page.headers.length > 0) {
 				const contentEl = document.querySelector('.content-body');

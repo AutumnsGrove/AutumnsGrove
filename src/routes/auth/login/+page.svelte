@@ -12,7 +12,9 @@
   };
 
   $effect(() => {
-    // Initialize error state from URL params - only run once on mount
+    // Use untrack() to prevent this effect from re-running when error/errorMessage change.
+    // Without untrack(), writing to these state variables inside the effect would cause
+    // infinite re-runs. This ensures initialization runs only once on component mount.
     untrack(() => {
       const params = new URLSearchParams(window.location.search);
       error = params.get('error') || '';

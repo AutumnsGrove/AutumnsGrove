@@ -503,8 +503,9 @@
 	});
 
 	$effect(() => {
-		// Use untrack to prevent this effect from tracking any dependencies
-		// This ensures it only runs once on mount
+		// Use untrack() to prevent this effect from re-running when isMounted or other state changes.
+		// Without untrack(), writing to isMounted and calling fetchStats (which updates state)
+		// would cause infinite re-runs. This ensures initialization runs only once on component mount.
 		untrack(() => {
 			isMounted = true;
 			// Auto-load stats on page mount
