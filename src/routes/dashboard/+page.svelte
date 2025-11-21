@@ -27,7 +27,7 @@
 	let lastRefreshed = $state(null);
 
 	// Time range filter
-	let timeRange = $state('all'); // 'all', '6months', '30days'
+	let timeRange = $state('all'); // 'all', '6months', '30days', 'today'
 
 	// Repo limit (how many repos to analyze)
 	let repoLimit = $state(15); // Default to 15, max is 50 (GitHub API limit)
@@ -38,13 +38,16 @@
 		if (timeRange === 'all') return null;
 
 		const now = new Date();
-		if (timeRange === '30days') {
+		if (timeRange === 'today') {
+			// Start of today (UTC)
+			now.setUTCHours(0, 0, 0, 0);
+		} else if (timeRange === '30days') {
 			now.setDate(now.getDate() - 30);
+			now.setUTCHours(0, 0, 0, 0);
 		} else if (timeRange === '6months') {
 			now.setMonth(now.getMonth() - 6);
+			now.setUTCHours(0, 0, 0, 0);
 		}
-		// Normalize to start of day (UTC) for better cache efficiency
-		now.setUTCHours(0, 0, 0, 0);
 		return now.toISOString();
 	}
 
@@ -435,6 +438,7 @@
 					<option value="all">All Time</option>
 					<option value="6months">Last 6 Months</option>
 					<option value="30days">Last 30 Days</option>
+					<option value="today">Today</option>
 				</select>
 
 				<span class="selector-divider"></span>
