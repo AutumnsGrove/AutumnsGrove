@@ -106,7 +106,7 @@
 		background: #2c5f2d;
 		color: white;
 		text-decoration: none;
-		border-radius: 6px;
+		border-radius: 20px;
 		font-weight: 600;
 		transition: background 0.2s, transform 0.2s;
 	}
@@ -118,7 +118,7 @@
 
 	.cta-button:hover {
 		background: #4a9d4f;
-		transform: translateY(-2px);
+		transform: translateY(-2px) scale(1.05);
 	}
 
 	:global(.dark) .cta-button:hover {

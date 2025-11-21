@@ -189,11 +189,18 @@
   }
 
   .tag {
-    background: #f1f8ff;
-    color: #0366d6;
-    padding: 0.125rem 0.5rem;
-    border-radius: 3px;
+    background: #7c4dab;
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
     font-size: 0.75rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+  }
+
+  .tag:hover {
+    background: #6a3d9a;
+    transform: scale(1.05);
   }
 
   .no-tags {
