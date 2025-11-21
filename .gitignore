@@ -27,3 +27,7 @@ node_modules/
 .wrangler/
 .aider*
 .kilocode/mcp.json
+
+# BaseProject updates
+.baseproject-backup-*/
+baseproject-update-summary.md
