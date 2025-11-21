@@ -1,7 +1,7 @@
 <script>
-	export let iconsUsed = [];
+	import CollapsibleSection from './CollapsibleSection.svelte';
 
-	let expanded = false;
+	export let iconsUsed = [];
 
 	// Map icon keys to their semantic meanings and display names
 	const iconMeanings = {
@@ -21,110 +21,35 @@
 		steam: { name: 'Steam', meaning: 'Steam' },
 		knead: { name: 'Knead', meaning: 'Knead dough' }
 	};
-
-	function toggleExpanded() {
-		expanded = !expanded;
-	}
 </script>
 
 {#if iconsUsed && iconsUsed.length > 0}
-	<div class="icon-legend">
-		<button
-			class="legend-toggle"
-			on:click={toggleExpanded}
-			aria-expanded={expanded}
-		>
-			<span class="legend-title">Icon Legend</span>
-			<span class="toggle-icon" class:expanded>{expanded ? '▼' : '▶'}</span>
-		</button>
-
-		{#if expanded}
-			<div class="legend-content">
-				{#each iconsUsed as iconKey}
-					{#if iconMeanings[iconKey]}
-						<div class="legend-item">
-							<img
-								src="/icons/instruction/{iconKey}.webp"
-								alt={iconMeanings[iconKey].name}
-								class="legend-icon"
-							/>
-							<div class="legend-text">
-								<span class="icon-name">{iconMeanings[iconKey].name}</span>
-								<span class="icon-meaning">{iconMeanings[iconKey].meaning}</span>
-							</div>
+	<CollapsibleSection title="Icon Legend">
+		<div class="legend-content">
+			{#each iconsUsed as iconKey}
+				{#if iconMeanings[iconKey]}
+					<div class="legend-item">
+						<img
+							src="/icons/instruction/{iconKey}.webp"
+							alt={iconMeanings[iconKey].name}
+							class="legend-icon"
+						/>
+						<div class="legend-text">
+							<span class="icon-name">{iconMeanings[iconKey].name}</span>
+							<span class="icon-meaning">{iconMeanings[iconKey].meaning}</span>
 						</div>
-					{/if}
-				{/each}
-			</div>
-		{/if}
-	</div>
+					</div>
+				{/if}
+			{/each}
+		</div>
+	</CollapsibleSection>
 {/if}
 
 <style>
-	.icon-legend {
-		margin-bottom: 1.5rem;
-		border: 1px solid #e0e0e0;
-		border-radius: 8px;
-		overflow: hidden;
-	}
-
-	:global(.dark) .icon-legend {
-		border-color: #3a3a3a;
-	}
-
-	.legend-toggle {
-		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 0.75rem 1rem;
-		background: #f5f5f5;
-		border: none;
-		cursor: pointer;
-		font-size: 0.9rem;
-		font-weight: 500;
-		color: #333;
-		transition: background-color 0.2s;
-	}
-
-	:global(.dark) .legend-toggle {
-		background: #2a2a2a;
-		color: #e0e0e0;
-	}
-
-	.legend-toggle:hover {
-		background: #e8e8e8;
-	}
-
-	:global(.dark) .legend-toggle:hover {
-		background: #333;
-	}
-
-	.legend-title {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-
-	.toggle-icon {
-		font-size: 0.75rem;
-		transition: transform 0.2s;
-	}
-
-	.toggle-icon.expanded {
-		transform: rotate(0deg);
-	}
-
 	.legend-content {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
 		gap: 0.75rem;
-		padding: 1rem;
-		background: #fafafa;
-	}
-
-	:global(.dark) .legend-content {
-		background: #1f1f1f;
 	}
 
 	.legend-item {
