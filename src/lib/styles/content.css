@@ -1,0 +1,328 @@
+/**
+ * Shared Content Styles
+ *
+ * Used by:
+ * - src/routes/about/+page.svelte
+ * - src/routes/blog/[slug]/+page.svelte
+ *
+ * Import this file to get consistent layout and typography styles
+ * for content pages with optional gutter sidebars.
+ */
+
+/* ==========================================================================
+   CSS Custom Properties (Theme Colors)
+   ========================================================================== */
+
+:root {
+	/* Primary colors */
+	--color-primary: #2c5f2d;
+	--color-primary-hover: #4a9d4f;
+	--color-primary-light: #5cb85f;
+	--color-primary-light-hover: #7cd97f;
+
+	/* Text colors */
+	--color-text: #333;
+	--color-text-muted: #666;
+	--color-text-subtle: #888;
+
+	/* Background colors */
+	--color-bg-secondary: #f5f5f5;
+	--color-border: #e0e0e0;
+
+	/* Dark mode overrides */
+	--color-text-dark: #e0e0e0;
+	--color-text-muted-dark: #aaa;
+	--color-text-subtle-dark: #999;
+	--color-bg-secondary-dark: #1a1a1a;
+	--color-bg-tertiary-dark: #2a2a2a;
+	--color-border-dark: #333;
+}
+
+/* ==========================================================================
+   Layout Grid System
+   ========================================================================== */
+
+.content-layout {
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.content-layout.has-gutters {
+	display: grid;
+	grid-template-columns: 1fr;
+	max-width: 1400px;
+	gap: 2rem;
+}
+
+@media (min-width: 1200px) {
+	.content-layout.has-gutters {
+		grid-template-columns: 240px 1fr 200px;
+	}
+}
+
+@media (min-width: 769px) and (max-width: 1199px) {
+	.content-layout.has-gutters {
+		grid-template-columns: 1fr 200px;
+		max-width: 1000px;
+	}
+
+	.content-layout .left-gutter-container {
+		display: none;
+	}
+}
+
+/* ==========================================================================
+   Visibility Utilities
+   ========================================================================== */
+
+.desktop-only {
+	display: none;
+}
+
+@media (min-width: 769px) {
+	.desktop-only {
+		display: block;
+	}
+}
+
+/* ==========================================================================
+   Mobile Gutter Content
+   ========================================================================== */
+
+.mobile-gutter-content {
+	display: block;
+	margin-bottom: 2rem;
+	padding: 1rem;
+	background: var(--color-bg-secondary);
+	border-radius: 8px;
+	transition: background-color 0.3s ease;
+}
+
+:global(.mobile-gutter-inline) {
+	margin-top: 1rem;
+	margin-bottom: 1.5rem;
+}
+
+:global(.dark) .mobile-gutter-content {
+	background: var(--color-bg-secondary-dark);
+}
+
+@media (min-width: 769px) {
+	.mobile-gutter-content {
+		display: none;
+	}
+}
+
+/* ==========================================================================
+   Gutter Containers
+   ========================================================================== */
+
+.left-gutter-container,
+.right-gutter-container {
+	min-width: 0;
+}
+
+/* ==========================================================================
+   Content Article
+   ========================================================================== */
+
+.content-article {
+	max-width: 800px;
+	min-width: 0;
+}
+
+/* ==========================================================================
+   Content Header
+   ========================================================================== */
+
+.content-header {
+	margin-bottom: 3rem;
+	padding-bottom: 2rem;
+	border-bottom: 2px solid var(--color-border);
+	transition: border-color 0.3s ease;
+}
+
+:global(.dark) .content-header {
+	border-bottom: 2px solid var(--color-border-dark);
+}
+
+.content-header h1 {
+	font-size: 2.5rem;
+	color: var(--color-primary);
+	margin: 0;
+	line-height: 1.2;
+	transition: color 0.3s ease;
+}
+
+:global(.dark) .content-header h1 {
+	color: var(--color-primary-light);
+}
+
+/* ==========================================================================
+   Content Body - Typography
+   ========================================================================== */
+
+.content-body {
+	line-height: 1.8;
+	color: var(--color-text);
+	transition: color 0.3s ease;
+}
+
+:global(.dark) .content-body {
+	color: var(--color-text-dark);
+}
+
+/* --------------------------------------------------------------------------
+   Headings
+   -------------------------------------------------------------------------- */
+
+:global(.content-body h2) {
+	color: var(--color-primary);
+	margin-top: 2.5rem;
+	margin-bottom: 1rem;
+	font-size: 1.75rem;
+	transition: color 0.3s ease;
+}
+
+:global(.dark .content-body h2) {
+	color: var(--color-primary-light);
+}
+
+:global(.content-body h3) {
+	color: var(--color-primary);
+	margin-top: 2rem;
+	margin-bottom: 0.75rem;
+	font-size: 1.4rem;
+	transition: color 0.3s ease;
+}
+
+:global(.dark .content-body h3) {
+	color: var(--color-primary-light);
+}
+
+/* --------------------------------------------------------------------------
+   Paragraphs
+   -------------------------------------------------------------------------- */
+
+:global(.content-body p) {
+	margin-bottom: 1.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   Links
+   -------------------------------------------------------------------------- */
+
+:global(.content-body a) {
+	color: var(--color-primary);
+	text-decoration: underline;
+	transition: color 0.3s ease;
+}
+
+:global(.dark .content-body a) {
+	color: var(--color-primary-light);
+}
+
+:global(.content-body a:hover) {
+	color: var(--color-primary-hover);
+}
+
+:global(.dark .content-body a:hover) {
+	color: var(--color-primary-light-hover);
+}
+
+/* --------------------------------------------------------------------------
+   Code
+   -------------------------------------------------------------------------- */
+
+:global(.content-body code) {
+	background: var(--color-bg-secondary);
+	padding: 0.2rem 0.4rem;
+	border-radius: 3px;
+	font-family: 'Courier New', monospace;
+	font-size: 0.9em;
+	transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+:global(.dark .content-body code) {
+	background: var(--color-bg-tertiary-dark);
+	color: var(--color-text-dark);
+}
+
+:global(.content-body pre) {
+	background: var(--color-bg-secondary);
+	padding: 1rem;
+	border-radius: 6px;
+	overflow-x: auto;
+	margin-bottom: 1.5rem;
+	transition: background-color 0.3s ease;
+}
+
+:global(.dark .content-body pre) {
+	background: var(--color-bg-tertiary-dark);
+}
+
+:global(.content-body pre code) {
+	background: none;
+	padding: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Lists
+   -------------------------------------------------------------------------- */
+
+:global(.content-body ul),
+:global(.content-body ol) {
+	margin-bottom: 1.5rem;
+	padding-left: 2rem;
+}
+
+:global(.content-body li) {
+	margin-bottom: 0.5rem;
+}
+
+/* --------------------------------------------------------------------------
+   Blockquotes
+   -------------------------------------------------------------------------- */
+
+:global(.content-body blockquote) {
+	border-left: 4px solid var(--color-primary);
+	padding-left: 1rem;
+	margin: 1.5rem 0;
+	color: var(--color-text-muted);
+	font-style: italic;
+	transition: border-color 0.3s ease, color 0.3s ease;
+}
+
+:global(.dark .content-body blockquote) {
+	border-left: 4px solid var(--color-primary-light);
+	color: var(--color-text-muted-dark);
+}
+
+/* --------------------------------------------------------------------------
+   Images
+   -------------------------------------------------------------------------- */
+
+:global(.content-body img) {
+	max-width: 100%;
+	height: auto;
+	border-radius: 8px;
+	margin: 1.5rem 0;
+}
+
+/* ==========================================================================
+   Responsive Typography
+   ========================================================================== */
+
+@media (max-width: 768px) {
+	.content-header h1 {
+		font-size: 2rem;
+	}
+
+	:global(.content-body h2) {
+		font-size: 1.5rem;
+	}
+
+	:global(.content-body h3) {
+		font-size: 1.25rem;
+	}
+}
