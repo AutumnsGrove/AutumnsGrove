@@ -65,15 +65,16 @@
 	}
 
 	onMount(() => {
-		// Check localStorage or system preference
+		// Sync state with pre-hydration theme (set by app.html script)
+		// This ensures the Svelte state matches the DOM
 		const savedTheme = localStorage.getItem('theme');
-		if (savedTheme === 'light') {
-			darkMode = false;
-		} else if (savedTheme === 'dark') {
+		if (savedTheme === 'dark') {
 			darkMode = true;
-		} else {
-			// Default to light mode (no system preference check)
+		} else if (savedTheme === 'light') {
 			darkMode = false;
+		} else {
+			// Respect system preference, default to light if no preference
+			darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
 		}
 		applyTheme();
 	});
