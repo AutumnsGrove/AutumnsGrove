@@ -5,7 +5,7 @@
 
 	let { children } = $props();
 
-	let darkMode = $state(true); // Default to dark mode
+	let darkMode = $state(false); // Default to light mode
 	let mobileMenuOpen = $state(false);
 	let mobileMenuRef = $state(null);
 	let hamburgerBtnRef = $state(null);
@@ -72,8 +72,8 @@
 		} else if (savedTheme === 'dark') {
 			darkMode = true;
 		} else {
-			// Default to dark mode (no system preference check)
-			darkMode = true;
+			// Default to light mode (no system preference check)
+			darkMode = false;
 		}
 		applyTheme();
 	});
