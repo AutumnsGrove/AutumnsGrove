@@ -74,6 +74,20 @@ const aboutGutterImageModules = import.meta.glob("../../../about/*/gutter/*.{jpg
 });
 
 /**
+ * Validates if a string is a valid URL
+ * @param {string} urlString - The string to validate as a URL
+ * @returns {boolean} True if the string is a valid URL, false otherwise
+ */
+function isValidUrl(urlString) {
+  try {
+    const url = new URL(urlString);
+    return url.protocol === 'http:' || url.protocol === 'https:';
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Get all markdown posts from the posts directory
  * @returns {Array} Array of post objects with metadata and slug
  */
@@ -269,10 +283,25 @@ function getGutterContentFromModules(slug, manifestModules, markdownModules, ima
         };
       }
     } else if (item.type === 'gallery') {
-      // Process gallery images
+      /**
+       * Process gallery items containing multiple images
+       *
+       * Galleries can contain:
+       * - External URLs (validated for http/https protocol)
+       * - Local files (resolved from the gutter directory)
+       *
+       * Images that fail to resolve (invalid URLs or missing files) are filtered out.
+       * If all images fail to resolve, the entire gallery item is excluded.
+       */
+      const originalImageCount = (item.images || []).length;
       const images = (item.images || []).map(img => {
         // Check if it's an external URL
         if (img.url) {
+          // Validate URL format to prevent malformed URLs from failing silently
+          if (!isValidUrl(img.url)) {
+            console.warn(`Invalid URL in gallery for "${slug}": ${img.url}`);
+            return null;
+          }
           return {
             url: img.url,
             alt: img.alt || '',
@@ -292,6 +321,8 @@ function getGutterContentFromModules(slug, manifestModules, markdownModules, ima
               alt: img.alt || '',
               caption: img.caption || '',
             };
+          } else {
+            console.warn(`Local file not found in gallery for "${slug}": ${img.file}`);
           }
         }
 
@@ -303,6 +334,9 @@ function getGutterContentFromModules(slug, manifestModules, markdownModules, ima
           ...item,
           images,
         };
+      } else if (originalImageCount > 0) {
+        // All images failed to resolve - log warning for debugging
+        console.warn(`Gallery in "${slug}" has ${originalImageCount} image(s) defined but none could be resolved`);
       }
     }
 

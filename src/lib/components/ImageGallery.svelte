@@ -21,6 +21,18 @@
 	// Lightbox state
 	let lightboxOpen = $state(false);
 
+	/**
+	 * Safely get the current image, handling race conditions when images prop changes
+	 * Returns a fallback object if the current index is invalid to prevent undefined access
+	 */
+	let currentImage = $derived.by(() => {
+		if (!images || images.length === 0) {
+			return { url: '', alt: '', caption: '' };
+		}
+		const safeIndex = Math.max(0, Math.min(currentIndex, images.length - 1));
+		return images[safeIndex] || { url: '', alt: '', caption: '' };
+	});
+
 	// Navigation cooldown to prevent double-tap
 	let isNavigating = $state(false);
 	const NAVIGATION_COOLDOWN_MS = 300;
@@ -172,8 +184,8 @@
 				{/if}
 
 				<img
-					src={images[currentIndex].url}
-					alt={images[currentIndex].alt || `Image ${currentIndex + 1}`}
+					src={currentImage.url}
+					alt={currentImage.alt || `Image ${currentIndex + 1}`}
 					class="gallery-image"
 					class:hidden={imageError}
 					onload={handleImageLoad}
@@ -208,7 +220,7 @@
 		</div>
 
 		<!-- Info panel (progress, counter, caption) -->
-		{#if images.length > 1 || images[currentIndex].caption}
+		{#if images.length > 1 || currentImage.caption}
 			<div class="gallery-info">
 				{#if images.length > 1}
 					<!-- Progress dots -->
@@ -232,9 +244,9 @@
 				{/if}
 
 				<!-- Caption -->
-				{#if images[currentIndex].caption}
+				{#if currentImage.caption}
 					<div class="gallery-caption">
-						{images[currentIndex].caption}
+						{currentImage.caption}
 					</div>
 				{/if}
 			</div>
@@ -260,8 +272,8 @@
 
 			<div class="lightbox-content">
 				<img
-					src={images[currentIndex].url}
-					alt={images[currentIndex].alt || `Image ${currentIndex + 1}`}
+					src={currentImage.url}
+					alt={currentImage.alt || `Image ${currentIndex + 1}`}
 					class="lightbox-image"
 				/>
 
