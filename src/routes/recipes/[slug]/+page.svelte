@@ -154,7 +154,7 @@
 	}
 
 	:global(.dark) time {
-		color: #999;
+		color: var(--color-text-subtle-dark);
 	}
 
 	/* Tags use global styles from +layout.svelte */
@@ -166,7 +166,7 @@
 	}
 
 	:global(.dark) .recipe-content {
-		color: #e0e0e0;
+		color: var(--color-text-dark);
 	}
 
 	:global(.recipe-content h2) {
@@ -225,8 +225,8 @@
 	}
 
 	:global(.dark .recipe-content code) {
-		background: #2a2a2a;
-		color: #e0e0e0;
+		background: var(--color-bg-tertiary-dark);
+		color: var(--color-text-dark);
 	}
 
 	:global(.recipe-content pre) {
@@ -267,7 +267,7 @@
 
 	:global(.dark .recipe-content blockquote) {
 		border-left: 4px solid #5cb85f;
-		color: #aaa;
+		color: var(--color-text-muted-dark);
 	}
 
 	:global(.recipe-content img) {

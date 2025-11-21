@@ -42,7 +42,7 @@
 	}
 
 	:global(.dark) .message {
-		color: #e0e0e0;
+		color: var(--color-text-dark);
 	}
 
 	.description {
@@ -53,7 +53,7 @@
 	}
 
 	:global(.dark) .description {
-		color: #aaa;
+		color: var(--color-text-muted-dark);
 	}
 
 	.home-link {
