@@ -1,11 +1,11 @@
 <script>
 	import { page } from '$app/stores';
 	import { fade } from 'svelte/transition';
-	import { untrack } from 'svelte';
+	import { onMount } from 'svelte';
 
 	let { children } = $props();
 
-	let darkMode = $state(true); // Default to dark mode
+	let darkMode = $state(false); // Default to light mode
 	let mobileMenuOpen = $state(false);
 	let mobileMenuRef = $state(null);
 	let hamburgerBtnRef = $state(null);
@@ -64,22 +64,19 @@
 		}
 	}
 
-	$effect(() => {
-		// Use untrack() to prevent this effect from re-running when darkMode changes.
-		// Without untrack(), writing to darkMode inside the effect would cause infinite re-runs.
-		// This ensures initialization code runs only once on component mount.
-		untrack(() => {
-			const savedTheme = localStorage.getItem('theme');
-			if (savedTheme === 'light') {
-				darkMode = false;
-			} else if (savedTheme === 'dark') {
-				darkMode = true;
-			} else {
-				// Default to dark mode (no system preference check)
-				darkMode = true;
-			}
-			applyTheme();
-		});
+	onMount(() => {
+		// Sync state with pre-hydration theme (set by app.html script)
+		// This ensures the Svelte state matches the DOM
+		const savedTheme = localStorage.getItem('theme');
+		if (savedTheme === 'dark') {
+			darkMode = true;
+		} else if (savedTheme === 'light') {
+			darkMode = false;
+		} else {
+			// Respect system preference, default to light if no preference
+			darkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+		}
+		applyTheme();
 	});
 
 	function toggleTheme() {

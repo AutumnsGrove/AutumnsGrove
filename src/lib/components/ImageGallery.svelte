@@ -21,6 +21,14 @@
 	// Lightbox state
 	let lightboxOpen = $state(false);
 
+	// Navigation cooldown to prevent double-tap
+	let isNavigating = $state(false);
+	const NAVIGATION_COOLDOWN_MS = 300;
+
+	// Image loading states
+	let imageLoading = $state(true);
+	let imageError = $state(false);
+
 	function openLightbox() {
 		lightboxOpen = true;
 	}
@@ -29,23 +37,55 @@
 		lightboxOpen = false;
 	}
 
-	// Navigation functions
+	// Navigation functions with cooldown to prevent double-tap
 	function goToNext() {
-		if (currentIndex < images.length - 1) {
-			currentIndex++;
-		}
+		if (isNavigating || currentIndex >= images.length - 1) return;
+
+		isNavigating = true;
+		imageLoading = true;
+		imageError = false;
+		currentIndex++;
+
+		setTimeout(() => {
+			isNavigating = false;
+		}, NAVIGATION_COOLDOWN_MS);
 	}
 
 	function goToPrevious() {
-		if (currentIndex > 0) {
-			currentIndex--;
-		}
+		if (isNavigating || currentIndex <= 0) return;
+
+		isNavigating = true;
+		imageLoading = true;
+		imageError = false;
+		currentIndex--;
+
+		setTimeout(() => {
+			isNavigating = false;
+		}, NAVIGATION_COOLDOWN_MS);
 	}
 
 	function goToIndex(index) {
-		if (index >= 0 && index < images.length) {
-			currentIndex = index;
-		}
+		if (isNavigating || index < 0 || index >= images.length || index === currentIndex) return;
+
+		isNavigating = true;
+		imageLoading = true;
+		imageError = false;
+		currentIndex = index;
+
+		setTimeout(() => {
+			isNavigating = false;
+		}, NAVIGATION_COOLDOWN_MS);
+	}
+
+	// Image loading handlers
+	function handleImageLoad() {
+		imageLoading = false;
+		imageError = false;
+	}
+
+	function handleImageError() {
+		imageLoading = false;
+		imageError = true;
 	}
 
 	// Keyboard navigation
@@ -88,6 +128,14 @@
 			currentIndex = images.length - 1;
 		}
 	});
+
+	// Reset loading state when images prop changes
+	$effect(() => {
+		if (images && images.length > 0) {
+			imageLoading = true;
+			imageError = false;
+		}
+	});
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -106,10 +154,30 @@
 		<!-- Main image display -->
 		<div class="gallery-image-wrapper">
 			<button class="image-expand-button" onclick={openLightbox} aria-label="View full size">
+				{#if imageLoading}
+					<div class="image-loading">
+						<div class="loading-spinner"></div>
+					</div>
+				{/if}
+
+				{#if imageError}
+					<div class="image-error">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<circle cx="12" cy="12" r="10"></circle>
+							<line x1="12" y1="8" x2="12" y2="12"></line>
+							<line x1="12" y1="16" x2="12.01" y2="16"></line>
+						</svg>
+						<span>Failed to load image</span>
+					</div>
+				{/if}
+
 				<img
 					src={images[currentIndex].url}
 					alt={images[currentIndex].alt || `Image ${currentIndex + 1}`}
 					class="gallery-image"
+					class:hidden={imageError}
+					onload={handleImageLoad}
+					onerror={handleImageError}
 				/>
 			</button>
 
@@ -270,6 +338,57 @@
 		display: block;
 		max-height: 70vh;
 		object-fit: contain;
+	}
+
+	.gallery-image.hidden {
+		visibility: hidden;
+	}
+
+	/* Loading spinner */
+	.image-loading {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		z-index: 5;
+	}
+
+	.loading-spinner {
+		width: 40px;
+		height: 40px;
+		border: 3px solid rgba(255, 255, 255, 0.3);
+		border-top-color: #5865f2;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	/* Error state */
+	.image-error {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.5rem;
+		color: #9ca3af;
+		z-index: 5;
+	}
+
+	.image-error svg {
+		width: 48px;
+		height: 48px;
+	}
+
+	.image-error span {
+		font-size: 0.875rem;
 	}
 
 	/* Navigation buttons */

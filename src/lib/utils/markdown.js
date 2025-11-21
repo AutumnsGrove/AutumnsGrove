@@ -268,10 +268,46 @@ function getGutterContentFromModules(slug, manifestModules, markdownModules, ima
           src: imgEntry[1],
         };
       }
+    } else if (item.type === 'gallery') {
+      // Process gallery images
+      const images = (item.images || []).map(img => {
+        // Check if it's an external URL
+        if (img.url) {
+          return {
+            url: img.url,
+            alt: img.alt || '',
+            caption: img.caption || '',
+          };
+        }
+
+        // Otherwise, look for local file
+        if (img.file) {
+          const imgEntry = Object.entries(imageModules).find(([filepath]) => {
+            return filepath.includes(`/${slug}/gutter/${img.file}`);
+          });
+
+          if (imgEntry) {
+            return {
+              url: imgEntry[1],
+              alt: img.alt || '',
+              caption: img.caption || '',
+            };
+          }
+        }
+
+        return null;
+      }).filter(Boolean);
+
+      if (images.length > 0) {
+        return {
+          ...item,
+          images,
+        };
+      }
     }
 
     return item;
-  }).filter(item => item.content || item.src); // Filter out items that weren't found
+  }).filter(item => item.content || item.src || item.images); // Filter out items that weren't found
 }
 
 /**

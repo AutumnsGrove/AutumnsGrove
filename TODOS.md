@@ -81,6 +81,26 @@
 
 ## 🔲 Remaining Tasks
 
+### MEDIUM PRIORITY: RSS Feed Implementation
+
+**Goal:** Add RSS feed support for blog posts
+
+**Documentation:** See `docs/RSS_FEED_IMPLEMENTATION.md` for full research and implementation guide.
+
+**Implementation steps:**
+- [ ] Create RSS endpoint at `src/routes/api/feed/+server.js`
+- [ ] Add RSS autodiscovery link to `src/routes/+layout.svelte`
+- [ ] Test feed locally and validate with W3C validator
+- [ ] Optional: Add full content in feed
+- [ ] Optional: Create `/rss.xml` redirect
+- [ ] Optional: Add KV caching for production
+
+**Key files:**
+- `src/lib/utils/markdown.js` - Use `getAllPosts()` function
+- `docs/RSS_FEED_IMPLEMENTATION.md` - Full implementation guide
+
+---
+
 ### HIGH PRIORITY: Admin Login
 I still cannot login. TO my own Admin page. I am the only one added to the Auth account storage key. Wtf.
 
