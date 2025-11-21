@@ -81,6 +81,9 @@
 
 ## 🔲 Remaining Tasks
 
+### HIGH PRIORITY: Admin Login
+I still cannot login. TO my own Admin page. I am the only one added to the Auth account storage key. Wtf.
+
 ### MEDIUM PRIORITY: Dashboard Data Expansion
 
 **Goal:** Show stats from ALL repos with time range filtering
