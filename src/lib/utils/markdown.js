@@ -214,17 +214,19 @@ export function extractHeaders(markdown) {
 }
 
 /**
- * Get gutter content for a blog post by slug
- * @param {string} slug - The post slug
+ * Generic helper to get gutter content
+ * @param {string} slug - The page/post slug
+ * @param {Object} manifestModules - The manifest modules to search
+ * @param {Object} markdownModules - The markdown modules to search
+ * @param {Object} imageModules - The image modules to search
  * @returns {Array} Array of gutter items with content and position info
  */
-export function getGutterContent(slug) {
-  // Find the manifest file for this post
-  const manifestEntry = Object.entries(gutterManifestModules).find(([filepath]) => {
-    // Path format: ../../../posts/Post Name/gutter/manifest.json
+function getGutterContentGeneric(slug, manifestModules, markdownModules, imageModules) {
+  // Find the manifest file for this page/post
+  const manifestEntry = Object.entries(manifestModules).find(([filepath]) => {
     const parts = filepath.split('/');
-    const postFolder = parts[parts.length - 3]; // Get the folder name
-    return postFolder === slug;
+    const folder = parts[parts.length - 3]; // Get the folder name
+    return folder === slug;
   });
 
   if (!manifestEntry) {
@@ -239,11 +241,9 @@ export function getGutterContent(slug) {
 
   // Process each gutter item
   return manifest.items.map(item => {
-    const basePath = `../../../posts/${slug}/gutter/`;
-
     if (item.type === 'comment' || item.type === 'markdown') {
       // Find the markdown content file
-      const mdEntry = Object.entries(gutterMarkdownModules).find(([filepath]) => {
+      const mdEntry = Object.entries(markdownModules).find(([filepath]) => {
         return filepath.includes(`/${slug}/gutter/${item.file}`);
       });
 
@@ -258,7 +258,7 @@ export function getGutterContent(slug) {
       }
     } else if (item.type === 'photo' || item.type === 'image') {
       // Find the image file
-      const imgEntry = Object.entries(gutterImageModules).find(([filepath]) => {
+      const imgEntry = Object.entries(imageModules).find(([filepath]) => {
         return filepath.includes(`/${slug}/gutter/${item.file}`);
       });
 
@@ -275,39 +275,53 @@ export function getGutterContent(slug) {
 }
 
 /**
+ * Get gutter content for a blog post by slug
+ * @param {string} slug - The post slug
+ * @returns {Array} Array of gutter items with content and position info
+ */
+export function getGutterContent(slug) {
+  return getGutterContentGeneric(slug, gutterManifestModules, gutterMarkdownModules, gutterImageModules);
+}
+
+/**
  * Get the about page content
  * @returns {Object|null} About page object with content and metadata
  */
 export function getAboutPage() {
-  // Find the about.md file
-  const entry = Object.entries(aboutModules).find(([filepath]) => {
-    return filepath.includes('about.md');
-  });
+  try {
+    // Find the about.md file
+    const entry = Object.entries(aboutModules).find(([filepath]) => {
+      return filepath.includes('about.md');
+    });
 
-  if (!entry) {
+    if (!entry) {
+      return null;
+    }
+
+    const content = entry[1];
+
+    const { data, content: markdown } = matter(content);
+    const htmlContent = marked.parse(markdown);
+
+    // Extract headers for table of contents
+    const headers = extractHeaders(markdown);
+
+    // Get gutter content for the about page
+    const gutterContent = getAboutGutterContent('about');
+
+    return {
+      slug: 'about',
+      title: data.title || 'About',
+      date: data.date || new Date().toISOString(),
+      description: data.description || '',
+      content: htmlContent,
+      headers,
+      gutterContent,
+    };
+  } catch (err) {
+    console.error('Error in getAboutPage:', err);
     return null;
   }
-
-  const content = entry[1];
-
-  const { data, content: markdown } = matter(content);
-  const htmlContent = marked.parse(markdown);
-
-  // Extract headers for table of contents
-  const headers = extractHeaders(markdown);
-
-  // Get gutter content for the about page
-  const gutterContent = getAboutGutterContent('about');
-
-  return {
-    slug: 'about',
-    title: data.title || 'About',
-    date: data.date || new Date().toISOString(),
-    description: data.description || '',
-    content: htmlContent,
-    headers,
-    gutterContent,
-  };
 }
 
 /**
@@ -316,57 +330,7 @@ export function getAboutPage() {
  * @returns {Array} Array of gutter items with content and position info
  */
 export function getAboutGutterContent(slug) {
-  // Find the manifest file for this page
-  const manifestEntry = Object.entries(aboutGutterManifestModules).find(([filepath]) => {
-    // Path format: ../../../about/about/gutter/manifest.json
-    const parts = filepath.split('/');
-    const pageFolder = parts[parts.length - 3]; // Get the folder name
-    return pageFolder === slug;
-  });
-
-  if (!manifestEntry) {
-    return [];
-  }
-
-  const manifest = manifestEntry[1].default || manifestEntry[1];
-
-  if (!manifest.items || !Array.isArray(manifest.items)) {
-    return [];
-  }
-
-  // Process each gutter item
-  return manifest.items.map(item => {
-    if (item.type === 'comment' || item.type === 'markdown') {
-      // Find the markdown content file
-      const mdEntry = Object.entries(aboutGutterMarkdownModules).find(([filepath]) => {
-        return filepath.includes(`/${slug}/gutter/${item.file}`);
-      });
-
-      if (mdEntry) {
-        const markdownContent = mdEntry[1];
-        const htmlContent = marked.parse(markdownContent);
-
-        return {
-          ...item,
-          content: htmlContent,
-        };
-      }
-    } else if (item.type === 'photo' || item.type === 'image') {
-      // Find the image file
-      const imgEntry = Object.entries(aboutGutterImageModules).find(([filepath]) => {
-        return filepath.includes(`/${slug}/gutter/${item.file}`);
-      });
-
-      if (imgEntry) {
-        return {
-          ...item,
-          src: imgEntry[1],
-        };
-      }
-    }
-
-    return item;
-  }).filter(item => item.content || item.src); // Filter out items that weren't found
+  return getGutterContentGeneric(slug, aboutGutterManifestModules, aboutGutterMarkdownModules, aboutGutterImageModules);
 }
 
 /**
