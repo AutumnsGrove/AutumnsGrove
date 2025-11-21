@@ -226,7 +226,7 @@
 					<!-- Progress dots -->
 					<div class="gallery-progress">
 						<div class="progress-dots">
-							{#each images as _, index}
+							{#each images as _, index (index)}
 								<button
 									class="progress-dot"
 									class:active={index === currentIndex}
@@ -306,7 +306,7 @@
 			<!-- Thumbnail strip -->
 			{#if images.length > 1}
 				<div class="lightbox-thumbnails">
-					{#each images as image, index}
+					{#each images as image, index (index)}
 						<button
 							class="thumbnail-button"
 							class:active={index === currentIndex}

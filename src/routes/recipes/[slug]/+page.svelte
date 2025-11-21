@@ -75,7 +75,7 @@
 			</time>
 			{#if data.recipe.tags.length > 0}
 				<div class="tags">
-					{#each data.recipe.tags as tag}
+					{#each data.recipe.tags as tag (tag)}
 						<span class="tag">{tag}</span>
 					{/each}
 				</div>

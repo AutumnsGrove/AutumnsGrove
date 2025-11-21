@@ -694,7 +694,7 @@
 				<h3><FolderGit2 size={20} /> Top Repositories</h3>
 				{#if Object.keys(stats.commits_by_repo).length > 0}
 					<div class="repo-list">
-						{#each Object.entries(stats.commits_by_repo) as [repo, commitCount]}
+						{#each Object.entries(stats.commits_by_repo) as [repo, commitCount] (repo)}
 							<div class="repo-item">
 								<div class="repo-info">
 									<span class="repo-name">{repo}</span>
@@ -716,7 +716,7 @@
 				<h3><GitCommit size={20} /> Recent Commits</h3>
 				{#if commits && commits.length > 0}
 					<div class="commits-list-container">
-						{#each commits as commit}
+						{#each commits as commit (commit.sha)}
 							<div class="commit-item">
 								<div class="commit-header">
 									<span class="commit-sha">{commit.sha}</span>

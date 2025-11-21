@@ -124,7 +124,7 @@
     <label class="folder-select">
       <span>Upload to:</span>
       <select bind:value={folder}>
-        {#each folderOptions as opt}
+        {#each folderOptions as opt (opt.value)}
           <option value={opt.value}>{opt.label}</option>
         {/each}
       </select>

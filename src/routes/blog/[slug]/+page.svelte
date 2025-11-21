@@ -83,7 +83,7 @@
 				</time>
 				{#if data.post.tags.length > 0}
 					<div class="tags">
-						{#each data.post.tags as tag}
+						{#each data.post.tags as tag (tag)}
 							<span class="tag">{tag}</span>
 						{/each}
 					</div>
@@ -94,7 +94,7 @@
 		<!-- Mobile gutter: orphan items at top (no matching anchor) -->
 		{#if hasLeftGutter && getOrphanItems().length > 0}
 			<div class="mobile-gutter-content">
-				{#each getOrphanItems() as item}
+				{#each getOrphanItems() as item, index (index)}
 					<GutterItem {item} />
 				{/each}
 			</div>
@@ -102,14 +102,14 @@
 
 		<!-- Mobile gutter containers for each header (will be moved into position) -->
 		{#if hasLeftGutter && data.post.headers}
-			{#each data.post.headers as header}
+			{#each data.post.headers as header (header.id)}
 				{@const anchorItems = getItemsForAnchor(`## ${header.text}`)}
 				{#if anchorItems.length > 0}
 					<div
 						class="mobile-gutter-content mobile-gutter-inline"
 						bind:this={mobileGutterRefs[header.id]}
 					>
-						{#each anchorItems as item}
+						{#each anchorItems as item, index (index)}
 							<GutterItem {item} />
 						{/each}
 					</div>
