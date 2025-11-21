@@ -108,6 +108,11 @@ docs: Update README
 - **For directory structure** → Read `AgentUsage/project_setup.md`
 - **Setting up CI/CD** → Read `AgentUsage/project_setup.md`
 
+### Svelte Development
+- **When working with Svelte 5 components** → Read `AgentUsage/svelte5_guide.md`
+- **Before using runes** → Read `AgentUsage/svelte5_guide.md`
+- **For SvelteKit routing and data loading** → Read `AgentUsage/svelte5_guide.md`
+
 ---
 
 ## Quick Reference
