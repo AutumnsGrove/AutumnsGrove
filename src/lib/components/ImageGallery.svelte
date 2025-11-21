@@ -124,32 +124,36 @@
 			{/if}
 		</div>
 
-		<!-- Progress indicators -->
-		{#if images.length > 1}
-			<div class="gallery-progress">
-				<!-- Progress dots -->
-				<div class="progress-dots">
-					{#each images as _, index}
-						<button
-							class="progress-dot"
-							class:active={index === currentIndex}
-							onclick={() => goToIndex(index)}
-							aria-label={`Go to image ${index + 1}`}
-						></button>
-					{/each}
-				</div>
-			</div>
+		<!-- Info panel (progress, counter, caption) -->
+		{#if images.length > 1 || images[currentIndex].caption}
+			<div class="gallery-info">
+				{#if images.length > 1}
+					<!-- Progress dots -->
+					<div class="gallery-progress">
+						<div class="progress-dots">
+							{#each images as _, index}
+								<button
+									class="progress-dot"
+									class:active={index === currentIndex}
+									onclick={() => goToIndex(index)}
+									aria-label={`Go to image ${index + 1}`}
+								></button>
+							{/each}
+						</div>
+					</div>
 
-			<!-- Counter -->
-			<div class="gallery-counter">
-				{currentIndex + 1}/{images.length}
-			</div>
-		{/if}
+					<!-- Counter -->
+					<div class="gallery-counter">
+						{currentIndex + 1}/{images.length}
+					</div>
+				{/if}
 
-		<!-- Caption -->
-		{#if images[currentIndex].caption}
-			<div class="gallery-caption">
-				{images[currentIndex].caption}
+				<!-- Caption -->
+				{#if images[currentIndex].caption}
+					<div class="gallery-caption">
+						{images[currentIndex].caption}
+					</div>
+				{/if}
 			</div>
 		{/if}
 	</div>
@@ -229,6 +233,16 @@
 		right: 16px;
 	}
 
+	/* Info panel - unified background for progress, counter, caption */
+	.gallery-info {
+		background: #f9fafb;
+		border-radius: 0 0 8px 8px;
+	}
+
+	:global(.dark) .gallery-info {
+		background: #1f2937;
+	}
+
 	/* Progress indicators */
 	.gallery-progress {
 		display: flex;
@@ -292,13 +306,9 @@
 		font-size: 0.9rem;
 		color: #374151;
 		line-height: 1.5;
-		background: #f9fafb;
-		border-radius: 0 0 8px 8px;
-		margin-top: -8px;
 	}
 
 	:global(.dark) .gallery-caption {
-		background: #1f2937;
 		color: #d1d5db;
 	}
 
