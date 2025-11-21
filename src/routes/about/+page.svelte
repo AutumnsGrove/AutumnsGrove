@@ -1,0 +1,347 @@
+<script>
+	import TableOfContents from '$lib/components/TableOfContents.svelte';
+	import MobileTOC from '$lib/components/MobileTOC.svelte';
+	import LeftGutter from '$lib/components/LeftGutter.svelte';
+	import GutterItem from '$lib/components/GutterItem.svelte';
+	import { onMount } from 'svelte';
+
+	export let data;
+
+	// References to mobile gutter containers for each anchor
+	let mobileGutterRefs = {};
+
+	// Group items by their anchor
+	function getItemsForAnchor(anchor) {
+		return data.page.gutterContent.filter(item => item.anchor === anchor);
+	}
+
+	// Get items that don't have a matching anchor (show at top)
+	function getOrphanItems() {
+		if (!data.page.gutterContent || !data.page.headers) return data.page.gutterContent || [];
+		const anchorIds = data.page.headers.map(h => `## ${h.text}`);
+		return data.page.gutterContent.filter(item => !anchorIds.includes(item.anchor));
+	}
+
+	// Add IDs to headers and position mobile gutter items
+	onMount(() => {
+		if (data.page.headers && data.page.headers.length > 0) {
+			const contentEl = document.querySelector('.page-content');
+			if (contentEl) {
+				const headerElements = contentEl.querySelectorAll('h1, h2, h3, h4, h5, h6');
+				headerElements.forEach((el) => {
+					const text = el.textContent.trim();
+					const matchingHeader = data.page.headers.find(h => h.text === text);
+					if (matchingHeader) {
+						el.id = matchingHeader.id;
+
+						// Move mobile gutter content after this header
+						const mobileGutterEl = mobileGutterRefs[matchingHeader.id];
+						if (mobileGutterEl && mobileGutterEl.children.length > 0) {
+							// Insert after the header element
+							el.insertAdjacentElement('afterend', mobileGutterEl);
+						}
+					}
+				});
+			}
+		}
+	});
+
+	// Check if we have content for gutters
+	$: hasLeftGutter = data.page.gutterContent && data.page.gutterContent.length > 0;
+	$: hasRightGutter = data.page.headers && data.page.headers.length > 0;
+	$: hasGutters = hasLeftGutter || hasRightGutter;
+</script>
+
+<svelte:head>
+	<title>{data.page.title} - AutumnsGrove</title>
+	<meta name="description" content={data.page.description || data.page.title} />
+</svelte:head>
+
+<div class="page-layout" class:has-gutters={hasGutters}>
+	<!-- Left Gutter - Comments/Photos -->
+	{#if hasLeftGutter}
+		<div class="left-gutter-container desktop-only">
+			<LeftGutter items={data.page.gutterContent} headers={data.page.headers || []} />
+		</div>
+	{/if}
+
+	<!-- Main Content -->
+	<article class="page">
+		<header class="page-header">
+			<h1>{data.page.title}</h1>
+		</header>
+
+		<!-- Mobile gutter: orphan items at top (no matching anchor) -->
+		{#if hasLeftGutter && getOrphanItems().length > 0}
+			<div class="mobile-gutter-content">
+				{#each getOrphanItems() as item}
+					<GutterItem {item} />
+				{/each}
+			</div>
+		{/if}
+
+		<!-- Mobile gutter containers for each header (will be moved into position) -->
+		{#if hasLeftGutter && data.page.headers}
+			{#each data.page.headers as header}
+				{@const anchorItems = getItemsForAnchor(`## ${header.text}`)}
+				{#if anchorItems.length > 0}
+					<div
+						class="mobile-gutter-content mobile-gutter-inline"
+						bind:this={mobileGutterRefs[header.id]}
+					>
+						{#each anchorItems as item}
+							<GutterItem {item} />
+						{/each}
+					</div>
+				{/if}
+			{/each}
+		{/if}
+
+		<div class="page-content">
+			{@html data.page.content}
+		</div>
+	</article>
+
+	<!-- Right Gutter - Table of Contents -->
+	{#if hasRightGutter}
+		<div class="right-gutter-container desktop-only">
+			<TableOfContents headers={data.page.headers} />
+		</div>
+	{/if}
+</div>
+
+<!-- Mobile TOC Button -->
+{#if hasRightGutter}
+	<MobileTOC headers={data.page.headers} />
+{/if}
+
+<style>
+	.page-layout {
+		max-width: 800px;
+		margin: 0 auto;
+	}
+
+	.page-layout.has-gutters {
+		display: grid;
+		grid-template-columns: 1fr;
+		max-width: 1400px;
+		gap: 2rem;
+	}
+
+	@media (min-width: 1200px) {
+		.page-layout.has-gutters {
+			grid-template-columns: 240px 1fr 200px;
+		}
+	}
+
+	@media (min-width: 769px) and (max-width: 1199px) {
+		.page-layout.has-gutters {
+			grid-template-columns: 1fr 200px;
+			max-width: 1000px;
+		}
+
+		.left-gutter-container {
+			display: none;
+		}
+	}
+
+	.desktop-only {
+		display: none;
+	}
+
+	@media (min-width: 769px) {
+		.desktop-only {
+			display: block;
+		}
+	}
+
+	.mobile-gutter-content {
+		display: block;
+		margin-bottom: 2rem;
+		padding: 1rem;
+		background: #f5f5f5;
+		border-radius: 8px;
+		transition: background-color 0.3s ease;
+	}
+
+	/* Inline mobile gutter items (positioned after headers) */
+	:global(.mobile-gutter-inline) {
+		margin-top: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	:global(.dark) .mobile-gutter-content {
+		background: #1a1a1a;
+	}
+
+	@media (min-width: 769px) {
+		.mobile-gutter-content {
+			display: none;
+		}
+	}
+
+	.left-gutter-container,
+	.right-gutter-container {
+		min-width: 0;
+	}
+
+	.page {
+		max-width: 800px;
+		min-width: 0;
+	}
+
+	.page-header {
+		margin-bottom: 3rem;
+		padding-bottom: 2rem;
+		border-bottom: 2px solid #e0e0e0;
+		transition: border-color 0.3s ease;
+	}
+
+	:global(.dark) .page-header {
+		border-bottom: 2px solid #333;
+	}
+
+	.page-header h1 {
+		font-size: 2.5rem;
+		color: #2c5f2d;
+		margin: 0;
+		line-height: 1.2;
+		transition: color 0.3s ease;
+	}
+
+	:global(.dark) .page-header h1 {
+		color: #5cb85f;
+	}
+
+	.page-content {
+		line-height: 1.8;
+		color: #333;
+		transition: color 0.3s ease;
+	}
+
+	:global(.dark) .page-content {
+		color: #e0e0e0;
+	}
+
+	:global(.page-content h2) {
+		color: #2c5f2d;
+		margin-top: 2.5rem;
+		margin-bottom: 1rem;
+		font-size: 1.75rem;
+		transition: color 0.3s ease;
+	}
+
+	:global(.dark .page-content h2) {
+		color: #5cb85f;
+	}
+
+	:global(.page-content h3) {
+		color: #2c5f2d;
+		margin-top: 2rem;
+		margin-bottom: 0.75rem;
+		font-size: 1.4rem;
+		transition: color 0.3s ease;
+	}
+
+	:global(.dark .page-content h3) {
+		color: #5cb85f;
+	}
+
+	:global(.page-content p) {
+		margin-bottom: 1.5rem;
+	}
+
+	:global(.page-content a) {
+		color: #2c5f2d;
+		text-decoration: underline;
+		transition: color 0.3s ease;
+	}
+
+	:global(.dark .page-content a) {
+		color: #5cb85f;
+	}
+
+	:global(.page-content a:hover) {
+		color: #4a9d4f;
+	}
+
+	:global(.dark .page-content a:hover) {
+		color: #7cd97f;
+	}
+
+	:global(.page-content code) {
+		background: #f5f5f5;
+		padding: 0.2rem 0.4rem;
+		border-radius: 3px;
+		font-family: 'Courier New', monospace;
+		font-size: 0.9em;
+		transition: background-color 0.3s ease, color 0.3s ease;
+	}
+
+	:global(.dark .page-content code) {
+		background: #2a2a2a;
+		color: #e0e0e0;
+	}
+
+	:global(.page-content pre) {
+		background: #f5f5f5;
+		padding: 1rem;
+		border-radius: 6px;
+		overflow-x: auto;
+		margin-bottom: 1.5rem;
+		transition: background-color 0.3s ease;
+	}
+
+	:global(.dark .page-content pre) {
+		background: #2a2a2a;
+	}
+
+	:global(.page-content pre code) {
+		background: none;
+		padding: 0;
+	}
+
+	:global(.page-content ul, .page-content ol) {
+		margin-bottom: 1.5rem;
+		padding-left: 2rem;
+	}
+
+	:global(.page-content li) {
+		margin-bottom: 0.5rem;
+	}
+
+	:global(.page-content blockquote) {
+		border-left: 4px solid #2c5f2d;
+		padding-left: 1rem;
+		margin: 1.5rem 0;
+		color: #666;
+		font-style: italic;
+		transition: border-color 0.3s ease, color 0.3s ease;
+	}
+
+	:global(.dark .page-content blockquote) {
+		border-left: 4px solid #5cb85f;
+		color: #aaa;
+	}
+
+	:global(.page-content img) {
+		max-width: 100%;
+		height: auto;
+		border-radius: 8px;
+		margin: 1.5rem 0;
+	}
+
+	@media (max-width: 768px) {
+		.page-header h1 {
+			font-size: 2rem;
+		}
+
+		:global(.page-content h2) {
+			font-size: 1.5rem;
+		}
+
+		:global(.page-content h3) {
+			font-size: 1.25rem;
+		}
+	}
+</style>

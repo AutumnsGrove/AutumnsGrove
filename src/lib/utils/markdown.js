@@ -23,6 +23,13 @@ const recipeModules = import.meta.glob("../../../recipes/*.md", {
   import: "default",
 });
 
+// Load about page markdown
+const aboutModules = import.meta.glob("../../../about/*.md", {
+  eager: true,
+  query: "?raw",
+  import: "default",
+});
+
 // Load recipe sidecar JSON files for instruction icons
 const recipeSidecarModules = import.meta.glob("../../../recipes/*-grove.json", {
   eager: true,
@@ -42,6 +49,25 @@ const gutterMarkdownModules = import.meta.glob("../../../posts/*/gutter/*.md", {
 
 // Load gutter image files
 const gutterImageModules = import.meta.glob("../../../posts/*/gutter/*.{jpg,jpeg,png,gif,webp}", {
+  eager: true,
+  query: "?url",
+  import: "default",
+});
+
+// Load about page gutter manifest files
+const aboutGutterManifestModules = import.meta.glob("../../../about/*/gutter/manifest.json", {
+  eager: true,
+});
+
+// Load about page gutter markdown content files
+const aboutGutterMarkdownModules = import.meta.glob("../../../about/*/gutter/*.md", {
+  eager: true,
+  query: "?raw",
+  import: "default",
+});
+
+// Load about page gutter image files
+const aboutGutterImageModules = import.meta.glob("../../../about/*/gutter/*.{jpg,jpeg,png,gif,webp}", {
   eager: true,
   query: "?url",
   import: "default",
@@ -233,6 +259,101 @@ export function getGutterContent(slug) {
     } else if (item.type === 'photo' || item.type === 'image') {
       // Find the image file
       const imgEntry = Object.entries(gutterImageModules).find(([filepath]) => {
+        return filepath.includes(`/${slug}/gutter/${item.file}`);
+      });
+
+      if (imgEntry) {
+        return {
+          ...item,
+          src: imgEntry[1],
+        };
+      }
+    }
+
+    return item;
+  }).filter(item => item.content || item.src); // Filter out items that weren't found
+}
+
+/**
+ * Get the about page content
+ * @returns {Object|null} About page object with content and metadata
+ */
+export function getAboutPage() {
+  // Find the about.md file
+  const entry = Object.entries(aboutModules).find(([filepath]) => {
+    return filepath.includes('about.md');
+  });
+
+  if (!entry) {
+    return null;
+  }
+
+  const content = entry[1];
+
+  const { data, content: markdown } = matter(content);
+  const htmlContent = marked.parse(markdown);
+
+  // Extract headers for table of contents
+  const headers = extractHeaders(markdown);
+
+  // Get gutter content for the about page
+  const gutterContent = getAboutGutterContent('about');
+
+  return {
+    slug: 'about',
+    title: data.title || 'About',
+    date: data.date || new Date().toISOString(),
+    description: data.description || '',
+    content: htmlContent,
+    headers,
+    gutterContent,
+  };
+}
+
+/**
+ * Get gutter content for the about page
+ * @param {string} slug - The page slug (e.g., 'about')
+ * @returns {Array} Array of gutter items with content and position info
+ */
+export function getAboutGutterContent(slug) {
+  // Find the manifest file for this page
+  const manifestEntry = Object.entries(aboutGutterManifestModules).find(([filepath]) => {
+    // Path format: ../../../about/about/gutter/manifest.json
+    const parts = filepath.split('/');
+    const pageFolder = parts[parts.length - 3]; // Get the folder name
+    return pageFolder === slug;
+  });
+
+  if (!manifestEntry) {
+    return [];
+  }
+
+  const manifest = manifestEntry[1].default || manifestEntry[1];
+
+  if (!manifest.items || !Array.isArray(manifest.items)) {
+    return [];
+  }
+
+  // Process each gutter item
+  return manifest.items.map(item => {
+    if (item.type === 'comment' || item.type === 'markdown') {
+      // Find the markdown content file
+      const mdEntry = Object.entries(aboutGutterMarkdownModules).find(([filepath]) => {
+        return filepath.includes(`/${slug}/gutter/${item.file}`);
+      });
+
+      if (mdEntry) {
+        const markdownContent = mdEntry[1];
+        const htmlContent = marked.parse(markdownContent);
+
+        return {
+          ...item,
+          content: htmlContent,
+        };
+      }
+    } else if (item.type === 'photo' || item.type === 'image') {
+      // Find the image file
+      const imgEntry = Object.entries(aboutGutterImageModules).find(([filepath]) => {
         return filepath.includes(`/${slug}/gutter/${item.file}`);
       });
 
