@@ -66,14 +66,17 @@
 		align-items: center;
 		max-width: 90vw;
 		max-height: 90vh;
+		overflow: hidden;
 	}
 
 	.lightbox-image {
 		max-width: 90vw;
-		max-height: calc(90vh - 60px);
 		object-fit: contain;
 		cursor: default;
 		border-radius: 4px;
+		/* Allow image to shrink to make room for caption */
+		flex: 1 1 auto;
+		min-height: 0;
 	}
 
 	.lightbox-caption {
@@ -85,6 +88,8 @@
 		text-align: center;
 		max-width: 90vw;
 		line-height: 1.5;
+		/* Caption keeps its natural size; image shrinks instead */
+		flex-shrink: 0;
 	}
 
 	.close-button {
