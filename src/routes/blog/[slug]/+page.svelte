@@ -11,6 +11,11 @@
 	// References to mobile gutter containers for each anchor
 	let mobileGutterRefs = $state({});
 
+	// Track content height for overflow detection
+	let contentArticle = $state();
+	let contentHeight = $state(0);
+	let overflowingHeaderIds = $state([]);
+
 	// Group items by their anchor
 	function getItemsForAnchor(anchor) {
 		return data.post.gutterContent.filter(item => item.anchor === anchor);
@@ -49,10 +54,46 @@
 		});
 	});
 
+	// Track content height
+	$effect(() => {
+		if (contentArticle) {
+			const updateHeight = () => {
+				contentHeight = contentArticle.offsetHeight;
+			};
+			updateHeight();
+
+			// Create ResizeObserver to track height changes
+			const observer = new ResizeObserver(updateHeight);
+			observer.observe(contentArticle);
+
+			return () => observer.disconnect();
+		}
+	});
+
+	// Handle overflow changes from LeftGutter
+	function handleOverflowChange(headerIds) {
+		overflowingHeaderIds = headerIds;
+	}
+
+	// Get items for overflowing headers
+	function getOverflowItems() {
+		if (!data.post.headers) return [];
+		const items = [];
+		for (const headerId of overflowingHeaderIds) {
+			const header = data.post.headers.find(h => h.id === headerId);
+			if (header) {
+				const headerItems = getItemsForAnchor(`## ${header.text}`);
+				items.push({ header, items: headerItems });
+			}
+		}
+		return items;
+	}
+
 	// Check if we have content for gutters
 	let hasLeftGutter = $derived(data.post.gutterContent && data.post.gutterContent.length > 0);
 	let hasRightGutter = $derived(data.post.headers && data.post.headers.length > 0);
 	let hasGutters = $derived(hasLeftGutter || hasRightGutter);
+	let hasOverflow = $derived(overflowingHeaderIds.length > 0);
 </script>
 
 <svelte:head>
@@ -64,12 +105,17 @@
 	<!-- Left Gutter - Comments/Photos -->
 	{#if hasLeftGutter}
 		<div class="left-gutter-container desktop-only">
-			<LeftGutter items={data.post.gutterContent} headers={data.post.headers || []} />
+			<LeftGutter
+				items={data.post.gutterContent}
+				headers={data.post.headers || []}
+				{contentHeight}
+				onOverflowChange={handleOverflowChange}
+			/>
 		</div>
 	{/if}
 
 	<!-- Main Content -->
-	<article class="content-article">
+	<article class="content-article" bind:this={contentArticle}>
 		<header class="content-header">
 			<a href="/blog" class="back-link">&larr; Back to Blog</a>
 			<h1>{data.post.title}</h1>
@@ -120,6 +166,21 @@
 		<div class="content-body">
 			{@html data.post.content}
 		</div>
+
+		<!-- Overflow gutter items rendered inline -->
+		{#if hasOverflow}
+			<div class="overflow-gutter-section">
+				<div class="overflow-divider"></div>
+				{#each getOverflowItems() as group (group.header.id)}
+					<div class="overflow-group">
+						<h4 class="overflow-anchor-label">From: {group.header.text}</h4>
+						{#each group.items as item, index (index)}
+							<GutterItem {item} />
+						{/each}
+					</div>
+				{/each}
+			</div>
+		{/if}
 	</article>
 
 	<!-- Right Gutter - Table of Contents -->
@@ -183,4 +244,37 @@
 	}
 
 	/* Tags use global styles from +layout.svelte */
+
+	/* Overflow gutter section */
+	.overflow-gutter-section {
+		margin-top: 3rem;
+		padding-top: 2rem;
+	}
+
+	.overflow-divider {
+		height: 1px;
+		background: linear-gradient(to right, transparent, #e0e0e0, transparent);
+		margin-bottom: 2rem;
+	}
+
+	:global(.dark) .overflow-divider {
+		background: linear-gradient(to right, transparent, #3a3a3a, transparent);
+	}
+
+	.overflow-group {
+		margin-bottom: 2rem;
+	}
+
+	.overflow-anchor-label {
+		font-size: 0.85rem;
+		color: #888;
+		margin: 0 0 0.75rem 0;
+		font-weight: 500;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	:global(.dark) .overflow-anchor-label {
+		color: #666;
+	}
 </style>

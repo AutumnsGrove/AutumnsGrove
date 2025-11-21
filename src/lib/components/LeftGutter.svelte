@@ -2,11 +2,12 @@
 	import { tick } from 'svelte';
 	import GutterItem from './GutterItem.svelte';
 
-	let { items = [], headers = [] } = $props();
+	let { items = [], headers = [], contentHeight = 0, onOverflowChange = () => {} } = $props();
 
 	let gutterElement = $state();
 	let itemPositions = $state({});
 	let anchorGroupElements = $state({});
+	let overflowingHeaders = $state([]);
 
 	// Group items by their anchor
 	function getItemsForAnchor(anchor) {
@@ -27,8 +28,10 @@
 
 		const gutterTop = gutterElement.offsetTop;
 		const minGap = 16; // Minimum gap between items in pixels
+		const bottomPadding = 32; // Padding from bottom of content
 
 		let lastBottom = 0; // Track the bottom edge of the last positioned item
+		const newOverflowingHeaders = [];
 
 		// Get headers that have gutter items, in document order
 		const headersWithItems = headers.filter(h =>
@@ -52,12 +55,23 @@
 					desiredTop = lastBottom + minGap;
 				}
 
-				itemPositions[header.id] = desiredTop;
-
-				// Update lastBottom for next iteration
-				lastBottom = desiredTop + groupHeight;
+				// Check if this item would overflow past the content
+				const effectiveContentHeight = contentHeight > 0 ? contentHeight : Infinity;
+				if (desiredTop + groupHeight > effectiveContentHeight - bottomPadding) {
+					// This item overflows - mark it and hide it in the gutter
+					newOverflowingHeaders.push(header.id);
+					itemPositions[header.id] = -9999; // Hide off-screen
+				} else {
+					itemPositions[header.id] = desiredTop;
+					// Update lastBottom for next iteration
+					lastBottom = desiredTop + groupHeight;
+				}
 			}
 		});
+
+		// Update overflowing headers and notify parent
+		overflowingHeaders = newOverflowingHeaders;
+		onOverflowChange(newOverflowingHeaders);
 	}
 
 	$effect(() => {
@@ -68,11 +82,12 @@
 		};
 	});
 
-	// Handle initial positioning and re-calculate when items or headers change
+	// Handle initial positioning and re-calculate when items, headers, or contentHeight change
 	$effect(() => {
 		// Explicitly reference dependencies to track changes
 		items;
 		headers;
+		contentHeight;
 		// Delay slightly to allow DOM updates
 		const timeout = setTimeout(updatePositions, 150);
 		return () => clearTimeout(timeout);
