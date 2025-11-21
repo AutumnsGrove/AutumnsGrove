@@ -1,21 +1,54 @@
 <script>
+	import Lightbox from './Lightbox.svelte';
+
 	export let item = {};
+
+	let lightboxOpen = false;
+	let lightboxSrc = '';
+	let lightboxAlt = '';
+
+	function openLightbox(src, alt) {
+		lightboxSrc = src;
+		lightboxAlt = alt;
+		lightboxOpen = true;
+	}
+
+	function closeLightbox() {
+		lightboxOpen = false;
+	}
+
+	// Handle clicks on images within markdown content
+	function handleContentClick(event) {
+		if (event.target.tagName === 'IMG') {
+			openLightbox(event.target.src, event.target.alt);
+		}
+	}
 </script>
 
 <div class="gutter-item" data-anchor={item.anchor || ''}>
 	{#if item.type === 'comment' || item.type === 'markdown'}
-		<div class="gutter-comment">
+		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+		<div class="gutter-comment" on:click={handleContentClick}>
 			{@html item.content}
 		</div>
 	{:else if item.type === 'photo' || item.type === 'image'}
 		<figure class="gutter-photo">
-			<img src={item.src} alt={item.caption || 'Gutter image'} />
+			<button class="image-button" on:click={() => openLightbox(item.src, item.caption || 'Gutter image')}>
+				<img src={item.src} alt={item.caption || 'Gutter image'} />
+			</button>
 			{#if item.caption}
 				<figcaption>{item.caption}</figcaption>
 			{/if}
 		</figure>
 	{/if}
 </div>
+
+<Lightbox
+	src={lightboxSrc}
+	alt={lightboxAlt}
+	isOpen={lightboxOpen}
+	onClose={closeLightbox}
+/>
 
 <style>
 	.gutter-item {
@@ -60,12 +93,25 @@
 		margin: 0;
 	}
 
+	.image-button {
+		padding: 0;
+		border: none;
+		background: none;
+		cursor: pointer;
+		display: block;
+	}
+
+	.image-button:hover img {
+		opacity: 0.9;
+	}
+
 	.gutter-photo img {
 		width: 100%;
 		max-width: 160px;
 		height: auto;
 		border-radius: 6px;
 		display: block;
+		transition: opacity 0.2s;
 	}
 
 	/* Also constrain images in markdown comments */
@@ -75,6 +121,12 @@
 		border-radius: 6px;
 		display: block;
 		margin-bottom: 0.5rem;
+		cursor: pointer;
+		transition: opacity 0.2s;
+	}
+
+	.gutter-comment :global(img:hover) {
+		opacity: 0.9;
 	}
 
 	.gutter-photo figcaption {

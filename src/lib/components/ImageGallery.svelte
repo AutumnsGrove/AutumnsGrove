@@ -1,4 +1,6 @@
 <script>
+	import Lightbox from './Lightbox.svelte';
+
 	/**
 	 * ImageGallery - Multi-image gallery with navigation
 	 * Similar to The Verge's implementation
@@ -15,6 +17,17 @@
 	let touchStartX = $state(0);
 	let touchEndX = $state(0);
 	let galleryElement;
+
+	// Lightbox state
+	let lightboxOpen = $state(false);
+
+	function openLightbox() {
+		lightboxOpen = true;
+	}
+
+	function closeLightbox() {
+		lightboxOpen = false;
+	}
 
 	// Navigation functions
 	function goToNext() {
@@ -92,11 +105,13 @@
 	>
 		<!-- Main image display -->
 		<div class="gallery-image-wrapper">
-			<img
-				src={images[currentIndex].url}
-				alt={images[currentIndex].alt || `Image ${currentIndex + 1}`}
-				class="gallery-image"
-			/>
+			<button class="image-expand-button" onclick={openLightbox} aria-label="View full size">
+				<img
+					src={images[currentIndex].url}
+					alt={images[currentIndex].alt || `Image ${currentIndex + 1}`}
+					class="gallery-image"
+				/>
+			</button>
 
 			<!-- Navigation arrows -->
 			{#if images.length > 1}
@@ -157,6 +172,74 @@
 			</div>
 		{/if}
 	</div>
+
+	<!-- Lightbox modal -->
+	{#if lightboxOpen}
+		<div
+			class="lightbox-backdrop"
+			onclick={(e) => e.target === e.currentTarget && closeLightbox()}
+			onkeydown={(e) => e.key === 'Escape' && closeLightbox()}
+			role="dialog"
+			aria-modal="true"
+			aria-label="Image viewer"
+		>
+			<button class="lightbox-close" onclick={closeLightbox} aria-label="Close">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<line x1="18" y1="6" x2="6" y2="18"></line>
+					<line x1="6" y1="6" x2="18" y2="18"></line>
+				</svg>
+			</button>
+
+			<div class="lightbox-content">
+				<img
+					src={images[currentIndex].url}
+					alt={images[currentIndex].alt || `Image ${currentIndex + 1}`}
+					class="lightbox-image"
+				/>
+
+				<!-- Navigation arrows in lightbox -->
+				{#if images.length > 1}
+					<button
+						class="lightbox-nav lightbox-prev"
+						onclick={goToPrevious}
+						disabled={currentIndex === 0}
+						aria-label="Previous image"
+					>
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<polyline points="15 18 9 12 15 6"></polyline>
+						</svg>
+					</button>
+
+					<button
+						class="lightbox-nav lightbox-next"
+						onclick={goToNext}
+						disabled={currentIndex === images.length - 1}
+						aria-label="Next image"
+					>
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<polyline points="9 18 15 12 9 6"></polyline>
+						</svg>
+					</button>
+				{/if}
+			</div>
+
+			<!-- Thumbnail strip -->
+			{#if images.length > 1}
+				<div class="lightbox-thumbnails">
+					{#each images as image, index}
+						<button
+							class="thumbnail-button"
+							class:active={index === currentIndex}
+							onclick={() => goToIndex(index)}
+							aria-label={`View image ${index + 1}`}
+						>
+							<img src={image.url} alt={image.alt || `Thumbnail ${index + 1}`} />
+						</button>
+					{/each}
+				</div>
+			{/if}
+		</div>
+	{/if}
 {/if}
 
 <style>
@@ -315,6 +398,158 @@
 		color: #d1d5db;
 	}
 
+	/* Image expand button */
+	.image-expand-button {
+		padding: 0;
+		border: none;
+		background: none;
+		cursor: pointer;
+		display: block;
+		width: 100%;
+	}
+
+	.image-expand-button:hover .gallery-image {
+		opacity: 0.95;
+	}
+
+	/* Lightbox styles */
+	.lightbox-backdrop {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: rgba(0, 0, 0, 0.95);
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		z-index: 9999;
+		padding: 1rem;
+	}
+
+	.lightbox-close {
+		position: absolute;
+		top: 1rem;
+		right: 1rem;
+		width: 48px;
+		height: 48px;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.1);
+		border: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: white;
+		transition: background 0.2s;
+		z-index: 10;
+	}
+
+	.lightbox-close:hover {
+		background: rgba(255, 255, 255, 0.2);
+	}
+
+	.lightbox-close svg {
+		width: 24px;
+		height: 24px;
+	}
+
+	.lightbox-content {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex: 1;
+		width: 100%;
+		max-height: calc(100vh - 140px);
+	}
+
+	.lightbox-image {
+		max-width: 90vw;
+		max-height: calc(100vh - 140px);
+		object-fit: contain;
+		border-radius: 4px;
+	}
+
+	.lightbox-nav {
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 48px;
+		height: 48px;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.1);
+		border: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: white;
+		transition: background 0.2s;
+	}
+
+	.lightbox-nav:hover:not(:disabled) {
+		background: rgba(255, 255, 255, 0.2);
+	}
+
+	.lightbox-nav:disabled {
+		opacity: 0.3;
+		cursor: not-allowed;
+	}
+
+	.lightbox-nav svg {
+		width: 24px;
+		height: 24px;
+	}
+
+	.lightbox-prev {
+		left: 1rem;
+	}
+
+	.lightbox-next {
+		right: 1rem;
+	}
+
+	/* Thumbnail strip */
+	.lightbox-thumbnails {
+		display: flex;
+		gap: 0.5rem;
+		padding: 1rem;
+		overflow-x: auto;
+		max-width: 100%;
+		justify-content: center;
+	}
+
+	.thumbnail-button {
+		flex-shrink: 0;
+		width: 60px;
+		height: 60px;
+		padding: 0;
+		border: 2px solid transparent;
+		border-radius: 6px;
+		overflow: hidden;
+		cursor: pointer;
+		background: none;
+		transition: border-color 0.2s, opacity 0.2s;
+		opacity: 0.6;
+	}
+
+	.thumbnail-button:hover {
+		opacity: 0.9;
+	}
+
+	.thumbnail-button.active {
+		border-color: white;
+		opacity: 1;
+	}
+
+	.thumbnail-button img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
 	/* Responsive */
 	@media (max-width: 640px) {
 		.nav-button {
@@ -338,6 +573,21 @@
 		.gallery-caption {
 			font-size: 0.85rem;
 			padding: 10px 12px;
+		}
+
+		.lightbox-nav {
+			width: 40px;
+			height: 40px;
+		}
+
+		.lightbox-nav svg {
+			width: 20px;
+			height: 20px;
+		}
+
+		.thumbnail-button {
+			width: 50px;
+			height: 50px;
 		}
 	}
 </style>
