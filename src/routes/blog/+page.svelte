@@ -157,20 +157,28 @@
 	}
 
 	.tag {
-		background: #f3e8fa;
-		color: #6a3d9a;
-		padding: 0.3rem 0.85rem;
-		border-radius: 16px;
-		font-size: 0.8rem;
+		background: #7c4dab;
+		color: white;
+		padding: 0.4rem 1rem;
+		border-radius: 20px;
+		font-size: 0.85rem;
 		font-weight: 500;
-		border: 1px solid #dcc5ed;
-		transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+		border: none;
+		transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+	}
+
+	.tag:hover {
+		background: #6a3d9a;
+		transform: scale(1.05);
 	}
 
 	:global(.dark) .tag {
-		background: #3d2452;
-		color: #d4b5e8;
-		border-color: #5a3875;
+		background: #6a3d9a;
+		color: white;
+	}
+
+	:global(.dark) .tag:hover {
+		background: #7c4dab;
 	}
 
 	.description {

@@ -151,17 +151,27 @@
 	}
 
 	.tag {
-		background: #e8d5f2;
-		color: #6a3d9a;
-		padding: 0.25rem 0.75rem;
-		border-radius: 12px;
+		background: #7c4dab;
+		color: white;
+		padding: 0.4rem 1rem;
+		border-radius: 20px;
 		font-size: 0.85rem;
-		transition: background-color 0.3s ease, color 0.3s ease;
+		font-weight: 500;
+		transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+	}
+
+	.tag:hover {
+		background: #6a3d9a;
+		transform: scale(1.05);
 	}
 
 	:global(.dark) .tag {
-		background: #4a2d5e;
-		color: #d4b5e8;
+		background: #6a3d9a;
+		color: white;
+	}
+
+	:global(.dark) .tag:hover {
+		background: #7c4dab;
 	}
 
 	.description {
