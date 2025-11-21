@@ -98,12 +98,12 @@
 	transition: background-color 0.3s ease;
 }
 
-:global(.mobile-gutter-inline) {
+.mobile-gutter-inline {
 	margin-top: 1rem;
 	margin-bottom: 1.5rem;
 }
 
-:global(.dark) .mobile-gutter-content {
+.dark .mobile-gutter-content {
 	background: var(--color-bg-secondary-dark);
 }
 
