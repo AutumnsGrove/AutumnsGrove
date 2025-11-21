@@ -1,6 +1,59 @@
 <script>
 	import { ImageGallery } from '$lib/components';
 
+	const landscapeImages = [
+		{
+			url: 'https://cdn.autumnsgrove.com/photos/2025/11/21/aerial_view_of_autumn_forest_with_colorful_foliage_c7c3f9a9.webp',
+			alt: 'Aerial view of autumn forest with colorful foliage',
+			caption: 'Colorful autumn canopy from above'
+		},
+		{
+			url: 'https://cdn.autumnsgrove.com/photos/2025/11/21/aerial_view_of_rocky_coastal_peninsula_with_white_cdacf3d5.webp',
+			alt: 'Aerial view of rocky coastal peninsula with white waves',
+			caption: 'Rocky coastal peninsula'
+		},
+		{
+			url: 'https://cdn.autumnsgrove.com/photos/2025/11/21/aerial_view_of_autumn_forest_with_colorful_foliage_26837900.webp',
+			alt: 'Aerial view of autumn forest with colorful foliage',
+			caption: 'Fall colors from above'
+		},
+		{
+			url: 'https://cdn.autumnsgrove.com/photos/2025/11/21/aerial_view_of_autumn_forest_surrounding_a_winding_f9d16723.webp',
+			alt: 'Aerial view of autumn forest surrounding a winding road',
+			caption: 'Winding road through autumn trees'
+		},
+		{
+			url: 'https://cdn.autumnsgrove.com/photos/2025/11/21/aerial_view_of_forested_lakeside_area_with_marina_bda2b18d.webp',
+			alt: 'Aerial view of forested lakeside area with marina',
+			caption: 'Lakeside marina view'
+		},
+		{
+			url: 'https://cdn.autumnsgrove.com/photos/2025/11/21/aerial_view_of_vibrant_autumn_forest_with_colorful_1cebda1d.webp',
+			alt: 'Aerial view of vibrant autumn forest with colorful leaves',
+			caption: 'Vibrant autumn colors'
+		},
+		{
+			url: 'https://cdn.autumnsgrove.com/photos/2025/11/21/aerial_view_of_dense_green_forest_canopy_with_vary_92319bd5.webp',
+			alt: 'Aerial view of dense green forest canopy',
+			caption: 'Dense forest canopy'
+		},
+		{
+			url: 'https://cdn.autumnsgrove.com/photos/2025/11/21/aerial_view_of_wooden_dock_extending_into_green_ti_a556c62e.webp',
+			alt: 'Aerial view of wooden dock extending into green water',
+			caption: 'Dock extending into green waters'
+		},
+		{
+			url: 'https://cdn.autumnsgrove.com/photos/2025/11/21/aerial_view_of_rolling_forested_mountains_with_aut_8969b77e.webp',
+			alt: 'Aerial view of rolling forested mountains with autumn colors',
+			caption: 'Rolling mountains in fall'
+		},
+		{
+			url: 'https://cdn.autumnsgrove.com/photos/2025/11/21/aerial_view_of_dramatic_coastal_cliffs_with_turquo_9336acc0.webp',
+			alt: 'Aerial view of dramatic coastal cliffs with turquoise water',
+			caption: 'Dramatic coastal cliffs'
+		}
+	];
+
 	const willowImages = [
 		{
 			url: 'https://cdn.autumnsgrove.com/Willow_walking_happy.jpeg',
@@ -57,6 +110,11 @@
 		AutumnsGrove is a personal blog where I share my thoughts, projects, and articles.
 		This is a place for exploration, learning, and sharing knowledge with the world.
 	</p>
+</div>
+
+<div class="gallery-section">
+	<h2>Landscapes</h2>
+	<ImageGallery images={landscapeImages} />
 </div>
 
 <div class="willow-section">
@@ -152,6 +210,24 @@
 
 	:global(.dark) .intro p {
 		color: var(--color-text-muted-dark);
+	}
+
+	.gallery-section {
+		margin-top: 4.5rem;
+		max-width: 800px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.gallery-section h2 {
+		color: #333;
+		margin-bottom: 1rem;
+		text-align: center;
+		transition: color 0.3s ease;
+	}
+
+	:global(.dark) .gallery-section h2 {
+		color: var(--color-text-dark);
 	}
 
 	.willow-section {
