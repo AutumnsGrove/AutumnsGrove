@@ -1018,11 +1018,7 @@
 		margin-bottom: 0.5rem;
 		line-height: 1.4;
 		word-break: break-word;
-		display: -webkit-box;
-		-webkit-line-clamp: 3;
-		-webkit-box-orient: vertical;
-		overflow: hidden;
-		min-height: calc(1.4em * 3);
+		white-space: pre-wrap;
 	}
 
 	.commit-stats {
