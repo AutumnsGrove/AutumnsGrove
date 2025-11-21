@@ -1,7 +1,7 @@
 <script>
 	import { page } from '$app/stores';
-	import { onMount } from 'svelte';
 	import { fade } from 'svelte/transition';
+	import { onMount } from 'svelte';
 
 	let { children } = $props();
 

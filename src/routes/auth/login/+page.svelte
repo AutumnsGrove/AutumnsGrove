@@ -1,5 +1,5 @@
 <script>
-  import { onMount } from 'svelte';
+  import { untrack } from 'svelte';
 
   let error = $state('');
   let errorMessage = $state('');
@@ -11,10 +11,15 @@
     'server_error': 'Server error. Please try again.'
   };
 
-  onMount(() => {
-    const params = new URLSearchParams(window.location.search);
-    error = params.get('error') || '';
-    errorMessage = errorMessages[error] || (error ? 'An error occurred.' : '');
+  $effect(() => {
+    // Use untrack() to prevent this effect from re-running when error/errorMessage change.
+    // Without untrack(), writing to these state variables inside the effect would cause
+    // infinite re-runs. This ensures initialization runs only once on component mount.
+    untrack(() => {
+      const params = new URLSearchParams(window.location.search);
+      error = params.get('error') || '';
+      errorMessage = errorMessages[error] || (error ? 'An error occurred.' : '');
+    });
   });
 </script>
 

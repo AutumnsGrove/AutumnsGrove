@@ -1,22 +1,24 @@
 <script>
-	import { onMount } from 'svelte';
+	import { untrack } from 'svelte';
 	import { renderMermaidDiagrams } from '$lib/utils/markdown.js';
 	import IconLegend from '$lib/components/IconLegend.svelte';
 
-	export let data;
+	let { data } = $props();
 
 	// Extract sidecar data if available
-	$: sidecar = data.recipe.sidecar;
-	$: iconsUsed = sidecar?.icons_used || [];
+	let sidecar = $derived(data.recipe.sidecar);
+	let iconsUsed = $derived(sidecar?.icons_used || []);
 
-	onMount(async () => {
-		// Render Mermaid diagrams after component mounts
-		await renderMermaidDiagrams();
-
-		// Inject instruction icons into step headings
-		if (sidecar?.steps) {
-			injectStepIcons();
-		}
+	$effect(() => {
+		untrack(() => {
+			// Render Mermaid diagrams after component mounts (async operation)
+			renderMermaidDiagrams().then(() => {
+				// Inject instruction icons into step headings after mermaid completes
+				if (sidecar?.steps) {
+					injectStepIcons();
+				}
+			});
+		});
 	});
 
 	function injectStepIcons() {

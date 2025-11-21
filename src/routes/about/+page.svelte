@@ -1,15 +1,15 @@
 <script>
+	import { untrack } from 'svelte';
 	import TableOfContents from '$lib/components/TableOfContents.svelte';
 	import MobileTOC from '$lib/components/MobileTOC.svelte';
 	import LeftGutter from '$lib/components/LeftGutter.svelte';
 	import GutterItem from '$lib/components/GutterItem.svelte';
-	import { onMount } from 'svelte';
 	import '$lib/styles/content.css';
 
-	export let data;
+	let { data } = $props();
 
 	// References to mobile gutter containers for each anchor
-	let mobileGutterRefs = {};
+	let mobileGutterRefs = $state({});
 
 	// Group items by their anchor
 	function getItemsForAnchor(anchor) {
@@ -24,33 +24,38 @@
 	}
 
 	// Add IDs to headers and position mobile gutter items
-	onMount(() => {
-		if (data.page.headers && data.page.headers.length > 0) {
-			const contentEl = document.querySelector('.content-body');
-			if (contentEl) {
-				const headerElements = contentEl.querySelectorAll('h1, h2, h3, h4, h5, h6');
-				headerElements.forEach((el) => {
-					const text = el.textContent.trim();
-					const matchingHeader = data.page.headers.find(h => h.text === text);
-					if (matchingHeader) {
-						el.id = matchingHeader.id;
+	$effect(() => {
+		// Use untrack() to prevent this effect from re-running when mobileGutterRefs changes.
+		// Without untrack(), DOM manipulation and state updates would cause infinite re-runs.
+		// This ensures initialization code runs only once on component mount.
+		untrack(() => {
+			if (data.page.headers && data.page.headers.length > 0) {
+				const contentEl = document.querySelector('.content-body');
+				if (contentEl) {
+					const headerElements = contentEl.querySelectorAll('h1, h2, h3, h4, h5, h6');
+					headerElements.forEach((el) => {
+						const text = el.textContent.trim();
+						const matchingHeader = data.page.headers.find(h => h.text === text);
+						if (matchingHeader) {
+							el.id = matchingHeader.id;
 
-						// Move mobile gutter content after this header
-						const mobileGutterEl = mobileGutterRefs[matchingHeader.id];
-						if (mobileGutterEl && mobileGutterEl.children.length > 0) {
-							// Insert after the header element
-							el.insertAdjacentElement('afterend', mobileGutterEl);
+							// Move mobile gutter content after this header
+							const mobileGutterEl = mobileGutterRefs[matchingHeader.id];
+							if (mobileGutterEl && mobileGutterEl.children.length > 0) {
+								// Insert after the header element
+								el.insertAdjacentElement('afterend', mobileGutterEl);
+							}
 						}
-					}
-				});
+					});
+				}
 			}
-		}
+		});
 	});
 
 	// Check if we have content for gutters
-	$: hasLeftGutter = data.page.gutterContent && data.page.gutterContent.length > 0;
-	$: hasRightGutter = data.page.headers && data.page.headers.length > 0;
-	$: hasGutters = hasLeftGutter || hasRightGutter;
+	let hasLeftGutter = $derived(data.page.gutterContent && data.page.gutterContent.length > 0);
+	let hasRightGutter = $derived(data.page.headers && data.page.headers.length > 0);
+	let hasGutters = $derived(hasLeftGutter || hasRightGutter);
 </script>
 
 <svelte:head>

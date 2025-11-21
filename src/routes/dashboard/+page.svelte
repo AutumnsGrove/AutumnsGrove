@@ -1,5 +1,5 @@
 <script>
-	import { onMount } from 'svelte';
+	import { untrack } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import Heatmap from './Heatmap.svelte';
 	import CollapsibleSection from '$lib/components/CollapsibleSection.svelte';
@@ -39,7 +39,7 @@
 	let sentinelElement = $state(null);
 
 	// Debounce timer for filter changes
-	let filterDebounceTimer = $state(null);
+	let filterDebounceTimer = null;
 	const FILTER_DEBOUNCE_MS = 300;
 
 	// Time range filter
@@ -110,9 +110,9 @@
 	let clickTimer = null;
 
 	// Track all timers for cleanup on unmount
-	let timerIds = $state(new Set());
-	let abortController = $state(null);
-	let commitsAbortController = $state(null);
+	let timerIds = new Set();
+	let abortController = null;
+	let commitsAbortController = null;
 	let isMounted = $state(false);
 
 	function scheduleTimeout(callback, delay) {
@@ -499,10 +499,15 @@
 		}
 	});
 
-	onMount(() => {
-		isMounted = true;
-		// Auto-load stats on page mount
-		fetchStats();
+	$effect(() => {
+		// Use untrack() to prevent this effect from re-running when isMounted or other state changes.
+		// Without untrack(), writing to isMounted and calling fetchStats (which updates state)
+		// would cause infinite re-runs. This ensures initialization runs only once on component mount.
+		untrack(() => {
+			isMounted = true;
+			// Auto-load stats on page mount
+			fetchStats();
+		});
 
 		return () => {
 			isMounted = false;

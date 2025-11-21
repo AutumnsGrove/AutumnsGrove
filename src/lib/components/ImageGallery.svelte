@@ -16,7 +16,7 @@
 	let currentIndex = $state(0);
 	let touchStartX = $state(0);
 	let touchEndX = $state(0);
-	let galleryElement;
+	let galleryElement = $state();
 
 	// Lightbox state
 	let lightboxOpen = $state(false);

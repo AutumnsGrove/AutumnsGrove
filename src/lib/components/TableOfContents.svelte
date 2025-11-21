@@ -1,7 +1,7 @@
 <script>
-	export let headers = [];
+	let { headers = [] } = $props();
 
-	let activeId = '';
+	let activeId = $state('');
 
 	// Set up intersection observer to track active section
 	function setupScrollTracking() {
@@ -32,9 +32,8 @@
 		return () => observer.disconnect();
 	}
 
-	// Run setup when component mounts
-	import { onMount } from 'svelte';
-	onMount(() => {
+	// Set up scroll tracking (runs on mount and when headers change)
+	$effect(() => {
 		const cleanup = setupScrollTracking();
 		return cleanup;
 	});
@@ -58,7 +57,7 @@
 				>
 					<button
 						type="button"
-						on:click={() => scrollToHeader(header.id)}
+						onclick={() => scrollToHeader(header.id)}
 						class="toc-link"
 					>
 						{header.text}

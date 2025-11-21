@@ -1,13 +1,12 @@
 <script>
-	import { onMount, tick } from 'svelte';
+	import { tick } from 'svelte';
 	import GutterItem from './GutterItem.svelte';
 
-	export let items = [];
-	export let headers = [];
+	let { items = [], headers = [] } = $props();
 
-	let gutterElement;
-	let itemPositions = {};
-	let anchorGroupElements = {};
+	let gutterElement = $state();
+	let itemPositions = $state({});
+	let anchorGroupElements = $state({});
 
 	// Group items by their anchor
 	function getItemsForAnchor(anchor) {
@@ -59,17 +58,24 @@
 				lastBottom = desiredTop + groupHeight;
 			}
 		});
-
-		itemPositions = { ...itemPositions }; // Trigger reactivity
 	}
 
-	onMount(() => {
-		// Initial positioning after content renders
-		setTimeout(updatePositions, 150);
-
+	$effect(() => {
 		// Update on resize
 		window.addEventListener('resize', updatePositions);
-		return () => window.removeEventListener('resize', updatePositions);
+		return () => {
+			window.removeEventListener('resize', updatePositions);
+		};
+	});
+
+	// Handle initial positioning and re-calculate when items or headers change
+	$effect(() => {
+		// Explicitly reference dependencies to track changes
+		items;
+		headers;
+		// Delay slightly to allow DOM updates
+		const timeout = setTimeout(updatePositions, 150);
+		return () => clearTimeout(timeout);
 	});
 </script>
 
