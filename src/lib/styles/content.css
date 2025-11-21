@@ -30,9 +30,9 @@
 	--color-border: #e0e0e0;
 
 	/* Dark mode overrides */
-	--color-text-dark: #e0e0e0;
-	--color-text-muted-dark: #aaa;
-	--color-text-subtle-dark: #999;
+	--color-text-dark: #f0f0f0;
+	--color-text-muted-dark: #d0d0d0;
+	--color-text-subtle-dark: #b8b8b8;
 	--color-bg-secondary-dark: #1a1a1a;
 	--color-bg-tertiary-dark: #2a2a2a;
 	--color-border-dark: #333;
