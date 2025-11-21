@@ -27,6 +27,16 @@
 	let activityData = $state([]);
 	let lastRefreshed = $state(null);
 
+	// Commit pagination state
+	let commits = $state([]);
+	let commitsPage = $state(1);
+	let commitsLoading = $state(false);
+	let commitsHasMore = $state(true);
+	let commitsTotalPages = $state(0);
+	let commitsLimitReached = $state(false);
+	const MAX_PAGES = 10;
+	let sentinelElement = $state(null);
+
 	// Time range filter
 	let timeRange = $state('all'); // 'all', '6months', '30days', 'today'
 
@@ -221,6 +231,13 @@
 				}
 			});
 
+			// Fetch initial commits with pagination
+			commits = [];
+			commitsPage = 1;
+			commitsHasMore = true;
+			commitsLimitReached = false;
+			await fetchCommits(1, true);
+
 			// Update last refreshed timestamp
 			lastRefreshed = new Date();
 		} catch (e) {
@@ -359,6 +376,86 @@
 		return repo?.description || '';
 	}
 
+	// Fetch paginated commits
+	async function fetchCommits(page = 1, reset = false) {
+		if (commitsLoading) return;
+		if (!reset && !commitsHasMore) return;
+		if (page > MAX_PAGES) {
+			commitsLimitReached = true;
+			commitsHasMore = false;
+			return;
+		}
+
+		commitsLoading = true;
+
+		try {
+			const since = getSinceDate();
+			let url = `/api/git/commits/${USERNAME}?repo_limit=${repoLimit}&page=${page}&per_page=20`;
+			if (since) {
+				url += `&since=${encodeURIComponent(since)}`;
+			}
+
+			const response = await fetch(url, { signal: abortController?.signal });
+			if (!response.ok) {
+				throw new Error('Failed to fetch commits');
+			}
+
+			const data = await response.json();
+
+			if (reset) {
+				commits = data.commits || [];
+			} else {
+				commits = [...commits, ...(data.commits || [])];
+			}
+
+			commitsPage = data.page;
+			commitsTotalPages = data.total_pages;
+			commitsHasMore = data.has_more && data.page < MAX_PAGES;
+			commitsLimitReached = data.page >= MAX_PAGES && data.has_more;
+		} catch (e) {
+			if (e.name === 'AbortError') return;
+			console.error('Error fetching commits:', e);
+		} finally {
+			commitsLoading = false;
+		}
+	}
+
+	// Load more commits (called by IntersectionObserver)
+	function loadMoreCommits() {
+		if (!commitsLoading && commitsHasMore && !commitsLimitReached) {
+			fetchCommits(commitsPage + 1);
+		}
+	}
+
+	// Set up IntersectionObserver for infinite scroll
+	let observer = null;
+
+	function setupIntersectionObserver() {
+		if (observer) {
+			observer.disconnect();
+		}
+
+		observer = new IntersectionObserver(
+			(entries) => {
+				if (entries[0].isIntersecting) {
+					loadMoreCommits();
+				}
+			},
+			{ threshold: 0.1 }
+		);
+
+		if (sentinelElement) {
+			observer.observe(sentinelElement);
+		}
+	}
+
+	// Watch sentinelElement changes
+	$effect(() => {
+		if (sentinelElement && isMounted) {
+			setupIntersectionObserver();
+		}
+	});
+
 	onMount(() => {
 		isMounted = true;
 		// Auto-load stats on page mount
@@ -375,6 +472,10 @@
 			// Destroy chart instances
 			if (hoursChartInstance) hoursChartInstance.destroy();
 			if (daysChartInstance) daysChartInstance.destroy();
+			// Disconnect observer
+			if (observer) {
+				observer.disconnect();
+			}
 		};
 	});
 </script>
@@ -542,7 +643,7 @@
 				<h3><FolderGit2 size={20} /> Top Repositories</h3>
 				{#if Object.keys(stats.commits_by_repo).length > 0}
 					<div class="repo-list">
-						{#each Object.entries(stats.commits_by_repo) as [repo, commits]}
+						{#each Object.entries(stats.commits_by_repo) as [repo, commitCount]}
 							<div class="repo-item">
 								<div class="repo-info">
 									<span class="repo-name">{repo}</span>
@@ -550,7 +651,7 @@
 										<span class="repo-description">{getRepoDescription(repo)}</span>
 									{/if}
 								</div>
-								<span class="repo-commits">{commits} commits</span>
+								<span class="repo-commits">{commitCount} commits</span>
 							</div>
 						{/each}
 					</div>
@@ -562,9 +663,9 @@
 			<!-- Recent Commits -->
 			<section class="card">
 				<h3><GitCommit size={20} /> Recent Commits</h3>
-				{#if stats.recent_commits && stats.recent_commits.length > 0}
+				{#if commits && commits.length > 0}
 					<div class="commits-list-container">
-						{#each stats.recent_commits as commit}
+						{#each commits as commit}
 							<div class="commit-item">
 								<div class="commit-header">
 									<span class="commit-sha">{commit.sha}</span>
@@ -578,9 +679,30 @@
 								</div>
 							</div>
 						{/each}
+
+						<!-- Loading indicator -->
+						{#if commitsLoading}
+							<div class="commits-loading">Loading more commits...</div>
+						{/if}
+
+						<!-- Limit reached message -->
+						{#if commitsLimitReached}
+							<div class="commits-limit-reached">
+								You've hit the limit! There's more commits out there, but that's all you can see here.
+							</div>
+						{:else if !commitsHasMore && commits.length > 0}
+							<div class="commits-end">No more commits to load.</div>
+						{/if}
+
+						<!-- Sentinel element for infinite scroll -->
+						{#if commitsHasMore && !commitsLimitReached}
+							<div bind:this={sentinelElement} class="commits-sentinel"></div>
+						{/if}
 					</div>
-				{:else}
+				{:else if !commitsLoading}
 					<p>No recent commits found.</p>
+				{:else}
+					<div class="commits-loading">Loading commits...</div>
 				{/if}
 			</section>
 
@@ -1071,7 +1193,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
-		max-height: 520px;
+		max-height: 600px;
 		overflow-y: auto;
 		padding-right: 0.5rem;
 	}
@@ -1096,6 +1218,50 @@
 
 	:global(.dark) .commits-list-container::-webkit-scrollbar-thumb {
 		background: #555;
+	}
+
+	/* Pagination elements */
+	.commits-loading {
+		text-align: center;
+		padding: 1rem;
+		color: #666;
+		font-style: italic;
+	}
+
+	:global(.dark) .commits-loading {
+		color: #aaa;
+	}
+
+	.commits-limit-reached {
+		text-align: center;
+		padding: 1.5rem 1rem;
+		background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+		border-radius: 8px;
+		color: #856404;
+		font-weight: 500;
+		border: 1px solid #ffc107;
+	}
+
+	:global(.dark) .commits-limit-reached {
+		background: linear-gradient(135deg, #3d3520 0%, #4a4025 100%);
+		color: #ffc107;
+		border-color: #ffc107;
+	}
+
+	.commits-end {
+		text-align: center;
+		padding: 1rem;
+		color: #666;
+		font-size: 0.9rem;
+	}
+
+	:global(.dark) .commits-end {
+		color: #888;
+	}
+
+	.commits-sentinel {
+		height: 20px;
+		width: 100%;
 	}
 
 	.commit-item {

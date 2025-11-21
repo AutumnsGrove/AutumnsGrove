@@ -271,3 +271,154 @@ export function getCacheKey(type, username, params = {}) {
     .join("&");
   return `github:${type}:${username}${paramStr ? ":" + paramStr : ""}`;
 }
+
+// GraphQL query for fetching commits with pagination support
+export const GRAPHQL_COMMITS_PAGINATED_QUERY = `
+query($username: String!, $first: Int!, $since: GitTimestamp) {
+  user(login: $username) {
+    repositories(first: $first, orderBy: {field: UPDATED_AT, direction: DESC}) {
+      nodes {
+        name
+        owner {
+          login
+        }
+        defaultBranchRef {
+          target {
+            ... on Commit {
+              history(first: 100, since: $since) {
+                nodes {
+                  oid
+                  message
+                  committedDate
+                  additions
+                  deletions
+                  author {
+                    user {
+                      login
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+`;
+
+/**
+ * Fetch paginated commits using GitHub GraphQL API
+ * @param {string} username
+ * @param {number} repoLimit - Number of repos to analyze
+ * @param {string} token
+ * @param {number} page - Page number (1-indexed)
+ * @param {number} perPage - Items per page
+ * @param {string|null} since - ISO date string for filtering commits (optional)
+ * @returns {Promise<object>}
+ */
+export async function fetchCommitsPaginated(username, repoLimit, token, page = 1, perPage = 20, since = null) {
+  // Build variables, only include since if provided
+  const variables = {
+    username,
+    first: repoLimit,
+  };
+  if (since) {
+    variables.since = since;
+  }
+
+  const response = await fetch(GITHUB_GRAPHQL_URL, {
+    method: "POST",
+    headers: getGraphQLHeaders(token),
+    body: JSON.stringify({
+      query: GRAPHQL_COMMITS_PAGINATED_QUERY,
+      variables,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    console.error("GitHub GraphQL error response:", errorText);
+    throw new Error(
+      `GitHub GraphQL API error: ${response.status} - ${errorText.substring(0, 200)}`,
+    );
+  }
+
+  const data = await response.json();
+
+  if (data.errors) {
+    const errorMsg = data.errors[0]?.message || "Unknown GraphQL error";
+    console.error("GraphQL errors:", data.errors);
+    throw new Error(`GraphQL error: ${errorMsg}`);
+  }
+
+  const userData = data?.data?.user;
+  if (!userData) {
+    throw new Error("User not found");
+  }
+
+  const repos = userData.repositories?.nodes || [];
+
+  // Collect all commits from all repos
+  const allCommits = [];
+
+  for (const repo of repos) {
+    if (!repo) continue;
+
+    const repoName = repo.name || "unknown";
+    const branchRef = repo.defaultBranchRef;
+
+    if (!branchRef) continue;
+
+    const target = branchRef.target || {};
+    const history = target.history || {};
+    const commits = history.nodes || [];
+
+    for (const commit of commits) {
+      if (!commit) continue;
+
+      // Filter to only this user's commits
+      const author = commit.author || {};
+      const authorUser = author.user || {};
+      const commitAuthor = authorUser.login || "";
+
+      if (commitAuthor.toLowerCase() !== username.toLowerCase()) {
+        continue;
+      }
+
+      const commitDate = commit.committedDate;
+      const message = commit.message || "";
+      // Get first 3 lines of commit message
+      const messageLines = message.split("\n").slice(0, 3).join("\n").substring(0, 300);
+
+      allCommits.push({
+        sha: (commit.oid || "").substring(0, 7),
+        message: messageLines,
+        date: commitDate,
+        repo: repoName,
+        additions: commit.additions || 0,
+        deletions: commit.deletions || 0,
+      });
+    }
+  }
+
+  // Sort all commits by date (newest first)
+  allCommits.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  // Calculate pagination
+  const totalCommits = allCommits.length;
+  const totalPages = Math.ceil(totalCommits / perPage);
+  const startIndex = (page - 1) * perPage;
+  const endIndex = startIndex + perPage;
+  const commits = allCommits.slice(startIndex, endIndex);
+
+  return {
+    commits,
+    page,
+    per_page: perPage,
+    total_commits: totalCommits,
+    total_pages: totalPages,
+    has_more: page < totalPages,
+  };
+}
