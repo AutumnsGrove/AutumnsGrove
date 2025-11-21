@@ -24,6 +24,19 @@
 	// Zoom state: 0 = normal, 1 = medium zoom, 2 = max zoom
 	let zoomLevel = $state(0);
 
+	// Pan/drag state for zoomed images
+	let isDragging = $state(false);
+	let panX = $state(0);
+	let panY = $state(0);
+	let dragStartX = $state(0);
+	let dragStartY = $state(0);
+	let dragStartPanX = $state(0);
+	let dragStartPanY = $state(0);
+	let totalDragDistance = $state(0);
+
+	// Derived scale value based on zoom level
+	let scaleValue = $derived(zoomLevel === 0 ? 1 : zoomLevel === 1 ? 1.5 : 2.5);
+
 	/**
 	 * Safely get the current image, handling race conditions when images prop changes
 	 * Returns a fallback object if the current index is invalid to prevent undefined access
@@ -51,10 +64,87 @@
 	function closeLightbox() {
 		lightboxOpen = false;
 		zoomLevel = 0;
+		panX = 0;
+		panY = 0;
 	}
 
 	function cycleZoom() {
 		zoomLevel = (zoomLevel + 1) % 3;
+		// Reset pan when zooming out to level 0
+		if (zoomLevel === 0) {
+			panX = 0;
+			panY = 0;
+		}
+	}
+
+	// Mouse event handlers for drag/pan
+	function handleMouseDown(event) {
+		if (zoomLevel === 0) return;
+
+		isDragging = true;
+		dragStartX = event.clientX;
+		dragStartY = event.clientY;
+		dragStartPanX = panX;
+		dragStartPanY = panY;
+		totalDragDistance = 0;
+		event.preventDefault();
+	}
+
+	function handleMouseMove(event) {
+		if (!isDragging) return;
+
+		const deltaX = event.clientX - dragStartX;
+		const deltaY = event.clientY - dragStartY;
+
+		panX = dragStartPanX + deltaX;
+		panY = dragStartPanY + deltaY;
+		totalDragDistance += Math.abs(deltaX) + Math.abs(deltaY);
+	}
+
+	function handleMouseUp() {
+		isDragging = false;
+	}
+
+	// Touch event handlers for drag/pan on mobile
+	function handleImageTouchStart(event) {
+		if (zoomLevel === 0) return;
+
+		// Only handle single touch for panning
+		if (event.touches.length === 1) {
+			isDragging = true;
+			dragStartX = event.touches[0].clientX;
+			dragStartY = event.touches[0].clientY;
+			dragStartPanX = panX;
+			dragStartPanY = panY;
+			totalDragDistance = 0;
+			event.preventDefault();
+		}
+	}
+
+	function handleImageTouchMove(event) {
+		if (!isDragging || event.touches.length !== 1) return;
+
+		const deltaX = event.touches[0].clientX - dragStartX;
+		const deltaY = event.touches[0].clientY - dragStartY;
+
+		panX = dragStartPanX + deltaX;
+		panY = dragStartPanY + deltaY;
+		totalDragDistance += Math.abs(deltaX) + Math.abs(deltaY);
+		event.preventDefault();
+	}
+
+	function handleImageTouchEnd() {
+		isDragging = false;
+	}
+
+	// Click handler that distinguishes between click and drag
+	function handleImageClick(event) {
+		// If we dragged more than 5px, don't treat as click
+		if (totalDragDistance > 5) {
+			totalDragDistance = 0;
+			return;
+		}
+		cycleZoom();
 	}
 
 	// Navigation functions with cooldown to prevent double-tap
@@ -65,6 +155,8 @@
 		imageLoading = true;
 		imageError = false;
 		zoomLevel = 0;
+		panX = 0;
+		panY = 0;
 		currentIndex++;
 
 		setTimeout(() => {
@@ -79,6 +171,8 @@
 		imageLoading = true;
 		imageError = false;
 		zoomLevel = 0;
+		panX = 0;
+		panY = 0;
 		currentIndex--;
 
 		setTimeout(() => {
@@ -93,6 +187,8 @@
 		imageLoading = true;
 		imageError = false;
 		zoomLevel = 0;
+		panX = 0;
+		panY = 0;
 		currentIndex = index;
 
 		setTimeout(() => {
@@ -167,7 +263,11 @@
 	});
 </script>
 
-<svelte:window onkeydown={handleKeydown} />
+<svelte:window
+	onkeydown={handleKeydown}
+	onmousemove={handleMouseMove}
+	onmouseup={handleMouseUp}
+/>
 
 {#if images && images.length > 0}
 	<div
@@ -291,9 +391,14 @@
 					src={currentImage.url}
 					alt={currentImage.alt || `Image ${currentIndex + 1}`}
 					class="lightbox-image"
-					class:zoom-1={zoomLevel === 1}
-					class:zoom-2={zoomLevel === 2}
-					onclick={cycleZoom}
+					class:zoomed={zoomLevel > 0}
+					class:dragging={isDragging}
+					style="transform: translate({panX}px, {panY}px) scale({scaleValue})"
+					onmousedown={handleMouseDown}
+					ontouchstart={handleImageTouchStart}
+					ontouchmove={handleImageTouchMove}
+					ontouchend={handleImageTouchEnd}
+					onclick={handleImageClick}
 				/>
 
 				<!-- Navigation arrows in lightbox -->
@@ -628,16 +733,17 @@
 		border-radius: 4px;
 		cursor: zoom-in;
 		transition: transform 0.3s ease;
+		user-select: none;
+		-webkit-user-drag: none;
 	}
 
-	.lightbox-image.zoom-1 {
-		transform: scale(1.5);
-		cursor: zoom-in;
+	.lightbox-image.zoomed {
+		cursor: grab;
 	}
 
-	.lightbox-image.zoom-2 {
-		transform: scale(2.5);
-		cursor: zoom-out;
+	.lightbox-image.dragging {
+		cursor: grabbing;
+		transition: none;
 	}
 
 	.lightbox-caption {
