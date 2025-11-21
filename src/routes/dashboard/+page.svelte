@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import Heatmap from './Heatmap.svelte';
+	import CollapsibleSection from '$lib/components/CollapsibleSection.svelte';
 	import {
 		GitCommit,
 		Plus,
@@ -150,13 +151,6 @@
 	let daysChartInstance = null;
 	let hoursCanvas = $state(null);
 	let daysCanvas = $state(null);
-
-	// Explanation box state
-	let explanationExpanded = $state(false);
-
-	function toggleExplanation() {
-		explanationExpanded = !explanationExpanded;
-	}
 
 	async function fetchStats(bypassCache = false) {
 		// Abort any in-flight requests
@@ -397,41 +391,30 @@
 	</header>
 
 	<!-- Explanation Box for non-developers -->
-	<div class="explanation-box">
-		<button
-			class="explanation-toggle"
-			onclick={toggleExplanation}
-			aria-expanded={explanationExpanded}
-		>
-			<span class="explanation-title">What do these metrics mean?</span>
-			<span class="toggle-icon">{explanationExpanded ? '▼' : '▶'}</span>
-		</button>
-
-		{#if explanationExpanded}
-			<div class="explanation-content">
-				<div class="explanation-item">
-					<strong>Commits</strong>
-					<p>A commit is like a "save point" in code. Each commit captures a snapshot of changes made to the project. More commits = more active development.</p>
-				</div>
-				<div class="explanation-item">
-					<strong>Lines Added / Deleted</strong>
-					<p>These show how much code was written (added) or removed (deleted). High numbers indicate significant changes to the codebase.</p>
-				</div>
-				<div class="explanation-item">
-					<strong>Repositories</strong>
-					<p>A repository (repo) is a project folder that contains all code and history. Think of it like a folder for a specific project.</p>
-				</div>
-				<div class="explanation-item">
-					<strong>Heatmap</strong>
-					<p>The green grid shows coding activity over time. Darker squares = more commits on that day. It's like a calendar of productivity.</p>
-				</div>
-				<div class="explanation-item">
-					<strong>Charts</strong>
-					<p>The bar charts show when coding happens most - by hour of day and day of week. Useful for understanding work patterns.</p>
-				</div>
+	<CollapsibleSection title="What do these metrics mean?">
+		<div class="explanation-content">
+			<div class="explanation-item">
+				<strong>Commits</strong>
+				<p>A commit is like a "save point" in code. Each commit captures a snapshot of changes made to the project. More commits = more active development.</p>
 			</div>
-		{/if}
-	</div>
+			<div class="explanation-item">
+				<strong>Lines Added / Deleted</strong>
+				<p>These show how much code was written (added) or removed (deleted). High numbers indicate significant changes to the codebase.</p>
+			</div>
+			<div class="explanation-item">
+				<strong>Repositories</strong>
+				<p>A repository (repo) is a project folder that contains all code and history. Think of it like a folder for a specific project.</p>
+			</div>
+			<div class="explanation-item">
+				<strong>Heatmap</strong>
+				<p>The green grid shows coding activity over time. Darker squares = more commits on that day. It's like a calendar of productivity.</p>
+			</div>
+			<div class="explanation-item">
+				<strong>Charts</strong>
+				<p>The bar charts show when coding happens most - by hour of day and day of week. Useful for understanding work patterns.</p>
+			</div>
+		</div>
+	</CollapsibleSection>
 
 	{#if loading}
 		<div class="loading-indicator">Loading...</div>
@@ -637,67 +620,11 @@
 		color: #aaa;
 	}
 
-	/* Explanation Box */
-	.explanation-box {
-		margin-bottom: 1.5rem;
-		border: 1px solid #e0e0e0;
-		border-radius: 8px;
-		overflow: hidden;
-	}
-
-	:global(.dark) .explanation-box {
-		border-color: #3a3a3a;
-	}
-
-	.explanation-toggle {
-		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 0.75rem 1rem;
-		background: #f5f5f5;
-		border: none;
-		cursor: pointer;
-		font-size: 0.9rem;
-		font-weight: 500;
-		color: #333;
-		transition: background-color 0.2s;
-	}
-
-	:global(.dark) .explanation-toggle {
-		background: #2a2a2a;
-		color: #e0e0e0;
-	}
-
-	.explanation-toggle:hover {
-		background: #e8e8e8;
-	}
-
-	:global(.dark) .explanation-toggle:hover {
-		background: #333;
-	}
-
-	.explanation-title {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-
-	.explanation-box .toggle-icon {
-		font-size: 0.75rem;
-		transition: transform 0.2s;
-	}
-
+	/* Explanation Content */
 	.explanation-content {
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
-		padding: 1rem;
-		background: #fafafa;
-	}
-
-	:global(.dark) .explanation-content {
-		background: #1f1f1f;
 	}
 
 	.explanation-item {
