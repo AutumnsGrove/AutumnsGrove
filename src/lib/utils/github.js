@@ -62,9 +62,9 @@ export function getGraphQLHeaders(token) {
   };
 }
 
-// GraphQL query for fetching user commits with stats
+// GraphQL query for fetching user commits with stats (with optional date filter)
 export const GRAPHQL_USER_COMMITS_QUERY = `
-query($username: String!, $first: Int!) {
+query($username: String!, $first: Int!, $since: GitTimestamp) {
   user(login: $username) {
     repositories(first: $first, orderBy: {field: UPDATED_AT, direction: DESC}) {
       nodes {
@@ -75,7 +75,7 @@ query($username: String!, $first: Int!) {
         defaultBranchRef {
           target {
             ... on Commit {
-              history(first: 100) {
+              history(first: 100, since: $since) {
                 nodes {
                   oid
                   message
@@ -103,9 +103,10 @@ query($username: String!, $first: Int!) {
  * @param {string} username
  * @param {number} limit
  * @param {string} token
+ * @param {string|null} since - ISO date string for filtering commits (optional)
  * @returns {Promise<object>}
  */
-export async function fetchStatsGraphQL(username, limit, token) {
+export async function fetchStatsGraphQL(username, limit, token, since = null) {
   const stats = {
     total_commits: 0,
     total_additions: 0,
@@ -115,6 +116,7 @@ export async function fetchStatsGraphQL(username, limit, token) {
     commits_by_repo: {},
     recent_commits: [],
     repos_analyzed: 0,
+    time_range: since ? 'filtered' : 'all_time',
   };
 
   // Initialize hour buckets
@@ -136,15 +138,21 @@ export async function fetchStatsGraphQL(username, limit, token) {
     stats.commits_by_day[day] = 0;
   });
 
+  // Build variables, only include since if provided
+  const variables = {
+    username,
+    first: limit,
+  };
+  if (since) {
+    variables.since = since;
+  }
+
   const response = await fetch(GITHUB_GRAPHQL_URL, {
     method: "POST",
     headers: getGraphQLHeaders(token),
     body: JSON.stringify({
       query: GRAPHQL_USER_COMMITS_QUERY,
-      variables: {
-        username,
-        first: limit,
-      },
+      variables,
     }),
   });
 

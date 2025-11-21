@@ -2,6 +2,17 @@
 	import { onMount } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import Heatmap from './Heatmap.svelte';
+	import {
+		GitCommit,
+		Plus,
+		Minus,
+		FolderGit2,
+		Calendar,
+		Clock,
+		CalendarDays,
+		Code,
+		ExternalLink
+	} from 'lucide-svelte';
 
 	// Hardcoded to your account
 	const USERNAME = 'AutumnsGrove';
@@ -12,6 +23,28 @@
 	let stats = $state(null);
 	let reposData = $state([]);
 	let activityData = $state([]);
+
+	// Time range filter
+	let timeRange = $state('all'); // 'all', '6months', '30days'
+
+	// Calculate the 'since' date based on selected time range
+	function getSinceDate() {
+		if (timeRange === 'all') return null;
+
+		const now = new Date();
+		if (timeRange === '30days') {
+			now.setDate(now.getDate() - 30);
+		} else if (timeRange === '6months') {
+			now.setMonth(now.getMonth() - 6);
+		}
+		return now.toISOString();
+	}
+
+	// Handle time range change
+	function handleTimeRangeChange(event) {
+		timeRange = event.target.value;
+		fetchStats();
+	}
 
 	// Refresh rate limiting (5 minutes = 300000ms)
 	const REFRESH_COOLDOWN = 5 * 60 * 1000;
@@ -113,10 +146,17 @@
 		error = '';
 
 		try {
+			// Build stats URL with time range filter
+			const since = getSinceDate();
+			let statsUrl = `/api/git/stats/${USERNAME}?limit=15`;
+			if (since) {
+				statsUrl += `&since=${encodeURIComponent(since)}`;
+			}
+
 			// Fetch all data in parallel for better performance
 			const [userResponse, statsResponse, reposResponse, contributionsResponse] = await Promise.all([
 				fetch(`/api/git/user/${USERNAME}`, { signal }),
-				fetch(`/api/git/stats/${USERNAME}?limit=15`, { signal }),
+				fetch(statsUrl, { signal }),
 				fetch(`/api/git/repos/${USERNAME}`, { signal }),
 				fetch(`/api/git/contributions/${USERNAME}`, { signal })
 			]);
@@ -352,21 +392,36 @@
 				{/if}
 			</section>
 
+			<!-- Time Range Selector -->
+			<div class="time-range-selector">
+				<Calendar size={18} />
+				<label for="time-range">Time Range:</label>
+				<select id="time-range" value={timeRange} onchange={handleTimeRangeChange}>
+					<option value="all">All Time</option>
+					<option value="6months">Last 6 Months</option>
+					<option value="30days">Last 30 Days</option>
+				</select>
+			</div>
+
 			<!-- Stats Cards -->
 			<div class="stats-grid">
 				<div class="stat-card">
+					<div class="stat-icon"><GitCommit size={24} /></div>
 					<div class="stat-value">{formatNumber(stats.total_commits)}</div>
 					<div class="stat-label">Commits (Top {stats.repos_analyzed} Repos)</div>
 				</div>
 				<div class="stat-card">
+					<div class="stat-icon additions"><Plus size={24} /></div>
 					<div class="stat-value additions">+{formatNumber(stats.total_additions)}</div>
 					<div class="stat-label">Lines Added</div>
 				</div>
 				<div class="stat-card">
+					<div class="stat-icon deletions"><Minus size={24} /></div>
 					<div class="stat-value deletions">-{formatNumber(stats.total_deletions)}</div>
 					<div class="stat-label">Lines Deleted</div>
 				</div>
 				<div class="stat-card">
+					<div class="stat-icon"><FolderGit2 size={24} /></div>
 					<div class="stat-value">{stats.repos_analyzed}</div>
 					<div class="stat-label">Repos Analyzed</div>
 				</div>
@@ -375,14 +430,14 @@
 			<!-- Charts -->
 			<div class="charts-grid">
 				<section class="card chart-card">
-					<h3>When Do I Code?</h3>
+					<h3><Clock size={20} /> When Do I Code?</h3>
 					<div class="chart-container">
 						<canvas bind:this={hoursCanvas}></canvas>
 					</div>
 				</section>
 
 				<section class="card chart-card">
-					<h3>Most Active Days</h3>
+					<h3><CalendarDays size={20} /> Most Active Days</h3>
 					<div class="chart-container">
 						<canvas bind:this={daysCanvas}></canvas>
 					</div>
@@ -394,7 +449,7 @@
 
 			<!-- Top Repos -->
 			<section class="card">
-				<h3>Top Repositories</h3>
+				<h3><FolderGit2 size={20} /> Top Repositories</h3>
 				{#if Object.keys(stats.commits_by_repo).length > 0}
 					<div class="repo-list">
 						{#each Object.entries(stats.commits_by_repo) as [repo, commits]}
@@ -416,7 +471,7 @@
 
 			<!-- Recent Commits -->
 			<section class="card">
-				<h3>Recent Commits</h3>
+				<h3><GitCommit size={20} /> Recent Commits</h3>
 				{#if stats.recent_commits && stats.recent_commits.length > 0}
 					<div class="commits-list-container">
 						{#each stats.recent_commits as commit}
@@ -443,7 +498,7 @@
 			<footer class="dashboard-footer">
 				<p>
 					<a href="https://github.com/AutumnsGrove/AutumnsGrove" target="_blank" rel="noopener noreferrer">
-						View Source Code
+						<Code size={16} /> View Source Code <ExternalLink size={14} />
 					</a>
 				</p>
 				<p class="attribution">Stats analyzed with Claude AI</p>
@@ -573,6 +628,69 @@
 		color: #5cb85f;
 	}
 
+	/* Time Range Selector */
+	.time-range-selector {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin-bottom: 1.5rem;
+		padding: 0.75rem 1rem;
+		background: white;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+	}
+
+	:global(.dark) .time-range-selector {
+		background: #2a2a2a;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+	}
+
+	.time-range-selector label {
+		font-weight: 500;
+		color: #2c5f2d;
+		font-size: 0.9rem;
+	}
+
+	:global(.dark) .time-range-selector label {
+		color: #5cb85f;
+	}
+
+	.time-range-selector select {
+		padding: 0.5rem 0.75rem;
+		border: 1px solid #ddd;
+		border-radius: 6px;
+		background: white;
+		color: #333;
+		font-size: 0.9rem;
+		cursor: pointer;
+		transition: border-color 0.2s ease;
+	}
+
+	.time-range-selector select:hover {
+		border-color: #5cb85f;
+	}
+
+	.time-range-selector select:focus {
+		outline: none;
+		border-color: #2c5f2d;
+		box-shadow: 0 0 0 2px rgba(92, 184, 95, 0.2);
+	}
+
+	:global(.dark) .time-range-selector select {
+		background: #333;
+		border-color: #444;
+		color: #eee;
+	}
+
+	:global(.dark) .time-range-selector select:hover {
+		border-color: #5cb85f;
+	}
+
+	:global(.dark) .time-range-selector select:focus {
+		border-color: #5cb85f;
+		box-shadow: 0 0 0 2px rgba(92, 184, 95, 0.3);
+	}
+
 	.user-details {
 		display: flex;
 		flex-direction: column;
@@ -628,6 +746,9 @@
 	.card h3 {
 		margin: 0 0 1rem;
 		color: #2c5f2d;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 	}
 
 	:global(.dark) .card h3 {
@@ -652,6 +773,23 @@
 	:global(.dark) .stat-card {
 		background: #2a2a2a;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+	}
+
+	.stat-icon {
+		color: #2c5f2d;
+		margin-bottom: 0.5rem;
+	}
+
+	:global(.dark) .stat-icon {
+		color: #5cb85f;
+	}
+
+	.stat-icon.additions {
+		color: #28a745;
+	}
+
+	.stat-icon.deletions {
+		color: #dc3545;
 	}
 
 	.stat-value {
@@ -862,6 +1000,9 @@
 		color: #2c5f2d;
 		text-decoration: none;
 		font-weight: 500;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
 	}
 
 	.dashboard-footer a:hover {

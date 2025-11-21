@@ -30,8 +30,15 @@ export async function GET({ params, url, platform }) {
     let limit = parseInt(url.searchParams.get("limit") || "10", 10);
     limit = Math.max(MIN_LIMIT, Math.min(limit, MAX_LIMIT));
 
-    // Check cache first
-    const cacheKey = getCacheKey("stats", username, { limit });
+    // Parse since parameter (ISO date string for time range filtering)
+    const since = url.searchParams.get("since") || null;
+
+    // Check cache first (include since in cache key)
+    const cacheParams = { limit };
+    if (since) {
+      cacheParams.since = since;
+    }
+    const cacheKey = getCacheKey("stats", username, cacheParams);
     if (kv) {
       const cached = await kv.get(cacheKey, { type: "json" });
       if (cached) {
@@ -40,7 +47,7 @@ export async function GET({ params, url, platform }) {
     }
 
     // Fetch stats using GraphQL
-    const stats = await fetchStatsGraphQL(username, limit, token);
+    const stats = await fetchStatsGraphQL(username, limit, token, since);
 
     // Cache the result
     if (kv) {

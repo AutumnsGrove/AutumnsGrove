@@ -61,6 +61,11 @@
 - [x] Redesigned recent commits with scrollable container
 - [x] Created Heatmap component (needs debugging)
 
+### Dashboard Data Expansion (Nov 20, 2025)
+- [x] Task A: Time range selector UI (All Time / 6 Months / 30 Days)
+- [x] Task B: Date filtering in stats API with `since` parameter
+- [x] Lucide icons throughout dashboard (stats cards, section headers, footer)
+
 ### Backend Systems
 - [x] D1 schema designed (src/lib/db/schema.sql)
 - [x] Claude Haiku 4.5 integration for AI analysis
@@ -76,23 +81,13 @@
 
 ## 🔲 Remaining Tasks
 
-### HIGH PRIORITY: Dashboard Data Expansion
+### MEDIUM PRIORITY: Dashboard Data Expansion
 
 **Goal:** Show stats from ALL repos with time range filtering
 
-**Current limitation:** Only fetches 15 most recently updated repos, 100 commits each (max ~1500 commits)
+**Current state:** Time range filtering implemented! Fetches 15 most recently updated repos, 100 commits each.
 
 ---
-
-#### Task A: Add Time Range Selector UI
-- [ ] Create dropdown component with options: Last 30 days, Last 6 months, All time
-- [ ] Place selector above stats cards on dashboard
-- [ ] Store selected range in component state
-
-#### Task B: Add Date Filtering to Stats API
-- [ ] Accept `since` query parameter in `/api/git/stats/[username]`
-- [ ] Modify GraphQL query: `history(first: 100, since: "2024-05-01T00:00:00Z")`
-- [ ] Return only commits within selected time range
 
 #### Task C: Paginate to Fetch All Repos (can defer)
 - [ ] Use GraphQL cursor pagination (`after: $cursor`, `hasNextPage`)
@@ -195,7 +190,7 @@ Additions:   ██████████ AutumnsGrove (5000)
 - [ ] Color scheme tweaks
 - [ ] Mobile responsiveness improvements
 - [ ] Loading states and animations
-- [ ] Add icons throughout (navigation, stats cards, sections)
+- [x] Add icons throughout (navigation, stats cards, sections) - Done with Lucide!
 
 ---
 
@@ -206,6 +201,34 @@ Additions:   ██████████ AutumnsGrove (5000)
 - [ ] Lazy-load Chart.js (reduce initial bundle size)
 - [ ] Mobile optimization for charts
 - [ ] Add error boundaries for graceful failures
+
+---
+
+## 💡 Future Ideas & Enhancements
+
+### Icons
+- **[Lucide](https://lucide.dev/)**: Icon library with excellent Svelte integration
+- Clean, consistent icon set for UI elements
+
+### UI & Styling
+- **[shadcn-svelte](https://github.com/huntabyte/shadcn-svelte)**: Pre-built accessible components
+- **Tailwind CSS**: Utility-first CSS framework (if needed for custom styling)
+
+### Image Optimization
+- **[@sveltejs/enhanced-img](https://svelte.dev/docs/kit/images#sveltejs-enhanced-img)**: Built-in SvelteKit image optimization
+
+### User Authentication (Far Future)
+- **[Better Auth](https://www.better-auth.com/)**: Modern auth library
+- **[Supabase SSR](https://github.com/supabase/ssr)**: Supabase auth with SSR support
+- Features: User login, comments on posts, likes/upvotes
+
+### Inspiration Websites
+- **https://マリウス.com/collection/make/**: Simple hacker-like aesthetic, great header, nice image handling
+- **https://joshtronic.com/**: Incredibly simple text-focused design
+- **https://bagerbach.com/**: Another clean, simple blog
+
+### Learning Resources
+- [Svelte Packages](https://svelte.dev/packages) - Main source for Svelte ecosystem packages
 
 ---
 
@@ -256,13 +279,14 @@ When you return to work on this project:
    ```
 
 2. **Test the deployed dashboard** at https://autumnsgrove.com/dashboard
+   - Test time range selector (All Time / 6 Months / 30 Days)
+   - Verify icons display correctly
+   - Check dark mode compatibility
 
-3. **Pick a task from HIGH PRIORITY:**
-   - Task A: Time range selector UI
-   - Task B: Date filtering in stats API
-   - Task C: Repo pagination (can defer)
-
-4. **Optional:** Work on Project Comparison Charts if time allows
+3. **Pick a task from remaining items:**
+   - Project Comparison Charts (compare repos side-by-side)
+   - Task C: Repo pagination (if more coverage needed)
+   - UI polish (loading states, animations, mobile tweaks)
 
 ---
 
