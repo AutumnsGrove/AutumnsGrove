@@ -275,7 +275,6 @@
 		<div
 			class="lightbox-backdrop"
 			onclick={(e) => e.target === e.currentTarget && closeLightbox()}
-			onkeydown={(e) => e.key === 'Escape' && closeLightbox()}
 			role="dialog"
 			aria-modal="true"
 			aria-label="Image viewer"
@@ -287,11 +286,14 @@
 				</svg>
 			</button>
 
-			<div class="lightbox-content">
+			<div class="lightbox-content" onclick={(e) => e.target === e.currentTarget && closeLightbox()}>
 				<img
 					src={currentImage.url}
 					alt={currentImage.alt || `Image ${currentIndex + 1}`}
 					class="lightbox-image"
+					class:zoom-1={zoomLevel === 1}
+					class:zoom-2={zoomLevel === 2}
+					onclick={cycleZoom}
 				/>
 
 				<!-- Navigation arrows in lightbox -->
@@ -616,6 +618,7 @@
 		flex: 1;
 		width: 100%;
 		max-height: calc(100vh - 140px);
+		overflow: auto;
 	}
 
 	.lightbox-image {
@@ -623,6 +626,18 @@
 		max-height: calc(100vh - 140px);
 		object-fit: contain;
 		border-radius: 4px;
+		cursor: zoom-in;
+		transition: transform 0.3s ease;
+	}
+
+	.lightbox-image.zoom-1 {
+		transform: scale(1.5);
+		cursor: zoom-in;
+	}
+
+	.lightbox-image.zoom-2 {
+		transform: scale(2.5);
+		cursor: zoom-out;
 	}
 
 	.lightbox-caption {
