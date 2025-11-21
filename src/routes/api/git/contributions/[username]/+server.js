@@ -1,7 +1,7 @@
 import { json, error } from "@sveltejs/kit";
 import {
   validateUsername,
-  getHeaders,
+  getGraphQLHeaders,
   getCacheKey,
 } from "$lib/utils/github.js";
 
@@ -12,7 +12,7 @@ export const prerender = false;
  * Returns the same data GitHub uses for their contribution graph
  * @type {import('./$types').RequestHandler}
  */
-export async function GET({ params, platform }) {
+export async function GET({ params, url, platform }) {
   try {
     const username = validateUsername(params.username);
     const token = platform?.env?.GITHUB_TOKEN;
@@ -22,9 +22,12 @@ export async function GET({ params, platform }) {
       throw error(401, "GitHub token not configured");
     }
 
+    // Parse bypass_cache parameter (for forced refresh)
+    const bypassCache = url.searchParams.get("bypass_cache") === "true";
+
     // Check cache (1 hour)
     const cacheKey = getCacheKey("contributions", username);
-    if (kv) {
+    if (kv && !bypassCache) {
       const cached = await kv.get(cacheKey, { type: "json" });
       if (cached) {
         return json({ ...cached, cached: true });
@@ -53,7 +56,7 @@ export async function GET({ params, platform }) {
 
     const response = await fetch("https://api.github.com/graphql", {
       method: "POST",
-      headers: getHeaders(token),
+      headers: getGraphQLHeaders(token),
       body: JSON.stringify({
         query,
         variables: { username },

@@ -33,13 +33,16 @@ export async function GET({ params, url, platform }) {
     // Parse since parameter (ISO date string for time range filtering)
     const since = url.searchParams.get("since") || null;
 
+    // Parse bypass_cache parameter (for forced refresh)
+    const bypassCache = url.searchParams.get("bypass_cache") === "true";
+
     // Check cache first (include since in cache key)
     const cacheParams = { limit };
     if (since) {
       cacheParams.since = since;
     }
     const cacheKey = getCacheKey("stats", username, cacheParams);
-    if (kv) {
+    if (kv && !bypassCache) {
       const cached = await kv.get(cacheKey, { type: "json" });
       if (cached) {
         return json({ ...cached, cached: true });

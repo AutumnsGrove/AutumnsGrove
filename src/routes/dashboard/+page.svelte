@@ -27,7 +27,11 @@
 	// Time range filter
 	let timeRange = $state('all'); // 'all', '6months', '30days'
 
+	// Repo limit (how many repos to analyze)
+	let repoLimit = $state(15); // Default to 15, max is 50 (GitHub API limit)
+
 	// Calculate the 'since' date based on selected time range
+	// Normalized to start of day for consistent caching
 	function getSinceDate() {
 		if (timeRange === 'all') return null;
 
@@ -37,12 +41,20 @@
 		} else if (timeRange === '6months') {
 			now.setMonth(now.getMonth() - 6);
 		}
+		// Normalize to start of day (UTC) for better cache efficiency
+		now.setUTCHours(0, 0, 0, 0);
 		return now.toISOString();
 	}
 
 	// Handle time range change
 	function handleTimeRangeChange(event) {
 		timeRange = event.target.value;
+		fetchStats();
+	}
+
+	// Handle repo limit change
+	function handleRepoLimitChange(event) {
+		repoLimit = parseInt(event.target.value, 10);
 		fetchStats();
 	}
 
@@ -123,7 +135,7 @@
 		console.log(`[Dashboard Refresh] Est. cost: 3 GitHub API calls`);
 
 		refreshMessage = 'Refreshing...';
-		fetchStats().then(() => {
+		fetchStats(true).then(() => { // Pass true to bypass cache
 			refreshMessage = 'Refreshed!';
 			scheduleTimeout(() => { refreshMessage = ''; }, 2000);
 		});
@@ -134,7 +146,7 @@
 	let hoursCanvas = $state(null);
 	let daysCanvas = $state(null);
 
-	async function fetchStats() {
+	async function fetchStats(bypassCache = false) {
 		// Abort any in-flight requests
 		if (abortController) {
 			abortController.abort();
@@ -148,17 +160,25 @@
 		try {
 			// Build stats URL with time range filter
 			const since = getSinceDate();
-			let statsUrl = `/api/git/stats/${USERNAME}?limit=15`;
+			let statsUrl = `/api/git/stats/${USERNAME}?limit=${repoLimit}`;
 			if (since) {
 				statsUrl += `&since=${encodeURIComponent(since)}`;
 			}
+			if (bypassCache) {
+				statsUrl += '&bypass_cache=true';
+			}
+			console.log(`[Dashboard] Fetching stats with timeRange=${timeRange}, repoLimit=${repoLimit}, since=${since || 'null'}, bypassCache=${bypassCache}`);
+			console.log(`[Dashboard] Stats URL: ${statsUrl}`);
 
 			// Fetch all data in parallel for better performance
+			const contributionsUrl = bypassCache
+				? `/api/git/contributions/${USERNAME}?bypass_cache=true`
+				: `/api/git/contributions/${USERNAME}`;
 			const [userResponse, statsResponse, reposResponse, contributionsResponse] = await Promise.all([
 				fetch(`/api/git/user/${USERNAME}`, { signal }),
 				fetch(statsUrl, { signal }),
 				fetch(`/api/git/repos/${USERNAME}`, { signal }),
-				fetch(`/api/git/contributions/${USERNAME}`, { signal })
+				fetch(contributionsUrl, { signal })
 			]);
 
 			// Process user response (required)
@@ -174,6 +194,7 @@
 				throw new Error(errorData.message || 'Failed to fetch stats');
 			}
 			stats = await statsResponse.json();
+			console.log(`[Dashboard] Stats received: commits=${stats.total_commits}, filtered_since=${stats.filtered_since || 'none'}, cached=${stats.cached}`);
 
 			// Process repos response (optional)
 			if (reposResponse.ok) {
@@ -400,6 +421,17 @@
 					<option value="all">All Time</option>
 					<option value="6months">Last 6 Months</option>
 					<option value="30days">Last 30 Days</option>
+				</select>
+
+				<span class="selector-divider"></span>
+
+				<FolderGit2 size={18} />
+				<label for="repo-limit">Repos:</label>
+				<select id="repo-limit" value={repoLimit} onchange={handleRepoLimitChange}>
+					<option value="15">Top 15</option>
+					<option value="25">Top 25</option>
+					<option value="35">Top 35</option>
+					<option value="50">All (50 max)</option>
 				</select>
 			</div>
 
@@ -689,6 +721,17 @@
 	:global(.dark) .time-range-selector select:focus {
 		border-color: #5cb85f;
 		box-shadow: 0 0 0 2px rgba(92, 184, 95, 0.3);
+	}
+
+	.selector-divider {
+		width: 1px;
+		height: 24px;
+		background: #ddd;
+		margin: 0 0.5rem;
+	}
+
+	:global(.dark) .selector-divider {
+		background: #444;
 	}
 
 	.user-details {

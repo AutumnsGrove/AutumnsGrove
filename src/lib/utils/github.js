@@ -117,6 +117,7 @@ export async function fetchStatsGraphQL(username, limit, token, since = null) {
     recent_commits: [],
     repos_analyzed: 0,
     time_range: since ? 'filtered' : 'all_time',
+    filtered_since: since || null, // Include the actual filter date for debugging
   };
 
   // Initialize hour buckets
