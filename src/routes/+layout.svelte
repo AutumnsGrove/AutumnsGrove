@@ -7,6 +7,8 @@
 
 	let darkMode = $state(true); // Default to dark mode
 	let mobileMenuOpen = $state(false);
+	let mobileMenuRef = $state(null);
+	let hamburgerBtnRef = $state(null);
 
 	// Prevent body scroll when mobile menu is open
 	$effect(() => {
@@ -17,7 +19,50 @@
 				document.body.style.overflow = '';
 			}
 		}
+		// Cleanup on unmount
+		return () => {
+			if (typeof document !== 'undefined') {
+				document.body.style.overflow = '';
+			}
+		};
 	});
+
+	// Focus management for mobile menu
+	$effect(() => {
+		if (mobileMenuOpen && mobileMenuRef) {
+			// Focus first link when menu opens
+			const firstLink = mobileMenuRef.querySelector('a');
+			if (firstLink) {
+				firstLink.focus();
+			}
+		}
+	});
+
+	// Handle Escape key to close mobile menu
+	function handleKeydown(event) {
+		if (event.key === 'Escape' && mobileMenuOpen) {
+			closeMobileMenu();
+			// Return focus to hamburger button
+			if (hamburgerBtnRef) {
+				hamburgerBtnRef.focus();
+			}
+		}
+
+		// Trap focus within mobile menu
+		if (mobileMenuOpen && mobileMenuRef && event.key === 'Tab') {
+			const focusableElements = mobileMenuRef.querySelectorAll('a');
+			const firstElement = focusableElements[0];
+			const lastElement = focusableElements[focusableElements.length - 1];
+
+			if (event.shiftKey && document.activeElement === firstElement) {
+				event.preventDefault();
+				lastElement.focus();
+			} else if (!event.shiftKey && document.activeElement === lastElement) {
+				event.preventDefault();
+				firstElement.focus();
+			}
+		}
+	}
 
 	onMount(() => {
 		// Check localStorage or system preference
@@ -56,6 +101,8 @@
 	}
 </script>
 
+<svelte:window onkeydown={handleKeydown} />
+
 <div class="layout">
 	<header>
 		<nav>
@@ -72,6 +119,7 @@
 
 			<!-- Mobile Hamburger Button -->
 			<button
+				bind:this={hamburgerBtnRef}
 				class="hamburger-btn"
 				class:open={mobileMenuOpen}
 				onclick={toggleMobileMenu}
@@ -94,6 +142,7 @@
 
 		<!-- Mobile Navigation Menu -->
 		<div
+			bind:this={mobileMenuRef}
 			id="mobile-menu"
 			class="mobile-menu"
 			class:open={mobileMenuOpen}
@@ -109,7 +158,7 @@
 
 	<main>
 		{#key $page.url.pathname}
-			<div in:fade={{ duration: 200, delay: 100 }}>
+			<div in:fade={{ duration: 200 }}>
 				{@render children()}
 			</div>
 		{/key}
@@ -140,6 +189,21 @@
 </div>
 
 <style>
+	/* CSS Custom Properties for theming */
+	:global(:root) {
+		--mobile-menu-bg: white;
+		--mobile-menu-border: #e0e0e0;
+		--tag-bg: #7c4dab;
+		--tag-bg-hover: #6a3d9a;
+	}
+
+	:global(.dark) {
+		--mobile-menu-bg: #242424;
+		--mobile-menu-border: #333;
+		--tag-bg: #6a3d9a;
+		--tag-bg-hover: #7c4dab;
+	}
+
 	:global(body) {
 		margin: 0;
 		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
@@ -152,6 +216,29 @@
 	:global(.dark body) {
 		color: #e0e0e0;
 		background: #1a1a1a;
+	}
+
+	/* Global tag styles - shared across all pages */
+	:global(.tag) {
+		background: var(--tag-bg);
+		color: white;
+		padding: 0.4rem 1rem;
+		border-radius: 20px;
+		font-size: 0.85rem;
+		font-weight: 500;
+		border: none;
+		transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+	}
+
+	:global(.tag:hover) {
+		background: var(--tag-bg-hover);
+		transform: scale(1.05);
+	}
+
+	:global(.tags) {
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
 	}
 
 	:global(*) {
@@ -429,19 +516,14 @@
 			top: 100%;
 			left: 0;
 			right: 0;
-			background: white;
-			border-bottom: 1px solid #e0e0e0;
+			background: var(--mobile-menu-bg);
+			border-bottom: 1px solid var(--mobile-menu-border);
 			padding: 0;
 			max-height: 0;
 			overflow: hidden;
 			opacity: 0;
 			transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
 			z-index: 100;
-		}
-
-		:global(.dark) .mobile-menu {
-			background: #242424;
-			border-bottom: 1px solid #333;
 		}
 
 		.mobile-menu.open {
