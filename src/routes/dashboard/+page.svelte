@@ -11,7 +11,8 @@
 		Clock,
 		CalendarDays,
 		Code,
-		ExternalLink
+		ExternalLink,
+		RefreshCw
 	} from 'lucide-svelte';
 
 	// Hardcoded to your account
@@ -23,6 +24,7 @@
 	let stats = $state(null);
 	let reposData = $state([]);
 	let activityData = $state([]);
+	let lastRefreshed = $state(null);
 
 	// Time range filter
 	let timeRange = $state('all'); // 'all', '6months', '30days'
@@ -214,6 +216,9 @@
 					renderDaysChart(stats.commits_by_day);
 				}
 			});
+
+			// Update last refreshed timestamp
+			lastRefreshed = new Date();
 		} catch (e) {
 			// Ignore abort errors
 			if (e.name === 'AbortError') {
@@ -330,6 +335,15 @@
 		return date.toLocaleDateString('en-US', {
 			month: 'short',
 			day: 'numeric',
+			hour: 'numeric',
+			minute: '2-digit',
+			hour12: true
+		});
+	}
+
+	function formatRefreshTime(date) {
+		if (!date) return '';
+		return date.toLocaleTimeString('en-US', {
 			hour: 'numeric',
 			minute: '2-digit',
 			hour12: true
@@ -534,6 +548,11 @@
 					</a>
 				</p>
 				<p class="attribution">Stats analyzed with Claude AI</p>
+				{#if lastRefreshed}
+					<p class="last-refreshed">
+						<RefreshCw size={12} /> Last refreshed at {formatRefreshTime(lastRefreshed)}
+					</p>
+				{/if}
 			</footer>
 		</div>
 	{/if}
@@ -1065,6 +1084,19 @@
 
 	:global(.dark) .dashboard-footer .attribution {
 		color: #666;
+	}
+
+	.dashboard-footer .last-refreshed {
+		font-size: 0.75rem;
+		color: #999;
+		margin-top: 0.5rem;
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+	}
+
+	:global(.dark) .dashboard-footer .last-refreshed {
+		color: #555;
 	}
 
 	.additions {
