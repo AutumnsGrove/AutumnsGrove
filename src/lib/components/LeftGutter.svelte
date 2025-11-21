@@ -7,6 +7,7 @@
 	let gutterElement = $state();
 	let itemPositions = $state({});
 	let anchorGroupElements = $state({});
+	let positionTimeout = $state(null);
 
 	// Group items by their anchor
 	function getItemsForAnchor(anchor) {
@@ -58,17 +59,18 @@
 				lastBottom = desiredTop + groupHeight;
 			}
 		});
-
-		itemPositions = { ...itemPositions }; // Trigger reactivity
 	}
 
 	$effect(() => {
 		// Initial positioning after content renders
-		setTimeout(updatePositions, 150);
+		positionTimeout = setTimeout(updatePositions, 150);
 
 		// Update on resize
 		window.addEventListener('resize', updatePositions);
-		return () => window.removeEventListener('resize', updatePositions);
+		return () => {
+			if (positionTimeout) clearTimeout(positionTimeout);
+			window.removeEventListener('resize', updatePositions);
+		};
 	});
 </script>
 

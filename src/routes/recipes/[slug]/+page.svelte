@@ -9,10 +9,10 @@
 	let iconsUsed = $derived(sidecar?.icons_used || []);
 
 	$effect(() => {
-		// Render Mermaid diagrams after component mounts
+		// Render Mermaid diagrams after component mounts (async operation)
 		renderMermaidDiagrams();
 
-		// Inject instruction icons into step headings
+		// Inject instruction icons into step headings (independent of mermaid)
 		if (sidecar?.steps) {
 			injectStepIcons();
 		}

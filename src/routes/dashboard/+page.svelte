@@ -1,4 +1,5 @@
 <script>
+	import { untrack } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import Heatmap from './Heatmap.svelte';
 	import CollapsibleSection from '$lib/components/CollapsibleSection.svelte';
@@ -502,7 +503,10 @@
 	});
 
 	$effect(() => {
-		isMounted = true;
+		// Use untrack to prevent isMounted assignment from causing re-execution
+		untrack(() => {
+			isMounted = true;
+		});
 		// Auto-load stats on page mount
 		fetchStats();
 
