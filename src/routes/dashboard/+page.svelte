@@ -35,7 +35,11 @@
 	let commitsTotalPages = $state(0);
 	let commitsLimitReached = $state(false);
 	const MAX_PAGES = 10;
+	const DEFAULT_PER_PAGE = 20;
 	let sentinelElement = $state(null);
+
+	// Debounce timer for filter changes
+	let filterDebounceTimer = $state(null);
 
 	// Time range filter
 	let timeRange = $state('all'); // 'all', '6months', '30days', 'today'
@@ -62,7 +66,7 @@
 		return now.toISOString();
 	}
 
-	// Handle time range change
+	// Handle time range change with debounce
 	function handleTimeRangeChange(event) {
 		timeRange = event.target.value;
 		// Immediately clear commits to avoid showing stale data during loading
@@ -70,10 +74,19 @@
 		commitsPage = 1;
 		commitsHasMore = true;
 		commitsLimitReached = false;
-		fetchStats();
+
+		// Debounce the fetch to prevent rapid API calls
+		if (filterDebounceTimer) {
+			clearTimeout(filterDebounceTimer);
+			timerIds.delete(filterDebounceTimer);
+		}
+		filterDebounceTimer = scheduleTimeout(() => {
+			fetchStats();
+			filterDebounceTimer = null;
+		}, 300);
 	}
 
-	// Handle repo limit change
+	// Handle repo limit change with debounce
 	function handleRepoLimitChange(event) {
 		repoLimit = parseInt(event.target.value, 10);
 		// Immediately clear commits to avoid showing stale data during loading
@@ -81,7 +94,16 @@
 		commitsPage = 1;
 		commitsHasMore = true;
 		commitsLimitReached = false;
-		fetchStats();
+
+		// Debounce the fetch to prevent rapid API calls
+		if (filterDebounceTimer) {
+			clearTimeout(filterDebounceTimer);
+			timerIds.delete(filterDebounceTimer);
+		}
+		filterDebounceTimer = scheduleTimeout(() => {
+			fetchStats();
+			filterDebounceTimer = null;
+		}, 300);
 	}
 
 	// Refresh rate limiting (5 minutes = 300000ms)
@@ -389,6 +411,8 @@
 
 	// Fetch paginated commits
 	async function fetchCommits(page = 1, reset = false) {
+		// Guard against multiple simultaneous non-reset calls
+		if (commitsLoading && !reset) return;
 		if (!reset && !commitsHasMore) return;
 		if (page > MAX_PAGES) {
 			commitsLimitReached = true;
@@ -407,7 +431,7 @@
 
 		try {
 			const since = getSinceDate();
-			let url = `/api/git/commits/${USERNAME}?repo_limit=${repoLimit}&page=${page}&per_page=20`;
+			let url = `/api/git/commits/${USERNAME}?repo_limit=${repoLimit}&page=${page}&per_page=${DEFAULT_PER_PAGE}`;
 			if (since) {
 				url += `&since=${encodeURIComponent(since)}`;
 			}

@@ -431,6 +431,7 @@ export async function fetchCommitsPaginated(username, repoLimit, token, page = 1
   // Sort all commits by date (newest first)
   // Use string comparison since ISO dates sort lexicographically correctly
   // This avoids creating Date objects for every comparison
+  // Note: Assumes all dates are ISO 8601 format (e.g., "2024-01-15T10:30:00Z")
   allCommits.sort((a, b) => {
     if (b.date > a.date) return 1;
     if (b.date < a.date) return -1;
