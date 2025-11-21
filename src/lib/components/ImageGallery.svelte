@@ -306,6 +306,7 @@
 		font-size: 0.9rem;
 		color: #374151;
 		line-height: 1.5;
+		font-style: italic;
 	}
 
 	:global(.dark) .gallery-caption {
