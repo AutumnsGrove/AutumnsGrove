@@ -192,6 +192,30 @@
 <style>
 	/* CSS Custom Properties for theming */
 	:global(:root) {
+		/* Primary colors */
+		--color-primary: #2c5f2d;
+		--color-primary-hover: #4a9d4f;
+		--color-primary-light: #5cb85f;
+		--color-primary-light-hover: #7cd97f;
+
+		/* Text colors */
+		--color-text: #333;
+		--color-text-muted: #666;
+		--color-text-subtle: #888;
+
+		/* Background colors */
+		--color-bg-secondary: #f5f5f5;
+		--color-border: #e0e0e0;
+
+		/* Dark mode color values */
+		--color-text-dark: #f0f0f0;
+		--color-text-muted-dark: #d0d0d0;
+		--color-text-subtle-dark: #b8b8b8;
+		--color-bg-secondary-dark: #1a1a1a;
+		--color-bg-tertiary-dark: #2a2a2a;
+		--color-border-dark: #333;
+
+		/* Component-specific */
 		--mobile-menu-bg: white;
 		--mobile-menu-border: #e0e0e0;
 		--tag-bg: #7c4dab;
