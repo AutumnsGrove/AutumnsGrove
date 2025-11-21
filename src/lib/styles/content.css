@@ -107,7 +107,7 @@
 	background: var(--color-bg-secondary-dark);
 }
 
-@media (min-width: 769px) {
+@media (min-width: 1200px) {
 	.mobile-gutter-content {
 		display: none;
 	}
