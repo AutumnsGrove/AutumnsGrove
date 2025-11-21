@@ -114,7 +114,7 @@
 				<a href="/" class:active={$page.url.pathname === '/'}>Home</a>
 				<a href="/blog" class:active={$page.url.pathname.startsWith('/blog')}>Blog</a>
 				<a href="/recipes" class:active={$page.url.pathname.startsWith('/recipes')}>Recipes</a>
-				<a href="/dashboard" class:active={$page.url.pathname.startsWith('/dashboard')}>Dashboard</a>
+				<a href="/about" class:active={$page.url.pathname.startsWith('/about')}>About</a>
 			</div>
 
 			<!-- Mobile Hamburger Button -->
@@ -152,7 +152,7 @@
 			<a href="/" class:active={$page.url.pathname === '/'} onclick={closeMobileMenu}>Home</a>
 			<a href="/blog" class:active={$page.url.pathname.startsWith('/blog')} onclick={closeMobileMenu}>Blog</a>
 			<a href="/recipes" class:active={$page.url.pathname.startsWith('/recipes')} onclick={closeMobileMenu}>Recipes</a>
-			<a href="/dashboard" class:active={$page.url.pathname.startsWith('/dashboard')} onclick={closeMobileMenu}>Dashboard</a>
+			<a href="/about" class:active={$page.url.pathname.startsWith('/about')} onclick={closeMobileMenu}>About</a>
 		</div>
 	</header>
 
