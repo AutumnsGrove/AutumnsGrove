@@ -70,9 +70,9 @@
 
 	// Handle initial positioning and re-calculate when items or headers change
 	$effect(() => {
-		// Explicitly reference dependencies to track changes
-		items;
-		headers;
+		// Skip if no content to position
+		if (!items.length && !headers.length) return;
+
 		// Delay slightly to allow DOM updates
 		const timeout = setTimeout(updatePositions, 150);
 		return () => clearTimeout(timeout);
