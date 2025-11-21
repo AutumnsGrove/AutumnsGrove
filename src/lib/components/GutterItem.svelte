@@ -1,5 +1,6 @@
 <script>
 	import Lightbox from './Lightbox.svelte';
+	import ImageGallery from './ImageGallery.svelte';
 
 	export let item = {};
 
@@ -40,6 +41,10 @@
 				<figcaption>{item.caption}</figcaption>
 			{/if}
 		</figure>
+	{:else if item.type === 'gallery'}
+		<div class="gutter-gallery">
+			<ImageGallery images={item.images} />
+		</div>
 	{/if}
 </div>
 
@@ -140,5 +145,64 @@
 
 	:global(.dark) .gutter-photo figcaption {
 		color: var(--color-text-subtle-dark);
+	}
+
+	/* Gallery styles for gutter - compact version */
+	.gutter-gallery {
+		width: 100%;
+		max-width: 160px;
+	}
+
+	.gutter-gallery :global(.gallery-container) {
+		margin: 0;
+	}
+
+	.gutter-gallery :global(.gallery-image) {
+		max-height: 120px;
+	}
+
+	.gutter-gallery :global(.nav-button) {
+		width: 24px;
+		height: 24px;
+	}
+
+	.gutter-gallery :global(.nav-button svg) {
+		width: 12px;
+		height: 12px;
+	}
+
+	.gutter-gallery :global(.nav-prev) {
+		left: 4px;
+	}
+
+	.gutter-gallery :global(.nav-next) {
+		right: 4px;
+	}
+
+	.gutter-gallery :global(.gallery-info) {
+		padding: 4px;
+	}
+
+	.gutter-gallery :global(.gallery-progress) {
+		padding: 6px 0 4px;
+	}
+
+	.gutter-gallery :global(.progress-dot) {
+		width: 8px;
+		height: 8px;
+	}
+
+	.gutter-gallery :global(.progress-dot.active) {
+		width: 16px;
+	}
+
+	.gutter-gallery :global(.gallery-counter) {
+		font-size: 0.7rem;
+		padding-bottom: 4px;
+	}
+
+	.gutter-gallery :global(.gallery-caption) {
+		font-size: 0.75rem;
+		padding: 6px 8px;
 	}
 </style>
