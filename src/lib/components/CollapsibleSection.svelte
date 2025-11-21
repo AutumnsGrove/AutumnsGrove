@@ -1,6 +1,6 @@
 <script>
-	export let title = '';
-	export let expanded = false;
+	let { title = '', expanded: initialExpanded = false } = $props();
+	let expanded = $state(initialExpanded);
 
 	function toggle() {
 		expanded = !expanded;
