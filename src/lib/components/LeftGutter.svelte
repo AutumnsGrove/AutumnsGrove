@@ -1,5 +1,5 @@
 <script>
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
 	import GutterItem from './GutterItem.svelte';
 
 	export let items = [];
@@ -7,6 +7,7 @@
 
 	let gutterElement;
 	let itemPositions = {};
+	let anchorGroupElements = {};
 
 	// Group items by their anchor
 	function getItemsForAnchor(anchor) {
@@ -19,20 +20,43 @@
 		return items.filter(item => !anchorIds.includes(item.anchor));
 	}
 
-	// Calculate positions based on header locations in the main content
-	function updatePositions() {
+	// Calculate positions based on header locations, with collision detection
+	async function updatePositions() {
 		if (!gutterElement) return;
 
-		const gutterRect = gutterElement.getBoundingClientRect();
-		const gutterTop = gutterElement.offsetTop;
+		await tick(); // Wait for DOM to update
 
-		headers.forEach(header => {
+		const gutterTop = gutterElement.offsetTop;
+		const minGap = 16; // Minimum gap between items in pixels
+
+		let lastBottom = 0; // Track the bottom edge of the last positioned item
+
+		// Get headers that have gutter items, in document order
+		const headersWithItems = headers.filter(h =>
+			getItemsForAnchor(`## ${h.text}`).length > 0
+		);
+
+		headersWithItems.forEach(header => {
 			const headerEl = document.getElementById(header.id);
-			if (headerEl) {
-				const headerRect = headerEl.getBoundingClientRect();
-				const headerTop = headerEl.offsetTop;
-				// Position relative to gutter's top
-				itemPositions[header.id] = headerTop - gutterTop;
+			const groupEl = anchorGroupElements[header.id];
+
+			if (headerEl && groupEl) {
+				// Desired position (aligned with header)
+				let desiredTop = headerEl.offsetTop - gutterTop;
+
+				// Get the height of this gutter group
+				const groupHeight = groupEl.offsetHeight;
+
+				// Check for collision with previous item
+				if (desiredTop < lastBottom + minGap) {
+					// Push down to avoid overlap
+					desiredTop = lastBottom + minGap;
+				}
+
+				itemPositions[header.id] = desiredTop;
+
+				// Update lastBottom for next iteration
+				lastBottom = desiredTop + groupHeight;
 			}
 		});
 
@@ -41,7 +65,7 @@
 
 	onMount(() => {
 		// Initial positioning after content renders
-		setTimeout(updatePositions, 100);
+		setTimeout(updatePositions, 150);
 
 		// Update on resize
 		window.addEventListener('resize', updatePositions);
@@ -66,6 +90,7 @@
 					class="anchor-group"
 					data-for-anchor={header.id}
 					style="top: {itemPositions[header.id] || 0}px"
+					bind:this={anchorGroupElements[header.id]}
 				>
 					{#each anchorItems as item}
 						<GutterItem {item} />
