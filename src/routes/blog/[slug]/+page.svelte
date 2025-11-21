@@ -11,8 +11,8 @@
 	// References to mobile gutter containers for each anchor
 	let mobileGutterRefs = $state({});
 
-	// Track content height for overflow detection
-	let contentArticle = $state();
+	// Track content height for overflow detection (measure content-body only to avoid feedback loop)
+	let contentBodyElement = $state();
 	let contentHeight = $state(0);
 	let overflowingHeaderIds = $state([]);
 
@@ -54,17 +54,24 @@
 		});
 	});
 
-	// Track content height
+	// Track content height (only the content-body to avoid feedback loop with overflow section)
 	$effect(() => {
-		if (contentArticle) {
+		if (contentBodyElement) {
 			const updateHeight = () => {
-				contentHeight = contentArticle.offsetHeight;
+				// Get the bottom of content-body relative to the article
+				const rect = contentBodyElement.getBoundingClientRect();
+				const articleRect = contentBodyElement.closest('.content-article')?.getBoundingClientRect();
+				if (articleRect) {
+					contentHeight = rect.bottom - articleRect.top;
+				} else {
+					contentHeight = contentBodyElement.offsetTop + contentBodyElement.offsetHeight;
+				}
 			};
 			updateHeight();
 
 			// Create ResizeObserver to track height changes
 			const observer = new ResizeObserver(updateHeight);
-			observer.observe(contentArticle);
+			observer.observe(contentBodyElement);
 
 			return () => observer.disconnect();
 		}
@@ -115,7 +122,7 @@
 	{/if}
 
 	<!-- Main Content -->
-	<article class="content-article" bind:this={contentArticle}>
+	<article class="content-article">
 		<header class="content-header">
 			<a href="/blog" class="back-link">&larr; Back to Blog</a>
 			<h1>{data.post.title}</h1>
@@ -163,7 +170,7 @@
 			{/each}
 		{/if}
 
-		<div class="content-body">
+		<div class="content-body" bind:this={contentBodyElement}>
 			{@html data.post.content}
 		</div>
 

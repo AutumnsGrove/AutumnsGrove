@@ -21,6 +21,9 @@
 	// Lightbox state
 	let lightboxOpen = $state(false);
 
+	// Zoom state: 0 = normal, 1 = medium zoom, 2 = max zoom
+	let zoomLevel = $state(0);
+
 	/**
 	 * Safely get the current image, handling race conditions when images prop changes
 	 * Returns a fallback object if the current index is invalid to prevent undefined access
@@ -47,6 +50,11 @@
 
 	function closeLightbox() {
 		lightboxOpen = false;
+		zoomLevel = 0;
+	}
+
+	function cycleZoom() {
+		zoomLevel = (zoomLevel + 1) % 3;
 	}
 
 	// Navigation functions with cooldown to prevent double-tap
@@ -56,6 +64,7 @@
 		isNavigating = true;
 		imageLoading = true;
 		imageError = false;
+		zoomLevel = 0;
 		currentIndex++;
 
 		setTimeout(() => {
@@ -69,6 +78,7 @@
 		isNavigating = true;
 		imageLoading = true;
 		imageError = false;
+		zoomLevel = 0;
 		currentIndex--;
 
 		setTimeout(() => {
@@ -82,6 +92,7 @@
 		isNavigating = true;
 		imageLoading = true;
 		imageError = false;
+		zoomLevel = 0;
 		currentIndex = index;
 
 		setTimeout(() => {
@@ -102,6 +113,12 @@
 
 	// Keyboard navigation
 	function handleKeydown(event) {
+		// Handle Escape to close lightbox
+		if (event.key === 'Escape' && lightboxOpen) {
+			closeLightbox();
+			return;
+		}
+
 		if (event.key === 'ArrowRight') {
 			goToNext();
 		} else if (event.key === 'ArrowLeft') {
