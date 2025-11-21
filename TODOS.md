@@ -84,6 +84,11 @@
 ### HIGH PRIORITY: Admin Login
 I still cannot login. TO my own Admin page. I am the only one added to the Auth account storage key. Wtf.
 
+### MEDIUM PRIORITY: Dashboard Stats Refresh Bug
+- [ ] Stats don't refresh when switching time ranges (Today, 30 Days, etc.)
+- Added "Today" view to time range selector (Nov 21, 2025)
+- Investigation needed for why data doesn't update on selection change
+
 ### MEDIUM PRIORITY: Dashboard Data Expansion
 
 **Goal:** Show stats from ALL repos with time range filtering
