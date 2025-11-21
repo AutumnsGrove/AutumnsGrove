@@ -9,6 +9,27 @@
       "type": "comment",
       "file": "willow-2.md",
       "anchor": "## Photos Section"
+    },
+    {
+      "type": "gallery",
+      "anchor": "## Conclusion",
+      "images": [
+        {
+          "url": "https://cdn.autumnsgrove.com/willow_close.jpeg",
+          "alt": "Close up of Willow",
+          "caption": "Such a pretty face"
+        },
+        {
+          "url": "https://cdn.autumnsgrove.com/willow_stretch.jpeg",
+          "alt": "Willow stretching",
+          "caption": "Big stretch!"
+        },
+        {
+          "url": "https://cdn.autumnsgrove.com/willow_wants_your_food.jpeg",
+          "alt": "Willow looking at food",
+          "caption": "Always hungry"
+        }
+      ]
     }
   ]
 }
