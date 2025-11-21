@@ -101,9 +101,9 @@
 		</div>
 
 		<div class="heatmap-grid">
-			{#each grid as week}
+			{#each grid as week, weekIndex (weekIndex)}
 				<div class="week">
-					{#each week as day}
+					{#each week as day (day.date)}
 						<div
 							class="day {getColorClass(day.count)}"
 							title="{day.count} commits on {formatDate(day.date)}"

@@ -74,7 +74,7 @@
       <section class="section">
         <h2>Top Repositories</h2>
         <div class="repos-list">
-          {#each stats.topRepos.slice(0, 5) as repo}
+          {#each stats.topRepos.slice(0, 5) as repo, index (index)}
             <div class="repo-item">
               <div class="repo-info">
                 <a href={repo.url} target="_blank" class="repo-name">
@@ -102,7 +102,7 @@
       <section class="section">
         <h2>Recent Commits</h2>
         <div class="commits-list">
-          {#each stats.recentCommits.slice(0, 10) as commit}
+          {#each stats.recentCommits.slice(0, 10) as commit, index (index)}
             <div class="commit-item">
               <div class="commit-info">
                 <p class="commit-message">{commit.message}</p>

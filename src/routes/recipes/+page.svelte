@@ -18,7 +18,7 @@
 	</div>
 {:else}
 	<div class="recipes-grid">
-		{#each data.recipes as recipe}
+		{#each data.recipes as recipe (recipe.slug)}
 			<article class="recipe-card">
 				<a href="/recipes/{recipe.slug}" class="recipe-link">
 					<h2>{recipe.title}</h2>
@@ -32,7 +32,7 @@
 						</time>
 						{#if recipe.tags.length > 0}
 							<div class="tags">
-								{#each recipe.tags as tag}
+								{#each recipe.tags as tag (tag)}
 									<span class="tag">{tag}</span>
 								{/each}
 							</div>

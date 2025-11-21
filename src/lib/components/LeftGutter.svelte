@@ -82,14 +82,14 @@
 <aside class="left-gutter" bind:this={gutterElement}>
 	{#if items.length > 0}
 		<!-- Show orphan items at the top -->
-		{#each getOrphanItems() as item}
+		{#each getOrphanItems() as item, index (index)}
 			<div class="gutter-item-wrapper">
 				<GutterItem {item} />
 			</div>
 		{/each}
 
 		<!-- Show items positioned by anchor -->
-		{#each headers as header}
+		{#each headers as header (header.id)}
 			{@const anchorItems = getItemsForAnchor(`## ${header.text}`)}
 			{#if anchorItems.length > 0}
 				<div
@@ -98,7 +98,7 @@
 					style="top: {itemPositions[header.id] || 0}px"
 					bind:this={anchorGroupElements[header.id]}
 				>
-					{#each anchorItems as item}
+					{#each anchorItems as item, index (index)}
 						<GutterItem {item} />
 					{/each}
 				</div>

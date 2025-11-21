@@ -26,7 +26,7 @@
 {#if iconsUsed && iconsUsed.length > 0}
 	<CollapsibleSection title="Icon Legend">
 		<div class="legend-content">
-			{#each iconsUsed as iconKey}
+			{#each iconsUsed as iconKey (iconKey)}
 				{#if iconMeanings[iconKey]}
 					<div class="legend-item">
 						<img

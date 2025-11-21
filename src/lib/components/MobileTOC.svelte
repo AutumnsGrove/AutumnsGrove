@@ -103,7 +103,7 @@
 			<div class="toc-menu" bind:this={menuRef}>
 				<h3 class="toc-title">Table of Contents</h3>
 				<ul class="toc-list">
-					{#each headers as header}
+					{#each headers as header (header.id)}
 						<li
 							class="toc-item level-{header.level}"
 							class:active={activeId === header.id}

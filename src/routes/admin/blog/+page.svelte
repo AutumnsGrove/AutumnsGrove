@@ -36,7 +36,7 @@
         </tr>
       </thead>
       <tbody>
-        {#each data.posts as post}
+        {#each data.posts as post (post.slug)}
           <tr>
             <td>
               <a href="/blog/{post.slug}" target="_blank" class="post-title">
@@ -50,7 +50,7 @@
             <td class="tags-cell">
               {#if post.tags.length > 0}
                 <div class="tags">
-                  {#each post.tags as tag}
+                  {#each post.tags as tag (tag)}
                     <span class="tag">{tag}</span>
                   {/each}
                 </div>

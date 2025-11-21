@@ -18,7 +18,7 @@
 	</div>
 {:else}
 	<div class="posts-grid">
-		{#each data.posts as post}
+		{#each data.posts as post (post.slug)}
 			<article class="post-card">
 				<a href="/blog/{post.slug}" class="post-link">
 					<h2>{post.title}</h2>
@@ -32,7 +32,7 @@
 						</time>
 						{#if post.tags.length > 0}
 							<div class="tags">
-								{#each post.tags as tag}
+								{#each post.tags as tag (tag)}
 									<span class="tag">{tag}</span>
 								{/each}
 							</div>
