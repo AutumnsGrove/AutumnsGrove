@@ -256,8 +256,8 @@
 	}
 
 	.progress-dot {
-		width: 8px;
-		height: 8px;
+		width: 12px;
+		height: 12px;
 		border-radius: 50%;
 		background: #d1d5db;
 		border: none;
@@ -268,12 +268,14 @@
 
 	.progress-dot:hover {
 		background: #9ca3af;
+		transform: scale(1.2);
 	}
 
 	.progress-dot.active {
 		background: #5865f2;
-		width: 24px;
-		border-radius: 4px;
+		width: 28px;
+		border-radius: 6px;
+		box-shadow: 0 2px 4px rgba(88, 101, 242, 0.3);
 	}
 
 	:global(.dark) .progress-dot {
