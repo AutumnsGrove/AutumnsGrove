@@ -273,6 +273,8 @@
 		justify-content: space-between;
 		align-items: center;
 		gap: 2rem;
+		position: relative;
+		z-index: 101;
 	}
 
 	.logo {
