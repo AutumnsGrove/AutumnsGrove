@@ -36,9 +36,12 @@ const recipeSidecarModules = import.meta.glob("../../../recipes/*-grove.json", {
 });
 
 // Load gutter manifest files for blog posts
-const gutterManifestModules = import.meta.glob("../../../posts/*/gutter/manifest.json", {
-  eager: true,
-});
+const gutterManifestModules = import.meta.glob(
+  "../../../posts/*/gutter/manifest.json",
+  {
+    eager: true,
+  },
+);
 
 // Load gutter markdown content files
 const gutterMarkdownModules = import.meta.glob("../../../posts/*/gutter/*.md", {
@@ -48,49 +51,70 @@ const gutterMarkdownModules = import.meta.glob("../../../posts/*/gutter/*.md", {
 });
 
 // Load gutter image files
-const gutterImageModules = import.meta.glob("../../../posts/*/gutter/*.{jpg,jpeg,png,gif,webp}", {
-  eager: true,
-  query: "?url",
-  import: "default",
-});
+const gutterImageModules = import.meta.glob(
+  "../../../posts/*/gutter/*.{jpg,jpeg,png,gif,webp}",
+  {
+    eager: true,
+    query: "?url",
+    import: "default",
+  },
+);
 
 // Load about page gutter manifest files
-const aboutGutterManifestModules = import.meta.glob("../../../about/*/gutter/manifest.json", {
-  eager: true,
-});
+const aboutGutterManifestModules = import.meta.glob(
+  "../../../about/*/gutter/manifest.json",
+  {
+    eager: true,
+  },
+);
 
 // Load about page gutter markdown content files
-const aboutGutterMarkdownModules = import.meta.glob("../../../about/*/gutter/*.md", {
-  eager: true,
-  query: "?raw",
-  import: "default",
-});
+const aboutGutterMarkdownModules = import.meta.glob(
+  "../../../about/*/gutter/*.md",
+  {
+    eager: true,
+    query: "?raw",
+    import: "default",
+  },
+);
 
 // Load about page gutter image files
-const aboutGutterImageModules = import.meta.glob("../../../about/*/gutter/*.{jpg,jpeg,png,gif,webp}", {
-  eager: true,
-  query: "?url",
-  import: "default",
-});
+const aboutGutterImageModules = import.meta.glob(
+  "../../../about/*/gutter/*.{jpg,jpeg,png,gif,webp}",
+  {
+    eager: true,
+    query: "?url",
+    import: "default",
+  },
+);
 
 // Load recipe gutter manifest files
-const recipeGutterManifestModules = import.meta.glob("../../../recipes/*/gutter/manifest.json", {
-  eager: true,
-});
+const recipeGutterManifestModules = import.meta.glob(
+  "../../../recipes/*/gutter/manifest.json",
+  {
+    eager: true,
+  },
+);
 
 // Load recipe gutter markdown content files
-const recipeGutterMarkdownModules = import.meta.glob("../../../recipes/*/gutter/*.md", {
-  eager: true,
-  query: "?raw",
-  import: "default",
-});
+const recipeGutterMarkdownModules = import.meta.glob(
+  "../../../recipes/*/gutter/*.md",
+  {
+    eager: true,
+    query: "?raw",
+    import: "default",
+  },
+);
 
 // Load recipe gutter image files
-const recipeGutterImageModules = import.meta.glob("../../../recipes/*/gutter/*.{jpg,jpeg,png,gif,webp}", {
-  eager: true,
-  query: "?url",
-  import: "default",
-});
+const recipeGutterImageModules = import.meta.glob(
+  "../../../recipes/*/gutter/*.{jpg,jpeg,png,gif,webp}",
+  {
+    eager: true,
+    query: "?url",
+    import: "default",
+  },
+);
 
 /**
  * Validates if a string is a valid URL
@@ -100,7 +124,7 @@ const recipeGutterImageModules = import.meta.glob("../../../recipes/*/gutter/*.{
 function isValidUrl(urlString) {
   try {
     const url = new URL(urlString);
-    return url.protocol === 'http:' || url.protocol === 'https:';
+    return url.protocol === "http:" || url.protocol === "https:";
   } catch {
     return false;
   }
@@ -234,9 +258,9 @@ export function extractHeaders(markdown) {
     // Create a slug-style ID from the header text
     const id = text
       .toLowerCase()
-      .replace(/[^\w\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
+      .replace(/[^\w\s-]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/-+/g, "-")
       .trim();
 
     headers.push({
@@ -260,7 +284,8 @@ export function processAnchorTags(html) {
   // Supports alphanumeric characters, underscores, and hyphens in tag names
   return html.replace(
     /<!--\s*anchor:([\w-]+)\s*-->/g,
-    (match, tagname) => `<span class="anchor-marker" data-anchor="${tagname}"></span>`
+    (match, tagname) =>
+      `<span class="anchor-marker" data-anchor="${tagname}"></span>`,
   );
 }
 
@@ -272,10 +297,15 @@ export function processAnchorTags(html) {
  * @param {Object} imageModules - The image modules to search
  * @returns {Array} Array of gutter items with content and position info
  */
-function getGutterContentFromModules(slug, manifestModules, markdownModules, imageModules) {
+function getGutterContentFromModules(
+  slug,
+  manifestModules,
+  markdownModules,
+  imageModules,
+) {
   // Find the manifest file for this page/post
   const manifestEntry = Object.entries(manifestModules).find(([filepath]) => {
-    const parts = filepath.split('/');
+    const parts = filepath.split("/");
     const folder = parts[parts.length - 3]; // Get the folder name
     return folder === slug;
   });
@@ -291,44 +321,33 @@ function getGutterContentFromModules(slug, manifestModules, markdownModules, ima
   }
 
   // Process each gutter item
-  return manifest.items.map(item => {
-    if (item.type === 'comment' || item.type === 'markdown') {
-      // Find the markdown content file
-      const mdEntry = Object.entries(markdownModules).find(([filepath]) => {
-        return filepath.includes(`/${slug}/gutter/${item.file}`);
-      });
+  return manifest.items
+    .map((item) => {
+      if (item.type === "comment" || item.type === "markdown") {
+        // Find the markdown content file
+        const mdEntry = Object.entries(markdownModules).find(([filepath]) => {
+          return filepath.includes(`/${slug}/gutter/${item.file}`);
+        });
 
-      if (mdEntry) {
-        const markdownContent = mdEntry[1];
-        const htmlContent = marked.parse(markdownContent);
+        if (mdEntry) {
+          const markdownContent = mdEntry[1];
+          const htmlContent = marked.parse(markdownContent);
 
-        return {
-          ...item,
-          content: htmlContent,
-        };
-      }
-    } else if (item.type === 'photo' || item.type === 'image') {
-      // Find the image file
-      const imgEntry = Object.entries(imageModules).find(([filepath]) => {
-        return filepath.includes(`/${slug}/gutter/${item.file}`);
-      });
+          return {
+            ...item,
+            content: htmlContent,
+          };
+        }
+      } else if (item.type === "photo" || item.type === "image") {
+        // Check if file is an external URL
+        if (item.file && isValidUrl(item.file)) {
+          return {
+            ...item,
+            src: item.file,
+          };
+        }
 
-      if (imgEntry) {
-        return {
-          ...item,
-          src: imgEntry[1],
-        };
-      }
-    } else if (item.type === 'emoji') {
-      // Emoji items can use URLs (local or CDN) or local files
-      if (item.url) {
-        // Direct URL (local path like /icons/instruction/mix.webp or CDN URL)
-        return {
-          ...item,
-          src: item.url,
-        };
-      } else if (item.file) {
-        // Local file in gutter directory
+        // Find the local image file
         const imgEntry = Object.entries(imageModules).find(([filepath]) => {
           return filepath.includes(`/${slug}/gutter/${item.file}`);
         });
@@ -339,68 +358,102 @@ function getGutterContentFromModules(slug, manifestModules, markdownModules, ima
             src: imgEntry[1],
           };
         }
-      }
-      return item;
-    } else if (item.type === 'gallery') {
-      /**
-       * Process gallery items containing multiple images
-       *
-       * Galleries can contain:
-       * - External URLs (validated for http/https protocol)
-       * - Local files (resolved from the gutter directory)
-       *
-       * Images that fail to resolve (invalid URLs or missing files) are filtered out.
-       * If all images fail to resolve, the entire gallery item is excluded.
-       */
-      const originalImageCount = (item.images || []).length;
-      const images = (item.images || []).map(img => {
-        // Check if it's an external URL
-        if (img.url) {
-          // Validate URL format to prevent malformed URLs from failing silently
-          if (!isValidUrl(img.url)) {
-            console.warn(`Invalid URL in gallery for "${slug}": ${img.url}`);
-            return null;
-          }
+      } else if (item.type === "emoji") {
+        // Emoji items can use URLs (local or CDN) or local files
+        if (item.url) {
+          // Direct URL (local path like /icons/instruction/mix.webp or CDN URL)
           return {
-            url: img.url,
-            alt: img.alt || '',
-            caption: img.caption || '',
+            ...item,
+            src: item.url,
           };
-        }
-
-        // Otherwise, look for local file
-        if (img.file) {
+        } else if (item.file) {
+          // Local file in gutter directory
           const imgEntry = Object.entries(imageModules).find(([filepath]) => {
-            return filepath.includes(`/${slug}/gutter/${img.file}`);
+            return filepath.includes(`/${slug}/gutter/${item.file}`);
           });
 
           if (imgEntry) {
             return {
-              url: imgEntry[1],
-              alt: img.alt || '',
-              caption: img.caption || '',
+              ...item,
+              src: imgEntry[1],
             };
-          } else {
-            console.warn(`Local file not found in gallery for "${slug}": ${img.file}`);
           }
         }
+        return item;
+      } else if (item.type === "gallery") {
+        /**
+         * Process gallery items containing multiple images
+         *
+         * Galleries can contain:
+         * - External URLs (validated for http/https protocol)
+         * - Local files (resolved from the gutter directory)
+         *
+         * Images that fail to resolve (invalid URLs or missing files) are filtered out.
+         * If all images fail to resolve, the entire gallery item is excluded.
+         */
+        const originalImageCount = (item.images || []).length;
+        const images = (item.images || [])
+          .map((img) => {
+            // Check if it's an external URL
+            if (img.url) {
+              // Validate URL format to prevent malformed URLs from failing silently
+              if (!isValidUrl(img.url)) {
+                console.warn(
+                  `Invalid URL in gallery for "${slug}": ${img.url}`,
+                );
+                return null;
+              }
+              return {
+                url: img.url,
+                alt: img.alt || "",
+                caption: img.caption || "",
+              };
+            }
 
-        return null;
-      }).filter(Boolean);
+            // Otherwise, look for local file
+            if (img.file) {
+              const imgEntry = Object.entries(imageModules).find(
+                ([filepath]) => {
+                  return filepath.includes(`/${slug}/gutter/${img.file}`);
+                },
+              );
 
-      if (images.length > 0) {
-        return {
-          ...item,
-          images,
-        };
-      } else if (originalImageCount > 0) {
-        // All images failed to resolve - log warning for debugging
-        console.warn(`Gallery in "${slug}" has ${originalImageCount} image(s) defined but none could be resolved`);
+              if (imgEntry) {
+                return {
+                  url: imgEntry[1],
+                  alt: img.alt || "",
+                  caption: img.caption || "",
+                };
+              } else {
+                console.warn(
+                  `Local file not found in gallery for "${slug}": ${img.file}`,
+                );
+              }
+            }
+
+            return null;
+          })
+          .filter(Boolean);
+
+        if (images.length > 0) {
+          return {
+            ...item,
+            images,
+          };
+        } else if (originalImageCount > 0) {
+          // All images failed to resolve - log warning for debugging
+          console.warn(
+            `Gallery in "${slug}" has ${originalImageCount} image(s) defined but none could be resolved`,
+          );
+        }
       }
-    }
 
-    return item;
-  }).filter(item => item.content || item.src || item.images || item.type === 'emoji'); // Filter out items that weren't found
+      return item;
+    })
+    .filter(
+      (item) =>
+        item.content || item.src || item.images || item.type === "emoji",
+    ); // Filter out items that weren't found
 }
 
 /**
@@ -409,7 +462,12 @@ function getGutterContentFromModules(slug, manifestModules, markdownModules, ima
  * @returns {Array} Array of gutter items with content and position info
  */
 export function getRecipeGutterContent(slug) {
-  return getGutterContentFromModules(slug, recipeGutterManifestModules, recipeGutterMarkdownModules, recipeGutterImageModules);
+  return getGutterContentFromModules(
+    slug,
+    recipeGutterManifestModules,
+    recipeGutterMarkdownModules,
+    recipeGutterImageModules,
+  );
 }
 
 /**
@@ -418,7 +476,12 @@ export function getRecipeGutterContent(slug) {
  * @returns {Array} Array of gutter items with content and position info
  */
 export function getGutterContent(slug) {
-  return getGutterContentFromModules(slug, gutterManifestModules, gutterMarkdownModules, gutterImageModules);
+  return getGutterContentFromModules(
+    slug,
+    gutterManifestModules,
+    gutterMarkdownModules,
+    gutterImageModules,
+  );
 }
 
 /**
@@ -429,7 +492,7 @@ export function getAboutPage() {
   try {
     // Find the about.md file
     const entry = Object.entries(aboutModules).find(([filepath]) => {
-      return filepath.includes('about.md');
+      return filepath.includes("about.md");
     });
 
     if (!entry) {
@@ -445,19 +508,19 @@ export function getAboutPage() {
     const headers = extractHeaders(markdown);
 
     // Get gutter content for the about page
-    const gutterContent = getAboutGutterContent('about');
+    const gutterContent = getAboutGutterContent("about");
 
     return {
-      slug: 'about',
-      title: data.title || 'About',
+      slug: "about",
+      title: data.title || "About",
       date: data.date || new Date().toISOString(),
-      description: data.description || '',
+      description: data.description || "",
       content: htmlContent,
       headers,
       gutterContent,
     };
   } catch (err) {
-    console.error('Error in getAboutPage:', err);
+    console.error("Error in getAboutPage:", err);
     return null;
   }
 }
@@ -468,7 +531,12 @@ export function getAboutPage() {
  * @returns {Array} Array of gutter items with content and position info
  */
 export function getAboutGutterContent(slug) {
-  return getGutterContentFromModules(slug, aboutGutterManifestModules, aboutGutterMarkdownModules, aboutGutterImageModules);
+  return getGutterContentFromModules(
+    slug,
+    aboutGutterManifestModules,
+    aboutGutterMarkdownModules,
+    aboutGutterImageModules,
+  );
 }
 
 /**
