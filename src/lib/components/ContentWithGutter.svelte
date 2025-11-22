@@ -73,17 +73,6 @@
 	}
 
 	/**
-	 * Simple debounce utility
-	 */
-	function debounce(fn, delay) {
-		let timeoutId;
-		return (...args) => {
-			clearTimeout(timeoutId);
-			timeoutId = setTimeout(() => fn(...args), delay);
-		};
-	}
-
-	/**
 	 * Calculate positions based on anchor locations, with collision detection
 	 */
 	async function updatePositions() {
@@ -149,14 +138,19 @@
 		overflowingAnchorKeys = newOverflowingAnchors;
 	}
 
-	// Setup resize listener on mount (clearer than $effect for one-time setup)
+	// Setup resize listener on mount with proper cleanup
 	onMount(() => {
-		const handleResize = debounce(() => {
-			requestAnimationFrame(updatePositions);
-		}, DEBOUNCE_DELAY);
+		let resizeTimeoutId;
+		const handleResize = () => {
+			clearTimeout(resizeTimeoutId);
+			resizeTimeoutId = setTimeout(() => {
+				requestAnimationFrame(updatePositions);
+			}, DEBOUNCE_DELAY);
+		};
 
 		window.addEventListener('resize', handleResize);
 		return () => {
+			clearTimeout(resizeTimeoutId);
 			window.removeEventListener('resize', handleResize);
 		};
 	});
