@@ -70,8 +70,30 @@
 }
 
 .mobile-gutter-inline {
-	margin-top: 1rem;
-	margin-bottom: 1.5rem;
+	float: right;
+	clear: right;
+	max-width: 200px;
+	margin: 0.25rem 0 1rem 1.5rem;
+	padding: 0;
+	background: none;
+	border-radius: 0;
+}
+
+/* On small mobile, don't float - just display inline */
+@media (max-width: 600px) {
+	.mobile-gutter-inline {
+		float: none;
+		clear: none;
+		max-width: none;
+		margin: 1rem 0 1.5rem 0;
+		padding: 0.75rem;
+		background: #f8f8f8;
+		border-radius: 6px;
+	}
+
+	.dark .mobile-gutter-inline {
+		background: #1a1a1a;
+	}
 }
 
 .dark .mobile-gutter-content {
