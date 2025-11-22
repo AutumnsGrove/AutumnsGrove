@@ -7,20 +7,126 @@
 	let gutterElement = $state();
 	let itemPositions = $state({});
 	let anchorGroupElements = $state({});
-	let overflowingHeaders = $state([]);
+	let overflowingAnchors = $state([]);
+
+	/**
+	 * Parse anchor string to determine anchor type and value
+	 */
+	function parseAnchor(anchor) {
+		if (!anchor) {
+			return { type: 'none', value: null };
+		}
+
+		// Check for paragraph anchor: "paragraph:N"
+		const paragraphMatch = anchor.match(/^paragraph:(\d+)$/);
+		if (paragraphMatch) {
+			return { type: 'paragraph', value: parseInt(paragraphMatch[1], 10) };
+		}
+
+		// Check for tag anchor: "anchor:tagname"
+		const tagMatch = anchor.match(/^anchor:(\w+)$/);
+		if (tagMatch) {
+			return { type: 'tag', value: tagMatch[1] };
+		}
+
+		// Check for header anchor: "## Header Text"
+		const headerMatch = anchor.match(/^(#{1,6})\s+(.+)$/);
+		if (headerMatch) {
+			return { type: 'header', value: anchor };
+		}
+
+		// Unknown format - treat as header for backwards compatibility
+		return { type: 'header', value: anchor };
+	}
+
+	/**
+	 * Generate a unique key for an anchor (used for grouping and positioning)
+	 */
+	function getAnchorKey(anchor) {
+		const parsed = parseAnchor(anchor);
+		switch (parsed.type) {
+			case 'header':
+				// For headers, use the header ID
+				const headerText = anchor.replace(/^#+\s*/, '');
+				const header = headers.find(h => h.text === headerText);
+				return header ? `header:${header.id}` : `header:${anchor}`;
+			case 'paragraph':
+				return `paragraph:${parsed.value}`;
+			case 'tag':
+				return `tag:${parsed.value}`;
+			default:
+				return `unknown:${anchor}`;
+		}
+	}
+
+	/**
+	 * Get all unique anchors from items (preserving order)
+	 */
+	function getUniqueAnchors() {
+		const seen = new Set();
+		const anchors = [];
+		for (const item of items) {
+			if (item.anchor && !seen.has(item.anchor)) {
+				seen.add(item.anchor);
+				anchors.push(item.anchor);
+			}
+		}
+		return anchors;
+	}
 
 	// Group items by their anchor
 	function getItemsForAnchor(anchor) {
 		return items.filter(item => item.anchor === anchor);
 	}
 
-	// Get items that don't have a matching anchor (show at top)
+	// Get items that don't have a valid anchor (show at top)
 	function getOrphanItems() {
-		const anchorIds = headers.map(h => `## ${h.text}`);
-		return items.filter(item => !anchorIds.includes(item.anchor));
+		return items.filter(item => {
+			if (!item.anchor) return true;
+			const parsed = parseAnchor(item.anchor);
+			if (parsed.type === 'header') {
+				const headerText = item.anchor.replace(/^#+\s*/, '');
+				return !headers.find(h => h.text === headerText);
+			}
+			// Paragraph and tag anchors are valid if they have values
+			return parsed.type === 'none';
+		});
 	}
 
-	// Calculate positions based on header locations, with collision detection
+	/**
+	 * Find the DOM element for an anchor
+	 */
+	function findAnchorElement(anchor) {
+		const parsed = parseAnchor(anchor);
+		const contentEl = document.querySelector('.content-body');
+		if (!contentEl) return null;
+
+		switch (parsed.type) {
+			case 'header': {
+				const headerText = anchor.replace(/^#+\s*/, '');
+				const header = headers.find(h => h.text === headerText);
+				if (header) {
+					return document.getElementById(header.id);
+				}
+				return null;
+			}
+			case 'paragraph': {
+				const paragraphs = contentEl.querySelectorAll('p');
+				const index = parsed.value - 1; // Convert to 0-based index
+				if (index >= 0 && index < paragraphs.length) {
+					return paragraphs[index];
+				}
+				return null;
+			}
+			case 'tag': {
+				return contentEl.querySelector(`[data-anchor="${parsed.value}"]`);
+			}
+			default:
+				return null;
+		}
+	}
+
+	// Calculate positions based on anchor locations, with collision detection
 	async function updatePositions() {
 		if (!gutterElement) return;
 
@@ -31,20 +137,28 @@
 		const bottomPadding = 32; // Padding from bottom of content
 
 		let lastBottom = 0; // Track the bottom edge of the last positioned item
-		const newOverflowingHeaders = [];
+		const newOverflowingAnchors = [];
 
-		// Get headers that have gutter items, in document order
-		const headersWithItems = headers.filter(h =>
-			getItemsForAnchor(`## ${h.text}`).length > 0
-		);
+		// Get all unique anchors that have items
+		const anchors = getUniqueAnchors();
 
-		headersWithItems.forEach(header => {
-			const headerEl = document.getElementById(header.id);
-			const groupEl = anchorGroupElements[header.id];
+		// Sort anchors by their position in the document
+		const anchorPositions = anchors.map(anchor => {
+			const el = findAnchorElement(anchor);
+			return {
+				anchor,
+				key: getAnchorKey(anchor),
+				element: el,
+				top: el ? el.offsetTop : Infinity
+			};
+		}).sort((a, b) => a.top - b.top);
 
-			if (headerEl && groupEl) {
-				// Desired position (aligned with header)
-				let desiredTop = headerEl.offsetTop - gutterTop;
+		anchorPositions.forEach(({ anchor, key, element }) => {
+			const groupEl = anchorGroupElements[key];
+
+			if (element && groupEl) {
+				// Desired position (aligned with anchor element)
+				let desiredTop = element.offsetTop - gutterTop;
 
 				// Get the height of this gutter group
 				const groupHeight = groupEl.offsetHeight;
@@ -59,19 +173,22 @@
 				const effectiveContentHeight = contentHeight > 0 ? contentHeight : Infinity;
 				if (desiredTop + groupHeight > effectiveContentHeight - bottomPadding) {
 					// This item overflows - mark it and hide it in the gutter
-					newOverflowingHeaders.push(header.id);
-					itemPositions[header.id] = -9999; // Hide off-screen
+					newOverflowingAnchors.push(key);
+					itemPositions[key] = -9999; // Hide off-screen
 				} else {
-					itemPositions[header.id] = desiredTop;
+					itemPositions[key] = desiredTop;
 					// Update lastBottom for next iteration
 					lastBottom = desiredTop + groupHeight;
 				}
+			} else if (groupEl) {
+				// Element not found - hide this group
+				itemPositions[key] = -9999;
 			}
 		});
 
-		// Update overflowing headers and notify parent
-		overflowingHeaders = newOverflowingHeaders;
-		onOverflowChange(newOverflowingHeaders);
+		// Update overflowing anchors and notify parent
+		overflowingAnchors = newOverflowingAnchors;
+		onOverflowChange(newOverflowingAnchors);
 	}
 
 	$effect(() => {
@@ -104,14 +221,15 @@
 		{/each}
 
 		<!-- Show items positioned by anchor -->
-		{#each headers as header (header.id)}
-			{@const anchorItems = getItemsForAnchor(`## ${header.text}`)}
+		{#each getUniqueAnchors() as anchor (anchor)}
+			{@const anchorKey = getAnchorKey(anchor)}
+			{@const anchorItems = getItemsForAnchor(anchor)}
 			{#if anchorItems.length > 0}
 				<div
 					class="anchor-group"
-					data-for-anchor={header.id}
-					style="top: {itemPositions[header.id] || 0}px"
-					bind:this={anchorGroupElements[header.id]}
+					data-for-anchor={anchorKey}
+					style="top: {itemPositions[anchorKey] || 0}px"
+					bind:this={anchorGroupElements[anchorKey]}
 				>
 					{#each anchorItems as item, index (index)}
 						<GutterItem {item} />
