@@ -1,3 +1,5 @@
-This is a text snippet! It appears in the left gutter, anchored to the Introduction section.
+**Welcome to the demo!**
 
-You can use these for author notes, additional context, or any supplementary information.
+This gutter item is anchored to the Introduction heading using a header-based anchor. Notice how it aligns with the section it describes.
+
+The gutter is a great place for supplementary information that enhances the main content.
