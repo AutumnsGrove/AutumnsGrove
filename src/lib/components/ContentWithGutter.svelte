@@ -197,20 +197,100 @@
 		}
 	});
 
-	// Get items for overflowing anchors
+	// Get items for overflowing anchors with reference numbers
 	function getOverflowItems() {
 		const items = [];
+		let refNum = 1;
 		for (const anchorKey of overflowingAnchorKeys) {
 			// Find the original anchor string that matches this key
 			const anchor = uniqueAnchors.find(a => getKey(a) === anchorKey);
 			if (anchor) {
 				const anchorItems = getItems(anchor);
 				const label = getAnchorLabel(anchor);
-				items.push({ anchorKey, label, items: anchorItems });
+				items.push({ anchorKey, label, items: anchorItems, refNum });
+				refNum++;
 			}
 		}
 		return items;
 	}
+
+	// Inject reference markers into content HTML for overflowing items
+	function injectReferenceMarkers(html, overflowKeys) {
+		if (!overflowKeys || overflowKeys.length === 0 || typeof window === 'undefined') {
+			return html;
+		}
+
+		const parser = new DOMParser();
+		const doc = parser.parseFromString(html, 'text/html');
+
+		let refNum = 1;
+		for (const anchorKey of overflowKeys) {
+			const anchor = uniqueAnchors.find(a => getKey(a) === anchorKey);
+			if (!anchor) continue;
+
+			const parsed = parseAnchor(anchor);
+			let targetEl = null;
+
+			switch (parsed.type) {
+				case 'header': {
+					const headerText = anchor.replace(/^#+\s*/, '');
+					// Find header by text content
+					const allHeaders = doc.body.querySelectorAll('h1, h2, h3, h4, h5, h6');
+					for (const h of allHeaders) {
+						if (h.textContent.trim() === headerText) {
+							targetEl = h;
+							break;
+						}
+					}
+					break;
+				}
+				case 'paragraph': {
+					const paragraphs = doc.body.querySelectorAll(':scope > p');
+					const index = parsed.value - 1;
+					if (index >= 0 && index < paragraphs.length) {
+						targetEl = paragraphs[index];
+					}
+					break;
+				}
+				case 'tag': {
+					targetEl = doc.body.querySelector(`[data-anchor="${parsed.value}"]`);
+					break;
+				}
+			}
+
+			if (targetEl) {
+				// Create reference marker
+				const marker = doc.createElement('sup');
+				marker.className = 'gutter-ref-marker';
+				marker.id = `ref-${refNum}`;
+
+				const link = doc.createElement('a');
+				link.href = `#overflow-${refNum}`;
+				link.textContent = refNum;
+				link.title = `See gutter content for: ${getAnchorLabel(anchor)}`;
+
+				marker.appendChild(link);
+
+				// Insert marker based on element type
+				if (parsed.type === 'header') {
+					// Insert after header text
+					targetEl.appendChild(doc.createTextNode(' '));
+					targetEl.appendChild(marker);
+				} else {
+					// Insert at start of paragraph/tag element
+					targetEl.insertBefore(marker, targetEl.firstChild);
+					targetEl.insertBefore(doc.createTextNode(' '), marker.nextSibling);
+				}
+			}
+
+			refNum++;
+		}
+
+		return doc.body.innerHTML;
+	}
+
+	// Derive content with reference markers injected
+	let processedContent = $derived(injectReferenceMarkers(content, overflowingAnchorKeys));
 </script>
 
 <div class="content-layout" class:has-gutters={hasGutters}>
@@ -281,7 +361,7 @@
 		{/if}
 
 		<div class="content-body" bind:this={contentBodyElement}>
-			{@html content}
+			{@html processedContent}
 		</div>
 
 		<!-- Overflow gutter items rendered inline -->
@@ -289,8 +369,11 @@
 			<div class="overflow-gutter-section">
 				<div class="overflow-divider"></div>
 				{#each getOverflowItems() as group (group.anchorKey)}
-					<div class="overflow-group">
-						<h4 class="overflow-anchor-label">From: {group.label}</h4>
+					<div class="overflow-group" id="overflow-{group.refNum}">
+						<h4 class="overflow-anchor-label">
+							<span class="overflow-ref-num">[{group.refNum}]</span>
+							From: {group.label}
+						</h4>
 						{#each group.items as item, index (index)}
 							<GutterItem {item} />
 						{/each}
@@ -380,5 +463,76 @@
 
 	:global(.dark) .overflow-anchor-label {
 		color: #666;
+	}
+
+	/* Reference number in overflow label */
+	.overflow-ref-num {
+		color: #2c5f2d;
+		font-weight: 600;
+		margin-right: 0.5rem;
+	}
+
+	:global(.dark) .overflow-ref-num {
+		color: #5cb85f;
+	}
+
+	/* Reference markers in content (global because they're in @html) */
+	:global(.gutter-ref-marker) {
+		font-size: 0.75em;
+		vertical-align: super;
+		line-height: 0;
+		margin-left: 0.1em;
+	}
+
+	:global(.gutter-ref-marker a) {
+		color: #2c5f2d;
+		text-decoration: none;
+		font-weight: 600;
+		padding: 0.1em 0.3em;
+		background: rgba(44, 95, 45, 0.1);
+		border-radius: 3px;
+		transition: background-color 0.2s ease, color 0.2s ease;
+	}
+
+	:global(.dark .gutter-ref-marker a) {
+		color: #5cb85f;
+		background: rgba(92, 184, 95, 0.15);
+	}
+
+	:global(.gutter-ref-marker a:hover) {
+		background: rgba(44, 95, 45, 0.2);
+		color: #4a9d4f;
+	}
+
+	:global(.dark .gutter-ref-marker a:hover) {
+		background: rgba(92, 184, 95, 0.25);
+		color: #7cd97f;
+	}
+
+	/* Smooth scroll target highlighting */
+	.overflow-group:target {
+		animation: highlight-flash 1.5s ease-out;
+	}
+
+	@keyframes highlight-flash {
+		0% {
+			background-color: rgba(44, 95, 45, 0.2);
+		}
+		100% {
+			background-color: transparent;
+		}
+	}
+
+	:global(.dark) .overflow-group:target {
+		animation: highlight-flash-dark 1.5s ease-out;
+	}
+
+	@keyframes highlight-flash-dark {
+		0% {
+			background-color: rgba(92, 184, 95, 0.2);
+		}
+		100% {
+			background-color: transparent;
+		}
 	}
 </style>
