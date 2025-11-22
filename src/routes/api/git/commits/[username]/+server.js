@@ -10,7 +10,7 @@ import {
 export const prerender = false;
 
 // Pagination constants
-const CACHE_TTL = 10800; // 3 hours
+const CACHE_TTL = 3600; // 1 hour
 const MAX_PAGES = 10; // Maximum number of pages to prevent abuse
 const MAX_PER_PAGE = 50; // Maximum items per page
 const DEFAULT_PER_PAGE = 20; // Default items per page

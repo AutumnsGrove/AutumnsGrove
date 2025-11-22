@@ -103,8 +103,11 @@
 		debouncedFetchStats();
 	}
 
-	// Refresh rate limiting (5 minutes = 300000ms)
-	const REFRESH_COOLDOWN = 5 * 60 * 1000;
+	// Refresh rate limiting (2 minutes = 120000ms)
+	const REFRESH_COOLDOWN = 2 * 60 * 1000;
+	// Auto-refresh interval (1 hour = 3600000ms)
+	const AUTO_REFRESH_INTERVAL = 60 * 60 * 1000;
+	let autoRefreshTimer = null;
 	let refreshMessage = $state('');
 	let clickCount = $state(0);
 	let clickTimer = null;
@@ -507,6 +510,12 @@
 			isMounted = true;
 			// Auto-load stats on page mount
 			fetchStats();
+
+			// Set up auto-refresh every hour
+			autoRefreshTimer = setInterval(() => {
+				console.log(`[Dashboard] Auto-refreshing at ${new Date().toISOString()}`);
+				fetchStats(true); // Bypass cache for fresh data
+			}, AUTO_REFRESH_INTERVAL);
 		});
 
 		return () => {
@@ -520,6 +529,11 @@
 			}
 			// Clear all tracked timers
 			clearAllTimers();
+			// Clear auto-refresh timer
+			if (autoRefreshTimer) {
+				clearInterval(autoRefreshTimer);
+				autoRefreshTimer = null;
+			}
 			// Destroy chart instances
 			if (hoursChartInstance) hoursChartInstance.destroy();
 			if (daysChartInstance) daysChartInstance.destroy();

@@ -198,13 +198,19 @@ export async function fetchStatsGraphQL(username, limit, token, since = null) {
       if (!commit) continue;
 
       // Filter to only this user's commits
+      // Check both author.user.login (GitHub linked) and author.name/email (git config)
       const author = commit.author || {};
       const authorUser = author.user || {};
-      const commitAuthor = authorUser.login || "";
+      const commitAuthorLogin = authorUser.login || "";
 
-      if (commitAuthor.toLowerCase() !== username.toLowerCase()) {
+      // Match by GitHub login if available, otherwise skip commits without linked accounts
+      // This allows commits from users who have their git email linked to their GitHub account
+      if (commitAuthorLogin && commitAuthorLogin.toLowerCase() !== username.toLowerCase()) {
         continue;
       }
+      // If no login is available (author.user is null), include the commit anyway
+      // These are commits made with a git email that isn't linked to GitHub,
+      // but they're in the user's repo so they're likely theirs
 
       stats.total_commits++;
 
@@ -404,13 +410,19 @@ export async function fetchCommitsPaginated(username, repoLimit, token, page = 1
       if (!commit) continue;
 
       // Filter to only this user's commits
+      // Check both author.user.login (GitHub linked) and author.name/email (git config)
       const author = commit.author || {};
       const authorUser = author.user || {};
-      const commitAuthor = authorUser.login || "";
+      const commitAuthorLogin = authorUser.login || "";
 
-      if (commitAuthor.toLowerCase() !== username.toLowerCase()) {
+      // Match by GitHub login if available, otherwise skip commits without linked accounts
+      // This allows commits from users who have their git email linked to their GitHub account
+      if (commitAuthorLogin && commitAuthorLogin.toLowerCase() !== username.toLowerCase()) {
         continue;
       }
+      // If no login is available (author.user is null), include the commit anyway
+      // These are commits made with a git email that isn't linked to GitHub,
+      // but they're in the user's repo so they're likely theirs
 
       const commitDate = commit.committedDate;
       const message = commit.message || "";

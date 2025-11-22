@@ -9,7 +9,7 @@ import {
 
 export const prerender = false;
 
-const CACHE_TTL = 10800; // 3 hours
+const CACHE_TTL = 3600; // 1 hour
 
 /**
  * Get comprehensive commit statistics for a GitHub user
