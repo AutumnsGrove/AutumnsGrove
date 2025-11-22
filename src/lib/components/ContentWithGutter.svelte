@@ -4,7 +4,6 @@
 	import MobileTOC from './MobileTOC.svelte';
 	import GutterItem from './GutterItem.svelte';
 	import {
-		parseAnchor,
 		getAnchorKey,
 		getUniqueAnchors,
 		getAnchorLabel,
@@ -13,6 +12,12 @@
 		findAnchorElement
 	} from '$lib/utils/gutter.js';
 	import '$lib/styles/content.css';
+
+	// Constants for positioning calculations
+	const MIN_GAP = 16; // Minimum gap between items in pixels
+	const BOTTOM_PADDING = 32; // Padding from bottom of content
+	const HIDDEN_POSITION = -9999; // Position for hidden items
+	const DEBOUNCE_DELAY = 100; // Debounce delay for resize in ms
 
 	let {
 		content = '',
@@ -55,6 +60,29 @@
 		return getItemsForAnchor(gutterContent, anchor);
 	}
 
+	// Generate unique key for a gutter item
+	function getItemKey(item, index) {
+		// Combine item properties to create a unique identifier
+		const parts = [
+			item.type || 'unknown',
+			item.file || item.src || item.url || '',
+			item.anchor || '',
+			index.toString()
+		];
+		return parts.join('-');
+	}
+
+	/**
+	 * Simple debounce utility
+	 */
+	function debounce(fn, delay) {
+		let timeoutId;
+		return (...args) => {
+			clearTimeout(timeoutId);
+			timeoutId = setTimeout(() => fn(...args), delay);
+		};
+	}
+
 	/**
 	 * Calculate positions based on anchor locations, with collision detection
 	 */
@@ -64,15 +92,17 @@
 		await tick(); // Wait for DOM to update
 
 		const gutterTop = gutterElement.offsetTop;
-		const minGap = 16; // Minimum gap between items in pixels
-		const bottomPadding = 32; // Padding from bottom of content
 
 		let lastBottom = 0; // Track the bottom edge of the last positioned item
 		const newOverflowingAnchors = [];
+		const newPositions = { ...itemPositions };
 
 		// Sort anchors by their position in the document
 		const anchorPositions = uniqueAnchors.map(anchor => {
 			const el = findAnchorElement(anchor, contentBodyElement, headers);
+			if (!el && import.meta.env.DEV) {
+				console.warn(`Anchor element not found for: ${anchor}`);
+			}
 			return {
 				anchor,
 				key: getKey(anchor),
@@ -92,37 +122,38 @@
 				const groupHeight = groupEl.offsetHeight;
 
 				// Check for collision with previous item
-				if (desiredTop < lastBottom + minGap) {
+				if (desiredTop < lastBottom + MIN_GAP) {
 					// Push down to avoid overlap
-					desiredTop = lastBottom + minGap;
+					desiredTop = lastBottom + MIN_GAP;
 				}
 
 				// Check if this item would overflow past the content
 				const effectiveContentHeight = contentHeight > 0 ? contentHeight : Infinity;
-				if (desiredTop + groupHeight > effectiveContentHeight - bottomPadding) {
+				if (desiredTop + groupHeight > effectiveContentHeight - BOTTOM_PADDING) {
 					// This item overflows - mark it and hide it in the gutter
 					newOverflowingAnchors.push(key);
-					itemPositions[key] = -9999; // Hide off-screen
+					newPositions[key] = HIDDEN_POSITION;
 				} else {
-					itemPositions[key] = desiredTop;
+					newPositions[key] = desiredTop;
 					// Update lastBottom for next iteration
 					lastBottom = desiredTop + groupHeight;
 				}
 			} else if (groupEl) {
 				// Element not found - hide this group
-				itemPositions[key] = -9999;
+				newPositions[key] = HIDDEN_POSITION;
 			}
 		});
 
-		// Update overflowing anchors
+		// Update state with new objects (idiomatic Svelte 5)
+		itemPositions = newPositions;
 		overflowingAnchorKeys = newOverflowingAnchors;
 	}
 
 	// Setup resize listener on mount (clearer than $effect for one-time setup)
 	onMount(() => {
-		const handleResize = () => {
+		const handleResize = debounce(() => {
 			requestAnimationFrame(updatePositions);
-		};
+		}, DEBOUNCE_DELAY);
 
 		window.addEventListener('resize', handleResize);
 		return () => {
@@ -144,6 +175,9 @@
 
 	// Add IDs to headers and position mobile gutter items
 	$effect(() => {
+		// Track moved elements for cleanup
+		const movedElements = [];
+
 		untrack(() => {
 			if (!contentBodyElement) return;
 
@@ -165,13 +199,31 @@
 				const mobileGutterEl = mobileGutterRefs[anchorKey];
 				if (!mobileGutterEl || mobileGutterEl.children.length === 0) continue;
 
+				// Track original parent for cleanup
+				const originalParent = mobileGutterEl.parentElement;
+				const originalNextSibling = mobileGutterEl.nextSibling;
+
 				const targetEl = findAnchorElement(anchor, contentBodyElement, headers);
 
 				if (targetEl) {
 					targetEl.insertAdjacentElement('afterend', mobileGutterEl);
+					movedElements.push({ element: mobileGutterEl, originalParent, originalNextSibling });
 				}
 			}
 		});
+
+		// Cleanup: restore moved elements to their original positions
+		return () => {
+			for (const { element, originalParent, originalNextSibling } of movedElements) {
+				if (originalParent && element.parentElement !== originalParent) {
+					if (originalNextSibling) {
+						originalParent.insertBefore(element, originalNextSibling);
+					} else {
+						originalParent.appendChild(element);
+					}
+				}
+			}
+		};
 	});
 
 	// Track content height (only the content-body to avoid feedback loop with overflow section)
@@ -219,7 +271,7 @@
 		<div class="left-gutter-container desktop-only">
 			<aside class="left-gutter" bind:this={gutterElement}>
 				<!-- Show orphan items at the top -->
-				{#each orphanItems as item, index (index)}
+				{#each orphanItems as item, index (getItemKey(item, index))}
 					<div class="gutter-item-wrapper">
 						<GutterItem {item} />
 					</div>
@@ -236,7 +288,7 @@
 							style="top: {itemPositions[anchorKey] || 0}px"
 							bind:this={anchorGroupElements[anchorKey]}
 						>
-							{#each anchorItems as item, index (index)}
+							{#each anchorItems as item, index (getItemKey(item, index))}
 								<GutterItem {item} />
 							{/each}
 						</div>
@@ -256,7 +308,7 @@
 		<!-- Mobile gutter: orphan items at top (no matching anchor) -->
 		{#if hasLeftGutter && orphanItems.length > 0}
 			<div class="mobile-gutter-content">
-				{#each orphanItems as item, index (index)}
+				{#each orphanItems as item, index (getItemKey(item, index))}
 					<GutterItem {item} />
 				{/each}
 			</div>
@@ -272,7 +324,7 @@
 						class="mobile-gutter-content mobile-gutter-inline"
 						bind:this={mobileGutterRefs[anchorKey]}
 					>
-						{#each anchorItems as item, index (index)}
+						{#each anchorItems as item, index (getItemKey(item, index))}
 							<GutterItem {item} />
 						{/each}
 					</div>
@@ -291,7 +343,7 @@
 				{#each getOverflowItems() as group (group.anchorKey)}
 					<div class="overflow-group">
 						<h4 class="overflow-anchor-label">From: {group.label}</h4>
-						{#each group.items as item, index (index)}
+						{#each group.items as item, index (getItemKey(item, index))}
 							<GutterItem {item} />
 						{/each}
 					</div>
