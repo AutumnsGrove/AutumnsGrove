@@ -11,8 +11,6 @@
 
 /* ==========================================================================
    Layout Grid System
-
-   Note: CSS variables are defined in +layout.svelte for single source of truth
    ========================================================================== */
 
 .content-layout {
@@ -66,7 +64,7 @@
 	display: block;
 	margin-bottom: 2rem;
 	padding: 1rem;
-	background: var(--color-bg-secondary);
+	background: #f5f5f5;
 	border-radius: 8px;
 	transition: background-color 0.3s ease;
 }
@@ -77,7 +75,7 @@
 }
 
 .dark .mobile-gutter-content {
-	background: var(--color-bg-secondary-dark);
+	background: #1a1a1a;
 }
 
 @media (min-width: 1200px) {
@@ -126,24 +124,24 @@
 .content-header {
 	margin-bottom: 3rem;
 	padding-bottom: 2rem;
-	border-bottom: 2px solid var(--color-border);
+	border-bottom: 2px solid #e0e0e0;
 	transition: border-color 0.3s ease;
 }
 
 .dark .content-header {
-	border-bottom: 2px solid var(--color-border-dark);
+	border-bottom: 2px solid #333;
 }
 
 .content-header h1 {
 	font-size: 2.5rem;
-	color: var(--color-primary);
+	color: #2c5f2d;
 	margin: 0;
 	line-height: 1.2;
 	transition: color 0.3s ease;
 }
 
 .dark .content-header h1 {
-	color: var(--color-primary-light);
+	color: #5cb85f;
 }
 
 /* ==========================================================================
@@ -152,12 +150,12 @@
 
 .content-body {
 	line-height: 1.8;
-	color: var(--color-text);
+	color: #333;
 	transition: color 0.3s ease;
 }
 
 .dark .content-body {
-	color: var(--color-text-dark);
+	color: #e0e0e0;
 }
 
 /* --------------------------------------------------------------------------
@@ -165,7 +163,7 @@
    -------------------------------------------------------------------------- */
 
 .content-body h2 {
-	color: var(--color-primary);
+	color: #2c5f2d;
 	margin-top: 2.5rem;
 	margin-bottom: 1rem;
 	font-size: 1.75rem;
@@ -173,11 +171,11 @@
 }
 
 .dark .content-body h2 {
-	color: var(--color-primary-light);
+	color: #5cb85f;
 }
 
 .content-body h3 {
-	color: var(--color-primary);
+	color: #2c5f2d;
 	margin-top: 2rem;
 	margin-bottom: 0.75rem;
 	font-size: 1.4rem;
@@ -185,7 +183,7 @@
 }
 
 .dark .content-body h3 {
-	color: var(--color-primary-light);
+	color: #5cb85f;
 }
 
 /* --------------------------------------------------------------------------
@@ -201,21 +199,21 @@
    -------------------------------------------------------------------------- */
 
 .content-body a {
-	color: var(--color-primary);
+	color: #2c5f2d;
 	text-decoration: underline;
 	transition: color 0.3s ease;
 }
 
 .dark .content-body a {
-	color: var(--color-primary-light);
+	color: #5cb85f;
 }
 
 .content-body a:hover {
-	color: var(--color-primary-hover);
+	color: #4a9d4f;
 }
 
 .dark .content-body a:hover {
-	color: var(--color-primary-light-hover);
+	color: #7cd97f;
 }
 
 /* --------------------------------------------------------------------------
@@ -223,7 +221,7 @@
    -------------------------------------------------------------------------- */
 
 .content-body code {
-	background: var(--color-bg-secondary);
+	background: #f5f5f5;
 	padding: 0.2rem 0.4rem;
 	border-radius: 3px;
 	font-family: 'Courier New', monospace;
@@ -232,12 +230,12 @@
 }
 
 .dark .content-body code {
-	background: var(--color-bg-tertiary-dark);
-	color: var(--color-text-dark);
+	background: #2a2a2a;
+	color: #e0e0e0;
 }
 
 .content-body pre {
-	background: var(--color-bg-secondary);
+	background: #f5f5f5;
 	padding: 1rem;
 	border-radius: 6px;
 	overflow-x: auto;
@@ -246,7 +244,7 @@
 }
 
 .dark .content-body pre {
-	background: var(--color-bg-tertiary-dark);
+	background: #2a2a2a;
 }
 
 .content-body pre code {
@@ -273,17 +271,17 @@
    -------------------------------------------------------------------------- */
 
 .content-body blockquote {
-	border-left: 4px solid var(--color-primary);
+	border-left: 4px solid #2c5f2d;
 	padding-left: 1rem;
 	margin: 1.5rem 0;
-	color: var(--color-text-muted);
+	color: #666;
 	font-style: italic;
 	transition: border-color 0.3s ease, color 0.3s ease;
 }
 
 .dark .content-body blockquote {
-	border-left: 4px solid var(--color-primary-light);
-	color: var(--color-text-muted-dark);
+	border-left: 4px solid #5cb85f;
+	color: #d0d0d0;
 }
 
 /* --------------------------------------------------------------------------
