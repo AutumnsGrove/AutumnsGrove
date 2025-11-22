@@ -265,38 +265,6 @@ export function processAnchorTags(html) {
 }
 
 /**
- * Parse anchor string to determine anchor type and value
- * @param {string} anchor - The anchor string from manifest
- * @returns {Object} Object with type and value properties
- */
-export function parseAnchor(anchor) {
-  if (!anchor) {
-    return { type: 'none', value: null };
-  }
-
-  // Check for paragraph anchor: "paragraph:N"
-  const paragraphMatch = anchor.match(/^paragraph:(\d+)$/);
-  if (paragraphMatch) {
-    return { type: 'paragraph', value: parseInt(paragraphMatch[1], 10) };
-  }
-
-  // Check for tag anchor: "anchor:tagname" (supports alphanumeric, underscores, and hyphens)
-  const tagMatch = anchor.match(/^anchor:([\w-]+)$/);
-  if (tagMatch) {
-    return { type: 'tag', value: tagMatch[1] };
-  }
-
-  // Check for header anchor: "## Header Text"
-  const headerMatch = anchor.match(/^(#{1,6})\s+(.+)$/);
-  if (headerMatch) {
-    return { type: 'header', value: anchor };
-  }
-
-  // Unknown format - treat as header for backwards compatibility
-  return { type: 'header', value: anchor };
-}
-
-/**
  * Get gutter content from specified modules
  * @param {string} slug - The page/post slug
  * @param {Object} manifestModules - The manifest modules to search
