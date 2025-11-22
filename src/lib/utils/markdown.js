@@ -176,7 +176,10 @@ export function getPostBySlug(slug) {
   const content = entry[1];
 
   const { data, content: markdown } = matter(content);
-  const htmlContent = marked.parse(markdown);
+  let htmlContent = marked.parse(markdown);
+
+  // Process anchor tags in the HTML content
+  htmlContent = processAnchorTags(htmlContent);
 
   // Extract headers for table of contents
   const headers = extractHeaders(markdown);
@@ -225,6 +228,52 @@ export function extractHeaders(markdown) {
   }
 
   return headers;
+}
+
+/**
+ * Process anchor tags in HTML content
+ * Converts <!-- anchor:tagname --> comments to identifiable span elements
+ * @param {string} html - The HTML content
+ * @returns {string} HTML with anchor markers converted to spans
+ */
+export function processAnchorTags(html) {
+  // Convert <!-- anchor:tagname --> to <span class="anchor-marker" data-anchor="tagname"></span>
+  return html.replace(
+    /<!--\s*anchor:(\w+)\s*-->/g,
+    (match, tagname) => `<span class="anchor-marker" data-anchor="${tagname}"></span>`
+  );
+}
+
+/**
+ * Parse anchor string to determine anchor type and value
+ * @param {string} anchor - The anchor string from manifest
+ * @returns {Object} Object with type and value properties
+ */
+export function parseAnchor(anchor) {
+  if (!anchor) {
+    return { type: 'none', value: null };
+  }
+
+  // Check for paragraph anchor: "paragraph:N"
+  const paragraphMatch = anchor.match(/^paragraph:(\d+)$/);
+  if (paragraphMatch) {
+    return { type: 'paragraph', value: parseInt(paragraphMatch[1], 10) };
+  }
+
+  // Check for tag anchor: "anchor:tagname"
+  const tagMatch = anchor.match(/^anchor:(\w+)$/);
+  if (tagMatch) {
+    return { type: 'tag', value: tagMatch[1] };
+  }
+
+  // Check for header anchor: "## Header Text"
+  const headerMatch = anchor.match(/^(#{1,6})\s+(.+)$/);
+  if (headerMatch) {
+    return { type: 'header', value: anchor };
+  }
+
+  // Unknown format - treat as header for backwards compatibility
+  return { type: 'header', value: anchor };
 }
 
 /**

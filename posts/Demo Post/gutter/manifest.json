@@ -2,6 +2,11 @@
   "items": [
     {
       "type": "comment",
+      "file": "paragraph-note.md",
+      "anchor": "paragraph:1"
+    },
+    {
+      "type": "comment",
       "file": "intro-note.md",
       "anchor": "## Introduction"
     },
@@ -9,6 +14,11 @@
       "type": "comment",
       "file": "willow-1.md",
       "anchor": "## About Willow"
+    },
+    {
+      "type": "comment",
+      "file": "tip-note.md",
+      "anchor": "anchor:tip1"
     },
     {
       "type": "comment",

@@ -21,6 +21,10 @@ Willow is a very good dog. She likes to eat, sleep, and go for walks.
 
 More filler text here. The gutter items should appear alongside the relevant sections.
 
+<!-- anchor:tip1 -->
+
+Here's a fun fact: dogs can learn to understand over 100 words and gestures!
+
 ## Photos Section
 
 This section has some photos in the left gutter.
