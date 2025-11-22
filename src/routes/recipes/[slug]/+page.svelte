@@ -1,6 +1,7 @@
 <script>
 	import { untrack } from 'svelte';
 	import { renderMermaidDiagrams } from '$lib/utils/markdown.js';
+	import ContentWithGutter from '$lib/components/ContentWithGutter.svelte';
 	import IconLegend from '$lib/components/IconLegend.svelte';
 
 	let { data } = $props();
@@ -23,7 +24,7 @@
 
 	function injectStepIcons() {
 		// Find all h3 elements that contain step information
-		const stepHeadings = document.querySelectorAll('.recipe-content h3');
+		const stepHeadings = document.querySelectorAll('.content-body h3');
 
 		stepHeadings.forEach((heading) => {
 			const text = heading.textContent || '';
@@ -61,43 +62,40 @@
 	<meta name="description" content={data.recipe.description || data.recipe.title} />
 </svelte:head>
 
-<article class="recipe">
-	<header class="recipe-header">
-		<a href="/recipes" class="back-link">&larr; Back to Recipes</a>
-		<h1>{data.recipe.title}</h1>
-		<div class="recipe-meta">
-			<time datetime={data.recipe.date}>
-				{new Date(data.recipe.date).toLocaleDateString('en-US', {
-					year: 'numeric',
-					month: 'long',
-					day: 'numeric'
-				})}
-			</time>
-			{#if data.recipe.tags.length > 0}
-				<div class="tags">
-					{#each data.recipe.tags as tag (tag)}
-						<span class="tag">{tag}</span>
-					{/each}
-				</div>
-			{/if}
-		</div>
-	</header>
+<ContentWithGutter
+	content={data.recipe.content}
+	gutterContent={data.recipe.gutterContent || []}
+	headers={data.recipe.headers || []}
+>
+	{#snippet children()}
+		<header class="content-header">
+			<a href="/recipes" class="back-link">&larr; Back to Recipes</a>
+			<h1>{data.recipe.title}</h1>
+			<div class="recipe-meta">
+				<time datetime={data.recipe.date}>
+					{new Date(data.recipe.date).toLocaleDateString('en-US', {
+						year: 'numeric',
+						month: 'long',
+						day: 'numeric'
+					})}
+				</time>
+				{#if data.recipe.tags.length > 0}
+					<div class="tags">
+						{#each data.recipe.tags as tag (tag)}
+							<span class="tag">{tag}</span>
+						{/each}
+					</div>
+				{/if}
+			</div>
+		</header>
 
-	{#if iconsUsed.length > 0}
-		<IconLegend {iconsUsed} />
-	{/if}
-
-	<div class="recipe-content">
-		{@html data.recipe.content}
-	</div>
-</article>
+		{#if iconsUsed.length > 0}
+			<IconLegend {iconsUsed} />
+		{/if}
+	{/snippet}
+</ContentWithGutter>
 
 <style>
-	.recipe {
-		max-width: 800px;
-		margin: 0 auto;
-	}
-
 	.back-link {
 		display: inline-block;
 		color: #2c5f2d;
@@ -119,27 +117,9 @@
 		color: #7cd97f;
 	}
 
-	.recipe-header {
-		margin-bottom: 3rem;
-		padding-bottom: 2rem;
-		border-bottom: 2px solid #e0e0e0;
-		transition: border-color 0.3s ease;
-	}
-
-	:global(.dark) .recipe-header {
-		border-bottom: 2px solid #333;
-	}
-
-	.recipe-header h1 {
-		font-size: 2.5rem;
-		color: #2c5f2d;
+	/* Override content-header h1 to add margin for recipe meta */
+	.content-header h1 {
 		margin: 0 0 1rem 0;
-		line-height: 1.2;
-		transition: color 0.3s ease;
-	}
-
-	:global(.dark) .recipe-header h1 {
-		color: #5cb85f;
 	}
 
 	.recipe-meta {
@@ -160,124 +140,6 @@
 	}
 
 	/* Tags use global styles from +layout.svelte */
-
-	.recipe-content {
-		line-height: 1.8;
-		color: #333;
-		transition: color 0.3s ease;
-	}
-
-	:global(.dark) .recipe-content {
-		color: var(--color-text-dark);
-	}
-
-	:global(.recipe-content h2) {
-		color: #2c5f2d;
-		margin-top: 2.5rem;
-		margin-bottom: 1rem;
-		font-size: 1.75rem;
-		transition: color 0.3s ease;
-	}
-
-	:global(.dark .recipe-content h2) {
-		color: #5cb85f;
-	}
-
-	:global(.recipe-content h3) {
-		color: #2c5f2d;
-		margin-top: 2rem;
-		margin-bottom: 0.75rem;
-		font-size: 1.4rem;
-		transition: color 0.3s ease;
-	}
-
-	:global(.dark .recipe-content h3) {
-		color: #5cb85f;
-	}
-
-	:global(.recipe-content p) {
-		margin-bottom: 1.5rem;
-	}
-
-	:global(.recipe-content a) {
-		color: #2c5f2d;
-		text-decoration: underline;
-		transition: color 0.3s ease;
-	}
-
-	:global(.dark .recipe-content a) {
-		color: #5cb85f;
-	}
-
-	:global(.recipe-content a:hover) {
-		color: #4a9d4f;
-	}
-
-	:global(.dark .recipe-content a:hover) {
-		color: #7cd97f;
-	}
-
-	:global(.recipe-content code) {
-		background: #f5f5f5;
-		padding: 0.2rem 0.4rem;
-		border-radius: 3px;
-		font-family: 'Courier New', monospace;
-		font-size: 0.9em;
-		transition: background-color 0.3s ease, color 0.3s ease;
-	}
-
-	:global(.dark .recipe-content code) {
-		background: var(--color-bg-tertiary-dark);
-		color: var(--color-text-dark);
-	}
-
-	:global(.recipe-content pre) {
-		background: #f5f5f5;
-		padding: 1rem;
-		border-radius: 6px;
-		overflow-x: auto;
-		margin-bottom: 1.5rem;
-		transition: background-color 0.3s ease;
-	}
-
-	:global(.dark .recipe-content pre) {
-		background: #2a2a2a;
-	}
-
-	:global(.recipe-content pre code) {
-		background: none;
-		padding: 0;
-	}
-
-	:global(.recipe-content ul, .recipe-content ol) {
-		margin-bottom: 1.5rem;
-		padding-left: 2rem;
-	}
-
-	:global(.recipe-content li) {
-		margin-bottom: 0.5rem;
-	}
-
-	:global(.recipe-content blockquote) {
-		border-left: 4px solid #2c5f2d;
-		padding-left: 1rem;
-		margin: 1.5rem 0;
-		color: #666;
-		font-style: italic;
-		transition: border-color 0.3s ease, color 0.3s ease;
-	}
-
-	:global(.dark .recipe-content blockquote) {
-		border-left: 4px solid #5cb85f;
-		color: var(--color-text-muted-dark);
-	}
-
-	:global(.recipe-content img) {
-		max-width: 100%;
-		height: auto;
-		border-radius: 8px;
-		margin: 1.5rem 0;
-	}
 
 	/* Mermaid diagram styling */
 	:global(.mermaid-container) {
@@ -334,7 +196,7 @@
 	}
 
 	/* Style step headings to accommodate icons */
-	:global(.recipe-content h3) {
+	:global(.content-body h3) {
 		display: flex;
 		align-items: center;
 		flex-wrap: wrap;
@@ -342,18 +204,6 @@
 	}
 
 	@media (max-width: 768px) {
-		.recipe-header h1 {
-			font-size: 2rem;
-		}
-
-		:global(.recipe-content h2) {
-			font-size: 1.5rem;
-		}
-
-		:global(.recipe-content h3) {
-			font-size: 1.25rem;
-		}
-
 		:global(.step-icons) {
 			display: flex;
 			margin-right: 0;

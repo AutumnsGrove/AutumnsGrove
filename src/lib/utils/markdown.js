@@ -73,6 +73,25 @@ const aboutGutterImageModules = import.meta.glob("../../../about/*/gutter/*.{jpg
   import: "default",
 });
 
+// Load recipe gutter manifest files
+const recipeGutterManifestModules = import.meta.glob("../../../recipes/*/gutter/manifest.json", {
+  eager: true,
+});
+
+// Load recipe gutter markdown content files
+const recipeGutterMarkdownModules = import.meta.glob("../../../recipes/*/gutter/*.md", {
+  eager: true,
+  query: "?raw",
+  import: "default",
+});
+
+// Load recipe gutter image files
+const recipeGutterImageModules = import.meta.glob("../../../recipes/*/gutter/*.{jpg,jpeg,png,gif,webp}", {
+  eager: true,
+  query: "?url",
+  import: "default",
+});
+
 /**
  * Validates if a string is a valid URL
  * @param {string} urlString - The string to validate as a URL
@@ -238,8 +257,9 @@ export function extractHeaders(markdown) {
  */
 export function processAnchorTags(html) {
   // Convert <!-- anchor:tagname --> to <span class="anchor-marker" data-anchor="tagname"></span>
+  // Supports alphanumeric characters, underscores, and hyphens in tag names
   return html.replace(
-    /<!--\s*anchor:(\w+)\s*-->/g,
+    /<!--\s*anchor:([\w-]+)\s*-->/g,
     (match, tagname) => `<span class="anchor-marker" data-anchor="${tagname}"></span>`
   );
 }
@@ -260,8 +280,8 @@ export function parseAnchor(anchor) {
     return { type: 'paragraph', value: parseInt(paragraphMatch[1], 10) };
   }
 
-  // Check for tag anchor: "anchor:tagname"
-  const tagMatch = anchor.match(/^anchor:(\w+)$/);
+  // Check for tag anchor: "anchor:tagname" (supports alphanumeric, underscores, and hyphens)
+  const tagMatch = anchor.match(/^anchor:([\w-]+)$/);
   if (tagMatch) {
     return { type: 'tag', value: tagMatch[1] };
   }
@@ -331,6 +351,28 @@ function getGutterContentFromModules(slug, manifestModules, markdownModules, ima
           src: imgEntry[1],
         };
       }
+    } else if (item.type === 'emoji') {
+      // Emoji items can use URLs (local or CDN) or local files
+      if (item.url) {
+        // Direct URL (local path like /icons/instruction/mix.webp or CDN URL)
+        return {
+          ...item,
+          src: item.url,
+        };
+      } else if (item.file) {
+        // Local file in gutter directory
+        const imgEntry = Object.entries(imageModules).find(([filepath]) => {
+          return filepath.includes(`/${slug}/gutter/${item.file}`);
+        });
+
+        if (imgEntry) {
+          return {
+            ...item,
+            src: imgEntry[1],
+          };
+        }
+      }
+      return item;
     } else if (item.type === 'gallery') {
       /**
        * Process gallery items containing multiple images
@@ -390,7 +432,16 @@ function getGutterContentFromModules(slug, manifestModules, markdownModules, ima
     }
 
     return item;
-  }).filter(item => item.content || item.src || item.images); // Filter out items that weren't found
+  }).filter(item => item.content || item.src || item.images || item.type === 'emoji'); // Filter out items that weren't found
+}
+
+/**
+ * Get gutter content for a recipe by slug
+ * @param {string} slug - The recipe slug
+ * @returns {Array} Array of gutter items with content and position info
+ */
+export function getRecipeGutterContent(slug) {
+  return getGutterContentFromModules(slug, recipeGutterManifestModules, recipeGutterMarkdownModules, recipeGutterImageModules);
 }
 
 /**
@@ -497,10 +548,19 @@ export function getRecipeBySlug(slug) {
 
   // Process Mermaid diagrams in the content
   const processedContent = processMermaidDiagrams(markdown);
-  const htmlContent = marked.parse(processedContent);
+  let htmlContent = marked.parse(processedContent);
+
+  // Process anchor tags in the HTML content
+  htmlContent = processAnchorTags(htmlContent);
+
+  // Extract headers for table of contents
+  const headers = extractHeaders(markdown);
 
   // Get sidecar data if available
   const sidecar = getRecipeSidecar(slug);
+
+  // Get gutter content for this recipe
+  const gutterContent = getRecipeGutterContent(slug);
 
   return {
     slug,
@@ -509,6 +569,8 @@ export function getRecipeBySlug(slug) {
     tags: data.tags || [],
     description: data.description || "",
     content: htmlContent,
+    headers,
+    gutterContent,
     sidecar: sidecar,
   };
 }
