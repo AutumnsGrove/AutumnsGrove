@@ -1,7 +1,9 @@
 <script>
+	import ZoomableImage from './ZoomableImage.svelte';
+
 	/**
 	 * Lightbox - Full-screen image viewer
-	 * Click to expand images to full size
+	 * Click to expand images to full size with zoom and pan support
 	 */
 	let { src = '', alt = '', caption = '', isOpen = false, onClose = () => {} } = $props();
 
@@ -34,8 +36,8 @@
 				<line x1="6" y1="6" x2="18" y2="18"></line>
 			</svg>
 		</button>
-		<div class="lightbox-content">
-			<img {src} {alt} class="lightbox-image" />
+		<div class="lightbox-content" onclick={handleBackdropClick}>
+			<ZoomableImage {src} {alt} isActive={isOpen} class="lightbox-image" />
 			{#if caption}
 				<div class="lightbox-caption">{caption}</div>
 			{/if}
@@ -66,15 +68,13 @@
 		align-items: center;
 		max-width: 90vw;
 		max-height: 90vh;
-		overflow: hidden;
+		overflow: auto;
 	}
 
-	.lightbox-image {
+	:global(.lightbox-content .lightbox-image) {
 		max-width: 90vw;
 		object-fit: contain;
-		cursor: default;
 		border-radius: 4px;
-		/* Allow image to shrink to make room for caption */
 		flex: 1 1 auto;
 		min-height: 0;
 	}
@@ -88,7 +88,6 @@
 		text-align: center;
 		max-width: 90vw;
 		line-height: 1.5;
-		/* Caption keeps its natural size; image shrinks instead */
 		flex-shrink: 0;
 	}
 

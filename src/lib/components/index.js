@@ -3,3 +3,4 @@
 
 export { default as ImageGallery } from "./ImageGallery.svelte";
 export { default as IconLegend } from "./IconLegend.svelte";
+export { default as ZoomableImage } from "./ZoomableImage.svelte";
