@@ -47,6 +47,10 @@
 		<div class="gutter-gallery">
 			<ImageGallery images={item.images} />
 		</div>
+	{:else if item.type === 'emoji'}
+		<div class="gutter-emoji">
+			<img src={item.src} alt={item.alt || 'Emoji'} title={item.alt || ''} />
+		</div>
 	{/if}
 </div>
 
@@ -207,5 +211,22 @@
 	.gutter-gallery :global(.gallery-caption) {
 		font-size: 0.75rem;
 		padding: 6px 8px;
+	}
+
+	/* Emoji styles */
+	.gutter-emoji {
+		display: flex;
+		justify-content: center;
+		padding: 0.5rem 0;
+	}
+
+	.gutter-emoji img {
+		width: 48px;
+		height: 48px;
+		transition: transform 0.2s;
+	}
+
+	.gutter-emoji img:hover {
+		transform: scale(1.15);
 	}
 </style>
