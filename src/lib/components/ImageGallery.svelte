@@ -1,5 +1,6 @@
 <script>
 	import ZoomableImage from './ZoomableImage.svelte';
+	import LightboxCaption from './LightboxCaption.svelte';
 
 	/**
 	 * ImageGallery - Multi-image gallery with navigation
@@ -310,9 +311,7 @@
 			</div>
 
 			<!-- Caption in lightbox -->
-			{#if currentImage.caption}
-				<div class="lightbox-caption">{currentImage.caption}</div>
-			{/if}
+		<LightboxCaption caption={currentImage.caption} />
 
 			<!-- Thumbnail strip -->
 			{#if images.length > 1}
@@ -613,16 +612,6 @@
 		max-height: calc(100vh - 140px);
 		object-fit: contain;
 		border-radius: 4px;
-	}
-
-	.lightbox-caption {
-		padding: 0.75rem 1rem;
-		color: rgba(255, 255, 255, 0.9);
-		font-size: 0.9rem;
-		font-style: italic;
-		text-align: center;
-		max-width: 90vw;
-		line-height: 1.5;
 	}
 
 	.lightbox-nav {

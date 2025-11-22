@@ -1,5 +1,6 @@
 <script>
 	import ZoomableImage from './ZoomableImage.svelte';
+	import LightboxCaption from './LightboxCaption.svelte';
 
 	/**
 	 * Lightbox - Full-screen image viewer
@@ -38,10 +39,8 @@
 		</button>
 		<div class="lightbox-content" onclick={handleBackdropClick}>
 			<ZoomableImage {src} {alt} isActive={isOpen} class="lightbox-image" />
-			{#if caption}
-				<div class="lightbox-caption">{caption}</div>
-			{/if}
 		</div>
+		<LightboxCaption {caption} />
 	</div>
 {/if}
 
@@ -77,18 +76,6 @@
 		border-radius: 4px;
 		flex: 1 1 auto;
 		min-height: 0;
-	}
-
-	.lightbox-caption {
-		margin-top: 1rem;
-		padding: 0.5rem 1rem;
-		color: rgba(255, 255, 255, 0.9);
-		font-size: 0.9rem;
-		font-style: italic;
-		text-align: center;
-		max-width: 90vw;
-		line-height: 1.5;
-		flex-shrink: 0;
 	}
 
 	.close-button {
