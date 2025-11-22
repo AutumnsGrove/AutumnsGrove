@@ -2,6 +2,11 @@
   "items": [
     {
       "type": "comment",
+      "file": "intro-note.md",
+      "anchor": "## Introduction"
+    },
+    {
+      "type": "comment",
       "file": "willow-1.md",
       "anchor": "## About Willow"
     },
