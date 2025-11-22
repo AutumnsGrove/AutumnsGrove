@@ -2,7 +2,7 @@
   "items": [
     {
       "type": "comment",
-      "file": "paragraph-note.md",
+      "file": "welcome-note.md",
       "anchor": "paragraph:1"
     },
     {
@@ -12,39 +12,61 @@
     },
     {
       "type": "comment",
-      "file": "willow-1.md",
-      "anchor": "## About Willow"
+      "file": "frontmatter-tip.md",
+      "anchor": "## Getting Started with Blog Posts"
+    },
+    {
+      "type": "photo",
+      "file": "https://cdn.autumnsgrove.com/willow_walk.jpeg",
+      "anchor": "## About Willow",
+      "caption": "Willow on her favorite walking trail"
     },
     {
       "type": "comment",
-      "file": "tip-note.md",
-      "anchor": "anchor:tip1"
+      "file": "willow-fact-note.md",
+      "anchor": "anchor:willow-fact"
     },
     {
       "type": "comment",
-      "file": "willow-2.md",
-      "anchor": "## Photos Section"
+      "file": "gutter-tip.md",
+      "anchor": "## Using the Left Gutter"
+    },
+    {
+      "type": "photo",
+      "file": "https://cdn.autumnsgrove.com/willow_close.jpeg",
+      "anchor": "anchor:image-tips",
+      "caption": "A well-composed photo of Willow"
     },
     {
       "type": "gallery",
-      "anchor": "## Conclusion",
+      "anchor": "## Creating Image Galleries",
       "images": [
         {
           "url": "https://cdn.autumnsgrove.com/willow_close.jpeg",
           "alt": "Close up of Willow",
-          "caption": "Such a pretty face"
+          "caption": "Portrait shot - great for detail"
         },
         {
           "url": "https://cdn.autumnsgrove.com/willow_stretch.jpeg",
           "alt": "Willow stretching",
-          "caption": "Big stretch!"
+          "caption": "Action shot - captures personality"
         },
         {
           "url": "https://cdn.autumnsgrove.com/willow_wants_your_food.jpeg",
           "alt": "Willow looking at food",
-          "caption": "Always hungry"
+          "caption": "Candid shot - tells a story"
         }
       ]
+    },
+    {
+      "type": "comment",
+      "file": "anchor-example.md",
+      "anchor": "anchor:anchor-types"
+    },
+    {
+      "type": "comment",
+      "file": "overflow-demo.md",
+      "anchor": "## Conclusion"
     }
   ]
 }
