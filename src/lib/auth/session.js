@@ -10,17 +10,14 @@ const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 7; // 7 days
 /**
  * Create a session token for a user
  * @param {Object} user - User data
- * @param {string} user.id - GitHub user ID
- * @param {string} user.username - GitHub username
- * @param {string} user.avatar - Avatar URL
+ * @param {string} user.email - User email address
  * @param {string} secret - Session secret
  * @returns {Promise<string>} - Signed JWT token
  */
 export async function createSession(user, secret) {
   const payload = {
-    sub: user.id,
-    username: user.username,
-    avatar: user.avatar,
+    sub: user.email,
+    email: user.email,
     exp: Math.floor(Date.now() / 1000) + SESSION_DURATION_SECONDS,
   };
 
@@ -41,9 +38,7 @@ export async function verifySession(token, secret) {
   }
 
   return {
-    id: payload.sub,
-    username: payload.username,
-    avatar: payload.avatar,
+    email: payload.email,
   };
 }
 
@@ -99,12 +94,12 @@ export function parseSessionCookie(cookieHeader) {
 }
 
 /**
- * Check if a username is in the allowed admin list
- * @param {string} username - GitHub username to check
- * @param {string} allowedList - Comma-separated list of allowed usernames
+ * Check if an email is in the allowed admin list
+ * @param {string} email - Email address to check
+ * @param {string} allowedList - Comma-separated list of allowed emails
  * @returns {boolean} - Whether the user is allowed
  */
-export function isAllowedAdmin(username, allowedList) {
-  const allowed = allowedList.split(",").map((u) => u.trim().toLowerCase());
-  return allowed.includes(username.toLowerCase());
+export function isAllowedAdmin(email, allowedList) {
+  const allowed = allowedList.split(",").map((e) => e.trim().toLowerCase());
+  return allowed.includes(email.toLowerCase());
 }

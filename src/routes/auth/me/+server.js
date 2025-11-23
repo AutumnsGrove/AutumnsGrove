@@ -26,9 +26,7 @@ export async function GET({ request, platform }) {
   return json({
     authenticated: true,
     user: {
-      id: user.id,
-      username: user.username,
-      avatar: user.avatar,
+      email: user.email,
     },
   });
 }
