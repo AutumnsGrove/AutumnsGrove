@@ -16,6 +16,7 @@
 
   $effect(() => {
     untrack(() => {
+      if (typeof window === 'undefined') return;
       const params = new URLSearchParams(window.location.search);
       const urlError = params.get('error') || '';
       error = errorMessages[urlError] || (urlError ? 'An error occurred.' : '');

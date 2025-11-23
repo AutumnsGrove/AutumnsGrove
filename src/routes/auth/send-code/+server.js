@@ -1,12 +1,85 @@
 import { json } from "@sveltejs/kit";
 import { isAllowedAdmin } from "$lib/auth/session.js";
 
+// Constants
+const CODE_EXPIRATION_MS = 10 * 60 * 1000; // 10 minutes
+const CODE_MIN = 100000;
+const CODE_MAX = 999999;
+const CODE_RANGE = CODE_MAX - CODE_MIN + 1;
+
+// Rate limiting constants
+const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1 minute window
+const MAX_REQUESTS_PER_EMAIL = 3; // Max 3 requests per email per minute
+const MAX_REQUESTS_PER_IP = 10; // Max 10 requests per IP per minute
+
 /**
- * Generate a random 6-digit code
+ * Generate a cryptographically secure random 6-digit code
  * @returns {string}
  */
 function generateCode() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
+  const array = new Uint32Array(1);
+  crypto.getRandomValues(array);
+  return (array[0] % CODE_RANGE + CODE_MIN).toString();
+}
+
+/**
+ * Check rate limits for email and IP
+ * @param {D1Database} db
+ * @param {string} email
+ * @param {string} ip
+ * @returns {Promise<{allowed: boolean, reason?: string}>}
+ */
+async function checkRateLimit(db, email, ip) {
+  const now = Date.now();
+  const windowStart = now - RATE_LIMIT_WINDOW_MS;
+
+  try {
+    // Check email rate limit
+    const emailCount = await db.prepare(
+      "SELECT COUNT(*) as count FROM magic_codes WHERE email = ? AND created_at > ?"
+    ).bind(email, windowStart).first();
+
+    if (emailCount && emailCount.count >= MAX_REQUESTS_PER_EMAIL) {
+      return { allowed: false, reason: "Too many requests. Please wait before requesting another code." };
+    }
+
+    // Check IP rate limit using a separate rate_limits table
+    const ipCount = await db.prepare(
+      "SELECT COUNT(*) as count FROM rate_limits WHERE ip_address = ? AND created_at > ?"
+    ).bind(ip, windowStart).first();
+
+    if (ipCount && ipCount.count >= MAX_REQUESTS_PER_IP) {
+      return { allowed: false, reason: "Too many requests from this IP. Please try again later." };
+    }
+
+    return { allowed: true };
+  } catch (error) {
+    // If rate_limits table doesn't exist, allow the request but log warning
+    console.warn("Rate limit check failed:", error);
+    return { allowed: true };
+  }
+}
+
+/**
+ * Record a rate limit entry for IP tracking
+ * @param {D1Database} db
+ * @param {string} ip
+ */
+async function recordRateLimit(db, ip) {
+  const now = Date.now();
+  try {
+    // Clean up old rate limit entries and insert new one
+    await db.prepare(
+      "DELETE FROM rate_limits WHERE created_at < ?"
+    ).bind(now - RATE_LIMIT_WINDOW_MS).run();
+
+    await db.prepare(
+      "INSERT INTO rate_limits (ip_address, created_at) VALUES (?, ?)"
+    ).bind(ip, now).run();
+  } catch (error) {
+    // Table might not exist yet - that's ok
+    console.warn("Rate limit recording failed:", error);
+  }
 }
 
 /**
@@ -53,7 +126,7 @@ async function sendEmail(email, code, apiKey) {
   return response.json();
 }
 
-export async function POST({ request, platform }) {
+export async function POST({ request, platform, getClientAddress }) {
   const env = platform?.env;
 
   if (!env) {
@@ -65,6 +138,9 @@ export async function POST({ request, platform }) {
   if (!RESEND_API_KEY || !ALLOWED_ADMIN_EMAILS || !SESSION_SECRET || !GIT_STATS_DB) {
     return json({ error: "Server configuration error" }, { status: 500 });
   }
+
+  // Get client IP for rate limiting
+  const clientIP = getClientAddress();
 
   let body;
   try {
@@ -81,6 +157,15 @@ export async function POST({ request, platform }) {
 
   const normalizedEmail = email.trim().toLowerCase();
 
+  // Check rate limits before processing
+  const rateLimit = await checkRateLimit(GIT_STATS_DB, normalizedEmail, clientIP);
+  if (!rateLimit.allowed) {
+    return json({ error: rateLimit.reason }, { status: 429 });
+  }
+
+  // Record this request for IP rate limiting
+  await recordRateLimit(GIT_STATS_DB, clientIP);
+
   // Check if email is allowed
   if (!isAllowedAdmin(normalizedEmail, ALLOWED_ADMIN_EMAILS)) {
     // Return generic message to prevent email enumeration
@@ -90,7 +175,7 @@ export async function POST({ request, platform }) {
   // Generate code
   const code = generateCode();
   const now = Date.now();
-  const expiresAt = now + 10 * 60 * 1000; // 10 minutes
+  const expiresAt = now + CODE_EXPIRATION_MS;
 
   // Store code in D1
   try {
