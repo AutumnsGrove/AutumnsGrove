@@ -40,6 +40,12 @@
 	.content-layout .left-gutter-container {
 		display: none;
 	}
+
+	/* Float gutter content to the left on tablet */
+	.mobile-gutter-inline {
+		float: left;
+		margin: 0.25rem 1.5rem 1rem 0;
+	}
 }
 
 /* ==========================================================================
