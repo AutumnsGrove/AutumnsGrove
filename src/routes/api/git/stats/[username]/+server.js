@@ -43,10 +43,16 @@ export async function GET({ params, url, platform }) {
     }
     const cacheKey = getCacheKey("stats", username, cacheParams);
     if (kv && !bypassCache) {
-      const cached = await kv.get(cacheKey, { type: "json" });
-      if (cached) {
-        return json({ ...cached, cached: true });
+      try {
+        const cached = await kv.get(cacheKey, { type: "json" });
+        if (cached) {
+          return json({ ...cached, cached: true });
+        }
+      } catch (cacheError) {
+        console.error(`[KV] Cache read failed for ${cacheKey}:`, cacheError);
       }
+    } else if (!kv) {
+      console.warn("[KV] Cache not available - CACHE_KV binding is undefined");
     }
 
     // Fetch stats using GraphQL
@@ -54,9 +60,14 @@ export async function GET({ params, url, platform }) {
 
     // Cache the result
     if (kv) {
-      await kv.put(cacheKey, JSON.stringify(stats), {
-        expirationTtl: CACHE_TTL,
-      });
+      try {
+        await kv.put(cacheKey, JSON.stringify(stats), {
+          expirationTtl: CACHE_TTL,
+        });
+        console.log(`[KV] Cached ${cacheKey} with TTL ${CACHE_TTL}s`);
+      } catch (cacheError) {
+        console.error(`[KV] Cache write failed for ${cacheKey}:`, cacheError);
+      }
     }
 
     return json({ ...stats, cached: false });

@@ -1,5 +1,5 @@
 name = "autumnsgrove"
-main = ".svelte-kit/cloudflare/_worker.js"
+main = "src/worker.js"
 compatibility_date = "2025-01-01"
 
 [assets]

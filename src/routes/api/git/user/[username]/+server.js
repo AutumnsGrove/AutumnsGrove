@@ -23,10 +23,16 @@ export async function GET({ params, platform }) {
     // Check cache first
     const cacheKey = getCacheKey("user", username);
     if (kv) {
-      const cached = await kv.get(cacheKey, { type: "json" });
-      if (cached) {
-        return json({ ...cached, cached: true });
+      try {
+        const cached = await kv.get(cacheKey, { type: "json" });
+        if (cached) {
+          return json({ ...cached, cached: true });
+        }
+      } catch (cacheError) {
+        console.error(`[KV] Cache read failed for ${cacheKey}:`, cacheError);
       }
+    } else {
+      console.warn("[KV] Cache not available - CACHE_KV binding is undefined");
     }
 
     // Fetch from GitHub API
@@ -46,9 +52,14 @@ export async function GET({ params, platform }) {
 
     // Cache the result
     if (kv) {
-      await kv.put(cacheKey, JSON.stringify(userData), {
-        expirationTtl: CACHE_TTL,
-      });
+      try {
+        await kv.put(cacheKey, JSON.stringify(userData), {
+          expirationTtl: CACHE_TTL,
+        });
+        console.log(`[KV] Cached ${cacheKey} with TTL ${CACHE_TTL}s`);
+      } catch (cacheError) {
+        console.error(`[KV] Cache write failed for ${cacheKey}:`, cacheError);
+      }
     }
 
     return json({ ...userData, cached: false });
