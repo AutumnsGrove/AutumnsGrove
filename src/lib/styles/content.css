@@ -186,6 +186,15 @@
    Headings
    -------------------------------------------------------------------------- */
 
+/* Scroll offset to account for sticky header */
+.content-body h2,
+.content-body h3,
+.content-body h4,
+.content-body h5,
+.content-body h6 {
+	scroll-margin-top: 5rem;
+}
+
 .content-body h2 {
 	color: #2c5f2d;
 	margin-top: 2.5rem;
