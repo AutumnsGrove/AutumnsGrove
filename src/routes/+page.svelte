@@ -49,17 +49,17 @@
 	h1 {
 		font-size: 3rem;
 		margin: 0 0 1rem 0;
-		color: #2c5f2d;
+		color: var(--color-primary);
 		transition: color 0.3s ease;
 	}
 
 	:global(.dark) h1 {
-		color: #5cb85f;
+		color: var(--color-primary-light);
 	}
 
 	.subtitle {
 		font-size: 1.25rem;
-		color: #555;
+		color: var(--color-text-muted);
 		margin: 0 0 2rem 0;
 		transition: color 0.3s ease;
 	}
@@ -71,7 +71,7 @@
 	.cta-button {
 		display: inline-block;
 		padding: 0.75rem 2rem;
-		background: #2c5f2d;
+		background: var(--color-primary);
 		color: white;
 		text-decoration: none;
 		border-radius: 20px;
@@ -80,19 +80,19 @@
 	}
 
 	:global(.dark) .cta-button {
-		background: #5cb85f;
-		color: #1a1a1a;
+		background: var(--color-primary-light);
+		color: var(--color-bg-secondary-dark);
 	}
 
 	.cta-button:hover {
-		background: #4a9d4f;
+		background: var(--color-primary-hover);
 		transform: translateY(-2px) scale(1.05);
 		filter: brightness(1.1);
 		box-shadow: 0 4px 12px rgba(44, 95, 45, 0.3);
 	}
 
 	:global(.dark) .cta-button:hover {
-		background: #7cd97f;
+		background: var(--color-primary-light-hover);
 		box-shadow: 0 4px 12px rgba(92, 184, 95, 0.4);
 	}
 
@@ -102,7 +102,7 @@
 	}
 
 	.intro :global(h2) {
-		color: #333;
+		color: var(--color-text);
 		margin-bottom: 1rem;
 		transition: color 0.3s ease;
 	}
@@ -113,7 +113,7 @@
 
 	.intro :global(p) {
 		font-size: 1.1rem;
-		color: #666;
+		color: var(--color-text-muted);
 		line-height: 1.8;
 		transition: color 0.3s ease;
 	}
@@ -130,7 +130,7 @@
 	}
 
 	.gallery-section h2 {
-		color: #333;
+		color: var(--color-text);
 		margin-bottom: 1rem;
 		text-align: center;
 		transition: color 0.3s ease;

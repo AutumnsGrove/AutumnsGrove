@@ -25,17 +25,17 @@
 	h1 {
 		font-size: 2.5rem;
 		margin-bottom: 2rem;
-		color: #2c5f2d;
+		color: var(--color-primary);
 		transition: color 0.3s ease;
 	}
 
 	:global(.dark) h1 {
-		color: #5cb85f;
+		color: var(--color-primary-light);
 	}
 
 	.content {
 		line-height: 1.8;
-		color: #333;
+		color: var(--color-text);
 		transition: color 0.3s ease;
 	}
 
@@ -47,18 +47,18 @@
 		font-size: 1.75rem;
 		margin-top: 2rem;
 		margin-bottom: 1rem;
-		color: #2c5f2d;
+		color: var(--color-primary);
 	}
 
 	:global(.dark) .content :global(h2) {
-		color: #5cb85f;
+		color: var(--color-primary-light);
 	}
 
 	.content :global(h3) {
 		font-size: 1.25rem;
 		margin-top: 1.5rem;
 		margin-bottom: 0.75rem;
-		color: #333;
+		color: var(--color-text);
 	}
 
 	:global(.dark) .content :global(h3) {
@@ -79,11 +79,11 @@
 	}
 
 	.content :global(strong) {
-		color: #2c5f2d;
+		color: var(--color-primary);
 	}
 
 	:global(.dark) .content :global(strong) {
-		color: #5cb85f;
+		color: var(--color-primary-light);
 	}
 
 	@media (max-width: 768px) {
