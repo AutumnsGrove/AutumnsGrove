@@ -79,8 +79,8 @@
 	border-radius: 0;
 }
 
-/* On small mobile, don't float - just display inline */
-@media (max-width: 600px) {
+/* On very small mobile, don't float - just display inline */
+@media (max-width: 400px) {
 	.mobile-gutter-inline {
 		float: none;
 		clear: none;
