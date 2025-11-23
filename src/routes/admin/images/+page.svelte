@@ -1,9 +1,19 @@
 <script>
+  import { onMount } from 'svelte';
+
   let folder = $state('blog');
   let customFolder = $state('');
   let isDragging = $state(false);
   let uploads = $state([]);
   let uploading = $state(false);
+
+  // Gallery state
+  let galleryImages = $state([]);
+  let galleryLoading = $state(false);
+  let galleryError = $state(null);
+  let galleryCursor = $state(null);
+  let galleryHasMore = $state(false);
+  let galleryFilter = $state('');
 
   const folderOptions = [
     { value: 'blog', label: 'Blog Posts' },
@@ -12,6 +22,56 @@
     { value: 'site', label: 'Site/General' },
     { value: 'custom', label: 'Custom Path...' },
   ];
+
+  onMount(() => {
+    loadGallery();
+  });
+
+  async function loadGallery(append = false) {
+    galleryLoading = true;
+    galleryError = null;
+
+    try {
+      const params = new URLSearchParams();
+      if (galleryFilter) params.set('prefix', galleryFilter);
+      if (append && galleryCursor) params.set('cursor', galleryCursor);
+      params.set('limit', '30');
+
+      const response = await fetch(`/api/images/list?${params}`);
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to load images');
+      }
+
+      if (append) {
+        galleryImages = [...galleryImages, ...data.images];
+      } else {
+        galleryImages = data.images;
+      }
+      galleryCursor = data.cursor;
+      galleryHasMore = data.truncated;
+    } catch (err) {
+      galleryError = err.message;
+    } finally {
+      galleryLoading = false;
+    }
+  }
+
+  function filterGallery() {
+    galleryCursor = null;
+    loadGallery();
+  }
+
+  function formatFileSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  function getFileName(key) {
+    return key.split('/').pop();
+  }
 
   function getTargetFolder() {
     if (folder === 'custom') {
@@ -218,6 +278,68 @@
       </div>
     </div>
   {/if}
+
+  <!-- Gallery Section -->
+  <div class="gallery-section">
+    <div class="gallery-header">
+      <h2>CDN Gallery</h2>
+      <div class="gallery-controls">
+        <input
+          type="text"
+          class="gallery-filter"
+          placeholder="Filter by folder (e.g., blog/)"
+          bind:value={galleryFilter}
+          onkeydown={(e) => e.key === 'Enter' && filterGallery()}
+        />
+        <button class="filter-btn" onclick={filterGallery}>Filter</button>
+        <button class="refresh-btn" onclick={() => loadGallery()}>Refresh</button>
+      </div>
+    </div>
+
+    {#if galleryError}
+      <div class="gallery-error">{galleryError}</div>
+    {/if}
+
+    {#if galleryLoading && galleryImages.length === 0}
+      <div class="gallery-loading">Loading images...</div>
+    {:else if galleryImages.length === 0}
+      <div class="gallery-empty">No images found</div>
+    {:else}
+      <div class="gallery-grid">
+        {#each galleryImages as image (image.key)}
+          <div class="gallery-item">
+            <div class="gallery-image-container">
+              <img src={image.url} alt={getFileName(image.key)} loading="lazy" />
+            </div>
+            <div class="gallery-item-info">
+              <span class="gallery-item-name" title={image.key}>{getFileName(image.key)}</span>
+              <span class="gallery-item-size">{formatFileSize(image.size)}</span>
+            </div>
+            <div class="gallery-item-actions">
+              <button class="copy-btn small" onclick={() => copyToClipboard(image.url, 'url')}>
+                URL
+              </button>
+              <button class="copy-btn small" onclick={() => copyToClipboard(`![](${image.url})`, 'markdown')}>
+                MD
+              </button>
+            </div>
+          </div>
+        {/each}
+      </div>
+
+      {#if galleryHasMore}
+        <div class="gallery-load-more">
+          <button
+            class="load-more-btn"
+            onclick={() => loadGallery(true)}
+            disabled={galleryLoading}
+          >
+            {galleryLoading ? 'Loading...' : 'Load More'}
+          </button>
+        </div>
+      {/if}
+    {/if}
+  </div>
 </div>
 
 <style>
@@ -447,5 +569,179 @@
 
   .copy-btn:hover {
     background: #0256cc;
+  }
+
+  .copy-btn.small {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  /* Gallery Section */
+  .gallery-section {
+    margin-top: 2rem;
+    background: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .gallery-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .gallery-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #24292e;
+  }
+
+  .gallery-controls {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .gallery-filter {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid #d1d5da;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    min-width: 180px;
+  }
+
+  .filter-btn,
+  .refresh-btn {
+    padding: 0.4rem 0.8rem;
+    background: #f6f8fa;
+    border: 1px solid #d1d5da;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    color: #24292e;
+  }
+
+  .filter-btn:hover,
+  .refresh-btn:hover {
+    background: #e1e4e8;
+  }
+
+  .gallery-error {
+    background: #ffeef0;
+    color: #d73a49;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+  }
+
+  .gallery-loading,
+  .gallery-empty {
+    text-align: center;
+    color: #586069;
+    padding: 2rem;
+  }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 1rem;
+  }
+
+  .gallery-item {
+    border: 1px solid #e1e4e8;
+    border-radius: 6px;
+    overflow: hidden;
+    background: #f6f8fa;
+  }
+
+  .gallery-image-container {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    overflow: hidden;
+  }
+
+  .gallery-image-container img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+  }
+
+  .gallery-item-info {
+    padding: 0.5rem;
+    border-top: 1px solid #e1e4e8;
+  }
+
+  .gallery-item-name {
+    display: block;
+    font-size: 0.75rem;
+    color: #24292e;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .gallery-item-size {
+    font-size: 0.7rem;
+    color: #586069;
+  }
+
+  .gallery-item-actions {
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    padding-top: 0;
+  }
+
+  .gallery-load-more {
+    text-align: center;
+    margin-top: 1.5rem;
+  }
+
+  .load-more-btn {
+    padding: 0.5rem 1.5rem;
+    background: #0366d6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    cursor: pointer;
+  }
+
+  .load-more-btn:hover:not(:disabled) {
+    background: #0256cc;
+  }
+
+  .load-more-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Mobile styles for gallery */
+  @media (max-width: 768px) {
+    .gallery-header {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .gallery-controls {
+      flex-direction: column;
+    }
+
+    .gallery-filter {
+      min-width: 0;
+      width: 100%;
+    }
+
+    .gallery-grid {
+      grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+      gap: 0.5rem;
+    }
   }
 </style>
