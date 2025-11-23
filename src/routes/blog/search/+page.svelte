@@ -5,11 +5,14 @@
 	let { data } = $props();
 
 	// Get initial values from URL params
-	let searchQuery = $state($page.url.searchParams.get('q') || '');
-	let selectedTag = $state($page.url.searchParams.get('tag') || '');
+	const initialQuery = $page.url.searchParams.get('q') || '';
+	const initialTag = $page.url.searchParams.get('tag') || '';
 
-	// Debounced search query for performance
-	let debouncedQuery = $state(searchQuery);
+	let searchQuery = $state(initialQuery);
+	let selectedTag = $state(initialTag);
+
+	// Debounced search query for performance - initialized to same value as searchQuery
+	let debouncedQuery = $state(initialQuery);
 	let debounceTimer = $state(null);
 
 	function debouncedSearchInput(event) {
@@ -81,7 +84,12 @@
 
 	function clearFilters() {
 		searchQuery = '';
+		debouncedQuery = '';
 		selectedTag = '';
+		if (debounceTimer) {
+			clearTimeout(debounceTimer);
+			debounceTimer = null;
+		}
 		goto('/blog/search', { replaceState: true });
 	}
 </script>
