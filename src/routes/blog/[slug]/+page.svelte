@@ -29,7 +29,7 @@
 				{#if data.post.tags.length > 0}
 					<div class="tags">
 						{#each data.post.tags as tag (tag)}
-							<span class="tag">{tag}</span>
+							<a href="/blog/search?tag={encodeURIComponent(tag)}" class="tag">{tag}</a>
 						{/each}
 					</div>
 				{/if}

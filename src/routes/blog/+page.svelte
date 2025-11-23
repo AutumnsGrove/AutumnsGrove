@@ -1,5 +1,22 @@
 <script>
+	import { goto } from '$app/navigation';
+
 	let { data } = $props();
+
+	function handleCardClick(event, slug) {
+		// Don't navigate if clicking on a tag link
+		if (event.target.closest('.tag')) {
+			return;
+		}
+		goto(`/blog/${slug}`);
+	}
+
+	function handleCardKeydown(event, slug) {
+		if (event.key === 'Enter' || event.key === ' ') {
+			event.preventDefault();
+			goto(`/blog/${slug}`);
+		}
+	}
 </script>
 
 <svelte:head>
@@ -19,30 +36,34 @@
 {:else}
 	<div class="posts-grid">
 		{#each data.posts as post (post.slug)}
-			<article class="post-card">
-				<a href="/blog/{post.slug}" class="post-link">
-					<h2>{post.title}</h2>
-					<div class="post-meta">
-						<time datetime={post.date}>
-							{new Date(post.date).toLocaleDateString('en-US', {
-								year: 'numeric',
-								month: 'long',
-								day: 'numeric'
-							})}
-						</time>
-						{#if post.tags.length > 0}
-							<div class="tags">
-								{#each post.tags as tag (tag)}
-									<span class="tag">{tag}</span>
-								{/each}
-							</div>
-						{/if}
-					</div>
-					{#if post.description}
-						<p class="description">{post.description}</p>
+			<div
+				class="post-card"
+				onclick={(e) => handleCardClick(e, post.slug)}
+				onkeydown={(e) => handleCardKeydown(e, post.slug)}
+				role="button"
+				tabindex="0"
+			>
+				<h2>{post.title}</h2>
+				<div class="post-meta">
+					<time datetime={post.date}>
+						{new Date(post.date).toLocaleDateString('en-US', {
+							year: 'numeric',
+							month: 'long',
+							day: 'numeric'
+						})}
+					</time>
+					{#if post.tags.length > 0}
+						<div class="tags">
+							{#each post.tags as tag (tag)}
+								<a href="/blog/search?tag={encodeURIComponent(tag)}" class="tag">{tag}</a>
+							{/each}
+						</div>
 					{/if}
-				</a>
-			</article>
+				</div>
+				{#if post.description}
+					<p class="description">{post.description}</p>
+				{/if}
+			</div>
 		{/each}
 	</div>
 {/if}
@@ -94,6 +115,7 @@
 		border-radius: 12px;
 		padding: 2.5rem;
 		border: 1px solid #e0e0e0;
+		cursor: pointer;
 		transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
 	}
 
@@ -113,10 +135,13 @@
 		border-color: #3d5f3e;
 	}
 
-	.post-link {
-		text-decoration: none;
-		color: inherit;
-		display: block;
+	.post-card:focus {
+		outline: 2px solid #2c5f2d;
+		outline-offset: 2px;
+	}
+
+	:global(.dark) .post-card:focus {
+		outline-color: #5cb85f;
 	}
 
 	.post-card h2 {

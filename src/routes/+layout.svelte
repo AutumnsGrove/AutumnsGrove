@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { fade } from 'svelte/transition';
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 
 	let { children } = $props();
 
@@ -9,6 +10,9 @@
 	let mobileMenuOpen = $state(false);
 	let mobileMenuRef = $state(null);
 	let hamburgerBtnRef = $state(null);
+	let searchExpanded = $state(false);
+	let searchQuery = $state('');
+	let searchInputRef = $state(null);
 
 	// Prevent body scroll when mobile menu is open
 	$effect(() => {
@@ -100,6 +104,46 @@
 	function closeMobileMenu() {
 		mobileMenuOpen = false;
 	}
+
+	function toggleSearch() {
+		searchExpanded = !searchExpanded;
+		if (searchExpanded) {
+			// Focus input after DOM update
+			setTimeout(() => {
+				if (searchInputRef) {
+					searchInputRef.focus();
+				}
+			}, 50);
+		} else {
+			searchQuery = '';
+		}
+	}
+
+	function handleSearchSubmit(event) {
+		event.preventDefault();
+		if (searchQuery.trim()) {
+			goto(`/blog/search?q=${encodeURIComponent(searchQuery.trim())}`);
+			searchExpanded = false;
+			searchQuery = '';
+			closeMobileMenu();
+		}
+	}
+
+	function handleSearchKeydown(event) {
+		if (event.key === 'Escape') {
+			searchExpanded = false;
+			searchQuery = '';
+		}
+	}
+
+	function handleSearchBlur(event) {
+		// Close search if clicking outside (but not on the search button)
+		setTimeout(() => {
+			if (!searchQuery.trim()) {
+				searchExpanded = false;
+			}
+		}, 200);
+	}
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -116,6 +160,40 @@
 				<a href="/blog" class:active={$page.url.pathname.startsWith('/blog')}>Blog</a>
 				<a href="/recipes" class:active={$page.url.pathname.startsWith('/recipes')}>Recipes</a>
 				<a href="/about" class:active={$page.url.pathname.startsWith('/about')}>About</a>
+
+				<!-- Search -->
+				<div class="search-wrapper">
+					{#if searchExpanded}
+						<form class="search-form" onsubmit={handleSearchSubmit}>
+							<input
+								bind:this={searchInputRef}
+								type="text"
+								placeholder="Search posts..."
+								bind:value={searchQuery}
+								onkeydown={handleSearchKeydown}
+								onblur={handleSearchBlur}
+								class="nav-search-input"
+							/>
+						</form>
+					{/if}
+					<button
+						class="search-btn"
+						onclick={toggleSearch}
+						aria-label={searchExpanded ? 'Close search' : 'Open search'}
+					>
+						{#if searchExpanded}
+							<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M18 6 6 18"></path>
+								<path d="m6 6 12 12"></path>
+							</svg>
+						{:else}
+							<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<circle cx="11" cy="11" r="8"></circle>
+								<path d="m21 21-4.3-4.3"></path>
+							</svg>
+						{/if}
+					</button>
+				</div>
 			</div>
 
 			<!-- Mobile Hamburger Button -->
@@ -150,6 +228,20 @@
 			role="navigation"
 			aria-label="Mobile navigation"
 		>
+			<form class="mobile-search-form" onsubmit={handleSearchSubmit}>
+				<input
+					type="text"
+					placeholder="Search posts..."
+					bind:value={searchQuery}
+					class="mobile-search-input"
+				/>
+				<button type="submit" class="mobile-search-btn" aria-label="Search">
+					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<circle cx="11" cy="11" r="8"></circle>
+						<path d="m21 21-4.3-4.3"></path>
+					</svg>
+				</button>
+			</form>
 			<a href="/" class:active={$page.url.pathname === '/'} onclick={closeMobileMenu}>Home</a>
 			<a href="/blog" class:active={$page.url.pathname.startsWith('/blog')} onclick={closeMobileMenu}>Blog</a>
 			<a href="/recipes" class:active={$page.url.pathname.startsWith('/recipes')} onclick={closeMobileMenu}>Recipes</a>
@@ -252,12 +344,20 @@
 		font-size: 0.85rem;
 		font-weight: 500;
 		border: none;
+		text-decoration: none;
+		cursor: pointer;
+		display: inline-block;
 		transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
 	}
 
 	:global(.tag:hover) {
 		background: var(--tag-bg-hover);
 		transform: scale(1.05);
+		color: white;
+	}
+
+	:global(.tag:visited) {
+		color: white;
 	}
 
 	:global(.tags) {
@@ -377,6 +477,79 @@
 	}
 
 	:global(.dark) .nav-links a.active {
+		color: #5cb85f;
+	}
+
+	/* Search styles */
+	.search-wrapper {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.search-form {
+		display: flex;
+		align-items: center;
+	}
+
+	.nav-search-input {
+		padding: 0.4rem 0.75rem;
+		font-size: 0.9rem;
+		border: 1px solid #e0e0e0;
+		border-radius: 6px;
+		background: white;
+		color: #333;
+		width: 160px;
+		transition: border-color 0.2s ease, background-color 0.3s ease, color 0.3s ease, width 0.3s ease;
+	}
+
+	:global(.dark) .nav-search-input {
+		background: #1a1a1a;
+		border-color: #444;
+		color: var(--color-text-dark);
+	}
+
+	.nav-search-input:focus {
+		outline: none;
+		border-color: #2c5f2d;
+		width: 200px;
+	}
+
+	:global(.dark) .nav-search-input:focus {
+		border-color: #5cb85f;
+	}
+
+	.nav-search-input::placeholder {
+		color: #999;
+	}
+
+	:global(.dark) .nav-search-input::placeholder {
+		color: #777;
+	}
+
+	.search-btn {
+		background: none;
+		border: none;
+		cursor: pointer;
+		padding: 0.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #666;
+		transition: color 0.2s, transform 0.2s;
+		border-radius: 4px;
+	}
+
+	:global(.dark) .search-btn {
+		color: var(--color-text-muted-dark);
+	}
+
+	.search-btn:hover {
+		color: #2c5f2d;
+		transform: scale(1.1);
+	}
+
+	:global(.dark) .search-btn:hover {
 		color: #5cb85f;
 	}
 
@@ -554,9 +727,78 @@
 		}
 
 		.mobile-menu.open {
-			max-height: 300px;
+			max-height: 400px;
 			opacity: 1;
 			padding: 0.5rem 0;
+		}
+
+		/* Mobile search styles */
+		.mobile-search-form {
+			display: flex;
+			align-items: center;
+			padding: 0.75rem 1rem;
+			gap: 0.5rem;
+			border-bottom: 1px solid var(--mobile-menu-border);
+			margin-bottom: 0.5rem;
+		}
+
+		.mobile-search-input {
+			flex: 1;
+			padding: 0.6rem 0.75rem;
+			font-size: 0.9rem;
+			border: 1px solid #e0e0e0;
+			border-radius: 6px;
+			background: white;
+			color: #333;
+			transition: border-color 0.2s ease, background-color 0.3s ease, color 0.3s ease;
+		}
+
+		:global(.dark) .mobile-search-input {
+			background: #1a1a1a;
+			border-color: #444;
+			color: var(--color-text-dark);
+		}
+
+		.mobile-search-input:focus {
+			outline: none;
+			border-color: #2c5f2d;
+		}
+
+		:global(.dark) .mobile-search-input:focus {
+			border-color: #5cb85f;
+		}
+
+		.mobile-search-input::placeholder {
+			color: #999;
+		}
+
+		:global(.dark) .mobile-search-input::placeholder {
+			color: #777;
+		}
+
+		.mobile-search-btn {
+			background: #2c5f2d;
+			border: none;
+			cursor: pointer;
+			padding: 0.6rem;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: white;
+			border-radius: 6px;
+			transition: background-color 0.2s;
+		}
+
+		:global(.dark) .mobile-search-btn {
+			background: #5cb85f;
+		}
+
+		.mobile-search-btn:hover {
+			background: #4a9d4f;
+		}
+
+		:global(.dark) .mobile-search-btn:hover {
+			background: #7cd97f;
 		}
 
 		.mobile-menu a {
