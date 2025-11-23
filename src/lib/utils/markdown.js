@@ -736,6 +736,8 @@ export function getAboutGutterContent(slug) {
  */
 export function getRecipeSidecar(slug) {
   // Find the recipe.json file in the gutter folder
+  // Expected path: ../../../UserContent/Recipes/{slug}/gutter/recipe.json
+  // parts[-3] extracts the recipe folder name from this path structure
   const entry = Object.entries(recipeMetadataModules).find(([filepath]) => {
     const parts = filepath.split("/");
     const folder = parts[parts.length - 3]; // Get the recipe folder name

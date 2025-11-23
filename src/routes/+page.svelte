@@ -5,7 +5,7 @@
 </script>
 
 <svelte:head>
-	<title>{data.title}</title>
+	<title>{data.title} - AutumnsGrove</title>
 	<meta name="description" content={data.description} />
 </svelte:head>
 

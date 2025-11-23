@@ -1,5 +1,5 @@
 ---
-title: "AutumnsGrove - Home"
+title: "Home"
 description: "A personal website for blogging, demonstrating projects, and sharing articles."
 hero:
   title: "Welcome to AutumnsGrove"

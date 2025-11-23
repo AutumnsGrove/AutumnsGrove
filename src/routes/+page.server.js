@@ -1,4 +1,5 @@
 import { getHomePage } from "$lib/utils/markdown.js";
+import { error } from "@sveltejs/kit";
 
 export const prerender = true;
 
@@ -6,15 +7,7 @@ export function load() {
   const page = getHomePage();
 
   if (!page) {
-    return {
-      title: "AutumnsGrove - Home",
-      description: "A personal website for blogging, demonstrating projects, and sharing articles.",
-      hero: null,
-      galleries: [],
-      content: "",
-      headers: [],
-      gutterContent: [],
-    };
+    throw error(404, "Home page not found");
   }
 
   return {
