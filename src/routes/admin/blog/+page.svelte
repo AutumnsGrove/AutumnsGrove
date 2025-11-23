@@ -17,7 +17,7 @@
       <p class="subtitle">{data.posts.length} posts</p>
     </div>
     <a
-      href="https://github.com/AutumnsGrove/AutumnsGrove/new/main/posts"
+      href="https://github.com/AutumnsGrove/AutumnsGrove/new/main/UserContent/Posts"
       target="_blank"
       class="btn btn-primary"
     >
@@ -61,7 +61,7 @@
             <td class="actions-cell">
               <a href="/blog/{post.slug}" target="_blank" class="action-link">View</a>
               <a
-                href="https://github.com/AutumnsGrove/AutumnsGrove/edit/main/posts/{post.slug}.md"
+                href="https://github.com/AutumnsGrove/AutumnsGrove/edit/main/UserContent/Posts/{encodeURIComponent(post.slug)}.md"
                 target="_blank"
                 class="action-link"
               >
@@ -83,7 +83,7 @@
   <div class="info-box">
     <h3>How Blog Posts Work</h3>
     <p>
-      Blog posts are markdown files stored in the <code>posts/</code> directory.
+      Blog posts are markdown files stored in the <code>UserContent/Posts/</code> directory.
       To add or edit posts, you can:
     </p>
     <ul>
@@ -264,5 +264,34 @@
     padding: 0.125rem 0.25rem;
     border-radius: 3px;
     font-size: 0.85em;
+  }
+
+  /* Mobile styles */
+  @media (max-width: 768px) {
+    .page-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 1rem;
+    }
+
+    .btn {
+      text-align: center;
+    }
+
+    .posts-table th:nth-child(2),
+    .posts-table td:nth-child(2),
+    .posts-table th:nth-child(3),
+    .posts-table td:nth-child(3) {
+      display: none;
+    }
+
+    .posts-table th,
+    .posts-table td {
+      padding: 0.75rem 0.5rem;
+    }
+
+    .action-link {
+      margin-right: 0.5rem;
+    }
   }
 </style>
