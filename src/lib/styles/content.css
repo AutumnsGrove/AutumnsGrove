@@ -33,11 +33,14 @@
 
 @media (min-width: 769px) and (max-width: 1199px) {
 	.content-layout.has-gutters {
-		grid-template-columns: 1fr 200px;
-		max-width: 1000px;
+		grid-template-columns: 180px 1fr 180px;
+		max-width: 1100px;
 	}
+}
 
-	.content-layout .left-gutter-container {
+/* Hide inline gutter on tablet - use left gutter instead */
+@media (min-width: 769px) {
+	.mobile-gutter-inline {
 		display: none;
 	}
 }
