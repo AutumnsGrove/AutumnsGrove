@@ -5,9 +5,7 @@ declare global {
     // interface Error {}
     interface Locals {
       user: {
-        id: string;
-        username: string;
-        avatar: string;
+        email: string;
       } | null;
     }
     // interface PageData {}
@@ -23,11 +21,10 @@ declare global {
         // Secrets
         GITHUB_TOKEN: string;
         ANTHROPIC_API_KEY: string;
-        // OAuth secrets
-        GITHUB_CLIENT_ID: string;
-        GITHUB_CLIENT_SECRET: string;
+        // Auth secrets
         SESSION_SECRET: string;
-        ADMIN_GITHUB_USERNAMES: string;
+        RESEND_API_KEY: string;
+        ALLOWED_ADMIN_EMAILS: string;
       };
       context: {
         waitUntil(promise: Promise<unknown>): void;

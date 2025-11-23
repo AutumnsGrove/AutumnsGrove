@@ -35,3 +35,6 @@ crons = ["0 */6 * * *"]
 # Secrets (set via: npx wrangler secret put SECRET_NAME)
 # GITHUB_TOKEN - GitHub token with 'repo' scope
 # ANTHROPIC_API_KEY - API key for Claude
+# SESSION_SECRET - Secret for signing JWT tokens (32+ chars)
+# RESEND_API_KEY - API key for Resend email service
+# ALLOWED_ADMIN_EMAILS - Comma-separated list of allowed admin emails (e.g., "admin@example.com")

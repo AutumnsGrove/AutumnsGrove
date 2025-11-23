@@ -37,8 +37,7 @@
 
     <div class="sidebar-footer">
       <div class="user-info">
-        <img src={data.user.avatar} alt={data.user.username} class="avatar" />
-        <span class="username">{data.user.username}</span>
+        <span class="email">{data.user.email}</span>
       </div>
       <a href="/auth/logout" class="logout-btn">Logout</a>
     </div>
@@ -107,21 +106,13 @@
   }
 
   .user-info {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
     margin-bottom: 0.75rem;
   }
 
-  .avatar {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-  }
-
-  .username {
-    font-size: 0.9rem;
+  .email {
+    font-size: 0.85rem;
     color: #e1e4e8;
+    word-break: break-all;
   }
 
   .logout-btn {
