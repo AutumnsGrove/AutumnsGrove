@@ -11,48 +11,72 @@ mermaid.initialize({
 
 // Use Vite's import.meta.glob to load markdown files at build time
 // This works in both dev and production (including Cloudflare Workers)
-// Path is relative to project root
-const modules = import.meta.glob("../../../posts/*.md", {
-  eager: true,
-  query: "?raw",
-  import: "default",
-});
-const recipeModules = import.meta.glob("../../../recipes/*.md", {
+// Path is relative to project root - now using UserContent directory
+
+// Posts
+const modules = import.meta.glob("../../../UserContent/Posts/*.md", {
   eager: true,
   query: "?raw",
   import: "default",
 });
 
-// Load about page markdown
-const aboutModules = import.meta.glob("../../../about/*.md", {
+// Recipes
+const recipeModules = import.meta.glob("../../../UserContent/Recipes/*.md", {
   eager: true,
   query: "?raw",
   import: "default",
 });
 
-// Load recipe sidecar JSON files for instruction icons
-const recipeSidecarModules = import.meta.glob("../../../recipes/*-grove.json", {
+// About
+const aboutModules = import.meta.glob("../../../UserContent/About/*.md", {
   eager: true,
+  query: "?raw",
+  import: "default",
 });
+
+// Home
+const homeModules = import.meta.glob("../../../UserContent/Home/*.md", {
+  eager: true,
+  query: "?raw",
+  import: "default",
+});
+
+// Contact
+const contactModules = import.meta.glob("../../../UserContent/Contact/*.md", {
+  eager: true,
+  query: "?raw",
+  import: "default",
+});
+
+// Load recipe metadata JSON files (step icons, etc.)
+const recipeMetadataModules = import.meta.glob(
+  "../../../UserContent/Recipes/*/gutter/recipe.json",
+  {
+    eager: true,
+  },
+);
 
 // Load gutter manifest files for blog posts
 const gutterManifestModules = import.meta.glob(
-  "../../../posts/*/gutter/manifest.json",
+  "../../../UserContent/Posts/*/gutter/manifest.json",
   {
     eager: true,
   },
 );
 
 // Load gutter markdown content files
-const gutterMarkdownModules = import.meta.glob("../../../posts/*/gutter/*.md", {
-  eager: true,
-  query: "?raw",
-  import: "default",
-});
+const gutterMarkdownModules = import.meta.glob(
+  "../../../UserContent/Posts/*/gutter/*.md",
+  {
+    eager: true,
+    query: "?raw",
+    import: "default",
+  },
+);
 
 // Load gutter image files
 const gutterImageModules = import.meta.glob(
-  "../../../posts/*/gutter/*.{jpg,jpeg,png,gif,webp}",
+  "../../../UserContent/Posts/*/gutter/*.{jpg,jpeg,png,gif,webp}",
   {
     eager: true,
     query: "?url",
@@ -62,7 +86,7 @@ const gutterImageModules = import.meta.glob(
 
 // Load about page gutter manifest files
 const aboutGutterManifestModules = import.meta.glob(
-  "../../../about/*/gutter/manifest.json",
+  "../../../UserContent/About/*/gutter/manifest.json",
   {
     eager: true,
   },
@@ -70,7 +94,7 @@ const aboutGutterManifestModules = import.meta.glob(
 
 // Load about page gutter markdown content files
 const aboutGutterMarkdownModules = import.meta.glob(
-  "../../../about/*/gutter/*.md",
+  "../../../UserContent/About/*/gutter/*.md",
   {
     eager: true,
     query: "?raw",
@@ -80,7 +104,7 @@ const aboutGutterMarkdownModules = import.meta.glob(
 
 // Load about page gutter image files
 const aboutGutterImageModules = import.meta.glob(
-  "../../../about/*/gutter/*.{jpg,jpeg,png,gif,webp}",
+  "../../../UserContent/About/*/gutter/*.{jpg,jpeg,png,gif,webp}",
   {
     eager: true,
     query: "?url",
@@ -90,7 +114,7 @@ const aboutGutterImageModules = import.meta.glob(
 
 // Load recipe gutter manifest files
 const recipeGutterManifestModules = import.meta.glob(
-  "../../../recipes/*/gutter/manifest.json",
+  "../../../UserContent/Recipes/*/gutter/manifest.json",
   {
     eager: true,
   },
@@ -98,7 +122,7 @@ const recipeGutterManifestModules = import.meta.glob(
 
 // Load recipe gutter markdown content files
 const recipeGutterMarkdownModules = import.meta.glob(
-  "../../../recipes/*/gutter/*.md",
+  "../../../UserContent/Recipes/*/gutter/*.md",
   {
     eager: true,
     query: "?raw",
@@ -108,7 +132,63 @@ const recipeGutterMarkdownModules = import.meta.glob(
 
 // Load recipe gutter image files
 const recipeGutterImageModules = import.meta.glob(
-  "../../../recipes/*/gutter/*.{jpg,jpeg,png,gif,webp}",
+  "../../../UserContent/Recipes/*/gutter/*.{jpg,jpeg,png,gif,webp}",
+  {
+    eager: true,
+    query: "?url",
+    import: "default",
+  },
+);
+
+// Load home page gutter manifest files
+const homeGutterManifestModules = import.meta.glob(
+  "../../../UserContent/Home/*/gutter/manifest.json",
+  {
+    eager: true,
+  },
+);
+
+// Load home page gutter markdown content files
+const homeGutterMarkdownModules = import.meta.glob(
+  "../../../UserContent/Home/*/gutter/*.md",
+  {
+    eager: true,
+    query: "?raw",
+    import: "default",
+  },
+);
+
+// Load home page gutter image files
+const homeGutterImageModules = import.meta.glob(
+  "../../../UserContent/Home/*/gutter/*.{jpg,jpeg,png,gif,webp}",
+  {
+    eager: true,
+    query: "?url",
+    import: "default",
+  },
+);
+
+// Load contact page gutter manifest files
+const contactGutterManifestModules = import.meta.glob(
+  "../../../UserContent/Contact/*/gutter/manifest.json",
+  {
+    eager: true,
+  },
+);
+
+// Load contact page gutter markdown content files
+const contactGutterMarkdownModules = import.meta.glob(
+  "../../../UserContent/Contact/*/gutter/*.md",
+  {
+    eager: true,
+    query: "?raw",
+    import: "default",
+  },
+);
+
+// Load contact page gutter image files
+const contactGutterImageModules = import.meta.glob(
+  "../../../UserContent/Contact/*/gutter/*.{jpg,jpeg,png,gif,webp}",
   {
     eager: true,
     query: "?url",
@@ -139,7 +219,7 @@ export function getAllPosts() {
     const posts = Object.entries(modules)
       .map(([filepath, content]) => {
         try {
-          // Extract slug from filepath: ../../../posts/example.md -> example
+          // Extract slug from filepath: ../../../UserContent/Posts/example.md -> example
           const slug = filepath.split("/").pop().replace(".md", "");
           const { data } = matter(content);
 
@@ -174,7 +254,7 @@ export function getAllRecipes() {
     const recipes = Object.entries(recipeModules)
       .map(([filepath, content]) => {
         try {
-          // Extract slug from filepath: ../../../recipes/example.md -> example
+          // Extract slug from filepath: ../../../UserContent/Recipes/example.md -> example
           const slug = filepath.split("/").pop().replace(".md", "");
           const { data } = matter(content);
 
@@ -485,6 +565,116 @@ export function getGutterContent(slug) {
 }
 
 /**
+ * Get gutter content for the home page
+ * @param {string} slug - The page slug (e.g., 'home')
+ * @returns {Array} Array of gutter items with content and position info
+ */
+export function getHomeGutterContent(slug) {
+  return getGutterContentFromModules(
+    slug,
+    homeGutterManifestModules,
+    homeGutterMarkdownModules,
+    homeGutterImageModules,
+  );
+}
+
+/**
+ * Get gutter content for the contact page
+ * @param {string} slug - The page slug (e.g., 'contact')
+ * @returns {Array} Array of gutter items with content and position info
+ */
+export function getContactGutterContent(slug) {
+  return getGutterContentFromModules(
+    slug,
+    contactGutterManifestModules,
+    contactGutterMarkdownModules,
+    contactGutterImageModules,
+  );
+}
+
+/**
+ * Get the home page content
+ * @returns {Object|null} Home page object with content, metadata, and galleries
+ */
+export function getHomePage() {
+  try {
+    // Find the home.md file
+    const entry = Object.entries(homeModules).find(([filepath]) => {
+      return filepath.includes("home.md");
+    });
+
+    if (!entry) {
+      return null;
+    }
+
+    const content = entry[1];
+
+    const { data, content: markdown } = matter(content);
+    const htmlContent = marked.parse(markdown);
+
+    // Extract headers for table of contents
+    const headers = extractHeaders(markdown);
+
+    // Get gutter content for the home page
+    const gutterContent = getHomeGutterContent("home");
+
+    return {
+      slug: "home",
+      title: data.title || "Home",
+      description: data.description || "",
+      hero: data.hero || null,
+      galleries: data.galleries || [],
+      content: htmlContent,
+      headers,
+      gutterContent,
+    };
+  } catch (err) {
+    console.error("Error in getHomePage:", err);
+    return null;
+  }
+}
+
+/**
+ * Get the contact page content
+ * @returns {Object|null} Contact page object with content and metadata
+ */
+export function getContactPage() {
+  try {
+    // Find the contact.md file
+    const entry = Object.entries(contactModules).find(([filepath]) => {
+      return filepath.includes("contact.md");
+    });
+
+    if (!entry) {
+      return null;
+    }
+
+    const content = entry[1];
+
+    const { data, content: markdown } = matter(content);
+    const htmlContent = marked.parse(markdown);
+
+    // Extract headers for table of contents
+    const headers = extractHeaders(markdown);
+
+    // Get gutter content for the contact page
+    const gutterContent = getContactGutterContent("contact");
+
+    return {
+      slug: "contact",
+      title: data.title || "Contact",
+      description: data.description || "",
+      content: htmlContent,
+      headers,
+      gutterContent,
+    };
+  } catch (err) {
+    console.error("Error in getContactPage:", err);
+    return null;
+  }
+}
+
+/**
  * Get the about page content
  * @returns {Object|null} About page object with content and metadata
  */
@@ -540,18 +730,16 @@ export function getAboutGutterContent(slug) {
 }
 
 /**
- * Get sidecar JSON data for a recipe by slug
- * @param {string} slug - The recipe slug (e.g., 'focaccia-recipe')
- * @returns {Object|null} Sidecar data with instruction icons
+ * Get recipe metadata (step icons, etc.) for a recipe by slug
+ * @param {string} slug - The recipe slug
+ * @returns {Object|null} Recipe metadata with instruction icons
  */
 export function getRecipeSidecar(slug) {
-  // Try to find a matching sidecar file
-  // Sidecar files are named like: recipe-name-grove.json
-  const entry = Object.entries(recipeSidecarModules).find(([filepath]) => {
-    // Extract the base name: ../../../recipes/focaccia-recipe-grove.json -> focaccia-recipe
-    const filename = filepath.split("/").pop();
-    const sidecarSlug = filename.replace("-grove.json", "");
-    return sidecarSlug === slug;
+  // Find the recipe.json file in the gutter folder
+  const entry = Object.entries(recipeMetadataModules).find(([filepath]) => {
+    const parts = filepath.split("/");
+    const folder = parts[parts.length - 3]; // Get the recipe folder name
+    return folder === slug;
   });
 
   if (!entry) {
