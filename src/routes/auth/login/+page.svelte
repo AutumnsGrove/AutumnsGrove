@@ -56,7 +56,8 @@
 
   async function handleVerifyCode(event) {
     event.preventDefault();
-    if (!code.trim()) return;
+    const cleanCode = code.replace(/\s/g, '');
+    if (!cleanCode) return;
 
     loading = true;
     error = '';
@@ -65,7 +66,7 @@
       const response = await fetch('/auth/verify-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), code: code.trim() })
+        body: JSON.stringify({ email: email.trim(), code: cleanCode })
       });
 
       const data = await response.json();
