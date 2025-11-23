@@ -147,9 +147,7 @@
           disabled={loading}
           autocomplete="one-time-code"
           inputmode="numeric"
-          pattern="\d{6}"
           maxlength="6"
-          title="Enter the 6-digit code from your email"
         />
         <button type="submit" class="login-btn" disabled={loading}>
           {#if loading}
