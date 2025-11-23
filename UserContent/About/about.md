@@ -26,6 +26,19 @@ Various projects I've worked on, showcasing different technologies and creative 
 
 Curious about the activity on this site? Check out the [GitHub Dashboard](/dashboard) to see contribution statistics, recent activity, and more.
 
-## Connect
+## Contact
 
-Feel free to explore the site and reach out if you have questions or just want to connect. Thanks for visiting!
+I'd love to hear from you! Whether you have questions, feedback, or just want to connect, feel free to reach out.
+
+### Get in Touch
+
+- **Email**: [contact@autumnsgrove.com](mailto:contact@autumnsgrove.com)
+- **GitHub**: [AutumnsGrove](https://github.com/AutumnsGrove)
+
+### Feedback
+
+Found a bug or have a suggestion for the site? You can:
+- Open an issue on the [GitHub repository](https://github.com/AutumnsGrove/AutumnsGrove/issues)
+- Send me an email with your feedback
+
+Thanks for visiting AutumnsGrove!
