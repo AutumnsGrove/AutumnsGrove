@@ -1,6 +1,4 @@
 {
-  "recipe": "Focaccia_Recipe",
-  "version": "1.0",
   "theme": "rustic Italian bread with garlic butter",
   "cuisine": "Italian",
   "icons_used": ["mix", "marinate", "bake", "stovetop", "chop", "serve"],
