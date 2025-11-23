@@ -8,22 +8,51 @@
 	let searchQuery = $state($page.url.searchParams.get('q') || '');
 	let selectedTag = $state($page.url.searchParams.get('tag') || '');
 
+	// Debounced search query for performance
+	let debouncedQuery = $state(searchQuery);
+	let debounceTimer = $state(null);
+
+	function debouncedSearchInput(event) {
+		searchQuery = event.target.value;
+
+		// Clear existing timer
+		if (debounceTimer) {
+			clearTimeout(debounceTimer);
+		}
+
+		// Set new timer for debounced update
+		debounceTimer = setTimeout(() => {
+			debouncedQuery = searchQuery;
+			updateUrl();
+		}, 250);
+	}
+
+	// Pre-compute lowercase searchable fields for performance
+	let postsWithLowercase = $derived.by(() => {
+		return data.posts.map(post => ({
+			...post,
+			titleLower: post.title.toLowerCase(),
+			descriptionLower: post.description.toLowerCase(),
+			tagsLower: post.tags.map(tag => tag.toLowerCase())
+		}));
+	});
+
 	// Filter posts based on search query and selected tag
-	let filteredPosts = $derived(() => {
-		let results = data.posts;
+	let filteredPosts = $derived.by(() => {
+		let results = postsWithLowercase;
 
 		// Filter by tag if selected
 		if (selectedTag) {
 			results = results.filter(post => post.tags.includes(selectedTag));
 		}
 
-		// Filter by search query
-		if (searchQuery.trim()) {
-			const query = searchQuery.toLowerCase().trim();
+		// Filter by search query (using debounced query)
+		if (debouncedQuery.trim()) {
+			const query = debouncedQuery.toLowerCase().trim();
 			results = results.filter(post =>
-				post.title.toLowerCase().includes(query) ||
-				post.description.toLowerCase().includes(query) ||
-				post.tags.some(tag => tag.toLowerCase().includes(query))
+				post.titleLower.includes(query) ||
+				post.descriptionLower.includes(query) ||
+				post.tagsLower.some(tag => tag.includes(query))
 			);
 		}
 
@@ -40,10 +69,6 @@
 		goto(newUrl, { replaceState: true, keepFocus: true });
 	}
 
-	function handleSearchInput(event) {
-		searchQuery = event.target.value;
-		updateUrl();
-	}
 
 	function selectTag(tag) {
 		if (selectedTag === tag) {
@@ -81,8 +106,9 @@
 			type="text"
 			placeholder="Search posts..."
 			value={searchQuery}
-			oninput={handleSearchInput}
+			oninput={debouncedSearchInput}
 			class="search-input"
+			required
 		/>
 		{#if searchQuery || selectedTag}
 			<button class="clear-btn" onclick={clearFilters} aria-label="Clear search">
@@ -115,7 +141,7 @@
 <div class="results-info">
 	{#if selectedTag || searchQuery}
 		<p>
-			Showing {filteredPosts().length} {filteredPosts().length === 1 ? 'post' : 'posts'}
+			Showing {filteredPosts.length} {filteredPosts.length === 1 ? 'post' : 'posts'}
 			{#if selectedTag}
 				tagged with <strong>"{selectedTag}"</strong>
 			{/if}
@@ -128,14 +154,14 @@
 	{/if}
 </div>
 
-{#if filteredPosts().length === 0}
+{#if filteredPosts.length === 0}
 	<div class="no-results">
 		<p>No posts found matching your criteria.</p>
 		<button class="reset-btn" onclick={clearFilters}>Clear filters</button>
 	</div>
 {:else}
 	<div class="posts-grid">
-		{#each filteredPosts() as post (post.slug)}
+		{#each filteredPosts as post (post.slug)}
 			<article class="post-card">
 				<a href="/blog/{post.slug}" class="post-link">
 					<h2>{post.title}</h2>
@@ -150,7 +176,14 @@
 						{#if post.tags.length > 0}
 							<div class="tags">
 								{#each post.tags as tag (tag)}
-									<span class="tag" class:active={selectedTag === tag}>{tag}</span>
+									<button
+										class="tag"
+										class:active={selectedTag === tag}
+										onclick={(e) => { e.preventDefault(); e.stopPropagation(); selectTag(tag); }}
+										aria-label="Filter by tag: {tag}"
+									>
+										{tag}
+									</button>
 								{/each}
 							</div>
 						{/if}

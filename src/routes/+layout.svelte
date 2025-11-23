@@ -42,13 +42,47 @@
 		}
 	});
 
-	// Handle Escape key to close mobile menu
+	// Handle keyboard shortcuts
 	function handleKeydown(event) {
+		// Escape to close mobile menu
 		if (event.key === 'Escape' && mobileMenuOpen) {
 			closeMobileMenu();
 			// Return focus to hamburger button
 			if (hamburgerBtnRef) {
 				hamburgerBtnRef.focus();
+			}
+		}
+
+		// Escape to close search
+		if (event.key === 'Escape' && searchExpanded) {
+			searchExpanded = false;
+			searchQuery = '';
+		}
+
+		// Keyboard shortcut to focus search (/ or Cmd+K)
+		const isTyping = document.activeElement.tagName === 'INPUT' ||
+		                 document.activeElement.tagName === 'TEXTAREA' ||
+		                 document.activeElement.isContentEditable;
+
+		if (!isTyping) {
+			// Forward slash to open search
+			if (event.key === '/') {
+				event.preventDefault();
+				if (!searchExpanded) {
+					toggleSearch();
+				} else if (searchInputRef) {
+					searchInputRef.focus();
+				}
+			}
+
+			// Cmd+K (Mac) or Ctrl+K (Windows/Linux) to open search
+			if (event.key === 'k' && (event.metaKey || event.ctrlKey)) {
+				event.preventDefault();
+				if (!searchExpanded) {
+					toggleSearch();
+				} else if (searchInputRef) {
+					searchInputRef.focus();
+				}
 			}
 		}
 
@@ -137,12 +171,15 @@
 	}
 
 	function handleSearchBlur(event) {
-		// Close search if clicking outside (but not on the search button)
-		setTimeout(() => {
-			if (!searchQuery.trim()) {
-				searchExpanded = false;
-			}
-		}, 200);
+		// Close search if focus moves outside the search area (but not to the search button)
+		const relatedTarget = event.relatedTarget;
+		// Check if focus moved to search button or stays within search form
+		if (relatedTarget && (relatedTarget.classList.contains('search-btn') || relatedTarget.closest('.search-form'))) {
+			return;
+		}
+		if (!searchQuery.trim()) {
+			searchExpanded = false;
+		}
 	}
 </script>
 
@@ -173,6 +210,7 @@
 								onkeydown={handleSearchKeydown}
 								onblur={handleSearchBlur}
 								class="nav-search-input"
+								required
 							/>
 						</form>
 					{/if}
@@ -234,6 +272,7 @@
 					placeholder="Search posts..."
 					bind:value={searchQuery}
 					class="mobile-search-input"
+					required
 				/>
 				<button type="submit" class="mobile-search-btn" aria-label="Search">
 					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">

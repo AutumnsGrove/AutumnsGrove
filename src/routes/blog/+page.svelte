@@ -55,7 +55,7 @@
 					{#if post.tags.length > 0}
 						<div class="tags">
 							{#each post.tags as tag (tag)}
-								<a href="/blog/search?tag={encodeURIComponent(tag)}" class="tag">{tag}</a>
+								<a href="/blog/search?tag={encodeURIComponent(tag)}" class="tag" aria-label="Filter posts by tag: {tag}">{tag}</a>
 							{/each}
 						</div>
 					{/if}
