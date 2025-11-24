@@ -1,16 +1,28 @@
 import { marked } from 'marked';
 import matter from 'gray-matter';
 
+// Validate slug format (alphanumeric, hyphens, underscores only)
+function isValidSlug(slug) {
+  return /^[a-zA-Z0-9_-]+$/.test(slug);
+}
+
+// Get CORS headers based on endpoint
+function getCorsHeaders(pathname) {
+  // Restrict CORS for sync endpoint to specific origins if needed
+  // For now, allowing all origins but this should be restricted in production
+  const allowedOrigin = '*'; // TODO: Set env.ALLOWED_ORIGIN for production
+
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  };
+}
+
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    
-    // Add CORS headers
-    const corsHeaders = {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    };
+    const corsHeaders = getCorsHeaders(url.pathname);
 
     // Handle CORS preflight requests
     if (request.method === 'OPTIONS') {
@@ -25,6 +37,15 @@ export default {
         return await handleGetPosts(env, corsHeaders);
       } else if (url.pathname.startsWith('/posts/') && request.method === 'GET') {
         const slug = url.pathname.split('/')[2];
+
+        // Validate slug format
+        if (!slug || !isValidSlug(slug)) {
+          return new Response(JSON.stringify({ error: 'Invalid slug format' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+          });
+        }
+
         return await handleGetPost(slug, env, corsHeaders);
       } else if (url.pathname === '/health' && request.method === 'GET') {
         return new Response('OK', { headers: corsHeaders });
@@ -33,7 +54,11 @@ export default {
       }
     } catch (error) {
       console.error('Worker error:', error);
-      return new Response(JSON.stringify({ error: error.message }), {
+      // Return generic error message in production
+      const errorMessage = env.ENVIRONMENT === 'production'
+        ? 'An internal error occurred'
+        : error.message;
+      return new Response(JSON.stringify({ error: errorMessage }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
@@ -58,21 +83,41 @@ async function handleSync(request, env, corsHeaders) {
     details: []
   };
 
+  // Validate all slugs before processing
+  for (const post of posts) {
+    if (!post.slug || !isValidSlug(post.slug)) {
+      results.errors.push({
+        slug: post.slug || 'unknown',
+        error: 'Invalid slug format'
+      });
+      return new Response(JSON.stringify({ error: 'Invalid slug format in payload' }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+  }
+
+  // Batch fetch existing posts to reduce DB calls
+  const existingPostsQuery = await env.DB.prepare(
+    `SELECT slug, file_hash FROM posts WHERE slug IN (${posts.map(() => '?').join(',')})`
+  ).bind(...posts.map(p => p.slug)).all();
+
+  const existingPostsMap = new Map(
+    existingPostsQuery.results.map(p => [p.slug, p.file_hash])
+  );
+
+  // Prepare batch statements
+  const batchStatements = [];
+
   for (const post of posts) {
     try {
-      // Parse markdown content to extract metadata
-      const { data, content: markdownContent } = matter(post.content);
-      const htmlContent = marked.parse(markdownContent);
-      
-      // Generate file hash for change detection
+      // Generate file hash first (before expensive parsing)
       const fileHash = await generateHash(post.content);
-      
-      // Check if post exists and if it needs updating
-      const existingPost = await env.DB.prepare(
-        'SELECT file_hash FROM posts WHERE slug = ?'
-      ).bind(post.slug).first();
 
-      if (existingPost && existingPost.file_hash === fileHash) {
+      // Check if post needs updating using the batched results
+      const existingHash = existingPostsMap.get(post.slug);
+
+      if (existingHash && existingHash === fileHash) {
         // No changes, skip
         results.details.push({
           slug: post.slug,
@@ -82,64 +127,88 @@ async function handleSync(request, env, corsHeaders) {
         continue;
       }
 
+      // Only parse markdown if we need to update
+      const { data, content: markdownContent } = matter(post.content);
+      const htmlContent = marked.parse(markdownContent);
+
       // Prepare tags as JSON string
       const tagsJson = JSON.stringify(data.tags || []);
+      const timestamp = new Date().toISOString();
 
-      if (existingPost) {
+      if (existingHash) {
         // Update existing post
-        await env.DB.prepare(`
-          UPDATE posts 
-          SET title = ?, date = ?, tags = ?, description = ?, 
-              markdown_content = ?, html_content = ?, file_hash = ?, 
-              last_synced = ?, updated_at = CURRENT_TIMESTAMP
-          WHERE slug = ?
-        `).bind(
-          data.title || 'Untitled',
-          data.date || new Date().toISOString(),
-          tagsJson,
-          data.description || '',
-          post.content,
-          htmlContent,
-          fileHash,
-          new Date().toISOString(),
-          post.slug
-        ).run();
-        
+        batchStatements.push(
+          env.DB.prepare(`
+            UPDATE posts
+            SET title = ?, date = ?, tags = ?, description = ?,
+                markdown_content = ?, html_content = ?, file_hash = ?,
+                last_synced = ?, updated_at = CURRENT_TIMESTAMP
+            WHERE slug = ?
+          `).bind(
+            data.title || 'Untitled',
+            data.date || new Date().toISOString(),
+            tagsJson,
+            data.description || '',
+            post.content,
+            htmlContent,
+            fileHash,
+            timestamp,
+            post.slug
+          )
+        );
+
         results.details.push({
           slug: post.slug,
           action: 'updated'
         });
       } else {
         // Insert new post
-        await env.DB.prepare(`
-          INSERT INTO posts (
-            slug, title, date, tags, description, 
-            markdown_content, html_content, file_hash, last_synced
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `).bind(
-          post.slug,
-          data.title || 'Untitled',
-          data.date || new Date().toISOString(),
-          tagsJson,
-          data.description || '',
-          post.content,
-          htmlContent,
-          fileHash,
-          new Date().toISOString()
-        ).run();
-        
+        batchStatements.push(
+          env.DB.prepare(`
+            INSERT INTO posts (
+              slug, title, date, tags, description,
+              markdown_content, html_content, file_hash, last_synced
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+          `).bind(
+            post.slug,
+            data.title || 'Untitled',
+            data.date || new Date().toISOString(),
+            tagsJson,
+            data.description || '',
+            post.content,
+            htmlContent,
+            fileHash,
+            timestamp
+          )
+        );
+
         results.details.push({
           slug: post.slug,
           action: 'created'
         });
       }
-      
+
       results.synced++;
     } catch (error) {
       console.error(`Error syncing post ${post.slug}:`, error);
       results.errors.push({
         slug: post.slug,
-        error: error.message
+        error: env.ENVIRONMENT === 'production' ? 'Sync failed' : error.message
+      });
+    }
+  }
+
+  // Execute batch statements if any
+  if (batchStatements.length > 0) {
+    try {
+      await env.DB.batch(batchStatements);
+    } catch (error) {
+      console.error('Batch operation failed:', error);
+      return new Response(JSON.stringify({
+        error: env.ENVIRONMENT === 'production' ? 'Database operation failed' : error.message
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
   }
@@ -190,7 +259,10 @@ async function handleGetPosts(env, corsHeaders) {
     });
   } catch (error) {
     console.error('Error getting posts:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    const errorMessage = env.ENVIRONMENT === 'production'
+      ? 'Failed to retrieve posts'
+      : error.message;
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
@@ -218,7 +290,10 @@ async function handleGetPost(slug, env, corsHeaders) {
     });
   } catch (error) {
     console.error(`Error getting post ${slug}:`, error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    const errorMessage = env.ENVIRONMENT === 'production'
+      ? 'Failed to retrieve post'
+      : error.message;
+    return new Response(JSON.stringify({ error: errorMessage }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
