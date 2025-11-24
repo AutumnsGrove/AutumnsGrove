@@ -4,6 +4,7 @@ import {
   getGraphQLHeaders,
   getCacheKey,
 } from "$lib/utils/github.js";
+import { logAPI, logGitHub, logCache, logError } from "$lib/server/logger.js";
 
 export const prerender = false;
 
@@ -13,6 +14,9 @@ export const prerender = false;
  * @type {import('./$types').RequestHandler}
  */
 export async function GET({ params, url, platform }) {
+  const startTime = Date.now();
+  const endpoint = `/api/git/contributions/${params.username}`;
+
   try {
     const username = validateUsername(params.username);
     const token = platform?.env?.GITHUB_TOKEN;
@@ -31,10 +35,16 @@ export async function GET({ params, url, platform }) {
       try {
         const cached = await kv.get(cacheKey, { type: "json" });
         if (cached) {
+          logCache("get", cacheKey, { hit: true, ttl: 3600 });
+          const duration = Date.now() - startTime;
+          logAPI(endpoint, "GET", 200, { duration, cached: true, username });
           return json({ ...cached, cached: true });
+        } else {
+          logCache("get", cacheKey, { hit: false });
         }
       } catch (cacheError) {
         console.error(`[KV] Cache read failed for ${cacheKey}:`, cacheError);
+        logCache("get", cacheKey, { error: cacheError.message });
       }
     } else if (!kv) {
       console.warn("[KV] Cache not available - CACHE_KV binding is undefined");
@@ -69,8 +79,24 @@ export async function GET({ params, url, platform }) {
       }),
     });
 
+    // Log GitHub API call with rate limit info
+    const rateLimit = {
+      limit: response.headers.get("x-ratelimit-limit"),
+      remaining: response.headers.get("x-ratelimit-remaining"),
+      reset: response.headers.get("x-ratelimit-reset"),
+    };
+    logGitHub(`GraphQL: contributionCalendar for ${username}`, {
+      rateLimit,
+      status: response.status,
+    });
+
     if (!response.ok) {
       const errorText = await response.text();
+      logGitHub(`GraphQL error: ${errorText}`, {
+        error: true,
+        status: response.status,
+        username,
+      });
       throw error(response.status, `GitHub API error: ${errorText}`);
     }
 
@@ -114,15 +140,40 @@ export async function GET({ params, url, platform }) {
           expirationTtl: 3600,
         });
         console.log(`[KV] Cached ${cacheKey} with TTL 3600s`);
+        logCache("set", cacheKey, {
+          ttl: 3600,
+          size: JSON.stringify(result).length,
+        });
       } catch (cacheError) {
         console.error(`[KV] Cache write failed for ${cacheKey}:`, cacheError);
+        logCache("set", cacheKey, { error: cacheError.message });
       }
     }
 
+    const duration = Date.now() - startTime;
+    logAPI(endpoint, "GET", 200, {
+      duration,
+      cached: false,
+      username,
+      total_contributions: result.total_contributions,
+      activity_days: result.activity.length,
+    });
     return json({ ...result, cached: false });
   } catch (e) {
-    if (e.status) throw e;
+    const duration = Date.now() - startTime;
+    if (e.status) {
+      logAPI(endpoint, "GET", e.status, {
+        duration,
+        error: e.body?.message || e.message,
+      });
+      throw e;
+    }
     console.error("Error fetching contributions:", e);
+    logError(`Failed to fetch contributions for ${params.username}`, e, {
+      endpoint,
+      username: params.username,
+    });
+    logAPI(endpoint, "GET", 500, { duration, error: e.message });
     throw error(500, e.message || "Failed to fetch contributions");
   }
 }

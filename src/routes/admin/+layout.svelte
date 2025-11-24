@@ -64,6 +64,10 @@
         <span class="nav-icon">&#x1F4CA;</span>
         Analytics
       </a>
+      <a href="/admin/logs" class="nav-item" onclick={closeSidebar}>
+        <span class="nav-icon">&#x1F5A5;</span>
+        Console
+      </a>
       <a href="/admin/settings" class="nav-item" onclick={closeSidebar}>
         <span class="nav-icon">&#x2699;</span>
         Settings
