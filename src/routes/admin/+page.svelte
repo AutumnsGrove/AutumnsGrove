@@ -120,13 +120,23 @@
   .dashboard-header h1 {
     margin: 0 0 0.5rem 0;
     font-size: 2rem;
-    color: #24292e;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .dashboard-header h1 {
+    color: var(--color-text-dark);
   }
 
   .welcome {
     margin: 0;
-    color: #586069;
+    color: var(--color-text-muted);
     font-size: 1.1rem;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .welcome {
+    color: var(--color-text-subtle-dark);
   }
 
   .stats-grid {
@@ -137,17 +147,30 @@
   }
 
   .stat-card {
-    background: white;
+    background: var(--mobile-menu-bg);
     padding: 1.5rem;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--color-border);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  :global(.dark) .stat-card {
+    background: var(--color-bg-tertiary-dark);
+    border-color: var(--color-border-dark);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
   .stat-card h3 {
     margin: 0 0 0.5rem 0;
     font-size: 0.9rem;
-    color: #586069;
+    color: var(--color-text-muted);
     font-weight: 500;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .stat-card h3 {
+    color: var(--color-text-subtle-dark);
   }
 
   .stat-value {
@@ -165,7 +188,12 @@
   }
 
   .stat-value.loading {
-    color: #6a737d;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .stat-value.loading {
+    color: var(--color-text-subtle-dark);
   }
 
   .quick-actions {
@@ -175,7 +203,12 @@
   .quick-actions h2 {
     margin: 0 0 1rem 0;
     font-size: 1.25rem;
-    color: #24292e;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .quick-actions h2 {
+    color: var(--color-text-dark);
   }
 
   .action-grid {
@@ -185,22 +218,33 @@
   }
 
   .action-card {
-    background: white;
+    background: var(--mobile-menu-bg);
     padding: 1.5rem;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid var(--color-border);
     text-decoration: none;
-    color: #24292e;
+    color: var(--color-text);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.75rem;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
+  :global(.dark) .action-card {
+    background: var(--color-bg-tertiary-dark);
+    color: var(--color-text-dark);
+    border-color: var(--color-border-dark);
   }
 
   .action-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  :global(.dark) .action-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   }
 
   .action-icon {
