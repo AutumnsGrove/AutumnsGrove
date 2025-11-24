@@ -9,6 +9,38 @@ mermaid.initialize({
   securityLevel: "loose",
 });
 
+// Configure marked renderer for GitHub-style code blocks
+const renderer = new marked.Renderer();
+renderer.code = function (code, language) {
+  const lang = language || "text";
+  const escapedCode = code
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
+  return `<div class="code-block-wrapper">
+  <div class="code-block-header">
+    <span class="code-block-language">${lang}</span>
+    <button class="code-block-copy" aria-label="Copy code to clipboard" data-code="${escapedCode}">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5.75 4.75H10.25V1.75H5.75V4.75ZM5.75 4.75H2.75V14.25H10.25V11.25" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="5.75" y="4.75" width="7.5" height="9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="copy-text">Copy</span>
+    </button>
+  </div>
+  <pre><code class="language-${lang}">${escapedCode}</code></pre>
+</div>`;
+};
+
+marked.setOptions({
+  renderer: renderer,
+  gfm: true,
+  breaks: false,
+});
+
 // Use Vite's import.meta.glob to load markdown files at build time
 // This works in both dev and production (including Cloudflare Workers)
 // Path is relative to project root - now using UserContent directory
@@ -49,9 +81,12 @@ const contactModules = import.meta.glob("../../../UserContent/Contact/*.md", {
 });
 
 // Site config
-const siteConfigModule = import.meta.glob("../../../UserContent/site-config.json", {
-  eager: true,
-});
+const siteConfigModule = import.meta.glob(
+  "../../../UserContent/site-config.json",
+  {
+    eager: true,
+  },
+);
 
 /**
  * Get the site configuration
@@ -65,7 +100,7 @@ export function getSiteConfig() {
   return {
     owner: { name: "Admin", email: "" },
     site: { title: "The Grove", description: "", copyright: "AutumnsGrove" },
-    social: {}
+    social: {},
   };
 }
 

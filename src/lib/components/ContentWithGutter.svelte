@@ -155,6 +155,57 @@
 		};
 	});
 
+	// Setup copy button functionality for code blocks
+	onMount(() => {
+		const handleCopyClick = async (event) => {
+			const button = event.currentTarget;
+			const codeText = button.getAttribute('data-code');
+
+			if (!codeText) return;
+
+			try {
+				// Decode HTML entities back to original text
+				const textarea = document.createElement('textarea');
+				textarea.innerHTML = codeText;
+				const decodedText = textarea.value;
+
+				await navigator.clipboard.writeText(decodedText);
+
+				// Update button text and style to show success
+				const copyText = button.querySelector('.copy-text');
+				const originalText = copyText.textContent;
+				copyText.textContent = 'Copied!';
+				button.classList.add('copied');
+
+				// Reset after 2 seconds
+				setTimeout(() => {
+					copyText.textContent = originalText;
+					button.classList.remove('copied');
+				}, 2000);
+			} catch (err) {
+				console.error('Failed to copy code:', err);
+				const copyText = button.querySelector('.copy-text');
+				copyText.textContent = 'Failed';
+				setTimeout(() => {
+					copyText.textContent = 'Copy';
+				}, 2000);
+			}
+		};
+
+		// Attach event listeners to all copy buttons
+		const copyButtons = document.querySelectorAll('.code-block-copy');
+		copyButtons.forEach(button => {
+			button.addEventListener('click', handleCopyClick);
+		});
+
+		// Cleanup
+		return () => {
+			copyButtons.forEach(button => {
+				button.removeEventListener('click', handleCopyClick);
+			});
+		};
+	});
+
 	// Handle initial positioning and re-calculate when dependencies change
 	$effect(() => {
 		// Explicitly reference dependencies to track changes
