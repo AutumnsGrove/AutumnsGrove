@@ -11,7 +11,11 @@ mermaid.initialize({
 
 // Configure marked renderer for GitHub-style code blocks
 const renderer = new marked.Renderer();
-renderer.code = function (code, language) {
+renderer.code = function (token) {
+  // Handle both old (code, language) and new (token) API signatures
+  const code = typeof token === "string" ? token : token.text;
+  const language = typeof token === "string" ? arguments[1] : token.lang;
+
   const lang = language || "text";
   const escapedCode = code
     .replace(/&/g, "&amp;")
