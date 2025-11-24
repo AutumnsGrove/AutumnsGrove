@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'posts/**'
+      - 'UserContent/Posts/**'
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
@@ -33,7 +33,7 @@ jobs:
         const path = require('path');
         const matter = require('gray-matter');
         
-        const postsDir = './posts';
+        const postsDir = './UserContent/Posts';
         const posts = [];
         
         // Read all markdown files

@@ -32,13 +32,19 @@ A CloudFlare Worker that syncs blog posts from markdown files to a CloudFlare D1
    npm install
    ```
 
-3. Deploy the worker:
+3. Create the D1 database and apply schema:
+   ```bash
+   wrangler d1 create autumnsgrove-posts
+   wrangler d1 execute autumnsgrove-posts --file=schema.sql --env production
+   ```
+
+4. Deploy the worker:
    ```bash
    chmod +x deploy.sh
    ./deploy.sh
    ```
 
-4. Set up GitHub repository secrets:
+5. Set up GitHub repository secrets:
    - `CLOUDFLARE_WORKER_URL`: Your worker's URL (shown after deployment)
    - `CLOUDFLARE_SYNC_API_KEY`: The API key generated during deployment
 
