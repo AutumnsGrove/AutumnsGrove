@@ -47,10 +47,17 @@
         throw new Error(data.message || 'Failed to load images');
       }
 
+      // Filter to only include actual image files
+      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp', '.ico', '.avif'];
+      const filteredImages = data.images.filter(img => {
+        const key = img.key.toLowerCase();
+        return imageExtensions.some(ext => key.endsWith(ext));
+      });
+
       if (append) {
-        galleryImages = [...galleryImages, ...data.images];
+        galleryImages = [...galleryImages, ...filteredImages];
       } else {
-        galleryImages = data.images;
+        galleryImages = filteredImages;
       }
       galleryCursor = data.cursor;
       galleryHasMore = data.truncated;
@@ -295,7 +302,10 @@
   <!-- Gallery Section -->
   <div class="gallery-section">
     <div class="gallery-header">
-      <h2>CDN Gallery</h2>
+      <div class="gallery-title">
+        <h2>CDN Gallery</h2>
+        <p class="gallery-subtitle">Hosted in website CDN</p>
+      </div>
       <div class="gallery-controls">
         <input
           type="text"
@@ -607,10 +617,17 @@
     gap: 1rem;
   }
 
-  .gallery-header h2 {
+  .gallery-title h2 {
     margin: 0;
     font-size: 1.25rem;
     color: #24292e;
+  }
+
+  .gallery-subtitle {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.85rem;
+    color: #586069;
+    font-style: italic;
   }
 
   .gallery-controls {
