@@ -12,7 +12,7 @@ async function testSync() {
 
   try {
     // Read test posts from the main posts directory
-    const postsDir = path.join(__dirname, '../../posts');
+    const postsDir = path.join(__dirname, '../../UserContent/Posts');
     const files = fs.readdirSync(postsDir).filter(file => file.endsWith('.md'));
     
     const posts = [];

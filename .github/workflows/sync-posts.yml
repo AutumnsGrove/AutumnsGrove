@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'posts/**'
+      - 'UserContent/Posts/**'
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
@@ -32,28 +32,53 @@ jobs:
         const fs = require('fs');
         const path = require('path');
         const matter = require('gray-matter');
-        
-        const postsDir = './posts';
+
+        // Normalize slug to kebab-case (matches worker normalization)
+        function normalizeSlug(slug) {
+          return slug
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, '-')
+            .replace(/_+/g, '-')
+            .replace(/[^a-z0-9-]/g, '')
+            .replace(/-+/g, '-')
+            .replace(/^-+|-+$/g, '');
+        }
+
+        const postsDir = './UserContent/Posts';
         const posts = [];
-        
+
         // Read all markdown files
         const files = fs.readdirSync(postsDir).filter(file => file.endsWith('.md'));
-        
+
         for (const file of files) {
           const filePath = path.join(postsDir, file);
           const content = fs.readFileSync(filePath, 'utf8');
-          const slug = file.replace('.md', '');
-          
+
+          // Generate SEO-friendly slug
+          const rawSlug = file.replace('.md', '');
+          const slug = normalizeSlug(rawSlug);
+
+          if (!slug) {
+            console.error(`Warning: Could not generate valid slug for file: ${file}`);
+            continue;
+          }
+
           posts.push({
             slug,
             content,
             filePath
           });
+
+          console.log(`Processed: ${file} -> ${slug}`);
         }
-        
-        // Output posts as JSON for the next step
-        console.log(`::set-output name=posts::${JSON.stringify(posts)}`);
-        console.log(`::set-output name=post-count::${posts.length}`);
+
+        // Output posts as JSON for the next step using modern GitHub Actions syntax
+        // https://github.blog/changelog/2022-10-11-github-actions-deprecating-save-state-and-set-output-commands/
+        fs.appendFileSync(process.env.GITHUB_OUTPUT, `posts=${JSON.stringify(posts)}\n`);
+        fs.appendFileSync(process.env.GITHUB_OUTPUT, `post-count=${posts.length}\n`);
+
+        console.log(`Total posts processed: ${posts.length}`);
         EOF
         
     - name: Sync posts to CloudFlare D1

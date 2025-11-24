@@ -191,7 +191,7 @@ node test-sync.js
 
 ## 🔄 Workflow
 
-1. **You write/edit posts** in the `posts/` directory
+1. **You write/edit posts** in the `UserContent/Posts/` directory
 2. **Push to GitHub** triggers the workflow
 3. **GitHub Actions** reads and processes posts
 4. **CloudFlare Worker** syncs to D1 database

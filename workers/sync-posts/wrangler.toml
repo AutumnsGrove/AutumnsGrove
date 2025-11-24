@@ -2,21 +2,39 @@ name = "autumnsgrove-sync-posts"
 main = "index.js"
 compatibility_date = "2025-01-01"
 
+# Production environment
 [env.production]
-vars = { ENVIRONMENT = "production" }
+vars = {
+  ENVIRONMENT = "production",
+  ALLOWED_ORIGIN = "https://autumnsgrove.com"
+}
 
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "autumnsgrove-posts"
 database_id = "510badf3-457a-4892-bf2a-45d4bfd7a7bb"
 
+# Optional: KV namespace for rate limiting (create with: wrangler kv:namespace create RATE_LIMIT_KV --env production)
+# [[env.production.kv_namespaces]]
+# binding = "RATE_LIMIT_KV"
+# id = "your-kv-namespace-id"
+
+# Staging environment
 [env.staging]
-vars = { ENVIRONMENT = "staging" }
+vars = {
+  ENVIRONMENT = "staging",
+  ALLOWED_ORIGIN = "https://staging.autumnsgrove.com"
+}
 
 [[env.staging.d1_databases]]
 binding = "DB"
 database_name = "autumnsgrove-posts"
 database_id = "510badf3-457a-4892-bf2a-45d4bfd7a7bb"
 
-# Secrets (set these using wrangler secret put)
-# SYNC_API_KEY - API key for authentication
+# Optional: KV namespace for rate limiting
+# [[env.staging.kv_namespaces]]
+# binding = "RATE_LIMIT_KV"
+# id = "your-staging-kv-namespace-id"
+
+# Secrets (set these using: wrangler secret put <SECRET_NAME> --env <ENV>)
+# SYNC_API_KEY - API key for authentication (required)
