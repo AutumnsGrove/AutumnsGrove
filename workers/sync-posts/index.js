@@ -10,11 +10,27 @@ marked.setOptions({
   // when rendering HTML content: https://github.com/cure53/DOMPurify
 });
 
+// Normalize slug to kebab-case (lowercase with hyphens)
+function normalizeSlug(slug) {
+  if (!slug || typeof slug !== 'string') {
+    return null;
+  }
+
+  return slug
+    .toLowerCase()                    // Convert to lowercase
+    .trim()                           // Remove leading/trailing whitespace
+    .replace(/\s+/g, '-')            // Replace spaces with hyphens
+    .replace(/_+/g, '-')             // Replace underscores with hyphens
+    .replace(/[^a-z0-9-]/g, '')      // Remove non-alphanumeric except hyphens
+    .replace(/-+/g, '-')             // Replace multiple hyphens with single hyphen
+    .replace(/^-+|-+$/g, '');        // Remove leading/trailing hyphens
+}
+
 // Validate slug format (kebab-case: lowercase alphanumeric with hyphens only)
 function isValidSlug(slug) {
   // SEO-friendly kebab-case: lowercase letters, numbers, and hyphens
   // Must start and end with alphanumeric, no consecutive hyphens
-  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
+  return slug && /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
 }
 
 // Basic rate limiting using KV (if available) or fallback to header-based check
@@ -95,7 +111,10 @@ export default {
       } else if (url.pathname === '/posts' && request.method === 'GET') {
         return await handleGetPosts(env, corsHeaders);
       } else if (url.pathname.startsWith('/posts/') && request.method === 'GET') {
-        const slug = url.pathname.split('/')[2];
+        const rawSlug = url.pathname.split('/')[2];
+
+        // Normalize slug for lookup
+        const slug = normalizeSlug(rawSlug);
 
         // Validate slug format
         if (!slug || !isValidSlug(slug)) {
@@ -178,17 +197,25 @@ async function handleSync(request, env, corsHeaders) {
   const MAX_DESCRIPTION_LENGTH = 2000;
 
   for (const post of posts) {
-    // Validate slug
-    if (!post.slug || !isValidSlug(post.slug)) {
+    // Normalize and validate slug
+    const originalSlug = post.slug;
+    const normalizedSlug = normalizeSlug(post.slug);
+
+    if (!normalizedSlug || !isValidSlug(normalizedSlug)) {
       results.errors.push({
-        slug: post.slug || 'unknown',
-        error: 'Invalid slug format'
+        slug: originalSlug || 'unknown',
+        error: 'Invalid slug format (must contain alphanumeric characters)'
       });
-      return new Response(JSON.stringify({ error: 'Invalid slug format in payload' }), {
+      return new Response(JSON.stringify({
+        error: `Invalid slug format in payload: "${originalSlug}" could not be normalized to valid kebab-case`
+      }), {
         status: 400,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
+
+    // Update the post object with normalized slug
+    post.slug = normalizedSlug;
 
     // Validate content exists and is a string
     if (!post.content || typeof post.content !== 'string') {
