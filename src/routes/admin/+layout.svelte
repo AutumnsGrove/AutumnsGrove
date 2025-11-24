@@ -99,7 +99,7 @@
     left: 0;
     right: 0;
     height: 56px;
-    background: white;
+    background: var(--mobile-menu-bg);
     color: var(--color-text);
     align-items: center;
     padding: 0 1rem;
@@ -173,7 +173,7 @@
 
   .sidebar {
     width: 250px;
-    background: white;
+    background: var(--mobile-menu-bg);
     color: var(--color-text);
     display: flex;
     flex-direction: column;
@@ -291,7 +291,7 @@
   }
 
   :global(.dark) .logout-btn:hover {
-    background: #444;
+    background: var(--color-bg-tertiary-dark);
     color: var(--color-text-dark);
   }
 

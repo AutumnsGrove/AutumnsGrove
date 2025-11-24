@@ -157,16 +157,17 @@ Your content here...
   }
 
   .btn-primary {
-    background: #2ea44f;
+    background: var(--color-primary);
     color: white;
+    transition: background-color 0.2s ease;
   }
 
   .btn-primary:hover {
-    background: #22863a;
+    background: var(--color-primary-hover);
   }
 
   .posts-table-container {
-    background: white;
+    background: var(--mobile-menu-bg);
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
