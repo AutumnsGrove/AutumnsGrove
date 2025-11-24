@@ -1,6 +1,11 @@
 import { json, error } from "@sveltejs/kit";
 
-export async function POST({ request, platform }) {
+export async function POST({ request, platform, locals }) {
+  // Authentication check
+  if (!locals.user) {
+    throw error(401, "Unauthorized");
+  }
+
   // Check for R2 binding
   if (!platform?.env?.IMAGES) {
     throw error(500, "R2 bucket not configured");

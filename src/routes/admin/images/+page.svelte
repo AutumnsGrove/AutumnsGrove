@@ -15,6 +15,9 @@
   let galleryHasMore = $state(false);
   let galleryFilter = $state('');
 
+  // Copy feedback state
+  let copiedItem = $state(null);
+
   const folderOptions = [
     { value: 'blog', label: 'Blog Posts' },
     { value: 'recipes', label: 'Recipes' },
@@ -158,12 +161,22 @@
     }
 
     uploading = false;
+
+    // Refresh gallery to show newly uploaded images
+    loadGallery();
   }
 
-  async function copyToClipboard(text, type) {
+  async function copyToClipboard(text, type, itemId = null) {
     try {
       await navigator.clipboard.writeText(text);
-      // Brief visual feedback could be added here
+      // Show visual feedback
+      const feedbackKey = itemId ? `${itemId}-${type}` : type;
+      copiedItem = feedbackKey;
+      setTimeout(() => {
+        if (copiedItem === feedbackKey) {
+          copiedItem = null;
+        }
+      }, 2000);
     } catch (err) {
       console.error('Failed to copy:', err);
     }
@@ -261,14 +274,14 @@
                   <code>{upload.url}</code>
                 </div>
                 <div class="copy-buttons">
-                  <button class="copy-btn" onclick={() => copyToClipboard(upload.url, 'url')}>
-                    Copy URL
+                  <button class="copy-btn" onclick={() => copyToClipboard(upload.url, 'url', upload.id)}>
+                    {copiedItem === `${upload.id}-url` ? 'Copied!' : 'Copy URL'}
                   </button>
-                  <button class="copy-btn" onclick={() => copyToClipboard(upload.markdown, 'markdown')}>
-                    Copy Markdown
+                  <button class="copy-btn" onclick={() => copyToClipboard(upload.markdown, 'markdown', upload.id)}>
+                    {copiedItem === `${upload.id}-markdown` ? 'Copied!' : 'Copy Markdown'}
                   </button>
-                  <button class="copy-btn" onclick={() => copyToClipboard(upload.svelte, 'svelte')}>
-                    Copy Svelte
+                  <button class="copy-btn" onclick={() => copyToClipboard(upload.svelte, 'svelte', upload.id)}>
+                    {copiedItem === `${upload.id}-svelte` ? 'Copied!' : 'Copy Svelte'}
                   </button>
                 </div>
               </div>
@@ -316,11 +329,11 @@
               <span class="gallery-item-size">{formatFileSize(image.size)}</span>
             </div>
             <div class="gallery-item-actions">
-              <button class="copy-btn small" onclick={() => copyToClipboard(image.url, 'url')}>
-                URL
+              <button class="copy-btn small" onclick={() => copyToClipboard(image.url, 'url', image.key)}>
+                {copiedItem === `${image.key}-url` ? '✓' : 'URL'}
               </button>
-              <button class="copy-btn small" onclick={() => copyToClipboard(`![](${image.url})`, 'markdown')}>
-                MD
+              <button class="copy-btn small" onclick={() => copyToClipboard(`![](${image.url})`, 'markdown', image.key)}>
+                {copiedItem === `${image.key}-markdown` ? '✓' : 'MD'}
               </button>
             </div>
           </div>
