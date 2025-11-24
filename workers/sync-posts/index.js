@@ -192,11 +192,13 @@ async function handleSync(request, env, corsHeaders) {
   }
 
   // Validate batch size to prevent SQL bind parameter limit issues
-  // D1/SQLite supports up to 999 bind parameters, but we set a conservative limit
-  const MAX_POSTS_PER_SYNC = 500;
+  // SQLite limit: 999 bind parameters
+  // Each post uses 9 parameters (slug, title, date, tags, description, markdown, html, hash, timestamp)
+  // Safe batch size: 999 ÷ 9 ≈ 111 posts, using 100 for headroom (100 × 9 = 900 params)
+  const MAX_POSTS_PER_SYNC = 100;
   if (posts.length > MAX_POSTS_PER_SYNC) {
     return new Response(JSON.stringify({
-      error: `Too many posts in single sync request. Maximum: ${MAX_POSTS_PER_SYNC}, received: ${posts.length}`
+      error: `Too many posts in single sync request. Maximum: ${MAX_POSTS_PER_SYNC}, received: ${posts.length}. Please batch your requests.`
     }), {
       status: 413,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
@@ -371,9 +373,15 @@ async function handleSync(request, env, corsHeaders) {
   }
 
   // Execute batch statements if any
+  // Use chunked batching to stay well below SQLite's 999 bind parameter limit
+  const BATCH_CHUNK_SIZE = 100; // 100 statements × ~9 params = ~900 params (safe)
   if (batchStatements.length > 0) {
     try {
-      await env.DB.batch(batchStatements);
+      // Process in chunks to prevent parameter overflow
+      for (let i = 0; i < batchStatements.length; i += BATCH_CHUNK_SIZE) {
+        const chunk = batchStatements.slice(i, i + BATCH_CHUNK_SIZE);
+        await env.DB.batch(chunk);
+      }
       // Only update synced count after successful batch execution
       results.synced = pendingSyncCount;
     } catch (error) {
@@ -397,12 +405,18 @@ async function handleSync(request, env, corsHeaders) {
       .filter(row => !syncSlugs.has(row.slug))
       .map(row => row.slug);
 
-    // Batch delete operations
+    // Batch delete operations with chunking for safety
     if (slugsToDelete.length > 0) {
       const deleteStatements = slugsToDelete.map(slug =>
         env.DB.prepare('DELETE FROM posts WHERE slug = ?').bind(slug)
       );
-      await env.DB.batch(deleteStatements);
+
+      // Process deletes in chunks (each delete uses 1 param, so we can use larger chunks)
+      const DELETE_CHUNK_SIZE = 500; // Well below 999 param limit for deletes
+      for (let i = 0; i < deleteStatements.length; i += DELETE_CHUNK_SIZE) {
+        const chunk = deleteStatements.slice(i, i + DELETE_CHUNK_SIZE);
+        await env.DB.batch(chunk);
+      }
 
       // Add to results
       slugsToDelete.forEach(slug => {
