@@ -148,12 +148,22 @@
   .header-content h1 {
     margin: 0 0 0.25rem 0;
     font-size: 2rem;
-    color: #24292e;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .header-content h1 {
+    color: var(--color-text-dark);
   }
 
   .subtitle {
     margin: 0;
-    color: #586069;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .subtitle {
+    color: var(--color-text-subtle-dark);
   }
 
   .btn {
@@ -167,22 +177,39 @@
   }
 
   .btn-secondary {
-    background: #f6f8fa;
-    color: #24292e;
-    border: 1px solid #e1e4e8;
+    background: var(--color-bg-secondary);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
+  :global(.dark) .btn-secondary {
+    background: var(--color-bg-secondary-dark);
+    color: var(--color-text-dark);
+    border-color: var(--color-border-dark);
   }
 
   .btn-secondary:hover {
-    background: #e1e4e8;
+    background: var(--color-border);
+  }
+
+  :global(.dark) .btn-secondary:hover {
+    background: var(--color-border-dark);
   }
 
   .loading-state,
   .error-state {
-    background: white;
+    background: var(--mobile-menu-bg);
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 3rem;
     text-align: center;
+    transition: background-color 0.3s ease;
+  }
+
+  :global(.dark) .loading-state,
+  :global(.dark) .error-state {
+    background: var(--color-bg-tertiary-dark);
   }
 
   .error-state h3 {
@@ -192,7 +219,12 @@
 
   .error-state p {
     margin: 0 0 1rem 0;
-    color: #586069;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .error-state p {
+    color: var(--color-text-subtle-dark);
   }
 
   .stats-grid {
@@ -203,10 +235,15 @@
   }
 
   .stat-card {
-    background: white;
+    background: var(--mobile-menu-bg);
     padding: 1.5rem;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+  }
+
+  :global(.dark) .stat-card {
+    background: var(--color-bg-tertiary-dark);
   }
 
   .stat-card.large {
@@ -222,41 +259,72 @@
   .stat-card h3 {
     margin: 0 0 0.5rem 0;
     font-size: 0.85rem;
-    color: #586069;
+    color: var(--color-text-muted);
     font-weight: 500;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .stat-card h3 {
+    color: var(--color-text-subtle-dark);
   }
 
   .stat-value {
     margin: 0;
     font-size: 2rem;
     font-weight: 700;
-    color: #24292e;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .stat-value {
+    color: var(--color-text-dark);
   }
 
   .section {
-    background: white;
+    background: var(--mobile-menu-bg);
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
     margin-bottom: 1.5rem;
+    transition: background-color 0.3s ease;
+  }
+
+  :global(.dark) .section {
+    background: var(--color-bg-tertiary-dark);
   }
 
   .section h2 {
     margin: 0 0 1rem 0;
     font-size: 1.1rem;
-    color: #24292e;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .section h2 {
+    color: var(--color-text-dark);
   }
 
   .section.info {
-    background: #f6f8fa;
+    background: var(--color-bg-secondary);
     box-shadow: none;
-    border: 1px solid #e1e4e8;
+    border: 1px solid var(--color-border);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  :global(.dark) .section.info {
+    background: var(--color-bg-secondary-dark);
+    border-color: var(--color-border-dark);
   }
 
   .section.info p {
     margin: 0 0 0.75rem 0;
-    color: #586069;
+    color: var(--color-text-muted);
     font-size: 0.9rem;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .section.info p {
+    color: var(--color-text-subtle-dark);
   }
 
   .section.info p:last-child {
@@ -264,7 +332,12 @@
   }
 
   .section.info a {
-    color: #0366d6;
+    color: var(--color-primary);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .section.info a {
+    color: var(--color-primary-light);
   }
 
   .repos-list {
@@ -278,7 +351,12 @@
     justify-content: space-between;
     align-items: flex-start;
     padding: 0.75rem 0;
-    border-bottom: 1px solid #e1e4e8;
+    border-bottom: 1px solid var(--color-border);
+    transition: border-color 0.3s ease;
+  }
+
+  :global(.dark) .repo-item {
+    border-bottom-color: var(--color-border-dark);
   }
 
   .repo-item:last-child {
@@ -288,8 +366,13 @@
 
   .repo-name {
     font-weight: 500;
-    color: #0366d6;
+    color: var(--color-primary);
     text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .repo-name {
+    color: var(--color-primary-light);
   }
 
   .repo-name:hover {
@@ -299,7 +382,12 @@
   .repo-description {
     margin: 0.25rem 0 0 0;
     font-size: 0.85rem;
-    color: #586069;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .repo-description {
+    color: var(--color-text-subtle-dark);
   }
 
   .repo-stats {
@@ -309,7 +397,12 @@
 
   .repo-stat {
     font-size: 0.85rem;
-    color: #586069;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .repo-stat {
+    color: var(--color-text-subtle-dark);
   }
 
   .commits-list {
@@ -319,7 +412,12 @@
 
   .commit-item {
     padding: 0.75rem 0;
-    border-bottom: 1px solid #e1e4e8;
+    border-bottom: 1px solid var(--color-border);
+    transition: border-color 0.3s ease;
+  }
+
+  :global(.dark) .commit-item {
+    border-bottom-color: var(--color-border-dark);
   }
 
   .commit-item:last-child {
@@ -330,18 +428,33 @@
   .commit-message {
     margin: 0 0 0.25rem 0;
     font-size: 0.9rem;
-    color: #24292e;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .commit-message {
+    color: var(--color-text-dark);
   }
 
   .commit-meta {
     margin: 0;
     font-size: 0.8rem;
-    color: #586069;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .commit-meta {
+    color: var(--color-text-subtle-dark);
   }
 
   .commit-meta a {
-    color: #0366d6;
+    color: var(--color-primary);
     text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .commit-meta a {
+    color: var(--color-primary-light);
   }
 
   .commit-meta a:hover {

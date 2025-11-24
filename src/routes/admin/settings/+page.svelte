@@ -176,32 +176,57 @@
   .page-header h1 {
     margin: 0 0 0.25rem 0;
     font-size: 2rem;
-    color: #24292e;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .page-header h1 {
+    color: var(--color-text-dark);
   }
 
   .subtitle {
     margin: 0;
-    color: #586069;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .subtitle {
+    color: var(--color-text-subtle-dark);
   }
 
   .settings-section {
-    background: white;
+    background: var(--mobile-menu-bg);
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
     margin-bottom: 1.5rem;
+    transition: background-color 0.3s ease;
+  }
+
+  :global(.dark) .settings-section {
+    background: var(--color-bg-tertiary-dark);
   }
 
   .settings-section h2 {
     margin: 0 0 1rem 0;
     font-size: 1.25rem;
-    color: #24292e;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .settings-section h2 {
+    color: var(--color-text-dark);
   }
 
   .section-description {
     margin: 0 0 1rem 0;
-    color: #586069;
+    color: var(--color-text-muted);
     font-size: 0.9rem;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .section-description {
+    color: var(--color-text-subtle-dark);
   }
 
   .health-grid {
@@ -223,7 +248,12 @@
 
   .health-label {
     font-size: 0.85rem;
-    color: #586069;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .health-label {
+    color: var(--color-text-subtle-dark);
   }
 
   .health-value {
@@ -239,7 +269,12 @@
   }
 
   .health-value.loading {
-    color: #6a737d;
+    color: var(--color-text-subtle);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .health-value.loading {
+    color: var(--color-text-subtle-dark);
   }
 
   .btn {
@@ -249,7 +284,7 @@
     font-weight: 500;
     font-size: 0.9rem;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
   }
 
   .btn:disabled {
@@ -258,13 +293,24 @@
   }
 
   .btn-secondary {
-    background: #f6f8fa;
-    color: #24292e;
-    border: 1px solid #e1e4e8;
+    background: var(--color-bg-secondary);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
 
   .btn-secondary:hover:not(:disabled) {
-    background: #e1e4e8;
+    background: var(--color-border);
+  }
+
+  :global(.dark) .btn-secondary {
+    background: var(--color-bg-secondary-dark);
+    color: var(--color-text-dark);
+    border-color: var(--color-border-dark);
+  }
+
+  :global(.dark) .btn-secondary:hover:not(:disabled) {
+    background: var(--color-border-dark);
   }
 
   .btn-danger {
@@ -296,14 +342,24 @@
   .note {
     margin: 1rem 0 0 0;
     font-size: 0.8rem;
-    color: #6a737d;
+    color: var(--color-text-subtle);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .note {
+    color: var(--color-text-subtle-dark);
   }
 
   .note code {
-    background: #f6f8fa;
+    background: var(--color-bg-secondary);
     padding: 0.125rem 0.25rem;
     border-radius: 3px;
     font-size: 0.85em;
+    transition: background-color 0.3s ease;
+  }
+
+  :global(.dark) .note code {
+    background: var(--color-bg-secondary-dark);
   }
 
   .env-info {
@@ -315,7 +371,12 @@
     display: flex;
     justify-content: space-between;
     padding: 0.5rem 0;
-    border-bottom: 1px solid #e1e4e8;
+    border-bottom: 1px solid var(--color-border);
+    transition: border-color 0.3s ease;
+  }
+
+  :global(.dark) .env-item {
+    border-color: var(--color-border-dark);
   }
 
   .env-item:last-child {
@@ -323,8 +384,13 @@
   }
 
   .env-label {
-    color: #586069;
+    color: var(--color-text-muted);
     font-size: 0.9rem;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .env-label {
+    color: var(--color-text-subtle-dark);
   }
 
   .env-value {
@@ -340,7 +406,12 @@
 
   .links-list li {
     padding: 0.5rem 0;
-    border-bottom: 1px solid #e1e4e8;
+    border-bottom: 1px solid var(--color-border);
+    transition: border-color 0.3s ease;
+  }
+
+  :global(.dark) .links-list li {
+    border-color: var(--color-border-dark);
   }
 
   .links-list li:last-child {
@@ -348,9 +419,14 @@
   }
 
   .links-list a {
-    color: #0366d6;
+    color: var(--color-primary);
     text-decoration: none;
     font-size: 0.9rem;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .links-list a {
+    color: var(--color-primary-light);
   }
 
   .links-list a:hover {

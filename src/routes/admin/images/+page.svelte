@@ -377,12 +377,22 @@
   .page-header h1 {
     margin: 0 0 0.5rem 0;
     font-size: 2rem;
-    color: #24292e;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .page-header h1 {
+    color: var(--color-text-dark);
   }
 
   .subtitle {
     margin: 0;
-    color: #586069;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .subtitle {
+    color: var(--color-text-subtle-dark);
   }
 
   .upload-config {
@@ -401,44 +411,81 @@
 
   .folder-select span {
     font-weight: 500;
-    color: #24292e;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .folder-select span {
+    color: var(--color-text-dark);
   }
 
   .folder-select select {
     padding: 0.5rem;
-    border: 1px solid #d1d5da;
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     font-size: 0.9rem;
-    background: white;
+    background: var(--mobile-menu-bg);
+    color: var(--color-text);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
+  :global(.dark) .folder-select select {
+    background: var(--color-bg-tertiary-dark);
+    color: var(--color-text-dark);
+    border-color: var(--color-border-dark);
   }
 
   .custom-folder {
     flex: 1;
     min-width: 200px;
     padding: 0.5rem;
-    border: 1px solid #d1d5da;
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     font-size: 0.9rem;
+    background: var(--mobile-menu-bg);
+    color: var(--color-text);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
+  :global(.dark) .custom-folder {
+    background: var(--color-bg-tertiary-dark);
+    color: var(--color-text-dark);
+    border-color: var(--color-border-dark);
   }
 
   .drop-zone {
-    border: 2px dashed #d1d5da;
+    border: 2px dashed var(--color-border);
     border-radius: 8px;
     padding: 3rem 2rem;
     text-align: center;
     cursor: pointer;
     transition: all 0.2s;
-    background: white;
+    background: var(--mobile-menu-bg);
+  }
+
+  :global(.dark) .drop-zone {
+    background: var(--color-bg-tertiary-dark);
+    border-color: var(--color-border-dark);
   }
 
   .drop-zone:hover {
-    border-color: #0366d6;
-    background: #f6f8fa;
+    border-color: var(--color-primary);
+    background: var(--color-bg-secondary);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  :global(.dark) .drop-zone:hover {
+    background: var(--color-bg-secondary-dark);
+    border-color: var(--color-primary-light);
   }
 
   .drop-zone.dragging {
     border-color: #28a745;
     background: #f0fff4;
+  }
+
+  :global(.dark) .drop-zone.dragging {
+    background: rgba(40, 167, 69, 0.1);
   }
 
   .drop-content {
@@ -454,19 +501,34 @@
   .drop-text {
     font-size: 1.25rem;
     font-weight: 500;
-    color: #24292e;
+    color: var(--color-text);
     margin: 0 0 0.5rem 0;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .drop-text {
+    color: var(--color-text-dark);
   }
 
   .drop-hint {
-    color: #586069;
+    color: var(--color-text-muted);
     margin: 0 0 0.5rem 0;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .drop-hint {
+    color: var(--color-text-subtle-dark);
   }
 
   .drop-formats {
     font-size: 0.85rem;
-    color: #6a737d;
+    color: var(--color-text-subtle);
     margin: 0;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .drop-formats {
+    color: var(--color-text-subtle-dark);
   }
 
   .uploads-section {
@@ -483,21 +545,37 @@
   .uploads-header h2 {
     margin: 0;
     font-size: 1.25rem;
-    color: #24292e;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .uploads-header h2 {
+    color: var(--color-text-dark);
   }
 
   .clear-btn {
     padding: 0.4rem 0.8rem;
-    background: #f6f8fa;
-    border: 1px solid #d1d5da;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     font-size: 0.85rem;
     cursor: pointer;
-    color: #586069;
+    color: var(--color-text-muted);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
+  :global(.dark) .clear-btn {
+    background: var(--color-bg-secondary-dark);
+    color: var(--color-text-subtle-dark);
+    border-color: var(--color-border-dark);
   }
 
   .clear-btn:hover {
     background: #e1e4e8;
+  }
+
+  :global(.dark) .clear-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .uploads-list {
@@ -507,10 +585,16 @@
   }
 
   .upload-item {
-    background: white;
-    border: 1px solid #e1e4e8;
+    background: var(--mobile-menu-bg);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     padding: 1rem;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  :global(.dark) .upload-item {
+    background: var(--color-bg-tertiary-dark);
+    border-color: var(--color-border-dark);
   }
 
   .upload-item.success {
@@ -530,7 +614,12 @@
 
   .upload-name {
     font-weight: 500;
-    color: #24292e;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .upload-name {
+    color: var(--color-text-dark);
   }
 
   .upload-status {
@@ -561,16 +650,26 @@
   }
 
   .url-display {
-    background: #f6f8fa;
+    background: var(--color-bg-secondary);
     padding: 0.5rem;
     border-radius: 4px;
     overflow-x: auto;
+    transition: background-color 0.3s ease;
+  }
+
+  :global(.dark) .url-display {
+    background: var(--color-bg-secondary-dark);
   }
 
   .url-display code {
     font-size: 0.8rem;
-    color: #24292e;
+    color: var(--color-text);
     word-break: break-all;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .url-display code {
+    color: var(--color-text-dark);
   }
 
   .copy-buttons {
@@ -581,17 +680,25 @@
 
   .copy-btn {
     padding: 0.4rem 0.8rem;
-    background: #0366d6;
+    background: var(--color-primary);
     color: white;
     border: none;
     border-radius: 4px;
     font-size: 0.85rem;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background-color 0.3s ease;
+  }
+
+  :global(.dark) .copy-btn {
+    background: var(--color-primary-light);
   }
 
   .copy-btn:hover {
     background: #0256cc;
+  }
+
+  :global(.dark) .copy-btn:hover {
+    background: #0366d6;
   }
 
   .copy-btn.small {
@@ -602,10 +709,15 @@
   /* Gallery Section */
   .gallery-section {
     margin-top: 2rem;
-    background: white;
+    background: var(--mobile-menu-bg);
     border-radius: 8px;
     padding: 1.5rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease;
+  }
+
+  :global(.dark) .gallery-section {
+    background: var(--color-bg-tertiary-dark);
   }
 
   .gallery-header {
@@ -620,14 +732,24 @@
   .gallery-title h2 {
     margin: 0;
     font-size: 1.25rem;
-    color: #24292e;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .gallery-title h2 {
+    color: var(--color-text-dark);
   }
 
   .gallery-subtitle {
     margin: 0.25rem 0 0 0;
     font-size: 0.85rem;
-    color: #586069;
+    color: var(--color-text-muted);
     font-style: italic;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .gallery-subtitle {
+    color: var(--color-text-subtle-dark);
   }
 
   .gallery-controls {
@@ -638,26 +760,48 @@
 
   .gallery-filter {
     padding: 0.4rem 0.8rem;
-    border: 1px solid #d1d5da;
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     font-size: 0.85rem;
     min-width: 180px;
+    background: var(--mobile-menu-bg);
+    color: var(--color-text);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
+  :global(.dark) .gallery-filter {
+    background: var(--color-bg-tertiary-dark);
+    color: var(--color-text-dark);
+    border-color: var(--color-border-dark);
   }
 
   .filter-btn,
   .refresh-btn {
     padding: 0.4rem 0.8rem;
-    background: #f6f8fa;
-    border: 1px solid #d1d5da;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     font-size: 0.85rem;
     cursor: pointer;
-    color: #24292e;
+    color: var(--color-text);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
+  :global(.dark) .filter-btn,
+  :global(.dark) .refresh-btn {
+    background: var(--color-bg-secondary-dark);
+    color: var(--color-text-dark);
+    border-color: var(--color-border-dark);
   }
 
   .filter-btn:hover,
   .refresh-btn:hover {
     background: #e1e4e8;
+  }
+
+  :global(.dark) .filter-btn:hover,
+  :global(.dark) .refresh-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
   }
 
   .gallery-error {
@@ -671,8 +815,14 @@
   .gallery-loading,
   .gallery-empty {
     text-align: center;
-    color: #586069;
+    color: var(--color-text-muted);
     padding: 2rem;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .gallery-loading,
+  :global(.dark) .gallery-empty {
+    color: var(--color-text-subtle-dark);
   }
 
   .gallery-grid {
@@ -682,10 +832,16 @@
   }
 
   .gallery-item {
-    border: 1px solid #e1e4e8;
+    border: 1px solid var(--color-border);
     border-radius: 6px;
     overflow: hidden;
-    background: #f6f8fa;
+    background: var(--color-bg-secondary);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  :global(.dark) .gallery-item {
+    background: var(--color-bg-secondary-dark);
+    border-color: var(--color-border-dark);
   }
 
   .gallery-image-container {
@@ -693,8 +849,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #fff;
+    background: var(--mobile-menu-bg);
     overflow: hidden;
+    transition: background-color 0.3s ease;
+  }
+
+  :global(.dark) .gallery-image-container {
+    background: var(--color-bg-tertiary-dark);
   }
 
   .gallery-image-container img {
@@ -705,21 +866,36 @@
 
   .gallery-item-info {
     padding: 0.5rem;
-    border-top: 1px solid #e1e4e8;
+    border-top: 1px solid var(--color-border);
+    transition: border-color 0.3s ease;
+  }
+
+  :global(.dark) .gallery-item-info {
+    border-color: var(--color-border-dark);
   }
 
   .gallery-item-name {
     display: block;
     font-size: 0.75rem;
-    color: #24292e;
+    color: var(--color-text);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .gallery-item-name {
+    color: var(--color-text-dark);
   }
 
   .gallery-item-size {
     font-size: 0.7rem;
-    color: #586069;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .gallery-item-size {
+    color: var(--color-text-subtle-dark);
   }
 
   .gallery-item-actions {
@@ -736,16 +912,25 @@
 
   .load-more-btn {
     padding: 0.5rem 1.5rem;
-    background: #0366d6;
+    background: var(--color-primary);
     color: white;
     border: none;
     border-radius: 4px;
     font-size: 0.9rem;
     cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  :global(.dark) .load-more-btn {
+    background: var(--color-primary-light);
   }
 
   .load-more-btn:hover:not(:disabled) {
     background: #0256cc;
+  }
+
+  :global(.dark) .load-more-btn:hover:not(:disabled) {
+    background: #0366d6;
   }
 
   .load-more-btn:disabled {
