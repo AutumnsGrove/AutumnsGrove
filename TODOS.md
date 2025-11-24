@@ -1,6 +1,6 @@
 # TODOs for AutumnsGrove
 
-> **Last Updated:** November 20, 2025 - TODOS cleanup and reorganization
+> **Last Updated:** November 24, 2025 - Updated with recent completions
 
 ---
 
@@ -52,16 +52,16 @@
 - [x] Triple-click avatar to refresh (5-min rate limit, logged to console)
 - [x] D1 database initialized and synced (10 repos, 342 commits)
 
-### Git Dashboard - UI Improvements (Nov 20, 2024)
+### Git Dashboard - UI Improvements
 - [x] Shrunk user info card to compact horizontal layout
 - [x] Changed time chart to 12-hour format with AM/PM
 - [x] Added repository descriptions to Top Repos
 - [x] Added source code link and "Stats analyzed with Claude AI" footer
 - [x] Removed public refresh button (security)
 - [x] Redesigned recent commits with scrollable container
-- [x] Created Heatmap component (needs debugging)
+- [x] Heatmap component debugged and working
 
-### Dashboard Data Expansion (Nov 20, 2025)
+### Dashboard Data Expansion
 - [x] Task A: Time range selector UI (All Time / 6 Months / 30 Days)
 - [x] Task B: Date filtering in stats API with `since` parameter
 - [x] Lucide icons throughout dashboard (stats cards, section headers, footer)
@@ -71,11 +71,45 @@
 - [x] Claude Haiku 4.5 integration for AI analysis
 - [x] TODO parsing from code comments and TODOS.md files
 
-### Image Hosting (Nov 20, 2024)
+### Image Hosting
 - [x] R2 bucket created: `autumnsgrove-images`
 - [x] Custom domain connected: `cdn.autumnsgrove.com`
 - [x] Upload helper script created: `scripts/upload-image.sh`
 - [x] Documentation created: `ClaudeUsage/image_hosting.md`
+
+### Multi-Image Gallery Component ✅
+- [x] Create `src/lib/components/ImageGallery.svelte`
+- [x] Navigation arrows with hover states
+- [x] Progress indicator and dots
+- [x] Caption display below gallery
+- [x] Keyboard and touch support
+- [x] Dark mode styling
+- [x] Lightbox integration with ZoomableImage
+
+### Admin Panel (Nov 2025)
+- [x] Admin dashboard at `/admin` with overview stats
+- [x] Blog management at `/admin/blog`
+- [x] Recipe management at `/admin/recipes`
+- [x] Image gallery at `/admin/images` (CDN browser)
+- [x] System console at `/admin/logs` with real-time log streaming
+- [x] Analytics page at `/admin/analytics`
+- [x] Settings page at `/admin/settings`
+- [x] Theme-responsive styling for all admin pages
+- [x] Authentication with logged-in indicator
+
+### Code Quality Improvements (Nov 2025)
+- [x] GitHub-style code blocks with copy button and language labels
+- [x] Markdown renderer updated for marked.js API compatibility
+- [x] TOC floating button fixed (hidden on tablet/desktop when sidebar visible)
+- [x] Duplicate gutter rendering resolved in tablet mode
+- [x] Slug normalization for lowercase kebab-case URLs
+
+### Security & Performance (Nov 2025)
+- [x] Rate limiting on API endpoints (dashboard, auth, contributions)
+- [x] Comprehensive security improvements for sync worker
+- [x] SQL parameter overflow prevention with chunked batching
+- [x] Authentication added to image API endpoints
+- [x] Security documentation completed
 
 ---
 
@@ -101,62 +135,18 @@
 
 ---
 
-### HIGH PRIORITY: Admin Login
-I still cannot login. TO my own Admin page. I am the only one added to the Auth account storage key. Wtf.
-
-### MEDIUM PRIORITY: Dashboard Data Expansion
-
-**Goal:** Show stats from ALL repos with time range filtering
-
-**Current state:** Time range filtering implemented! Fetches 15 most recently updated repos, 100 commits each.
-
----
+### LOW PRIORITY: Dashboard Data Expansion
 
 #### Task C: Paginate to Fetch All Repos (can defer)
 - [ ] Use GraphQL cursor pagination (`after: $cursor`, `hasNextPage`)
 - [ ] May need multiple API calls for full repo coverage
 - [ ] Consider background sync to D1 for performance
 
----
-
-### HIGH PRIORITY: Multi-Image Gallery Component
-
-**Goal:** Create a reusable image gallery component similar to The Verge's implementation
-
-**Features:**
-- Left/right circular navigation buttons
-- Progress indicator showing current/total (e.g., "1/9")
-- Progress dots/bars at bottom
-- Caption support below images
-- Keyboard navigation (arrow keys)
-- Dark mode support
-- Responsive design
-
-**Implementation:**
-- [x] Create `src/lib/components/ImageGallery.svelte`
-- [x] Navigation arrows with hover states
-- [x] Progress indicator and dots
-- [x] Caption display below gallery
-- [x] Keyboard and touch support
-- [x] Dark mode styling
-
-**Usage Example:**
-```svelte
-<ImageGallery
-  images={[
-    { url: 'https://cdn.autumnsgrove.com/...', alt: 'Description', caption: 'Photo caption here' },
-    { url: '...', alt: '...', caption: '...' }
-  ]}
-/>
-```
+**Current state:** Fetches 15 most recently updated repos, 100 commits each. Time range filtering works.
 
 ---
 
-### MEDIUM PRIORITY: Dashboard Visualizations
-
-**Goal:** Add advanced visualizations to make the dashboard more informative
-
----
+### LOW PRIORITY: Dashboard Visualizations
 
 #### Project Comparison Charts
 
@@ -175,63 +165,27 @@ I still cannot login. TO my own Admin page. I am the only one added to the Auth 
 Commits:     ████████ AutumnsGrove (150)
              ████ BaseProject (80)
              ██ Sounds (40)
-
-Additions:   ██████████ AutumnsGrove (5000)
-             ████ BaseProject (2000)
-             ██ Sounds (800)
 ```
 
 **Radar/Spider Chart:**
 - Axes: Commits, Additions, Deletions, Recent Activity, TODO Progress
 - Each repo is a different colored polygon
-- Shows which projects are most "complete" or active
 
 **Activity Timeline:**
-- Line chart with one line per repo
-- X-axis: time (weeks/months)
-- Y-axis: commit count
-- See which projects had bursts of activity
-
-**Data needed:**
-- Use existing `/api/git/stats/AutumnsGrove?limit=50` to get all repos
-- Then fetch individual stats or use the D1 historical data
+- Line chart with one line per repo showing commit frequency over time
 
 ---
 
-### LOW PRIORITY: Dashboard Enhancements
+### LOW PRIORITY: UI Polish
 
-#### Heatmap Component (Backlog)
-- [x] Debug existing component - fixed Svelte 5 reactivity issue with `$derived`
-  - Changed from destructured props to `const props = $props()` with derived accessors
-  - Updated `generateDateGrid` to accept `days` as parameter
-- Component exists at `src/routes/dashboard/Heatmap.svelte`
-- API works: `/api/git/contributions/[username]` returns data
-- Grid displays 7 rows (days) × 52 columns (weeks)
-
-#### UI Improvements
-- [ ] Layout adjustments
-- [ ] Color scheme tweaks
-- [ ] Mobile responsiveness improvements
+- [ ] Mobile responsiveness improvements for charts
 - [ ] Loading states and animations
-- [x] Add icons throughout (navigation, stats cards, sections) - Done with Lucide!
-
----
-
-### LOW PRIORITY: Security & Performance
-
-- [ ] Add rate limiting to API endpoints (use Cloudflare's built-in)
-- [ ] Input validation hardening
 - [ ] Lazy-load Chart.js (reduce initial bundle size)
-- [ ] Mobile optimization for charts
 - [ ] Add error boundaries for graceful failures
 
 ---
 
 ## 💡 Future Ideas & Enhancements
-
-### Icons
-- **[Lucide](https://lucide.dev/)**: Icon library with excellent Svelte integration
-- Clean, consistent icon set for UI elements
 
 ### UI & Styling
 - **[shadcn-svelte](https://github.com/huntabyte/shadcn-svelte)**: Pre-built accessible components
@@ -240,10 +194,10 @@ Additions:   ██████████ AutumnsGrove (5000)
 ### Image Optimization
 - **[@sveltejs/enhanced-img](https://svelte.dev/docs/kit/images#sveltejs-enhanced-img)**: Built-in SvelteKit image optimization
 
-### User Authentication (Far Future)
-- **[Better Auth](https://www.better-auth.com/)**: Modern auth library
-- **[Supabase SSR](https://github.com/supabase/ssr)**: Supabase auth with SSR support
-- Features: User login, comments on posts, likes/upvotes
+### User Authentication Expansion (Far Future)
+- Public commenting on posts
+- User likes/upvotes system
+- OAuth integration (GitHub, Google)
 
 ### Inspiration Websites
 - **https://マリウス.com/collection/make/**: Simple hacker-like aesthetic, great header, nice image handling
@@ -267,6 +221,7 @@ npx wrangler pages dev -- npm run dev
 
 ### Key Files
 - **Dashboard page:** `src/routes/dashboard/+page.svelte`
+- **Admin panel:** `src/routes/admin/`
 - **GitHub utilities:** `src/lib/utils/github.js`
 - **API routes:** `src/routes/api/git/`
 - **D1 schema:** `src/lib/db/schema.sql`
@@ -296,21 +251,16 @@ npx wrangler pages dev -- npm run dev
 
 When you return to work on this project:
 
-1. **Deploy current changes:**
-   ```bash
-   git push origin main
-   ```
-
-2. **Test the deployed dashboard** at https://autumnsgrove.com/dashboard
-   - Test time range selector (All Time / 6 Months / 30 Days)
-   - Verify icons display correctly
-   - Check dark mode compatibility
-
-3. **Pick a task from remaining items:**
+1. **Pick a task from remaining items:**
+   - RSS Feed implementation (medium priority)
    - Project Comparison Charts (compare repos side-by-side)
-   - Task C: Repo pagination (if more coverage needed)
    - UI polish (loading states, animations, mobile tweaks)
+
+2. **Test recent features:**
+   - Admin panel at `/admin` - all sections working
+   - System console logs streaming
+   - Code block copy buttons
 
 ---
 
-*Last updated: November 2025*
+*Last updated: November 24, 2025*
