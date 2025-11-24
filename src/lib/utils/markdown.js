@@ -48,6 +48,27 @@ const contactModules = import.meta.glob("../../../UserContent/Contact/*.md", {
   import: "default",
 });
 
+// Site config
+const siteConfigModule = import.meta.glob("../../../UserContent/site-config.json", {
+  eager: true,
+});
+
+/**
+ * Get the site configuration
+ * @returns {Object} Site configuration object
+ */
+export function getSiteConfig() {
+  const entry = Object.entries(siteConfigModule)[0];
+  if (entry) {
+    return entry[1].default || entry[1];
+  }
+  return {
+    owner: { name: "Admin", email: "" },
+    site: { title: "The Grove", description: "", copyright: "AutumnsGrove" },
+    social: {}
+  };
+}
+
 // Load recipe metadata JSON files (step icons, etc.)
 const recipeMetadataModules = import.meta.glob(
   "../../../UserContent/Recipes/*/gutter/recipe.json",

@@ -1,0 +1,15 @@
+{
+  "owner": {
+    "name": "Autumn",
+    "email": "autumnbrown23@pm.me"
+  },
+  "site": {
+    "title": "The Grove",
+    "description": "Personal blog, recipes, and projects by Autumn",
+    "copyright": "AutumnsGrove"
+  },
+  "social": {
+    "github": "https://github.com/AutumnsGrove",
+    "email": "autumnbrown23@pm.me"
+  }
+}

@@ -24,7 +24,7 @@
 <div class="dashboard">
   <header class="dashboard-header">
     <h1>Dashboard</h1>
-    <p class="welcome">Welcome back, {data.user.username}!</p>
+    <p class="welcome">Welcome back, {data.siteConfig?.owner?.name || 'Admin'}!</p>
   </header>
 
   <div class="stats-grid">
@@ -79,6 +79,10 @@
       <a href="/admin/blog" class="action-card">
         <span class="action-icon">&#x1F4DD;</span>
         <span class="action-label">Manage Blog Posts</span>
+      </a>
+      <a href="/admin/recipes" class="action-card">
+        <span class="action-icon">&#x1F373;</span>
+        <span class="action-label">Manage Recipes</span>
       </a>
       <a href="/admin/images" class="action-card">
         <span class="action-icon">&#x1F4F7;</span>
