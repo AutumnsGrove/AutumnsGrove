@@ -132,8 +132,8 @@
 		z-index: 1000;
 	}
 
-	/* Show on mobile and tablet (when desktop TOC is hidden) */
-	@media (max-width: 1199px) {
+	/* Show only on mobile (tablet and desktop have sidebar TOC) */
+	@media (max-width: 768px) {
 		.mobile-toc-wrapper {
 			display: block;
 		}
