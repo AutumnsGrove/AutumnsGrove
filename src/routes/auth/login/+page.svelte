@@ -129,6 +129,7 @@
           required
           disabled={loading}
           autocomplete="email"
+          autocorrect="on"
         />
         <button type="submit" class="login-btn" disabled={loading}>
           {#if loading}
