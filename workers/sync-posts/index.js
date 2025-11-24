@@ -191,6 +191,18 @@ async function handleSync(request, env, corsHeaders) {
     });
   }
 
+  // Validate batch size to prevent SQL bind parameter limit issues
+  // D1/SQLite supports up to 999 bind parameters, but we set a conservative limit
+  const MAX_POSTS_PER_SYNC = 500;
+  if (posts.length > MAX_POSTS_PER_SYNC) {
+    return new Response(JSON.stringify({
+      error: `Too many posts in single sync request. Maximum: ${MAX_POSTS_PER_SYNC}, received: ${posts.length}`
+    }), {
+      status: 413,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+
   // Validate all posts before processing
   const MAX_CONTENT_SIZE = 5 * 1024 * 1024; // 5MB limit per post
   const MAX_TITLE_LENGTH = 500;

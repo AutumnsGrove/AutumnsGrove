@@ -73,9 +73,12 @@ jobs:
           console.log(`Processed: ${file} -> ${slug}`);
         }
 
-        // Output posts as JSON for the next step
-        console.log(`::set-output name=posts::${JSON.stringify(posts)}`);
-        console.log(`::set-output name=post-count::${posts.length}`);
+        // Output posts as JSON for the next step using modern GitHub Actions syntax
+        // https://github.blog/changelog/2022-10-11-github-actions-deprecating-save-state-and-set-output-commands/
+        fs.appendFileSync(process.env.GITHUB_OUTPUT, `posts=${JSON.stringify(posts)}\n`);
+        fs.appendFileSync(process.env.GITHUB_OUTPUT, `post-count=${posts.length}\n`);
+
+        console.log(`Total posts processed: ${posts.length}`);
         EOF
         
     - name: Sync posts to CloudFlare D1
