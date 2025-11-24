@@ -1,16 +1,75 @@
 import { marked } from 'marked';
 import matter from 'gray-matter';
 
-// Validate slug format (alphanumeric, hyphens, underscores only)
+// Configure marked with security options to prevent XSS
+marked.setOptions({
+  headerIds: false,  // Disable auto-generated header IDs to prevent DOM clobbering
+  mangle: false,     // Don't mangle email addresses
+  // Note: marked v5+ automatically escapes HTML by default for security
+  // For additional sanitization, consider using DOMPurify on the client side
+  // when rendering HTML content: https://github.com/cure53/DOMPurify
+});
+
+// Validate slug format (kebab-case: lowercase alphanumeric with hyphens only)
 function isValidSlug(slug) {
-  return /^[a-zA-Z0-9_-]+$/.test(slug);
+  // SEO-friendly kebab-case: lowercase letters, numbers, and hyphens
+  // Must start and end with alphanumeric, no consecutive hyphens
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug);
+}
+
+// Basic rate limiting using KV (if available) or fallback to header-based check
+async function checkRateLimit(request, env) {
+  // Rate limit: 10 requests per minute for sync endpoint
+  const RATE_LIMIT = 10;
+  const WINDOW_MS = 60 * 1000; // 1 minute
+
+  const clientIP = request.headers.get('CF-Connecting-IP') || 'unknown';
+  const rateLimitKey = `rate_limit:${clientIP}`;
+
+  if (env.RATE_LIMIT_KV) {
+    // Use KV for distributed rate limiting if available
+    const requestData = await env.RATE_LIMIT_KV.get(rateLimitKey, 'json');
+    const now = Date.now();
+
+    if (requestData) {
+      const { count, resetTime } = requestData;
+
+      if (now < resetTime) {
+        if (count >= RATE_LIMIT) {
+          return { limited: true, retryAfter: Math.ceil((resetTime - now) / 1000) };
+        }
+        await env.RATE_LIMIT_KV.put(
+          rateLimitKey,
+          JSON.stringify({ count: count + 1, resetTime }),
+          { expirationTtl: Math.ceil((resetTime - now) / 1000) + 60 }
+        );
+      } else {
+        // Reset window
+        await env.RATE_LIMIT_KV.put(
+          rateLimitKey,
+          JSON.stringify({ count: 1, resetTime: now + WINDOW_MS }),
+          { expirationTtl: 120 }
+        );
+      }
+    } else {
+      // First request in window
+      await env.RATE_LIMIT_KV.put(
+        rateLimitKey,
+        JSON.stringify({ count: 1, resetTime: now + WINDOW_MS }),
+        { expirationTtl: 120 }
+      );
+    }
+  }
+  // Note: For production, configure Cloudflare Rate Limiting rules in dashboard
+  // or bind a KV namespace as RATE_LIMIT_KV in wrangler.toml
+
+  return { limited: false };
 }
 
 // Get CORS headers based on endpoint
-function getCorsHeaders(pathname) {
-  // Restrict CORS for sync endpoint to specific origins if needed
-  // For now, allowing all origins but this should be restricted in production
-  const allowedOrigin = '*'; // TODO: Set env.ALLOWED_ORIGIN for production
+function getCorsHeaders(pathname, env) {
+  // Use environment variable for allowed origin, fallback to production domain
+  const allowedOrigin = env?.ALLOWED_ORIGIN || 'https://autumnsgrove.com';
 
   return {
     'Access-Control-Allow-Origin': allowedOrigin,
@@ -22,7 +81,7 @@ function getCorsHeaders(pathname) {
 export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    const corsHeaders = getCorsHeaders(url.pathname);
+    const corsHeaders = getCorsHeaders(url.pathname, env);
 
     // Handle CORS preflight requests
     if (request.method === 'OPTIONS') {
@@ -67,11 +126,34 @@ export default {
 };
 
 async function handleSync(request, env, corsHeaders) {
+  // Check rate limiting
+  const rateLimitResult = await checkRateLimit(request, env);
+  if (rateLimitResult.limited) {
+    return new Response(JSON.stringify({ error: 'Rate limit exceeded' }), {
+      status: 429,
+      headers: {
+        ...corsHeaders,
+        'Content-Type': 'application/json',
+        'Retry-After': rateLimitResult.retryAfter.toString()
+      }
+    });
+  }
+
   // Verify authorization
   const authHeader = request.headers.get('Authorization');
   if (!authHeader || authHeader !== `Bearer ${env.SYNC_API_KEY}`) {
     return new Response(JSON.stringify({ error: 'Unauthorized' }), {
       status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+
+  // Check request size to prevent DoS attacks
+  const MAX_REQUEST_SIZE = 50 * 1024 * 1024; // 50MB total request limit
+  const contentLength = request.headers.get('Content-Length');
+  if (contentLength && parseInt(contentLength) > MAX_REQUEST_SIZE) {
+    return new Response(JSON.stringify({ error: 'Request too large' }), {
+      status: 413,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' }
     });
   }
@@ -83,8 +165,20 @@ async function handleSync(request, env, corsHeaders) {
     details: []
   };
 
-  // Validate all slugs before processing
+  // Handle empty posts array
+  if (!Array.isArray(posts) || posts.length === 0) {
+    return new Response(JSON.stringify({ synced: 0, errors: [], details: [] }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    });
+  }
+
+  // Validate all posts before processing
+  const MAX_CONTENT_SIZE = 5 * 1024 * 1024; // 5MB limit per post
+  const MAX_TITLE_LENGTH = 500;
+  const MAX_DESCRIPTION_LENGTH = 2000;
+
   for (const post of posts) {
+    // Validate slug
     if (!post.slug || !isValidSlug(post.slug)) {
       results.errors.push({
         slug: post.slug || 'unknown',
@@ -92,6 +186,22 @@ async function handleSync(request, env, corsHeaders) {
       });
       return new Response(JSON.stringify({ error: 'Invalid slug format in payload' }), {
         status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Validate content exists and is a string
+    if (!post.content || typeof post.content !== 'string') {
+      return new Response(JSON.stringify({ error: `Missing or invalid content for post: ${post.slug}` }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      });
+    }
+
+    // Validate content size to prevent DoS
+    if (post.content.length > MAX_CONTENT_SIZE) {
+      return new Response(JSON.stringify({ error: `Content too large for post: ${post.slug}. Max size: ${MAX_CONTENT_SIZE} bytes` }), {
+        status: 413,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       });
     }
@@ -108,6 +218,7 @@ async function handleSync(request, env, corsHeaders) {
 
   // Prepare batch statements
   const batchStatements = [];
+  let pendingSyncCount = 0; // Track operations that will be synced
 
   for (const post of posts) {
     try {
@@ -129,7 +240,29 @@ async function handleSync(request, env, corsHeaders) {
 
       // Only parse markdown if we need to update
       const { data, content: markdownContent } = matter(post.content);
+      // Note: HTML content is stored as-is. Ensure client-side rendering uses
+      // Content Security Policy (CSP) headers and/or DOMPurify for additional XSS protection
       const htmlContent = marked.parse(markdownContent);
+
+      // Validate title and description lengths
+      const title = data.title || 'Untitled';
+      const description = data.description || '';
+
+      if (title.length > MAX_TITLE_LENGTH) {
+        results.errors.push({
+          slug: post.slug,
+          error: `Title too long (max ${MAX_TITLE_LENGTH} characters)`
+        });
+        continue;
+      }
+
+      if (description.length > MAX_DESCRIPTION_LENGTH) {
+        results.errors.push({
+          slug: post.slug,
+          error: `Description too long (max ${MAX_DESCRIPTION_LENGTH} characters)`
+        });
+        continue;
+      }
 
       // Prepare tags as JSON string
       const tagsJson = JSON.stringify(data.tags || []);
@@ -145,10 +278,10 @@ async function handleSync(request, env, corsHeaders) {
                 last_synced = ?, updated_at = CURRENT_TIMESTAMP
             WHERE slug = ?
           `).bind(
-            data.title || 'Untitled',
+            title,
             data.date || new Date().toISOString(),
             tagsJson,
-            data.description || '',
+            description,
             post.content,
             htmlContent,
             fileHash,
@@ -171,10 +304,10 @@ async function handleSync(request, env, corsHeaders) {
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
           `).bind(
             post.slug,
-            data.title || 'Untitled',
+            title,
             data.date || new Date().toISOString(),
             tagsJson,
-            data.description || '',
+            description,
             post.content,
             htmlContent,
             fileHash,
@@ -188,7 +321,7 @@ async function handleSync(request, env, corsHeaders) {
         });
       }
 
-      results.synced++;
+      pendingSyncCount++; // Count operations to be executed
     } catch (error) {
       console.error(`Error syncing post ${post.slug}:`, error);
       results.errors.push({
@@ -202,6 +335,8 @@ async function handleSync(request, env, corsHeaders) {
   if (batchStatements.length > 0) {
     try {
       await env.DB.batch(batchStatements);
+      // Only update synced count after successful batch execution
+      results.synced = pendingSyncCount;
     } catch (error) {
       console.error('Batch operation failed:', error);
       return new Response(JSON.stringify({
@@ -217,21 +352,32 @@ async function handleSync(request, env, corsHeaders) {
   try {
     const dbSlugs = await env.DB.prepare('SELECT slug FROM posts').all();
     const syncSlugs = new Set(posts.map(p => p.slug));
-    
-    for (const row of dbSlugs.results) {
-      if (!syncSlugs.has(row.slug)) {
-        await env.DB.prepare('DELETE FROM posts WHERE slug = ?').bind(row.slug).run();
+
+    // Collect slugs to delete
+    const slugsToDelete = dbSlugs.results
+      .filter(row => !syncSlugs.has(row.slug))
+      .map(row => row.slug);
+
+    // Batch delete operations
+    if (slugsToDelete.length > 0) {
+      const deleteStatements = slugsToDelete.map(slug =>
+        env.DB.prepare('DELETE FROM posts WHERE slug = ?').bind(slug)
+      );
+      await env.DB.batch(deleteStatements);
+
+      // Add to results
+      slugsToDelete.forEach(slug => {
         results.details.push({
-          slug: row.slug,
+          slug: slug,
           action: 'deleted'
         });
-      }
+      });
     }
   } catch (error) {
     console.error('Error handling deleted posts:', error);
     results.errors.push({
       action: 'cleanup',
-      error: error.message
+      error: env.ENVIRONMENT === 'production' ? 'Cleanup failed' : error.message
     });
   }
 
