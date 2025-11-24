@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
+    "dev:wrangler": "wrangler pages dev -- vite dev",
     "build": "vite build",
     "preview": "vite preview"
   },

@@ -36,7 +36,6 @@
 	let commitsLimitReached = $state(false);
 	const MAX_PAGES = 10;
 	const DEFAULT_PER_PAGE = 20;
-	let sentinelElement = $state(null);
 
 	// Debounce timer for filter changes
 	let filterDebounceTimer = null;
@@ -115,7 +114,6 @@
 	// Track all timers for cleanup on unmount
 	let timerIds = new Set();
 	let abortController = null;
-	let commitsAbortController = null;
 	let isMounted = $state(false);
 
 	function scheduleTimeout(callback, delay) {
@@ -247,13 +245,19 @@
 
 			// Process repos response (optional)
 			if (reposResponse.ok) {
-				reposData = await reposResponse.json();
+				const reposResult = await reposResponse.json();
+				// Handle both array format and object format {repos: [], count: N}
+				reposData = reposResult.repos || reposResult;
 			}
 
 			// Process contributions response (optional)
 			if (contributionsResponse.ok) {
 				const contributionsResult = await contributionsResponse.json();
 				activityData = contributionsResult.activity || [];
+				console.log(`[Dashboard] Contributions received: ${activityData.length} activity days, total=${contributionsResult.total_contributions}, cached=${contributionsResult.cached}`);
+			} else {
+				console.warn(`[Dashboard] Contributions fetch failed: ${contributionsResponse.status} ${contributionsResponse.statusText}`);
+				activityData = [];
 			}
 
 			// Render charts after stats are loaded using microtask for better performance
@@ -411,21 +415,14 @@
 
 	// Fetch paginated commits
 	async function fetchCommits(page = 1, reset = false) {
-		// Guard against multiple simultaneous non-reset calls
-		if (commitsLoading && !reset) return;
+		// Prevent fetching if already loading
+		if (commitsLoading) return;
 		if (!reset && !commitsHasMore) return;
 		if (page > MAX_PAGES) {
 			commitsLimitReached = true;
 			commitsHasMore = false;
 			return;
 		}
-
-		// Abort any in-flight commits requests to prevent race conditions
-		if (commitsAbortController) {
-			commitsAbortController.abort();
-		}
-		commitsAbortController = new AbortController();
-		const signal = commitsAbortController.signal;
 
 		commitsLoading = true;
 
@@ -436,7 +433,7 @@
 				url += `&since=${encodeURIComponent(since)}`;
 			}
 
-			const response = await fetch(url, { signal });
+			const response = await fetch(url);
 			if (!response.ok) {
 				throw new Error('Failed to fetch commits');
 			}
@@ -454,53 +451,18 @@
 			commitsHasMore = data.has_more && data.page < MAX_PAGES;
 			commitsLimitReached = data.page >= MAX_PAGES && data.has_more;
 		} catch (e) {
-			if (e.name === 'AbortError') return;
 			console.error('Error fetching commits:', e);
 		} finally {
 			commitsLoading = false;
 		}
 	}
 
-	// Load more commits (called by IntersectionObserver)
+	// Load more commits (called by button click)
 	function loadMoreCommits() {
 		if (!commitsLoading && commitsHasMore && !commitsLimitReached) {
 			fetchCommits(commitsPage + 1);
 		}
 	}
-
-	// Set up IntersectionObserver for infinite scroll
-	let observer = null;
-
-	function setupIntersectionObserver() {
-		if (observer) {
-			observer.disconnect();
-		}
-
-		observer = new IntersectionObserver(
-			(entries) => {
-				if (entries[0].isIntersecting) {
-					loadMoreCommits();
-				}
-			},
-			{ threshold: 0.1 }
-		);
-
-		if (sentinelElement) {
-			observer.observe(sentinelElement);
-		}
-	}
-
-	// Watch sentinelElement changes
-	$effect(() => {
-		if (sentinelElement && isMounted) {
-			setupIntersectionObserver();
-			return () => {
-				if (observer) {
-					observer.disconnect();
-				}
-			};
-		}
-	});
 
 	$effect(() => {
 		// Use untrack() to prevent this effect from re-running when isMounted or other state changes.
@@ -524,9 +486,6 @@
 			if (abortController) {
 				abortController.abort();
 			}
-			if (commitsAbortController) {
-				commitsAbortController.abort();
-			}
 			// Clear all tracked timers
 			clearAllTimers();
 			// Clear auto-refresh timer
@@ -537,10 +496,6 @@
 			// Destroy chart instances
 			if (hoursChartInstance) hoursChartInstance.destroy();
 			if (daysChartInstance) daysChartInstance.destroy();
-			// Disconnect observer
-			if (observer) {
-				observer.disconnect();
-			}
 		};
 	});
 </script>
@@ -745,9 +700,16 @@
 							</div>
 						{/each}
 
+						<!-- Load More button -->
+						{#if commitsHasMore && !commitsLimitReached && !commitsLoading}
+							<button class="load-more-btn" onclick={loadMoreCommits}>
+								Load More Commits
+							</button>
+						{/if}
+
 						<!-- Loading indicator -->
 						{#if commitsLoading}
-							<div class="commits-loading">Loading more commits...</div>
+							<div class="commits-loading">Loading commits...</div>
 						{/if}
 
 						<!-- Limit reached message -->
@@ -755,13 +717,8 @@
 							<div class="commits-limit-reached">
 								You've hit the limit! There's more commits out there, but that's all you can see here.
 							</div>
-						{:else if !commitsHasMore && commits.length > 0}
+						{:else if !commitsHasMore && commits.length > 0 && !commitsLoading}
 							<div class="commits-end">No more commits to load.</div>
-						{/if}
-
-						<!-- Sentinel element for infinite scroll -->
-						{#if commitsHasMore && !commitsLimitReached}
-							<div bind:this={sentinelElement} class="commits-sentinel"></div>
 						{/if}
 					</div>
 				{:else if !commitsLoading}
@@ -1324,9 +1281,40 @@
 		color: var(--color-text-subtle-dark);
 	}
 
-	.commits-sentinel {
-		height: 20px;
+	.load-more-btn {
 		width: 100%;
+		padding: 0.875rem 1.5rem;
+		margin-top: 1rem;
+		background: linear-gradient(135deg, #2c5f2d 0%, #234d24 100%);
+		color: white;
+		border: none;
+		border-radius: 8px;
+		font-size: 0.95rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		box-shadow: 0 2px 4px rgba(44, 95, 45, 0.2);
+	}
+
+	.load-more-btn:hover {
+		background: linear-gradient(135deg, #234d24 0%, #1a3a1b 100%);
+		box-shadow: 0 4px 8px rgba(44, 95, 45, 0.3);
+		transform: translateY(-1px);
+	}
+
+	.load-more-btn:active {
+		transform: translateY(0);
+		box-shadow: 0 2px 4px rgba(44, 95, 45, 0.2);
+	}
+
+	:global(.dark) .load-more-btn {
+		background: linear-gradient(135deg, #5cb85f 0%, #4a9e4d 100%);
+		box-shadow: 0 2px 4px rgba(92, 184, 95, 0.3);
+	}
+
+	:global(.dark) .load-more-btn:hover {
+		background: linear-gradient(135deg, #4a9e4d 0%, #3d8540 100%);
+		box-shadow: 0 4px 8px rgba(92, 184, 95, 0.4);
 	}
 
 	.commit-item {
