@@ -33,17 +33,15 @@
 
 @media (min-width: 769px) and (max-width: 1199px) {
 	.content-layout.has-gutters {
-		grid-template-columns: 200px 1fr;
-		max-width: 1000px;
-	}
-
-	.content-layout .right-gutter-container {
-		display: none;
+		grid-template-columns: 200px 1fr 200px;
+		max-width: 1200px;
 	}
 
 	/* Hide mobile gutter content since left gutter container is visible */
-	.mobile-gutter-content {
-		display: none;
+	.mobile-gutter-content,
+	.mobile-gutter-inline {
+		display: none !important;
+		float: none;
 	}
 }
 
@@ -67,11 +65,12 @@
 
 .mobile-gutter-content {
 	display: block;
-	margin-bottom: 2rem;
+	margin: 0 auto 2rem auto;
 	padding: 1rem;
 	background: #f5f5f5;
 	border-radius: 8px;
 	transition: background-color 0.3s ease;
+	text-align: center;
 }
 
 .mobile-gutter-inline {
@@ -86,16 +85,17 @@
 	border-radius: 0;
 }
 
-/* On very small mobile, don't float - just display inline */
+/* On very small mobile, don't float - just display inline and centered */
 @media (max-width: 400px) {
 	.mobile-gutter-inline {
 		float: none;
 		clear: none;
 		max-width: none;
-		margin: 1rem 0 1.5rem 0;
+		margin: 1rem auto 1.5rem auto;
 		padding: 0.75rem;
 		background: #f8f8f8;
 		border-radius: 6px;
+		text-align: center;
 	}
 
 	.dark .mobile-gutter-inline {
