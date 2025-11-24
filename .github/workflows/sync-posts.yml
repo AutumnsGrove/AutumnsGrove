@@ -73,29 +73,28 @@ jobs:
           console.log(`Processed: ${file} -> ${slug}`);
         }
 
-        // Output posts as JSON for the next step using modern GitHub Actions syntax
-        // https://github.blog/changelog/2022-10-11-github-actions-deprecating-save-state-and-set-output-commands/
-        fs.appendFileSync(process.env.GITHUB_OUTPUT, `posts=${JSON.stringify(posts)}\n`);
+        // Write posts to a JSON file to avoid shell escaping issues
+        fs.writeFileSync('posts-data.json', JSON.stringify(posts));
+
+        // Output post count for the next step
         fs.appendFileSync(process.env.GITHUB_OUTPUT, `post-count=${posts.length}\n`);
 
         console.log(`Total posts processed: ${posts.length}`);
         EOF
-        
+
     - name: Sync posts to CloudFlare D1
       env:
         WORKER_URL: ${{ secrets.CLOUDFLARE_WORKER_URL }}
         SYNC_API_KEY: ${{ secrets.CLOUDFLARE_SYNC_API_KEY }}
       run: |
-        POSTS='${{ steps.process-posts.outputs.posts }}'
-        
         echo "Syncing ${{ steps.process-posts.outputs.post-count }} posts to CloudFlare D1..."
-        
-        # Call the CloudFlare Worker sync endpoint
+
+        # Call the CloudFlare Worker sync endpoint using the JSON file
         RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
           "$WORKER_URL/sync" \
           -H "Authorization: Bearer $SYNC_API_KEY" \
           -H "Content-Type: application/json" \
-          -d "$POSTS")
+          -d @posts-data.json)
         
         # Extract response body and status code
         HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
