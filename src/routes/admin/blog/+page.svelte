@@ -8,6 +8,27 @@
       day: 'numeric'
     });
   }
+
+  // Generate today's date in YYYY-MM-DD format
+  function getTodayDate() {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  // Create the new post URL with frontmatter template
+  function getNewPostUrl() {
+    const template = `---
+title: Your Post Title
+date: ${getTodayDate()}
+description: A brief description of your post
+tags:
+  - tag1
+  - tag2
+---
+
+Your content here...
+`;
+    return `https://github.com/AutumnsGrove/AutumnsGrove/new/main/UserContent/Posts?filename=New-Post.md&value=${encodeURIComponent(template)}`;
+  }
 </script>
 
 <div class="blog-admin">
@@ -17,7 +38,7 @@
       <p class="subtitle">{data.posts.length} posts</p>
     </div>
     <a
-      href="https://github.com/AutumnsGrove/AutumnsGrove/new/main/UserContent/Posts"
+      href={getNewPostUrl()}
       target="_blank"
       class="btn btn-primary"
     >
@@ -109,12 +130,22 @@
   .header-content h1 {
     margin: 0 0 0.25rem 0;
     font-size: 2rem;
-    color: #24292e;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .header-content h1 {
+    color: var(--color-text-dark);
   }
 
   .subtitle {
     margin: 0;
-    color: #586069;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .subtitle {
+    color: var(--color-text-subtle-dark);
   }
 
   .btn {
@@ -139,6 +170,12 @@
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  :global(.dark) .posts-table-container {
+    background: var(--color-bg-tertiary-dark);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
 
   .posts-table {
@@ -150,20 +187,37 @@
   .posts-table td {
     padding: 1rem;
     text-align: left;
-    border-bottom: 1px solid #e1e4e8;
+    border-bottom: 1px solid var(--color-border);
+    transition: border-color 0.3s ease;
+  }
+
+  :global(.dark) .posts-table th,
+  :global(.dark) .posts-table td {
+    border-bottom-color: var(--color-border-dark);
   }
 
   .posts-table th {
-    background: #f6f8fa;
+    background: var(--color-bg-secondary);
     font-weight: 600;
     font-size: 0.85rem;
-    color: #24292e;
+    color: var(--color-text);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  :global(.dark) .posts-table th {
+    background: var(--color-border-dark);
+    color: var(--color-text-dark);
   }
 
   .post-title {
     font-weight: 500;
-    color: #0366d6;
+    color: var(--color-primary);
     text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .post-title {
+    color: var(--color-primary-light);
   }
 
   .post-title:hover {
@@ -173,13 +227,23 @@
   .post-description {
     margin: 0.25rem 0 0 0;
     font-size: 0.85rem;
-    color: #586069;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .post-description {
+    color: var(--color-text-subtle-dark);
   }
 
   .date-cell {
     white-space: nowrap;
-    color: #586069;
+    color: var(--color-text-muted);
     font-size: 0.9rem;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .date-cell {
+    color: var(--color-text-subtle-dark);
   }
 
   .tags {
@@ -204,7 +268,12 @@
   }
 
   .no-tags {
-    color: #6a737d;
+    color: var(--color-text-subtle);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .no-tags {
+    color: var(--color-text-subtle-dark);
   }
 
   .actions-cell {
@@ -212,10 +281,15 @@
   }
 
   .action-link {
-    color: #0366d6;
+    color: var(--color-primary);
     text-decoration: none;
     font-size: 0.9rem;
     margin-right: 1rem;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .action-link {
+    color: var(--color-primary-light);
   }
 
   .action-link:hover {
@@ -224,35 +298,61 @@
 
   .empty-state {
     text-align: center;
-    color: #586069;
+    color: var(--color-text-muted);
     padding: 3rem 1rem;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .empty-state {
+    color: var(--color-text-subtle-dark);
   }
 
   .info-box {
     margin-top: 2rem;
-    background: #f6f8fa;
-    border: 1px solid #e1e4e8;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     padding: 1.5rem;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  :global(.dark) .info-box {
+    background: var(--color-bg-tertiary-dark);
+    border-color: var(--color-border-dark);
   }
 
   .info-box h3 {
     margin: 0 0 0.75rem 0;
     font-size: 1rem;
-    color: #24292e;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .info-box h3 {
+    color: var(--color-text-dark);
   }
 
   .info-box p {
     margin: 0 0 0.75rem 0;
-    color: #586069;
+    color: var(--color-text-muted);
     font-size: 0.9rem;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .info-box p {
+    color: var(--color-text-subtle-dark);
   }
 
   .info-box ul {
     margin: 0;
     padding-left: 1.25rem;
-    color: #586069;
+    color: var(--color-text-muted);
     font-size: 0.9rem;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .info-box ul {
+    color: var(--color-text-subtle-dark);
   }
 
   .info-box li {
@@ -260,10 +360,15 @@
   }
 
   .info-box code {
-    background: #e1e4e8;
+    background: var(--color-border);
     padding: 0.125rem 0.25rem;
     border-radius: 3px;
     font-size: 0.85em;
+    transition: background-color 0.3s ease;
+  }
+
+  :global(.dark) .info-box code {
+    background: var(--color-border-dark);
   }
 
   /* Mobile styles */

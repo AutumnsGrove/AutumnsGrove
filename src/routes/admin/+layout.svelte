@@ -83,7 +83,12 @@
   .admin-layout {
     display: flex;
     min-height: 100vh;
-    background: #f5f5f5;
+    background: var(--color-bg-secondary);
+    transition: background-color 0.3s ease;
+  }
+
+  :global(.dark) .admin-layout {
+    background: var(--color-bg-secondary-dark);
   }
 
   /* Mobile header - hidden on desktop */
@@ -94,12 +99,20 @@
     left: 0;
     right: 0;
     height: 56px;
-    background: #24292e;
-    color: white;
+    background: white;
+    color: var(--color-text);
     align-items: center;
     padding: 0 1rem;
     gap: 1rem;
     z-index: 1000;
+    border-bottom: 1px solid var(--color-border);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
+  :global(.dark) .mobile-header {
+    background: var(--color-bg-tertiary-dark);
+    color: var(--color-text-dark);
+    border-bottom-color: var(--color-border-dark);
   }
 
   .mobile-header h2 {
@@ -121,8 +134,13 @@
   .hamburger-line {
     width: 20px;
     height: 2px;
-    background: white;
+    background: var(--color-text);
     border-radius: 1px;
+    transition: background-color 0.3s ease;
+  }
+
+  :global(.dark) .hamburger-line {
+    background: var(--color-text-dark);
   }
 
   /* Sidebar overlay for mobile */
@@ -141,30 +159,48 @@
     display: none;
     background: none;
     border: none;
-    color: white;
+    color: var(--color-text);
     font-size: 1.5rem;
     cursor: pointer;
     padding: 0.25rem;
     line-height: 1;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .close-sidebar {
+    color: var(--color-text-dark);
   }
 
   .sidebar {
     width: 250px;
-    background: #24292e;
-    color: white;
+    background: white;
+    color: var(--color-text);
     display: flex;
     flex-direction: column;
     position: fixed;
     height: 100vh;
     z-index: 1002;
+    border-right: 1px solid var(--color-border);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
+  :global(.dark) .sidebar {
+    background: var(--color-bg-tertiary-dark);
+    color: var(--color-text-dark);
+    border-right-color: var(--color-border-dark);
   }
 
   .sidebar-header {
     padding: 1.5rem;
-    border-bottom: 1px solid #3d4450;
+    border-bottom: 1px solid var(--color-border);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: border-color 0.3s ease;
+  }
+
+  :global(.dark) .sidebar-header {
+    border-bottom-color: var(--color-border-dark);
   }
 
   .sidebar-header h2 {
@@ -184,13 +220,23 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 1.5rem;
-    color: #e1e4e8;
+    color: var(--color-text-muted);
     text-decoration: none;
-    transition: background 0.2s;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  :global(.dark) .nav-item {
+    color: var(--color-text-muted-dark);
   }
 
   .nav-item:hover {
-    background: #3d4450;
+    background: var(--color-bg-secondary);
+    color: var(--color-primary);
+  }
+
+  :global(.dark) .nav-item:hover {
+    background: var(--color-border-dark);
+    color: var(--color-primary-light);
   }
 
   .nav-icon {
@@ -199,7 +245,12 @@
 
   .sidebar-footer {
     padding: 1rem 1.5rem;
-    border-top: 1px solid #3d4450;
+    border-top: 1px solid var(--color-border);
+    transition: border-color 0.3s ease;
+  }
+
+  :global(.dark) .sidebar-footer {
+    border-top-color: var(--color-border-dark);
   }
 
   .user-info {
@@ -208,24 +259,40 @@
 
   .email {
     font-size: 0.85rem;
-    color: #e1e4e8;
+    color: var(--color-text-muted);
     word-break: break-all;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .email {
+    color: var(--color-text-muted-dark);
   }
 
   .logout-btn {
     display: block;
     text-align: center;
     padding: 0.5rem;
-    background: #3d4450;
-    color: #e1e4e8;
+    background: var(--color-bg-secondary);
+    color: var(--color-text-muted);
     text-decoration: none;
     border-radius: 4px;
     font-size: 0.85rem;
-    transition: background 0.2s;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  :global(.dark) .logout-btn {
+    background: var(--color-border-dark);
+    color: var(--color-text-muted-dark);
   }
 
   .logout-btn:hover {
-    background: #4a5568;
+    background: var(--color-border);
+    color: var(--color-text);
+  }
+
+  :global(.dark) .logout-btn:hover {
+    background: #444;
+    color: var(--color-text-dark);
   }
 
   .content {
