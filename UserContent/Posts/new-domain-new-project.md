@@ -11,6 +11,14 @@ tags:
 title: A new domain and a new Project
 type: Blog
 ---
+
+ ▄ .▄▄▄▄ .▄▄▌  ▄▄▌          ·▄▄▄▄▄▄  ▪  ▄▄▄ . ▐ ▄ ·▄▄▄▄  .▄▄ ·  ▄▄ 
+██▪▐█▀▄.▀·██•  ██•   ▄█▀▄   ▐▄▄ ▀▄ █·██ ▀▄.▀·•█▌▐███· ██ ▐█ ▀.  ██▌
+██▀▀█▐▀▀▪▄██ ▪ ██ ▪ ▐█▌.▐▌  █  ▪▐▀▀▄ ▐█·▐▀▀▪▄▐█▐▐▌▐█▪ ▐█▌▄▀▀▀█▄ ▐█·
+██▌▐▀▐█▄▄▌▐█▌ ▄▐█▌ ▄▐█▌.▐▌  ██ .▐█•█▌▐█▌▐█▄▄▌██▐█▌██. ██ ▐█▄▪▐█ .▀ 
+▀▀▀ · ▀▀▀ .▀▀▀ .▀▀▀  ▀█▄▀▪  ▀▀▀ .▀  ▀▀▀▀ ▀▀▀ ▀▀ █▪▀▀▀▀▀•  ▀▀▀▀   ▀ 
+
+
 Hello friends!!
 
 Apologies in the delays on posting. Been very busy working in the backend! If you joined the site a few days ago, please feel free to explore - everything should be functional. If not, feel free to reach out to me on my Contact page!
