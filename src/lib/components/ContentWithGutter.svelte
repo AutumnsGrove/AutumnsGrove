@@ -390,7 +390,11 @@
 	let processedContent = $derived(injectReferenceMarkers(content, overflowingAnchorKeys));
 </script>
 
-<div class="content-layout" class:has-gutters={hasGutters}>
+<div class="content-layout"
+     class:has-gutters={hasGutters}
+     class:has-left-gutter={hasLeftGutter}
+     class:has-right-gutter={hasRightGutter}
+     class:has-both-gutters={hasLeftGutter && hasRightGutter}>
 	<!-- Left Gutter - Comments/Photos/Emojis -->
 	{#if hasLeftGutter}
 		<div class="left-gutter-container desktop-only">
