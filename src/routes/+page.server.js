@@ -14,7 +14,6 @@ export function load() {
     title: page.title,
     description: page.description,
     hero: page.hero,
-    galleries: page.galleries,
     content: page.content,
     headers: page.headers,
     gutterContent: page.gutterContent,

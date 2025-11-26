@@ -1,6 +1,4 @@
 <script>
-	import { ImageGallery } from '$lib/components';
-
 	export let data;
 </script>
 
@@ -25,12 +23,6 @@
 	</div>
 {/if}
 
-{#each data.galleries as gallery}
-	<div class="gallery-section">
-		<h2>{gallery.title}</h2>
-		<ImageGallery images={gallery.images} />
-	</div>
-{/each}
 
 <style>
 	.hero {
@@ -120,24 +112,6 @@
 
 	:global(.dark) .intro :global(p) {
 		color: var(--color-text-muted-dark);
-	}
-
-	.gallery-section {
-		margin-top: 4.5rem;
-		max-width: 800px;
-		margin-left: auto;
-		margin-right: auto;
-	}
-
-	.gallery-section h2 {
-		color: var(--color-text);
-		margin-bottom: 1rem;
-		text-align: center;
-		transition: color 0.3s ease;
-	}
-
-	:global(.dark) .gallery-section h2 {
-		color: var(--color-text-dark);
 	}
 
 	@media (max-width: 768px) {
