@@ -1,5 +1,7 @@
 <script>
-	export let data;
+	import InternalsPostViewer from '$lib/components/InternalsPostViewer.svelte';
+
+	let { data } = $props();
 </script>
 
 <svelte:head>
@@ -21,6 +23,16 @@
 	<div class="intro">
 		{@html data.content}
 	</div>
+{/if}
+
+{#if data.latestPost}
+	<section class="latest-post-section">
+		<h2 class="section-title">Latest Post</h2>
+		<InternalsPostViewer
+			post={data.latestPost}
+			caption="From the blog"
+		/>
+	</section>
 {/if}
 
 
@@ -114,6 +126,25 @@
 		color: var(--color-text-muted-dark);
 	}
 
+	.latest-post-section {
+		max-width: 700px;
+		margin: 3rem auto 0;
+	}
+
+	.section-title {
+		font-size: 1.5rem;
+		color: var(--color-primary);
+		margin-bottom: 1.25rem;
+		padding-bottom: 0.5rem;
+		border-bottom: 2px solid #e0e0e0;
+		transition: color 0.3s ease, border-color 0.3s ease;
+	}
+
+	:global(.dark) .section-title {
+		color: var(--color-primary-light);
+		border-bottom-color: #333;
+	}
+
 	@media (max-width: 768px) {
 		h1 {
 			font-size: 2rem;
@@ -125,6 +156,14 @@
 
 		.subtitle {
 			font-size: 1rem;
+		}
+
+		.latest-post-section {
+			margin: 2rem 1rem 0;
+		}
+
+		.section-title {
+			font-size: 1.25rem;
 		}
 	}
 </style>

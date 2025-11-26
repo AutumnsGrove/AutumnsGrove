@@ -5,3 +5,4 @@ export { default as ImageGallery } from "./ImageGallery.svelte";
 export { default as IconLegend } from "./IconLegend.svelte";
 export { default as ZoomableImage } from "./ZoomableImage.svelte";
 export { default as LightboxCaption } from "./LightboxCaption.svelte";
+export { default as InternalsPostViewer } from "./InternalsPostViewer.svelte";
