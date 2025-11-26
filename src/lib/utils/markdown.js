@@ -306,6 +306,19 @@ export function getAllPosts() {
 }
 
 /**
+ * Get the latest (most recent) post with full content
+ * @returns {Object|null} The latest post object with content, or null if no posts exist
+ */
+export function getLatestPost() {
+  const posts = getAllPosts();
+  if (posts.length === 0) {
+    return null;
+  }
+  // Get the full post content for the most recent post
+  return getPostBySlug(posts[0].slug);
+}
+
+/**
  * Get all recipes from the recipes directory
  * @returns {Array} Array of recipe objects with metadata and slug
  */
