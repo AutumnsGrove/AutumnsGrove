@@ -96,7 +96,7 @@ async function sendEmail(email, code, apiKey) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "Autumns Grove <noreply@autumnsgrove.com>",
+      from: "Autumns Grove <noreply@grove.place>",
       to: [email],
       subject: "Your login code for Autumns Grove",
       html: `
