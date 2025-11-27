@@ -1,9 +1,34 @@
 import { json, error } from "@sveltejs/kit";
 
+/**
+ * DELETE endpoint for removing images from CDN (R2)
+ * Includes CSRF protection via origin/host header validation
+ */
 export async function DELETE({ request, platform, locals }) {
   // Authentication check
   if (!locals.user) {
     throw error(401, "Unauthorized");
+  }
+
+  // CSRF Protection: Validate origin header against host
+  const origin = request.headers.get("origin");
+  const host = request.headers.get("host");
+
+  if (origin) {
+    try {
+      const originUrl = new URL(origin);
+      // Allow localhost for development, otherwise validate host matches
+      const isLocalhost = originUrl.hostname === "localhost" || originUrl.hostname === "127.0.0.1";
+      const hostMatches = host && originUrl.host === host;
+
+      if (!isLocalhost && !hostMatches) {
+        console.warn(`CSRF violation: origin ${origin} does not match host ${host}`);
+        throw error(403, "Invalid origin");
+      }
+    } catch (err) {
+      if (err.status) throw err;
+      throw error(403, "Invalid origin header");
+    }
   }
 
   // Check for R2 binding
@@ -12,25 +37,30 @@ export async function DELETE({ request, platform, locals }) {
   }
 
   try {
-    const { key } = await request.json();
+    const body = await request.json();
+    const { key } = body;
 
     if (!key || typeof key !== "string") {
-      throw error(400, "No file key provided");
+      throw error(400, "Missing or invalid image key");
     }
 
-    // Sanitize key to prevent directory traversal
-    const sanitizedKey = key
-      .replace(/\.\./g, "")
-      .replace(/^\/+/, "");
+    // Comprehensive key sanitization to prevent directory traversal
+    let sanitizedKey = key
+      .replace(/\.\./g, "")           // Remove parent directory traversal
+      .replace(/^\/+/, "")            // Remove leading slashes
+      .replace(/\/\/+/g, "/")         // Remove consecutive slashes
+      .replace(/\\/g, "/")            // Normalize backslashes to forward slashes
+      .trim();
 
-    if (!sanitizedKey) {
-      throw error(400, "Invalid file key");
+    // Additional validation: ensure key doesn't contain dangerous patterns
+    if (sanitizedKey.includes("..") || sanitizedKey.startsWith("/") || !sanitizedKey) {
+      throw error(400, "Invalid image key format");
     }
 
-    // Check if file exists before deleting
-    const existingFile = await platform.env.IMAGES.head(sanitizedKey);
-    if (!existingFile) {
-      throw error(404, "File not found");
+    // Check if the object exists before attempting deletion
+    const existingObject = await platform.env.IMAGES.head(sanitizedKey);
+    if (!existingObject) {
+      throw error(404, "Image not found");
     }
 
     // Delete from R2
@@ -38,8 +68,8 @@ export async function DELETE({ request, platform, locals }) {
 
     return json({
       success: true,
+      message: "Image deleted successfully",
       key: sanitizedKey,
-      message: "File deleted successfully",
     });
   } catch (err) {
     if (err.status) throw err;
