@@ -11,10 +11,10 @@ At the end of your workday, simply run:
 ```
 
 This will automatically:
-1. Scan all git repos in `/Users/mini/Documents/Projects`
-2. Collect all commits from today
+1. Query GitHub API for all your commits from today
+2. Collect commits from ALL your repositories (not just local)
 3. Generate two summary documents
-4. Save them to the current project directory
+4. Save them to `docs/daily-summaries/`
 
 ## Generated Documents
 
@@ -42,17 +42,22 @@ An executive summary in 2-3 paragraphs:
 
 ## How It Works
 
-### Step 1: Repository Discovery
+### Step 1: GitHub API Query
 ```bash
-# Scans for all .git directories
-find /Users/mini/Documents/Projects -name ".git" -type d
+# Get your GitHub username
+gh api user --jq '.login'
+
+# Search for all your commits from today across ALL repos
+gh api search/commits -f q="author:YOUR_USERNAME committer-date:>=YYYY-MM-DD"
 ```
 
 ### Step 2: Commit Collection
-For each repository, collects:
+Via GitHub API, collects:
 - All commits since 00:00:00 today
+- From ALL repositories (public and private)
 - Commit hash, timestamp, message
-- Author information
+- Repository information
+- Works regardless of which machine you committed from
 
 ### Step 3: Analysis
 Automatically identifies:
@@ -112,10 +117,10 @@ mv docs/daily-summaries/daily-summary-2025-11-*.md docs/archives/2025-11/
 
 ## Customization
 
-### Change Repository Scan Path
-Edit `.claude/commands/daily-summary.md`:
+### Filter Specific Organizations
+Edit `.claude/commands/daily-summary.md` to filter by organization:
 ```markdown
-Search for all git repositories in `/Your/Custom/Path`
+-f q="author:USERNAME org:ORG_NAME committer-date:>=YYYY-MM-DD"
 ```
 
 ### Adjust Time Blocks
@@ -254,9 +259,10 @@ If you work across many projects:
 - Check git repositories have valid `.git` directories
 - Ensure commits are authored today (not pulled from remote)
 
-### "Permission denied"
-- Check read permissions on `/Users/mini/Documents/Projects`
-- Verify git repositories are accessible
+### "GitHub API authentication failed"
+- Run `gh auth login` to authenticate
+- Verify you have access to private repositories
+- Check `gh auth status` to confirm authentication
 
 ### "Document too large"
 - Very active days (100+ commits) may produce large files
@@ -285,9 +291,10 @@ Command:        /daily-summary
 Frequency:      End of each workday
 Duration:       ~30 seconds to generate
 Output:         2 files (detailed + concise)
-Location:       Current project directory
-Scans:          All repos in ~/Documents/Projects
+Location:       docs/daily-summaries/
+Scans:          All GitHub repos via API
 Time Range:     Today (00:00:00 to now)
+Requirement:    GitHub CLI (gh) authenticated
 ```
 
 ---
