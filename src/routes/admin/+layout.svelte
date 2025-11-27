@@ -186,11 +186,11 @@
     display: flex;
     flex-direction: column;
     position: fixed;
-    top: 0.75rem;
+    top: calc(4rem + 0.75rem); /* Header height + margin */
     left: 0.75rem;
     bottom: 0.75rem;
     height: auto;
-    max-height: calc(100vh - 1.5rem);
+    max-height: calc(100vh - 5.5rem); /* Account for header + margins */
     z-index: 99; /* Below header (100) but above content */
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-standard);
