@@ -17,6 +17,21 @@ renderer.code = function (token) {
   const language = typeof token === "string" ? arguments[1] : token.lang;
 
   const lang = language || "text";
+
+  // Render markdown/md code blocks as formatted HTML (like GitHub)
+  if (lang === "markdown" || lang === "md") {
+    // Parse the markdown content and render it
+    const renderedContent = marked.parse(code);
+    return `<div class="rendered-markdown-block">
+  <div class="rendered-markdown-header">
+    <span class="rendered-markdown-label">Rendered Markdown</span>
+  </div>
+  <div class="rendered-markdown-content">
+    ${renderedContent}
+  </div>
+</div>`;
+  }
+
   const escapedCode = code
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
