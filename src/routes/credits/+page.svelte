@@ -10,7 +10,43 @@
   </header>
 
   <section class="credits-section">
-    <h2>Fonts</h2>
+    <h2>Font Preview</h2>
+    <p class="section-intro">Each font rendered with our tagline:</p>
+
+    <div class="font-previews">
+      <div class="font-preview">
+        <span class="preview-label">Alagard</span>
+        <span class="preview-text" style="font-family: 'Alagard', sans-serif;">The Grove: A Place to Be</span>
+      </div>
+      <div class="font-preview">
+        <span class="preview-label">Cozette</span>
+        <span class="preview-text" style="font-family: 'Cozette', sans-serif;">The Grove: A Place to Be</span>
+      </div>
+      <div class="font-preview">
+        <span class="preview-label">Atkinson Hyperlegible</span>
+        <span class="preview-text" style="font-family: 'Atkinson Hyperlegible', sans-serif;">The Grove: A Place to Be</span>
+      </div>
+      <div class="font-preview">
+        <span class="preview-label">OpenDyslexic</span>
+        <span class="preview-text" style="font-family: 'OpenDyslexic', sans-serif;">The Grove: A Place to Be</span>
+      </div>
+      <div class="font-preview">
+        <span class="preview-label">Lexend</span>
+        <span class="preview-text" style="font-family: 'Lexend', sans-serif;">The Grove: A Place to Be</span>
+      </div>
+      <div class="font-preview">
+        <span class="preview-label">Cormorant</span>
+        <span class="preview-text" style="font-family: 'Cormorant', serif;">The Grove: A Place to Be</span>
+      </div>
+      <div class="font-preview">
+        <span class="preview-label">Quicksand</span>
+        <span class="preview-text" style="font-family: 'Quicksand', sans-serif;">The Grove: A Place to Be</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="credits-section">
+    <h2>Font Credits</h2>
 
     <article class="credit-item">
       <h3>Alagard</h3>
@@ -36,7 +72,6 @@
       <h3>Cozette</h3>
       <p class="credit-description">
         A bitmap programming font with excellent readability at small sizes.
-        Available as an alternative site font.
       </p>
       <dl class="credit-details">
         <dt>Author</dt>
@@ -91,6 +126,65 @@
         <dd>SIL Open Font License</dd>
       </dl>
     </article>
+
+    <article class="credit-item">
+      <h3>Lexend</h3>
+      <p class="credit-description">
+        A variable font designed to improve reading fluency. Research shows it can increase
+        reading speed by up to 20% for struggling readers.
+      </p>
+      <dl class="credit-details">
+        <dt>Author</dt>
+        <dd>Thomas Jockin / Bonnie Shaver-Troup</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://www.lexend.com/" target="_blank" rel="noopener noreferrer">
+            Lexend.com
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>SIL Open Font License</dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>Cormorant</h3>
+      <p class="credit-description">
+        An elegant display serif inspired by Claude Garamond's work. Perfect for
+        long-form reading and fantasy-themed content.
+      </p>
+      <dl class="credit-details">
+        <dt>Author</dt>
+        <dd>Christian Thalmann (Catharsis Fonts)</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://github.com/CatharsisFonts/Cormorant" target="_blank" rel="noopener noreferrer">
+            GitHub - Cormorant
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>SIL Open Font License 1.1</dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>Quicksand</h3>
+      <p class="credit-description">
+        A geometric sans-serif with rounded terminals. Friendly, modern, and highly readable.
+      </p>
+      <dl class="credit-details">
+        <dt>Author</dt>
+        <dd>Andrew Paglinawan</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://github.com/andrew-paglinawan/QuicksandFamily" target="_blank" rel="noopener noreferrer">
+            GitHub - Quicksand
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>SIL Open Font License</dd>
+      </dl>
+    </article>
   </section>
 </div>
 
@@ -130,6 +224,7 @@
     border-radius: var(--border-radius-standard);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
+    margin-bottom: 1.5rem;
     transition: background-color 0.3s ease;
   }
 
@@ -138,7 +233,7 @@
   }
 
   .credits-section h2 {
-    margin: 0 0 1.5rem 0;
+    margin: 0 0 1rem 0;
     font-size: 1.25rem;
     color: var(--color-text);
     border-bottom: 1px solid var(--color-border);
@@ -151,6 +246,62 @@
     border-color: var(--color-border-dark);
   }
 
+  .section-intro {
+    margin: 0 0 1rem 0;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .section-intro {
+    color: var(--color-text-subtle-dark);
+  }
+
+  /* Font Preview Styles */
+  .font-previews {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .font-preview {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.75rem;
+    background: var(--color-bg-secondary);
+    border-radius: var(--border-radius-small);
+    transition: background-color 0.3s ease;
+  }
+
+  :global(.dark) .font-preview {
+    background: var(--color-bg-secondary-dark);
+  }
+
+  .preview-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .preview-label {
+    color: var(--color-primary-light);
+  }
+
+  .preview-text {
+    font-size: 1.5rem;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .preview-text {
+    color: var(--color-text-dark);
+  }
+
+  /* Credit Item Styles */
   .credit-item {
     margin-bottom: 2rem;
     padding-bottom: 1.5rem;
@@ -238,6 +389,10 @@
 
     .page-header h1 {
       font-size: 1.5rem;
+    }
+
+    .preview-text {
+      font-size: 1.25rem;
     }
 
     .credit-details {

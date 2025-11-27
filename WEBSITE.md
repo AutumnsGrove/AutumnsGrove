@@ -247,6 +247,24 @@ Multi-image gallery component with:
 
 Currently showcases Willow photos on the homepage.
 
+### Custom Fonts
+
+The site includes 7 self-hosted fonts with full admin panel configuration:
+
+| Font | Style | Purpose |
+|------|-------|---------|
+| **Alagard** | Medieval pixel | Default site font |
+| **Cozette** | Bitmap programming | Retro/pixel aesthetic |
+| **Atkinson Hyperlegible** | Sans-serif | Accessibility (low vision) |
+| **OpenDyslexic** | Sans-serif | Accessibility (dyslexia) |
+| **Lexend** | Sans-serif | Accessibility (reading fluency) |
+| **Cormorant** | Display serif | Fantasy/elegant content |
+| **Quicksand** | Geometric sans | Friendly, modern |
+
+Font selection is available in Admin → Settings → Typography.
+
+See the [Credits page](https://autumnsgrove.com/credits) for full attribution and font previews.
+
 ---
 
 ## Cloudflare Integration

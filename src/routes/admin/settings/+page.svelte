@@ -85,7 +85,10 @@
           alagard: "'Alagard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
           cozette: "'Cozette', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
           atkinson: "'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          opendyslexic: "'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+          opendyslexic: "'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          lexend: "'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          cormorant: "'Cormorant', Georgia, 'Times New Roman', serif",
+          quicksand: "'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
         };
         document.documentElement.style.setProperty('--font-family-main', fontMap[currentFont]);
       } else {
@@ -229,6 +232,45 @@
           <div class="font-info">
             <span class="font-name" style="font-family: 'OpenDyslexic', sans-serif;">OpenDyslexic</span>
             <span class="font-description">Accessibility font for dyslexia</span>
+          </div>
+        </label>
+
+        <label class="font-option" class:selected={currentFont === 'lexend'}>
+          <input
+            type="radio"
+            name="font"
+            value="lexend"
+            bind:group={currentFont}
+          />
+          <div class="font-info">
+            <span class="font-name" style="font-family: 'Lexend', sans-serif;">Lexend</span>
+            <span class="font-description">Modern accessibility font for reading fluency</span>
+          </div>
+        </label>
+
+        <label class="font-option" class:selected={currentFont === 'cormorant'}>
+          <input
+            type="radio"
+            name="font"
+            value="cormorant"
+            bind:group={currentFont}
+          />
+          <div class="font-info">
+            <span class="font-name" style="font-family: 'Cormorant', serif;">Cormorant</span>
+            <span class="font-description">Elegant display serif for fantasy aesthetic</span>
+          </div>
+        </label>
+
+        <label class="font-option" class:selected={currentFont === 'quicksand'}>
+          <input
+            type="radio"
+            name="font"
+            value="quicksand"
+            bind:group={currentFont}
+          />
+          <div class="font-info">
+            <span class="font-name" style="font-family: 'Quicksand', sans-serif;">Quicksand</span>
+            <span class="font-description">Rounded, friendly geometric sans-serif</span>
           </div>
         </label>
       </div>

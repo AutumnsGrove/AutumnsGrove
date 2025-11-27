@@ -35,8 +35,44 @@
 	</section>
 {/if}
 
+<footer class="home-footer">
+	<a href="/credits">Font Credits & Attribution</a>
+</footer>
 
 <style>
+	.home-footer {
+		text-align: center;
+		padding: 2rem 0;
+		margin-top: 3rem;
+		border-top: 1px solid var(--color-border);
+		transition: border-color 0.3s ease;
+	}
+
+	:global(.dark) .home-footer {
+		border-color: var(--color-border-dark);
+	}
+
+	.home-footer a {
+		color: var(--color-text-muted);
+		text-decoration: none;
+		font-size: 0.9rem;
+		transition: color 0.2s ease;
+	}
+
+	:global(.dark) .home-footer a {
+		color: var(--color-text-subtle-dark);
+	}
+
+	.home-footer a:hover {
+		color: var(--color-primary);
+		text-decoration: underline;
+	}
+
+	:global(.dark) .home-footer a:hover {
+		color: var(--color-primary-light);
+	}
+
+
 	.hero {
 		text-align: center;
 		padding: 4rem 2rem;
