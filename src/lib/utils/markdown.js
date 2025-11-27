@@ -49,12 +49,16 @@ marked.setOptions({
 // This works in both dev and production (including Cloudflare Workers)
 // Path is relative to project root - now using UserContent directory
 
-// Posts
-const modules = import.meta.glob("../../../UserContent/Posts/*.md", {
+// Posts - Using absolute path from project root for Cloudflare Pages compatibility
+const modules = import.meta.glob("/UserContent/Posts/*.md", {
   eager: true,
   query: "?raw",
   import: "default",
 });
+
+// Debug: Log at module load time to see if glob found anything
+console.log('[MARKDOWN.JS MODULE LOAD] Posts modules loaded:', Object.keys(modules).length, 'files');
+console.log('[MARKDOWN.JS MODULE LOAD] Module keys:', Object.keys(modules));
 
 // Recipes
 const recipeModules = import.meta.glob("../../../UserContent/Recipes/*.md", {
