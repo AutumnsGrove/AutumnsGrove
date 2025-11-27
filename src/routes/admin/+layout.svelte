@@ -186,12 +186,12 @@
     display: flex;
     flex-direction: column;
     position: fixed;
-    top: 0;
-    bottom: 0;
-    height: auto;
+    height: 100vh;
+    max-height: 100vh;
     z-index: 1002;
     border-right: 1px solid var(--color-border);
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    overflow-y: auto;
   }
 
   :global(.dark) .sidebar {

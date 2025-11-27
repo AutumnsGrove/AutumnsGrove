@@ -14,6 +14,9 @@
 	let searchQuery = $state('');
 	let searchInputRef = $state(null);
 
+	// Check if we're on an admin page
+	let isAdminPage = $derived($page.url.pathname.startsWith('/admin'));
+
 	// Prevent body scroll when mobile menu is open
 	$effect(() => {
 		if (typeof document !== 'undefined') {
@@ -298,7 +301,7 @@
 		{/key}
 	</main>
 
-	<footer>
+	<footer class:admin-page-footer={isAdminPage}>
 		<p>&copy; {new Date().getFullYear()} AutumnsGrove. <a href="https://github.com/AutumnsGrove/AutumnsGrove" target="_blank" rel="noopener noreferrer">Built</a> with SvelteKit.</p>
 		<div class="footer-actions">
 			{#if data?.user}
@@ -658,6 +661,8 @@
 		gap: 1rem;
 		color: #666;
 		margin-top: 4rem;
+		position: relative;
+		z-index: 1003;
 		transition: background-color 0.3s ease, border-color 0.3s ease;
 	}
 
@@ -665,6 +670,17 @@
 		background: #242424;
 		border-top: 1px solid var(--color-border-dark);
 		color: var(--color-text-muted-dark);
+	}
+
+	/* Footer margin on admin pages to avoid sidebar overlap */
+	footer.admin-page-footer {
+		margin-left: 250px;
+	}
+
+	@media (max-width: 768px) {
+		footer.admin-page-footer {
+			margin-left: 0;
+		}
 	}
 
 	footer p {
