@@ -4,6 +4,12 @@
   let healthStatus = $state(null);
   let loadingHealth = $state(true);
 
+  // Font settings state
+  let currentFont = $state('alagard');
+  let savingFont = $state(false);
+  let fontMessage = $state('');
+  let loadingFont = $state(true);
+
   async function fetchHealth() {
     loadingHealth = true;
     try {
@@ -41,8 +47,58 @@
     clearingCache = false;
   }
 
+  // Fetch current font setting
+  async function fetchCurrentFont() {
+    loadingFont = true;
+    try {
+      const res = await fetch('/api/settings');
+      const data = await res.json();
+      currentFont = data.font_family || 'alagard';
+    } catch (error) {
+      console.error('Failed to fetch font setting:', error);
+      currentFont = 'alagard';
+    }
+    loadingFont = false;
+  }
+
+  // Save font setting
+  async function saveFont() {
+    savingFont = true;
+    fontMessage = '';
+
+    try {
+      const res = await fetch('/api/admin/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          setting_key: 'font_family',
+          setting_value: currentFont
+        })
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        fontMessage = 'Font setting saved! Refresh to see changes site-wide.';
+        // Apply immediately for preview
+        const fontMap = {
+          alagard: "'Alagard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          cozette: "'Cozette', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+        };
+        document.documentElement.style.setProperty('--font-family-main', fontMap[currentFont]);
+      } else {
+        fontMessage = data.error || 'Failed to save font setting';
+      }
+    } catch (error) {
+      fontMessage = 'Error: ' + error.message;
+    }
+
+    savingFont = false;
+  }
+
   $effect(() => {
     fetchHealth();
+    fetchCurrentFont();
   });
 </script>
 
@@ -110,6 +166,61 @@
     <button onclick={fetchHealth} class="btn btn-secondary" disabled={loadingHealth}>
       {loadingHealth ? 'Checking...' : 'Refresh Status'}
     </button>
+  </section>
+
+  <section class="settings-section">
+    <h2>Typography</h2>
+    <p class="section-description">
+      Choose the font family used across the entire site. Changes take effect immediately.
+    </p>
+
+    {#if loadingFont}
+      <p class="loading-text">Loading font settings...</p>
+    {:else}
+      <div class="font-selector">
+        <label class="font-option" class:selected={currentFont === 'alagard'}>
+          <input
+            type="radio"
+            name="font"
+            value="alagard"
+            bind:group={currentFont}
+          />
+          <div class="font-info">
+            <span class="font-name" style="font-family: 'Alagard', sans-serif;">Alagard</span>
+            <span class="font-description">Medieval pixel font (default)</span>
+          </div>
+        </label>
+
+        <label class="font-option" class:selected={currentFont === 'cozette'}>
+          <input
+            type="radio"
+            name="font"
+            value="cozette"
+            bind:group={currentFont}
+          />
+          <div class="font-info">
+            <span class="font-name" style="font-family: 'Cozette', sans-serif;">Cozette</span>
+            <span class="font-description">Bitmap programming font</span>
+          </div>
+        </label>
+      </div>
+
+      {#if fontMessage}
+        <div class="message" class:success={fontMessage.includes('saved')} class:error={!fontMessage.includes('saved')}>
+          {fontMessage}
+        </div>
+      {/if}
+
+      <div class="button-row">
+        <button onclick={saveFont} class="btn btn-primary" disabled={savingFont}>
+          {savingFont ? 'Saving...' : 'Save Font Setting'}
+        </button>
+      </div>
+
+      <p class="note">
+        See <a href="/credits">font credits and licenses</a> for attribution.
+      </p>
+    {/if}
   </section>
 
   <section class="settings-section">
@@ -431,5 +542,111 @@
 
   .links-list a:hover {
     text-decoration: underline;
+  }
+
+  /* Font selector styles */
+  .font-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .font-option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border: 2px solid var(--color-border);
+    border-radius: var(--border-radius-standard);
+    cursor: pointer;
+    transition: border-color 0.2s, background-color 0.2s;
+  }
+
+  :global(.dark) .font-option {
+    border-color: var(--color-border-dark);
+  }
+
+  .font-option:hover {
+    border-color: var(--color-primary);
+  }
+
+  :global(.dark) .font-option:hover {
+    border-color: var(--color-primary-light);
+  }
+
+  .font-option.selected {
+    border-color: var(--color-primary);
+    background: rgba(44, 95, 45, 0.05);
+  }
+
+  :global(.dark) .font-option.selected {
+    border-color: var(--color-primary-light);
+    background: rgba(92, 184, 95, 0.1);
+  }
+
+  .font-option input[type="radio"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--color-primary);
+  }
+
+  .font-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .font-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .font-name {
+    color: var(--color-text-dark);
+  }
+
+  .font-description {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .font-description {
+    color: var(--color-text-subtle-dark);
+  }
+
+  .btn-primary {
+    background: var(--color-primary);
+    color: white;
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+  }
+
+  :global(.dark) .btn-primary {
+    background: var(--color-primary-light);
+  }
+
+  :global(.dark) .btn-primary:hover:not(:disabled) {
+    background: var(--color-primary-light-hover);
+  }
+
+  .button-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .loading-text {
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  :global(.dark) .loading-text {
+    color: var(--color-text-subtle-dark);
   }
 </style>

@@ -6,6 +6,20 @@
 
 	let { children, data } = $props();
 
+	// Font family mapping - maps database values to CSS font stacks
+	const fontMap = {
+		alagard: "'Alagard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+		cozette: "'Cozette', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+	};
+
+	// Apply font from server-loaded settings
+	$effect(() => {
+		if (typeof document !== 'undefined' && data?.siteSettings?.font_family) {
+			const fontValue = fontMap[data.siteSettings.font_family] || fontMap.alagard;
+			document.documentElement.style.setProperty('--font-family-main', fontValue);
+		}
+	});
+
 	let darkMode = $state(false); // Default to light mode
 	let mobileMenuOpen = $state(false);
 	let mobileMenuRef = $state(null);
@@ -341,8 +355,28 @@
 </div>
 
 <style>
+	/* @font-face declarations for custom fonts */
+	@font-face {
+		font-family: 'Alagard';
+		src: url('/fonts/alagard.ttf') format('truetype');
+		font-weight: normal;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: 'Cozette';
+		src: url('/fonts/CozetteVector.ttf') format('truetype');
+		font-weight: normal;
+		font-style: normal;
+		font-display: swap;
+	}
+
 	/* CSS Custom Properties for theming */
 	:global(:root) {
+		/* Font family - dynamically set via JavaScript from database settings */
+		--font-family-main: 'Alagard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
 		/* Primary colors */
 		--color-primary: #2c5f2d;
 		--color-primary-hover: #4a9d4f;
@@ -391,7 +425,7 @@
 
 	:global(body) {
 		margin: 0;
-		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+		font-family: var(--font-family-main);
 		line-height: 1.6;
 		color: #333;
 		background: #fafafa;
