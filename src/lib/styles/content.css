@@ -460,6 +460,17 @@
 	margin: 0;
 	overflow-x: auto;
 	transition: background-color 0.3s ease;
+	/* Word wrap enabled by default */
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
+}
+
+/* Disable word wrap with .no-wrap class on the wrapper */
+.content-body .code-block-wrapper.no-wrap pre {
+	white-space: pre;
+	word-wrap: normal;
+	overflow-wrap: normal;
 }
 
 .dark .content-body .code-block-wrapper pre {
@@ -474,6 +485,8 @@
 	font-size: 0.875rem;
 	line-height: 1.6;
 	transition: color 0.3s ease;
+	/* Inherit wrapping from pre */
+	white-space: inherit;
 }
 
 .dark .content-body .code-block-wrapper pre code {
