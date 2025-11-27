@@ -1,0 +1,57 @@
+# License
+
+This repository contains both source code and creative content, which are licensed separately.
+
+---
+
+## Creative Content (CC BY-NC-SA 4.0)
+
+All content in the `UserContent/` directory, including but not limited to:
+- Blog posts
+- Recipes
+- Images and media created by the author
+- Written articles and documentation
+
+is licensed under the **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License**.
+
+### You are free to:
+
+- **Share** — copy and redistribute the material in any medium or format
+- **Adapt** — remix, transform, and build upon the material
+
+### Under the following terms:
+
+- **Attribution** — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.
+
+- **NonCommercial** — You may not use the material for commercial purposes.
+
+- **ShareAlike** — If you remix, transform, or build upon the material, you must distribute your contributions under the same license as the original.
+
+- **No additional restrictions** — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.
+
+Full license text: https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode
+
+---
+
+## Source Code
+
+All source code in this repository (including but not limited to `.js`, `.svelte`, `.css`, `.html`, `.json` configuration files, and build scripts) is provided for reference and learning purposes.
+
+For a fully open-source, reusable version of the website engine, see the separate engine repository (coming soon).
+
+---
+
+## Third-Party Content
+
+This project uses various open-source libraries and tools. Each retains its original license:
+- SvelteKit (MIT)
+- Chart.js (MIT)
+- Marked (MIT)
+- Mermaid (MIT)
+- Lucide Icons (ISC)
+
+See `package.json` for a full list of dependencies.
+
+---
+
+Copyright (c) 2025 Autumn
