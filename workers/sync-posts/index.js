@@ -1,5 +1,10 @@
 import { marked } from 'marked';
 import matter from 'gray-matter';
+import { Buffer } from 'node:buffer';
+
+// Polyfill Buffer for Cloudflare Workers compatibility
+// gray-matter requires Buffer which is not available in Workers by default
+globalThis.Buffer = Buffer;
 
 // Configure marked with security options to prevent XSS
 marked.setOptions({
