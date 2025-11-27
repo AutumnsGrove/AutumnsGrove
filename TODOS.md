@@ -117,17 +117,28 @@
 
 ### HIGH PRIORITY: Admin Panel Improvements (Nov 26, 2025)
 
-**Status:** Ready for implementation
+**Status:** In progress - sidebar and styling mostly complete
 
-#### Immediate Fixes:
-- [ ] Fix admin sidebar extending into footer (height: 100vh issue)
-- [ ] Standardize border-radius across admin panel with CSS variables
-- [ ] Add admin indicators (checkmark/cog) to `/blog` route when logged in
-- [ ] Improve images gallery sorting:
-  - [ ] Add server-side sorting to `/api/images/list`
-  - [ ] Add sort dropdown UI (newest first, oldest first, A-Z, Z-A, size)
-  - [ ] Fix filter button visual feedback
-  - [ ] Default to newest-first (match public gallery)
+#### Completed:
+- [x] Fix admin sidebar extending into footer (height: 100vh issue)
+- [x] Standardize border-radius across admin panel with CSS variables
+- [x] Add admin indicators (checkmark/cog) to `/blog` route when logged in
+- [x] Improve images gallery sorting:
+  - [x] Add server-side sorting to `/api/images/list`
+  - [x] Add sort dropdown UI (newest first, oldest first, A-Z, Z-A, size)
+  - [x] Default to newest-first (match public gallery)
+- [x] Add rounded corners to admin sidebar with inset positioning
+
+#### Remaining:
+- [ ] Enhance Settings page with R2 status and Cloudflare dashboard links:
+  - [ ] Add R2 bucket status card (currently shows D1 DB and KV Cache only)
+  - [ ] Add direct links to Cloudflare dashboard for each service:
+    - [ ] D1 Database → Link to specific D1 dashboard in user's Cloudflare account
+    - [ ] KV Cache → Link to specific KV namespace in user's Cloudflare account
+    - [ ] R2 Bucket → Link to specific R2 bucket in user's Cloudflare account
+  - [ ] Research Cloudflare dashboard URL patterns for deep linking
+  - [ ] Add external link icon next to each status indicator
+  - [ ] Test if deep links work correctly (may need account ID or other identifiers)
 
 **Implementation plan:** `docs/plans/admin-panel-improvements.md`
 
