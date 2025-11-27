@@ -463,7 +463,7 @@
               <button class="copy-btn small" onclick={() => copyToClipboard(`![](${image.url})`, 'markdown', image.key)}>
                 {copiedItem === `${image.key}-markdown` ? '✓' : 'MD'}
               </button>
-              <button class="delete-btn small" onclick={() => confirmDelete(image)} aria-label="Delete image">
+              <button class="delete-btn small" onclick={() => confirmDelete(image)} aria-label="Delete image" title="Delete image">
                 X
               </button>
             </div>
@@ -1169,16 +1169,18 @@
 
   /* Delete Button */
   .delete-btn {
-    background: #d73a49;
+    padding: 0.4rem 0.8rem;
+    background: var(--color-danger, #d73a49);
     color: white;
     border: none;
     border-radius: var(--border-radius-small);
+    font-size: 0.85rem;
     cursor: pointer;
     transition: background-color 0.2s ease;
   }
 
   .delete-btn:hover {
-    background: #cb2431;
+    background: var(--color-danger-hover, #cb2431);
   }
 
   .delete-btn.small {
@@ -1213,7 +1215,7 @@
     padding: 1.5rem;
     max-width: 400px;
     width: 100%;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     transition: background-color 0.3s ease;
   }
 
@@ -1271,8 +1273,9 @@
 
   .modal-warning {
     font-size: 0.85rem;
-    color: #d73a49;
+    color: var(--color-danger, #d73a49);
     margin: 0 0 1.5rem 0;
+    font-weight: 500;
   }
 
   .modal-actions {
@@ -1317,12 +1320,12 @@
   }
 
   .modal-btn.delete {
-    background: #d73a49;
+    background: var(--color-danger, #d73a49);
     color: white;
   }
 
   .modal-btn.delete:hover:not(:disabled) {
-    background: #cb2431;
+    background: var(--color-danger-hover, #cb2431);
   }
 
   /* Toast Notifications */
