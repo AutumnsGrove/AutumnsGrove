@@ -2,9 +2,6 @@
 const WORKER_URL = 'https://autumnsgrove-sync-posts.m7jv4v7npb.workers.dev';
 
 export async function load() {
-  console.log('=== Admin Blog Page Server Load START ===');
-  console.log('Fetching posts from D1 via worker API:', `${WORKER_URL}/posts`);
-
   try {
     const response = await fetch(`${WORKER_URL}/posts`);
 
@@ -15,8 +12,6 @@ export async function load() {
 
     // Worker API returns an array directly, not {posts: [...]}
     const postsArray = await response.json();
-    console.log('Posts returned from worker API:', postsArray);
-    console.log('Posts count:', postsArray.length);
 
     // Transform posts - tags are already parsed by the worker
     const posts = postsArray.map(post => ({
@@ -26,9 +21,6 @@ export async function load() {
       tags: Array.isArray(post.tags) ? post.tags : [],
       description: post.description || '',
     }));
-
-    console.log('Transformed posts:', posts);
-    console.log('=== Admin Blog Page Server Load END ===');
 
     return { posts };
   } catch (error) {
