@@ -12,11 +12,11 @@
   <section class="credits-section">
     <h2>Font Credits</h2>
 
-    <article class="credit-item" style="font-family: 'Alagard', sans-serif;">
-      <h3>Alagard</h3>
+    <article class="credit-item current-font" style="font-family: 'Alagard', sans-serif;">
+      <h3><span class="heart-icon">&#9829;</span> Alagard</h3>
+      <p class="current-font-label">Currently active site font</p>
       <p class="credit-description">
         A medieval-style pixel font perfect for fantasy and game-inspired designs.
-        Used as the default site font.
       </p>
       <dl class="credit-details">
         <dt>Author</dt>
@@ -536,6 +536,43 @@
     padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--color-border);
     transition: border-color 0.3s ease;
+  }
+
+  .credit-item.current-font {
+    background: rgba(44, 95, 45, 0.08);
+    border-radius: var(--border-radius-small);
+    padding: 1rem;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-bottom: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  :global(.dark) .credit-item.current-font {
+    background: rgba(92, 184, 95, 0.1);
+  }
+
+  .heart-icon {
+    color: #e25555;
+    margin-right: 0.25rem;
+  }
+
+  .current-font-label {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    background: rgba(44, 95, 45, 0.15);
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    margin: 0 0 0.75rem 0;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+
+  :global(.dark) .current-font-label {
+    color: var(--color-primary-light);
+    background: rgba(92, 184, 95, 0.2);
   }
 
   :global(.dark) .credit-item {
