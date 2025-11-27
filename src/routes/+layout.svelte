@@ -674,7 +674,7 @@
 
 	/* Footer margin on admin pages to avoid sidebar overlap */
 	footer.admin-page-footer {
-		margin-left: 250px;
+		margin-left: calc(250px + 1.5rem); /* Sidebar width + margins */
 	}
 
 	@media (max-width: 768px) {
