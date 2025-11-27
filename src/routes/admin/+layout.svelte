@@ -186,13 +186,12 @@
     display: flex;
     flex-direction: column;
     position: fixed;
-    top: 0;
-    left: 0;
-    height: 100vh;
-    margin: 0.75rem;
-    margin-right: 0;
-    height: calc(100vh - 1.5rem);
-    z-index: 1002;
+    top: 0.75rem;
+    left: 0.75rem;
+    bottom: 0.75rem;
+    height: auto;
+    max-height: calc(100vh - 1.5rem);
+    z-index: 99; /* Below header (100) but above content */
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-standard);
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
@@ -315,7 +314,7 @@
 
   .content {
     flex: 1;
-    margin-left: calc(250px + 1.5rem); /* Sidebar width + margins */
+    margin-left: calc(250px + 0.75rem); /* Sidebar width + left margin */
     padding: 2rem;
     min-height: 100vh;
   }
