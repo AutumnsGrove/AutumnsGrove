@@ -366,6 +366,10 @@
 		--color-bg-tertiary-dark: #2a2a2a;
 		--color-border-dark: #333;
 
+		/* Danger/Error colors */
+		--color-danger: #d73a49;
+		--color-danger-hover: #cb2431;
+
 		/* Component-specific */
 		--mobile-menu-bg: white;
 		--mobile-menu-border: #e0e0e0;

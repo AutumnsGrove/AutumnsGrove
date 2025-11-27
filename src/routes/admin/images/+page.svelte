@@ -19,6 +19,10 @@
   // Copy feedback state
   let copiedItem = $state(null);
 
+  // Delete state
+  let deleteConfirm = $state(null);
+  let deleting = $state(false);
+
   const folderOptions = [
     { value: 'blog', label: 'Blog Posts' },
     { value: 'recipes', label: 'Recipes' },
@@ -199,6 +203,43 @@
   function clearCompleted() {
     uploads = uploads.filter(u => u.status === 'uploading');
   }
+
+  function confirmDelete(image) {
+    deleteConfirm = image;
+  }
+
+  function cancelDelete() {
+    deleteConfirm = null;
+  }
+
+  async function deleteImage() {
+    if (!deleteConfirm) return;
+
+    deleting = true;
+    try {
+      const response = await fetch('/api/images/delete', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ key: deleteConfirm.key }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Delete failed');
+      }
+
+      // Remove from gallery
+      galleryImages = galleryImages.filter(img => img.key !== deleteConfirm.key);
+      deleteConfirm = null;
+    } catch (err) {
+      alert('Failed to delete image: ' + err.message);
+    } finally {
+      deleting = false;
+    }
+  }
 </script>
 
 <div class="images-page">
@@ -367,6 +408,9 @@
               <button class="copy-btn small" onclick={() => copyToClipboard(`![](${image.url})`, 'markdown', image.key)}>
                 {copiedItem === `${image.key}-markdown` ? '✓' : 'MD'}
               </button>
+              <button class="delete-btn small" onclick={() => confirmDelete(image)} title="Delete image">
+                ✕
+              </button>
             </div>
           </div>
         {/each}
@@ -386,6 +430,27 @@
     {/if}
   </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+{#if deleteConfirm}
+  <div class="modal-overlay" onclick={cancelDelete} role="dialog" aria-modal="true">
+    <div class="modal-content" onclick={(e) => e.stopPropagation()}>
+      <h3>Delete Image?</h3>
+      <p>Are you sure you want to delete this image?</p>
+      <div class="modal-preview">
+        <img src={deleteConfirm.url} alt={getFileName(deleteConfirm.key)} />
+        <span class="modal-filename">{deleteConfirm.key}</span>
+      </div>
+      <p class="modal-warning">This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" onclick={cancelDelete} disabled={deleting}>Cancel</button>
+        <button class="modal-btn delete" onclick={deleteImage} disabled={deleting}>
+          {deleting ? 'Deleting...' : 'Delete'}
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}
 
 <style>
   .images-page {
@@ -1014,5 +1079,163 @@
       grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
       gap: 0.5rem;
     }
+  }
+
+  /* Delete button */
+  .delete-btn {
+    padding: 0.4rem 0.8rem;
+    background: var(--color-danger);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-small);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .delete-btn:hover {
+    background: var(--color-danger-hover);
+  }
+
+  .delete-btn.small {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  /* Modal styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+  }
+
+  .modal-content {
+    background: var(--mobile-menu-bg);
+    border-radius: var(--border-radius-standard);
+    padding: 1.5rem;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s ease;
+  }
+
+  :global(.dark) .modal-content {
+    background: var(--color-bg-tertiary-dark);
+  }
+
+  .modal-content h3 {
+    margin: 0 0 0.5rem 0;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .modal-content h3 {
+    color: var(--color-text-dark);
+  }
+
+  .modal-content p {
+    margin: 0 0 1rem 0;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .modal-content p {
+    color: var(--color-text-subtle-dark);
+  }
+
+  .modal-preview {
+    background: var(--color-bg-secondary);
+    border-radius: var(--border-radius-small);
+    padding: 1rem;
+    text-align: center;
+    margin-bottom: 1rem;
+    transition: background-color 0.3s ease;
+  }
+
+  :global(.dark) .modal-preview {
+    background: var(--color-bg-secondary-dark);
+  }
+
+  .modal-preview img {
+    max-width: 100%;
+    max-height: 150px;
+    object-fit: contain;
+    border-radius: var(--border-radius-small);
+    margin-bottom: 0.5rem;
+  }
+
+  .modal-filename {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    word-break: break-all;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .modal-filename {
+    color: var(--color-text-subtle-dark);
+  }
+
+  .modal-warning {
+    color: var(--color-danger) !important;
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+  }
+
+  .modal-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--border-radius-small);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .modal-btn.cancel {
+    background: var(--color-bg-secondary);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+  }
+
+  :global(.dark) .modal-btn.cancel {
+    background: var(--color-bg-secondary-dark);
+    color: var(--color-text-dark);
+    border-color: var(--color-border-dark);
+  }
+
+  .modal-btn.cancel:hover:not(:disabled) {
+    background: #e1e4e8;
+  }
+
+  :global(.dark) .modal-btn.cancel:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .modal-btn.delete {
+    background: var(--color-danger);
+    color: white;
+  }
+
+  .modal-btn.delete:hover:not(:disabled) {
+    background: var(--color-danger-hover);
+  }
+
+  .modal-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 </style>
