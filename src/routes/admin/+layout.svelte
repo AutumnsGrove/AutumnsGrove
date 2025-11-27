@@ -186,7 +186,9 @@
     display: flex;
     flex-direction: column;
     position: fixed;
-    height: 100vh;
+    top: 0;
+    bottom: 0;
+    height: auto;
     z-index: 1002;
     border-right: 1px solid var(--color-border);
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
@@ -230,6 +232,7 @@
     padding: 0.75rem 1.5rem;
     color: var(--color-text-muted);
     text-decoration: none;
+    border-radius: var(--border-radius-button);
     transition: background 0.2s, color 0.2s;
   }
 

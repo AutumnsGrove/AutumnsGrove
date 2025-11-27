@@ -196,7 +196,7 @@
 
   .settings-section {
     background: var(--mobile-menu-bg);
-    border-radius: 8px;
+    border-radius: var(--border-radius-standard);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
     margin-bottom: 1.5rem;
@@ -280,7 +280,7 @@
   .btn {
     padding: 0.5rem 1rem;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--border-radius-button);
     font-weight: 500;
     font-size: 0.9rem;
     cursor: pointer;
@@ -324,7 +324,7 @@
 
   .message {
     padding: 0.75rem 1rem;
-    border-radius: 6px;
+    border-radius: var(--border-radius-button);
     margin-bottom: 1rem;
     font-size: 0.9rem;
   }
@@ -353,7 +353,7 @@
   .note code {
     background: var(--color-bg-secondary);
     padding: 0.125rem 0.25rem;
-    border-radius: 3px;
+    border-radius: var(--border-radius-small);
     font-size: 0.85em;
     transition: background-color 0.3s ease;
   }

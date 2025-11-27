@@ -149,7 +149,7 @@
   .stat-card {
     background: var(--mobile-menu-bg);
     padding: 1.5rem;
-    border-radius: 8px;
+    border-radius: var(--border-radius-standard);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid var(--color-border);
     transition: background-color 0.3s ease, border-color 0.3s ease;
@@ -220,7 +220,7 @@
   .action-card {
     background: var(--mobile-menu-bg);
     padding: 1.5rem;
-    border-radius: 8px;
+    border-radius: var(--border-radius-standard);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid var(--color-border);
     text-decoration: none;

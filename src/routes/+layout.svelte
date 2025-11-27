@@ -368,6 +368,11 @@
 		--mobile-menu-border: #e0e0e0;
 		--tag-bg: #7c4dab;
 		--tag-bg-hover: #6a3d9a;
+
+		/* Border radius standardization */
+		--border-radius-standard: 8px;
+		--border-radius-small: 4px;
+		--border-radius-button: 6px;
 	}
 
 	:global(.dark) {

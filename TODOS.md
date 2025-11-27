@@ -115,6 +115,44 @@
 
 ## 🔲 Remaining Tasks
 
+### HIGH PRIORITY: Admin Panel Improvements (Nov 26, 2025)
+
+**Status:** Ready for implementation
+
+#### Immediate Fixes:
+- [ ] Fix admin sidebar extending into footer (height: 100vh issue)
+- [ ] Standardize border-radius across admin panel with CSS variables
+- [ ] Add admin indicators (checkmark/cog) to `/blog` route when logged in
+- [ ] Improve images gallery sorting:
+  - [ ] Add server-side sorting to `/api/images/list`
+  - [ ] Add sort dropdown UI (newest first, oldest first, A-Z, Z-A, size)
+  - [ ] Fix filter button visual feedback
+  - [ ] Default to newest-first (match public gallery)
+
+**Implementation plan:** `docs/plans/admin-panel-improvements.md`
+
+---
+
+### HIGH PRIORITY: Recipes D1 Integration (Nov 26, 2025)
+
+**Status:** Standalone plan ready
+
+**Goal:** Mirror blog posts D1 integration for recipes, add URL field for external sources
+
+**Key tasks:**
+- [ ] Update D1 schema with recipes table (includes `url` field)
+- [ ] Add recipe sync endpoints to Cloudflare Worker
+- [ ] Create GitHub Actions workflow for recipe syncing
+- [ ] Update admin recipes page to fetch from D1
+- [ ] Display URL field in admin table
+- [ ] Add external source link to recipe display page
+
+**Implementation plan:** `docs/plans/recipes-d1-integration.md`
+
+**Independent execution:** Can be run separately from other tasks at any time
+
+---
+
 ### MEDIUM PRIORITY: RSS Feed Implementation
 
 **Goal:** Add RSS feed support for blog posts
@@ -182,6 +220,77 @@ Commits:     ████████ AutumnsGrove (150)
 - [ ] Loading states and animations
 - [ ] Lazy-load Chart.js (reduce initial bundle size)
 - [ ] Add error boundaries for graceful failures
+
+---
+
+## 💡 Future Ideas & Enhancements
+
+### Content Management Modernization
+
+#### In-Website Markdown Editor (High Priority Future)
+**Goal:** Move away from GitHub-based editing to admin panel editing
+
+**Features:**
+- [ ] Full markdown editor with live preview
+- [ ] Frontmatter editor UI (title, date, tags, description)
+- [ ] Integrated gutter content management:
+  - [ ] Add images from CDN gallery
+  - [ ] Create comment/note sidebars
+  - [ ] Add image galleries
+  - [ ] Position gutter items with visual anchors
+- [ ] Save directly to D1 database (bypass GitHub for new posts)
+- [ ] **Keep GitHub fallback as emergency backup option**
+- [ ] Syntax highlighting for code blocks
+- [ ] Image upload integration with R2/CDN
+- [ ] Auto-save drafts
+- [ ] Preview mode with actual site styling
+
+**Dependencies:**
+- D1 database already set up for posts
+- R2 bucket already configured for images
+- Admin authentication already working
+
+**Benefits:**
+- No more manual sidecar JSON files
+- Simpler gutter content workflow
+- Faster publishing (no git commit/push cycle)
+- Better user experience for content creation
+
+---
+
+#### "Create a Post" Button
+**Goal:** Quick post creation from `/blog` route page
+
+**Features:**
+- [ ] Add/enhance "Create Post" button on `/blog` route (already exists)
+- [ ] Opens in-website markdown editor (once built)
+- [ ] Fills in basic template (frontmatter, date, slug)
+- [ ] **Fallback to GitHub editor** (always available as backup)
+- [ ] Same approach for recipes at `/recipes` route
+
+**Implementation notes:**
+- Button already exists on /blog page
+- Depends on markdown editor being built first
+- GitHub fallback ensures content creation always possible
+- Template should match current UserContent structure
+
+---
+
+### Content Migration Strategy
+
+#### UserContent Legacy Support (v1.0 Plan)
+- **Current:** Posts sync from `UserContent/Posts/` → D1 via GitHub Actions
+- **Current:** Recipes use local filesystem (no D1 yet)
+- **Future:** Markdown editor writes directly to D1
+- **v1.0:** Close UserContent system for new posts, keep for legacy/reference
+
+**Migration path:**
+1. ✅ Blog posts → D1 (done)
+2. ⏳ Recipes → D1 (planned, see recipes-d1-integration.md)
+3. ⏳ Build markdown editor (future)
+4. ⏳ Add "Create Post" button (future)
+5. ⏳ Migrate gutter content to programmatic system (future)
+6. ⏳ v1.0: Deprecate UserContent for new content (legacy read-only)
 
 ---
 

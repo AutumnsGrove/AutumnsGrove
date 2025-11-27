@@ -150,7 +150,7 @@ Your content here...
 
   .btn {
     padding: 0.5rem 1rem;
-    border-radius: 6px;
+    border-radius: var(--border-radius-button);
     text-decoration: none;
     font-weight: 500;
     font-size: 0.9rem;
@@ -168,7 +168,7 @@ Your content here...
 
   .posts-table-container {
     background: var(--mobile-menu-bg);
-    border-radius: 8px;
+    border-radius: var(--border-radius-standard);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
@@ -312,7 +312,7 @@ Your content here...
     margin-top: 2rem;
     background: var(--color-bg-secondary);
     border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border-radius: var(--border-radius-standard);
     padding: 1.5rem;
     transition: background-color 0.3s ease, border-color 0.3s ease;
   }
@@ -363,7 +363,7 @@ Your content here...
   .info-box code {
     background: var(--color-border);
     padding: 0.125rem 0.25rem;
-    border-radius: 3px;
+    border-radius: var(--border-radius-small);
     font-size: 0.85em;
     transition: background-color 0.3s ease;
   }

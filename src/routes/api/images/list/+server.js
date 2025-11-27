@@ -15,6 +15,7 @@ export async function GET({ url, platform, locals }) {
     const prefix = url.searchParams.get("prefix") || "";
     const cursor = url.searchParams.get("cursor") || undefined;
     const limit = parseInt(url.searchParams.get("limit") || "50", 10);
+    const sortBy = url.searchParams.get("sortBy") || "date-desc";
 
     // List objects from R2
     const listResult = await platform.env.IMAGES.list({
@@ -30,6 +31,28 @@ export async function GET({ url, platform, locals }) {
       size: obj.size,
       uploaded: obj.uploaded,
     }));
+
+    // Apply sorting
+    switch (sortBy) {
+      case "date-desc":
+        images.sort((a, b) => new Date(b.uploaded).getTime() - new Date(a.uploaded).getTime());
+        break;
+      case "date-asc":
+        images.sort((a, b) => new Date(a.uploaded).getTime() - new Date(b.uploaded).getTime());
+        break;
+      case "name-asc":
+        images.sort((a, b) => a.key.localeCompare(b.key));
+        break;
+      case "name-desc":
+        images.sort((a, b) => b.key.localeCompare(a.key));
+        break;
+      case "size-desc":
+        images.sort((a, b) => b.size - a.size);
+        break;
+      case "size-asc":
+        images.sort((a, b) => a.size - b.size);
+        break;
+    }
 
     return json({
       success: true,

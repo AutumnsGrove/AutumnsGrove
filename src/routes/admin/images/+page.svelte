@@ -14,6 +14,7 @@
   let galleryCursor = $state(null);
   let galleryHasMore = $state(false);
   let galleryFilter = $state('');
+  let gallerySortBy = $state('date-desc');
 
   // Copy feedback state
   let copiedItem = $state(null);
@@ -39,6 +40,7 @@
       if (galleryFilter) params.set('prefix', galleryFilter);
       if (append && galleryCursor) params.set('cursor', galleryCursor);
       params.set('limit', '30');
+      params.set('sortBy', gallerySortBy);
 
       const response = await fetch(`/api/images/list?${params}`);
       const data = await response.json();
@@ -69,6 +71,11 @@
   }
 
   function filterGallery() {
+    galleryCursor = null;
+    loadGallery();
+  }
+
+  function changeSortOrder() {
     galleryCursor = null;
     loadGallery();
   }
@@ -307,14 +314,29 @@
         <p class="gallery-subtitle">Hosted in website CDN</p>
       </div>
       <div class="gallery-controls">
-        <input
-          type="text"
-          class="gallery-filter"
-          placeholder="Filter by folder (e.g., blog/)"
-          bind:value={galleryFilter}
-          onkeydown={(e) => e.key === 'Enter' && filterGallery()}
-        />
-        <button class="filter-btn" onclick={filterGallery}>Filter</button>
+        <div class="control-group">
+          <label for="sortBy">Sort by:</label>
+          <select id="sortBy" bind:value={gallerySortBy} onchange={changeSortOrder}>
+            <option value="date-desc">Newest First</option>
+            <option value="date-asc">Oldest First</option>
+            <option value="name-asc">Name (A-Z)</option>
+            <option value="name-desc">Name (Z-A)</option>
+            <option value="size-desc">Largest First</option>
+            <option value="size-asc">Smallest First</option>
+          </select>
+        </div>
+        <div class="control-group">
+          <label for="filterInput">Filter by folder:</label>
+          <input
+            id="filterInput"
+            type="text"
+            class="gallery-filter"
+            placeholder="e.g., blog/"
+            bind:value={galleryFilter}
+            onkeydown={(e) => e.key === 'Enter' && filterGallery()}
+          />
+          <button class="filter-btn" onclick={filterGallery}>Filter</button>
+        </div>
         <button class="refresh-btn" onclick={() => loadGallery()}>Refresh</button>
       </div>
     </div>
@@ -422,7 +444,7 @@
   .folder-select select {
     padding: 0.5rem;
     border: 1px solid var(--color-border);
-    border-radius: 4px;
+    border-radius: var(--border-radius-small);
     font-size: 0.9rem;
     background: var(--mobile-menu-bg);
     color: var(--color-text);
@@ -440,7 +462,7 @@
     min-width: 200px;
     padding: 0.5rem;
     border: 1px solid var(--color-border);
-    border-radius: 4px;
+    border-radius: var(--border-radius-small);
     font-size: 0.9rem;
     background: var(--mobile-menu-bg);
     color: var(--color-text);
@@ -455,7 +477,7 @@
 
   .drop-zone {
     border: 2px dashed var(--color-border);
-    border-radius: 8px;
+    border-radius: var(--border-radius-standard);
     padding: 3rem 2rem;
     text-align: center;
     cursor: pointer;
@@ -557,7 +579,7 @@
     padding: 0.4rem 0.8rem;
     background: var(--color-bg-secondary);
     border: 1px solid var(--color-border);
-    border-radius: 4px;
+    border-radius: var(--border-radius-small);
     font-size: 0.85rem;
     cursor: pointer;
     color: var(--color-text-muted);
@@ -587,7 +609,7 @@
   .upload-item {
     background: var(--mobile-menu-bg);
     border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border-radius: var(--border-radius-standard);
     padding: 1rem;
     transition: background-color 0.3s ease, border-color 0.3s ease;
   }
@@ -625,7 +647,7 @@
   .upload-status {
     font-size: 0.85rem;
     padding: 0.25rem 0.5rem;
-    border-radius: 4px;
+    border-radius: var(--border-radius-small);
   }
 
   .upload-status.uploading {
@@ -652,7 +674,7 @@
   .url-display {
     background: var(--color-bg-secondary);
     padding: 0.5rem;
-    border-radius: 4px;
+    border-radius: var(--border-radius-small);
     overflow-x: auto;
     transition: background-color 0.3s ease;
   }
@@ -683,7 +705,7 @@
     background: var(--color-primary);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--border-radius-small);
     font-size: 0.85rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -710,7 +732,7 @@
   .gallery-section {
     margin-top: 2rem;
     background: var(--mobile-menu-bg);
-    border-radius: 8px;
+    border-radius: var(--border-radius-standard);
     padding: 1.5rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease;
@@ -754,14 +776,48 @@
 
   .gallery-controls {
     display: flex;
-    gap: 0.5rem;
+    gap: 1rem;
     flex-wrap: wrap;
+    align-items: flex-end;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .control-group label {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .control-group label {
+    color: var(--color-text-muted-dark);
+  }
+
+  .control-group select {
+    padding: 0.4rem 0.8rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-small);
+    font-size: 0.85rem;
+    background: var(--mobile-menu-bg);
+    color: var(--color-text);
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
+  :global(.dark) .control-group select {
+    background: var(--color-bg-tertiary-dark);
+    color: var(--color-text-dark);
+    border-color: var(--color-border-dark);
   }
 
   .gallery-filter {
     padding: 0.4rem 0.8rem;
     border: 1px solid var(--color-border);
-    border-radius: 4px;
+    border-radius: var(--border-radius-small);
     font-size: 0.85rem;
     min-width: 180px;
     background: var(--mobile-menu-bg);
@@ -780,7 +836,7 @@
     padding: 0.4rem 0.8rem;
     background: var(--color-bg-secondary);
     border: 1px solid var(--color-border);
-    border-radius: 4px;
+    border-radius: var(--border-radius-small);
     font-size: 0.85rem;
     cursor: pointer;
     color: var(--color-text);
@@ -808,7 +864,7 @@
     background: #ffeef0;
     color: #d73a49;
     padding: 1rem;
-    border-radius: 4px;
+    border-radius: var(--border-radius-small);
     margin-bottom: 1rem;
   }
 
@@ -833,7 +889,7 @@
 
   .gallery-item {
     border: 1px solid var(--color-border);
-    border-radius: 6px;
+    border-radius: var(--border-radius-button);
     overflow: hidden;
     background: var(--color-bg-secondary);
     transition: background-color 0.3s ease, border-color 0.3s ease;
@@ -915,7 +971,7 @@
     background: var(--color-primary);
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: var(--border-radius-small);
     font-size: 0.9rem;
     cursor: pointer;
     transition: background-color 0.3s ease;

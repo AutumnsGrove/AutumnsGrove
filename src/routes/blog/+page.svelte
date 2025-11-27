@@ -27,6 +27,21 @@
 <div class="blog-header">
 	<h1>Blog</h1>
 	<p>Thoughts, ideas, and explorations.</p>
+	{#if data.user}
+		<div class="admin-actions">
+			<span class="logged-in-indicator" title="Logged in as {data.user.email}">
+				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<polyline points="20 6 9 17 4 12"></polyline>
+				</svg>
+			</span>
+			<a href="/admin" class="admin-link" aria-label="Admin Panel">
+				<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+					<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path>
+					<circle cx="12" cy="12" r="3"></circle>
+				</svg>
+			</a>
+		</div>
+	{/if}
 </div>
 
 {#if data.posts.length === 0}
@@ -95,6 +110,47 @@
 
 	:global(.dark) .blog-header p {
 		color: var(--color-text-muted-dark);
+	}
+
+	.admin-actions {
+		display: flex;
+		gap: 0.5rem;
+		align-items: center;
+		margin-top: 1rem;
+	}
+
+	.logged-in-indicator {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #28a745;
+		padding: 0.25rem;
+	}
+
+	:global(.dark) .logged-in-indicator {
+		color: #5cb85f;
+	}
+
+	.admin-link {
+		color: #666;
+		text-decoration: none;
+		border-radius: 4px;
+		padding: 0.25rem;
+		display: flex;
+		align-items: center;
+		transition: background-color 0.2s ease;
+	}
+
+	.admin-link:hover {
+		background: rgba(0, 0, 0, 0.05);
+	}
+
+	:global(.dark) .admin-link {
+		color: #999;
+	}
+
+	:global(.dark) .admin-link:hover {
+		background: rgba(255, 255, 255, 0.05);
 	}
 
 	.no-posts {
