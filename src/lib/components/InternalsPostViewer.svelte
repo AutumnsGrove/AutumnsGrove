@@ -270,8 +270,8 @@
 	}
 
 	.viewer-caption {
-		margin-top: 0.75rem;
-		padding-top: 0.5rem;
+		margin-top: 1.25rem;
+		padding-top: 0.75rem;
 		font-size: 0.8rem;
 		color: #777;
 		font-style: italic;
@@ -302,6 +302,11 @@
 			flex-direction: column;
 			gap: 1rem;
 			align-items: flex-start;
+		}
+
+		.viewer-caption {
+			margin-top: 1.5rem;
+			padding-top: 0.875rem;
 		}
 	}
 </style>
