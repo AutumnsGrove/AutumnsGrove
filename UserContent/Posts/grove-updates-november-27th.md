@@ -3,7 +3,7 @@ aliases: []
 date: 2025-11-26
 date created: Wednesday, November 26th 2025, 11:32:25 pm
 date modified: Wednesday, November 26th 2025, 11:47:30 pm
-description: A couple of updates across the Grove, and a brief summary of my commit history from today.
+description: A couple of updates across the Grove, and a brief summary of my commit history from today
 tags:
   - update
   - grove
@@ -17,6 +17,10 @@ Hello friends!! Late night post this evening.
 I've been hard at work today, on both [GroveEngine](https://github.com/AutumnsGrove/GroveEngine) and this [website](https://github.com/AutumnsGrove/AutumnsGrove), as well as some minor edits to [scripts](https://github.com/AutumnsGrove/CDNUploader) for uploading to my CDN as well as a few [other](https://github.com/AutumnsGrove/ProjectReminder) [things](https://github.com/AutumnsGrove/epub2tts). Look. its been a long day. Heres an automated summary, that will be very shortly automated in the background. Today will be the only manual entry. See you all tomorrow, and, for those who celebrate,
 
 Happy Thanksgiving!!
+
+since i havent been putting enought photos in here. check out my minecraft world. ill explain all the mods soon. i built a dock to fish from and a crop area in a grove of my own. 
+![PhotoOfGroveWithCrops](https://cdn.autumnsgrove.com/photos/2025/11/26/minecraft_scene_showing_villager_garden_plots_and_6b81fe08.webp)
+![DocksNearTheSea](https://cdn.autumnsgrove.com/photos/2025/11/26/minecraft_nighttime_scene_showing_wooden_dock_stru_25d80828.webp)
 
 Be well,
 Autumn <3
