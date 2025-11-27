@@ -144,6 +144,43 @@
 
 ---
 
+### HIGH PRIORITY: Automated Daily Summary Timeline (Nov 26, 2025)
+
+**Status:** Concept ready for planning
+
+**Goal:** Create an automated system that generates and stores daily development summaries in D1, displayable as a live timeline on the website
+
+**Components needed:**
+- [ ] Cloudflare Worker for daily summary generation
+  - [ ] GitHub API integration to fetch commits
+  - [ ] Summary generation logic (detailed + concise)
+  - [ ] Scheduled trigger (runs at end of day)
+- [ ] D1 database schema for timeline storage
+  - [ ] Table: `daily_summaries` (date, brief_summary, detailed_timeline, commit_count, repos_active)
+  - [ ] Indexed by date for fast queries
+- [ ] API endpoint for fetching timeline data
+  - [ ] GET `/api/timeline` - Retrieve summaries
+  - [ ] Support pagination and date filtering
+- [ ] Frontend timeline component
+  - [ ] Option 1: Add to GitHub dashboard page
+  - [ ] Option 2: Create dedicated `/timeline` route
+  - [ ] Card-based UI showing daily summaries
+  - [ ] Expandable detailed view
+- [ ] Configuration
+  - [ ] Upload GitHub token to Cloudflare secrets
+  - [ ] Configure GitHub username
+  - [ ] Set timezone for "end of day" trigger
+
+**Benefits:**
+- Automatic daily summaries without manual `/daily-summary` command
+- Historical record visible on website
+- Share development progress publicly
+- No local machine dependency
+
+**Implementation plan:** To be created in `docs/plans/automated-timeline.md`
+
+---
+
 ### HIGH PRIORITY: Recipes D1 Integration (Nov 26, 2025)
 
 **Status:** Standalone plan ready
