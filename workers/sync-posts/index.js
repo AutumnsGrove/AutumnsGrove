@@ -314,6 +314,11 @@ async function handleSync(request, env, corsHeaders) {
       const tagsJson = JSON.stringify(data.tags || []);
       const timestamp = new Date().toISOString();
 
+      // Normalize date to ISO string (gray-matter may parse dates as Date objects)
+      const postDate = data.date instanceof Date
+        ? data.date.toISOString()
+        : (data.date || new Date().toISOString());
+
       if (existingHash) {
         // Update existing post
         batchStatements.push(
@@ -325,7 +330,7 @@ async function handleSync(request, env, corsHeaders) {
             WHERE slug = ?
           `).bind(
             title,
-            data.date || new Date().toISOString(),
+            postDate,
             tagsJson,
             description,
             post.content,
@@ -351,7 +356,7 @@ async function handleSync(request, env, corsHeaders) {
           `).bind(
             post.slug,
             title,
-            data.date || new Date().toISOString(),
+            postDate,
             tagsJson,
             description,
             post.content,
