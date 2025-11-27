@@ -5,12 +5,14 @@
 A personal website for blogging, sharing recipes, demonstrating projects, and visualizing GitHub activity. Built with SvelteKit 5 and deployed to Cloudflare Pages with D1 database, R2 storage, and KV caching.
 
 **Features:**
-- Markdown-based blogging and recipes
-- GitHub Dashboard with activity heatmap and stats
+- Markdown-based blogging with gutter annotations and table of contents
+- GitHub Dashboard with activity heatmap, stats, and time filtering
 - Admin panel with GitHub OAuth authentication
 - Image hosting via Cloudflare R2 CDN
+- GitHub-style code blocks with syntax highlighting and copy buttons
+- Blog search functionality
+- Photo gallery with lightbox and mood board views
 - Semantic instruction icons for recipes
-- Photo gallery components
 - Scheduled data sync via Cloudflare Workers
 
 ---
@@ -95,9 +97,18 @@ AutumnsGrove/
 │   │           └── upload/         # R2 image upload
 │   ├── lib/
 │   │   ├── components/             # Reusable components
-│   │   │   ├── ImageGallery.svelte # Multi-image gallery
-│   │   │   ├── IconLegend.svelte   # Recipe instruction icons
-│   │   │   └── index.js            # Component exports
+│   │   │   ├── ContentWithGutter.svelte  # Layout with sidebar annotations
+│   │   │   ├── GutterItem.svelte         # Individual gutter annotation
+│   │   │   ├── LeftGutter.svelte         # Left sidebar container
+│   │   │   ├── ImageGallery.svelte       # Multi-image gallery
+│   │   │   ├── Lightbox.svelte           # Modal image viewer
+│   │   │   ├── ZoomableImage.svelte      # Zoomable image component
+│   │   │   ├── TableOfContents.svelte    # Auto-generated TOC
+│   │   │   ├── MobileTOC.svelte          # Mobile-friendly TOC
+│   │   │   ├── CollapsibleSection.svelte # Expandable sections
+│   │   │   ├── LogViewer.svelte          # Admin console logging
+│   │   │   ├── IconLegend.svelte         # Recipe instruction icons
+│   │   │   └── index.js                  # Component exports
 │   │   ├── utils/
 │   │   │   ├── markdown.js         # Markdown parser
 │   │   │   └── github.js           # GitHub API utilities
@@ -109,8 +120,13 @@ AutumnsGrove/
 │   ├── hooks.server.js             # Server hooks (auth)
 │   ├── app.html                    # HTML template
 │   └── app.d.ts                    # TypeScript declarations
-├── posts/                          # Markdown blog posts
-├── recipes/                        # Recipe files (MD & JSON)
+├── UserContent/                    # All user-created content
+│   ├── Posts/                      # Markdown blog posts
+│   │   ├── [post-name].md          # Post content
+│   │   └── [post-name]/gutter/     # Gutter annotations for post
+│   ├── About/                      # About page content
+│   ├── Home/                       # Homepage content
+│   └── Contact/                    # Contact page content
 ├── static/
 │   ├── favicon.png
 │   ├── images/                     # Local images
@@ -139,7 +155,7 @@ AutumnsGrove/
 
 ### Blog Posts
 
-Create Markdown files in the `posts/` directory:
+Create Markdown files in the `UserContent/Posts/` directory:
 
 ```markdown
 ---
@@ -160,9 +176,25 @@ Your content here...
 - **tags** (optional) - Array of tags
 - **description** (optional) - Short preview text
 
+### Gutter Annotations
+
+Posts can have sidebar annotations (gutters) for supplementary content. Create a `gutter/` folder alongside your post:
+
+```
+UserContent/Posts/
+├── my-post.md
+└── my-post/
+    └── gutter/
+        ├── manifest.json      # Defines gutter items and anchors
+        ├── intro-note.md      # Markdown content for annotation
+        └── diagram.svg        # Images can be included too
+```
+
+The `manifest.json` links gutter items to specific anchors in the main post content.
+
 ### Recipes
 
-Recipes support both Markdown (`.md`) and JSON (`.json`) formats in the `recipes/` directory. JSON format enables semantic instruction icons.
+Recipes support both Markdown (`.md`) and JSON (`.json`) formats. JSON format enables semantic instruction icons with visual cues for actions like mixing, heating, and timing.
 
 ---
 
@@ -182,12 +214,22 @@ Data is synced every 6 hours via Cloudflare Workers cron trigger and cached in D
 ### Admin Panel
 
 Protected admin area with GitHub OAuth:
-- Blog post management
-- Image uploads to R2 CDN
+- Blog post management with D1 database sync
+- Recipe management
+- Image uploads to R2 CDN with sorting options
+- Real-time system console with log streaming
 - Site analytics
-- Settings configuration
+- Settings with Cloudflare service status
 
 Access via `/admin` after authenticating through `/auth/login`.
+
+### Code Blocks
+
+GitHub-style code blocks with:
+- Syntax highlighting by language
+- One-click copy button
+- Language label display
+- Word wrapping enabled by default
 
 ### Image Hosting
 
@@ -353,9 +395,19 @@ This project uses Claude Code for development. Key files:
 
 ## License
 
-TBD
+This repository uses a split license approach:
+
+- **Creative Content** (`UserContent/` directory) — [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/)
+  - Blog posts, recipes, and original media
+  - Requires attribution, non-commercial use, and share-alike
+
+- **Source Code** — [MIT License](https://opensource.org/licenses/MIT)
+  - Free to use, modify, and distribute
+  - A standalone engine repository is also planned
+
+See [LICENSE](LICENSE) for full details.
 
 ---
 
-**Last updated:** 2025-11-20
+**Last updated:** 2025-11-27
 **Built with:** SvelteKit 5 + Cloudflare Pages + Claude Code
