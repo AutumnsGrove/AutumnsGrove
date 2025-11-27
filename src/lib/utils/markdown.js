@@ -276,12 +276,24 @@ function isValidUrl(urlString) {
  */
 export function getAllPosts() {
   try {
+    console.log('=== getAllPosts DEBUG START ===');
+    console.log('modules object type:', typeof modules);
+    console.log('modules is array?', Array.isArray(modules));
+    console.log('modules keys count:', Object.keys(modules).length);
+    console.log('modules keys:', Object.keys(modules));
+    console.log('modules:', modules);
+
     const posts = Object.entries(modules)
       .map(([filepath, content]) => {
         try {
           // Extract slug from filepath: ../../../UserContent/Posts/example.md -> example
           const slug = filepath.split("/").pop().replace(".md", "");
+          console.log(`Processing post: ${filepath} -> slug: ${slug}`);
+          console.log('Content type:', typeof content);
+          console.log('Content length:', content?.length);
+
           const { data } = matter(content);
+          console.log('Frontmatter data:', data);
 
           return {
             slug,
@@ -298,6 +310,9 @@ export function getAllPosts() {
       .filter(Boolean)
       .sort((a, b) => new Date(b.date) - new Date(a.date));
 
+    console.log('Final posts count:', posts.length);
+    console.log('Final posts:', posts);
+    console.log('=== getAllPosts DEBUG END ===');
     return posts;
   } catch (err) {
     console.error("Error in getAllPosts:", err);
