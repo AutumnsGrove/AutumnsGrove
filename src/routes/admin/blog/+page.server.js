@@ -13,15 +13,17 @@ export async function load() {
       return { posts: [] };
     }
 
-    const data = await response.json();
-    console.log('Posts returned from worker API:', data);
-    console.log('Posts count:', data.posts?.length || 0);
+    // Worker API returns an array directly, not {posts: [...]}
+    const postsArray = await response.json();
+    console.log('Posts returned from worker API:', postsArray);
+    console.log('Posts count:', postsArray.length);
 
-    const posts = (data.posts || []).map(post => ({
+    // Transform posts - tags are already parsed by the worker
+    const posts = postsArray.map(post => ({
       slug: post.slug,
       title: post.title,
       date: post.date,
-      tags: post.tags ? (typeof post.tags === 'string' ? JSON.parse(post.tags) : post.tags) : [],
+      tags: Array.isArray(post.tags) ? post.tags : [],
       description: post.description || '',
     }));
 
