@@ -73,24 +73,20 @@ Creates both timeline and summary using:
 
 ## File Organization
 
-Documents are saved with date-stamped filenames:
+Documents are saved in `docs/daily-summaries/` with date-stamped filenames:
 
 ```
 AutumnsGrove/
-├── git-timeline-2025-11-26.md
-├── daily-summary-2025-11-26.md
-├── git-timeline-2025-11-27.md
-├── daily-summary-2025-11-27.md
-└── ...
+└── docs/
+    └── daily-summaries/
+        ├── git-timeline-2025-11-26.md
+        ├── daily-summary-2025-11-26.md
+        ├── git-timeline-2025-11-27.md
+        ├── daily-summary-2025-11-27.md
+        └── ...
 ```
 
-**Tip:** Create a `daily-summaries/` directory if you want to organize them separately:
-
-```bash
-mkdir -p daily-summaries
-mv git-timeline-*.md daily-summaries/
-mv daily-summary-*.md daily-summaries/
-```
+This keeps your project root clean while maintaining organized documentation.
 
 ## Usage Patterns
 
@@ -103,15 +99,15 @@ mv daily-summary-*.md daily-summaries/
 ### Weekly Review
 ```bash
 # View all summaries from this week
-ls -1 daily-summary-2025-11-*.md | xargs cat
+ls -1 docs/daily-summaries/daily-summary-2025-11-*.md | xargs cat
 ```
 
 ### Monthly Archive
 ```bash
 # Archive last month's summaries
-mkdir -p archives/2025-11
-mv git-timeline-2025-11-*.md archives/2025-11/
-mv daily-summary-2025-11-*.md archives/2025-11/
+mkdir -p docs/archives/2025-11
+mv docs/daily-summaries/git-timeline-2025-11-*.md docs/archives/2025-11/
+mv docs/daily-summaries/daily-summary-2025-11-*.md docs/archives/2025-11/
 ```
 
 ## Customization
