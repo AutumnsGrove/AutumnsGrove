@@ -146,16 +146,69 @@
 
 /* Explicit grid positioning to handle missing gutters */
 @media (min-width: 1200px) {
-	.content-layout.has-gutters .left-gutter-container {
+	/* Both gutters - 3 column layout */
+	.content-layout.has-both-gutters .left-gutter-container {
 		grid-column: 1;
 	}
 
-	.content-layout.has-gutters .content-article {
+	.content-layout.has-both-gutters .content-article {
 		grid-column: 2;
 	}
 
-	.content-layout.has-gutters .right-gutter-container {
+	.content-layout.has-both-gutters .right-gutter-container {
 		grid-column: 3;
+	}
+
+	/* Left gutter only - 2 column layout */
+	.content-layout.has-left-gutter:not(.has-right-gutter) .left-gutter-container {
+		grid-column: 1;
+	}
+
+	.content-layout.has-left-gutter:not(.has-right-gutter) .content-article {
+		grid-column: 2;
+	}
+
+	/* Right gutter only - 2 column layout */
+	.content-layout.has-right-gutter:not(.has-left-gutter) .content-article {
+		grid-column: 1;
+	}
+
+	.content-layout.has-right-gutter:not(.has-left-gutter) .right-gutter-container {
+		grid-column: 2;
+	}
+}
+
+/* Tablet grid positioning */
+@media (min-width: 769px) and (max-width: 1199px) {
+	/* Both gutters - 3 column layout */
+	.content-layout.has-both-gutters .left-gutter-container {
+		grid-column: 1;
+	}
+
+	.content-layout.has-both-gutters .content-article {
+		grid-column: 2;
+	}
+
+	.content-layout.has-both-gutters .right-gutter-container {
+		grid-column: 3;
+	}
+
+	/* Left gutter only - 2 column layout */
+	.content-layout.has-left-gutter:not(.has-right-gutter) .left-gutter-container {
+		grid-column: 1;
+	}
+
+	.content-layout.has-left-gutter:not(.has-right-gutter) .content-article {
+		grid-column: 2;
+	}
+
+	/* Right gutter only - 2 column layout */
+	.content-layout.has-right-gutter:not(.has-left-gutter) .content-article {
+		grid-column: 1;
+	}
+
+	.content-layout.has-right-gutter:not(.has-left-gutter) .right-gutter-container {
+		grid-column: 2;
 	}
 }
 

@@ -402,10 +402,15 @@ export function getPostBySlug(slug) {
  */
 export function extractHeaders(markdown) {
   const headers = [];
+
+  // Remove fenced code blocks before extracting headers
+  // This prevents # comments inside code blocks from being treated as headers
+  const markdownWithoutCodeBlocks = markdown.replace(/```[\s\S]*?```/g, "");
+
   const headerRegex = /^(#{1,6})\s+(.+)$/gm;
 
   let match;
-  while ((match = headerRegex.exec(markdown)) !== null) {
+  while ((match = headerRegex.exec(markdownWithoutCodeBlocks)) !== null) {
     const level = match[1].length;
     const text = match[2].trim();
     // Create a slug-style ID from the header text
