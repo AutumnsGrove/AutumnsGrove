@@ -19,6 +19,18 @@
   // Copy feedback state
   let copiedItem = $state(null);
 
+  // Delete confirmation modal state
+  let deleteModalOpen = $state(false);
+  let imageToDelete = $state(null);
+  let deleting = $state(false);
+
+  // Toast notification state
+  let toasts = $state([]);
+  let toastId = 0;
+
+  // Modal element reference for focus management
+  let modalElement = $state(null);
+
   const folderOptions = [
     { value: 'blog', label: 'Blog Posts' },
     { value: 'recipes', label: 'Recipes' },
@@ -124,7 +136,7 @@
     const imageFiles = files.filter(f => f.type.startsWith('image/'));
 
     if (imageFiles.length === 0) {
-      alert('Please select image files only');
+      showToast('Please select image files only', 'error');
       return;
     }
 
@@ -198,6 +210,90 @@
 
   function clearCompleted() {
     uploads = uploads.filter(u => u.status === 'uploading');
+  }
+
+  // Toast notification functions
+  function showToast(message, type = 'info') {
+    const id = ++toastId;
+    toasts = [...toasts, { id, message, type }];
+    setTimeout(() => {
+      toasts = toasts.filter(t => t.id !== id);
+    }, 5000);
+  }
+
+  function dismissToast(id) {
+    toasts = toasts.filter(t => t.id !== id);
+  }
+
+  // Delete confirmation functions
+  function confirmDelete(image) {
+    imageToDelete = image;
+    deleteModalOpen = true;
+    // Focus the modal after it opens
+    setTimeout(() => {
+      if (modalElement) {
+        modalElement.focus();
+      }
+    }, 0);
+  }
+
+  function cancelDelete() {
+    deleteModalOpen = false;
+    imageToDelete = null;
+  }
+
+  function handleModalKeydown(e) {
+    if (e.key === 'Escape') {
+      cancelDelete();
+    }
+    // Focus trap: keep focus within modal
+    if (e.key === 'Tab' && modalElement) {
+      const focusableElements = modalElement.querySelectorAll(
+        'button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (e.shiftKey && document.activeElement === firstElement) {
+        e.preventDefault();
+        lastElement.focus();
+      } else if (!e.shiftKey && document.activeElement === lastElement) {
+        e.preventDefault();
+        firstElement.focus();
+      }
+    }
+  }
+
+  async function executeDelete() {
+    if (!imageToDelete) return;
+
+    deleting = true;
+
+    try {
+      const response = await fetch('/api/images/delete', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ key: imageToDelete.key }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to delete image');
+      }
+
+      // Remove from gallery after successful deletion
+      galleryImages = galleryImages.filter(img => img.key !== imageToDelete.key);
+      showToast('Image deleted successfully', 'success');
+    } catch (err) {
+      showToast('Failed to delete image: ' + err.message, 'error');
+    } finally {
+      deleting = false;
+      deleteModalOpen = false;
+      imageToDelete = null;
+    }
   }
 </script>
 
@@ -367,6 +463,9 @@
               <button class="copy-btn small" onclick={() => copyToClipboard(`![](${image.url})`, 'markdown', image.key)}>
                 {copiedItem === `${image.key}-markdown` ? '✓' : 'MD'}
               </button>
+              <button class="delete-btn small" onclick={() => confirmDelete(image)} aria-label="Delete image">
+                X
+              </button>
             </div>
           </div>
         {/each}
@@ -386,6 +485,58 @@
     {/if}
   </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+{#if deleteModalOpen}
+  <div
+    class="modal-overlay"
+    onclick={cancelDelete}
+    onkeydown={handleModalKeydown}
+    role="presentation"
+  >
+    <div
+      class="modal-content"
+      bind:this={modalElement}
+      onclick={(e) => e.stopPropagation()}
+      onkeydown={handleModalKeydown}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      tabindex="-1"
+    >
+      <h3 id="modal-title">Delete Image?</h3>
+      {#if imageToDelete}
+        <p class="modal-filename">{getFileName(imageToDelete.key)}</p>
+        <div class="modal-preview">
+          <img src={imageToDelete.url} alt="Preview" />
+        </div>
+      {/if}
+      <p class="modal-warning">This action cannot be undone.</p>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" onclick={cancelDelete} disabled={deleting}>
+          Cancel
+        </button>
+        <button class="modal-btn delete" onclick={executeDelete} disabled={deleting}>
+          {deleting ? 'Deleting...' : 'Delete'}
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}
+
+<!-- Toast Notifications -->
+{#if toasts.length > 0}
+  <div class="toast-container" role="status" aria-live="polite">
+    {#each toasts as toast (toast.id)}
+      <div class="toast toast-{toast.type}">
+        <span class="toast-message">{toast.message}</span>
+        <button class="toast-dismiss" onclick={() => dismissToast(toast.id)} aria-label="Dismiss notification">
+          &times;
+        </button>
+      </div>
+    {/each}
+  </div>
+{/if}
 
 <style>
   .images-page {
@@ -1013,6 +1164,268 @@
     .gallery-grid {
       grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
       gap: 0.5rem;
+    }
+  }
+
+  /* Delete Button */
+  .delete-btn {
+    background: #d73a49;
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-small);
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  .delete-btn:hover {
+    background: #cb2431;
+  }
+
+  .delete-btn.small {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    font-weight: bold;
+  }
+
+  /* Modal Overlay */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+  }
+
+  :global(.dark) .modal-overlay {
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  /* Modal Content */
+  .modal-content {
+    background: var(--mobile-menu-bg);
+    border-radius: var(--border-radius-standard);
+    padding: 1.5rem;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease;
+  }
+
+  :global(.dark) .modal-content {
+    background: var(--color-bg-tertiary-dark);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-content h3 {
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .modal-content h3 {
+    color: var(--color-text-dark);
+  }
+
+  .modal-filename {
+    font-family: monospace;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    word-break: break-all;
+    margin: 0 0 1rem 0;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .modal-filename {
+    color: var(--color-text-subtle-dark);
+  }
+
+  .modal-preview {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--color-bg-secondary);
+    border-radius: var(--border-radius-small);
+    padding: 0.5rem;
+    margin-bottom: 1rem;
+    max-height: 150px;
+    overflow: hidden;
+    transition: background-color 0.3s ease;
+  }
+
+  :global(.dark) .modal-preview {
+    background: var(--color-bg-secondary-dark);
+  }
+
+  .modal-preview img {
+    max-width: 100%;
+    max-height: 130px;
+    object-fit: contain;
+  }
+
+  .modal-warning {
+    font-size: 0.85rem;
+    color: #d73a49;
+    margin: 0 0 1.5rem 0;
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+  }
+
+  .modal-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--border-radius-small);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+  }
+
+  .modal-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .modal-btn.cancel {
+    background: var(--color-bg-secondary);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
+  :global(.dark) .modal-btn.cancel {
+    background: var(--color-bg-secondary-dark);
+    color: var(--color-text-dark);
+    border-color: var(--color-border-dark);
+  }
+
+  .modal-btn.cancel:hover:not(:disabled) {
+    background: #e1e4e8;
+  }
+
+  :global(.dark) .modal-btn.cancel:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.1);
+  }
+
+  .modal-btn.delete {
+    background: #d73a49;
+    color: white;
+  }
+
+  .modal-btn.delete:hover:not(:disabled) {
+    background: #cb2431;
+  }
+
+  /* Toast Notifications */
+  .toast-container {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    z-index: 1001;
+    max-width: 350px;
+  }
+
+  .toast {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    border-radius: var(--border-radius-small);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.3s ease;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .toast-success {
+    background: #dcffe4;
+    color: #22863a;
+    border: 1px solid #22863a;
+  }
+
+  :global(.dark) .toast-success {
+    background: rgba(40, 167, 69, 0.2);
+    color: #7ee787;
+    border-color: #238636;
+  }
+
+  .toast-error {
+    background: #ffeef0;
+    color: #d73a49;
+    border: 1px solid #d73a49;
+  }
+
+  :global(.dark) .toast-error {
+    background: rgba(248, 81, 73, 0.2);
+    color: #f85149;
+    border-color: #f85149;
+  }
+
+  .toast-info {
+    background: #e6f3ff;
+    color: #0366d6;
+    border: 1px solid #0366d6;
+  }
+
+  :global(.dark) .toast-info {
+    background: rgba(56, 139, 253, 0.2);
+    color: #58a6ff;
+    border-color: #388bfd;
+  }
+
+  .toast-message {
+    flex: 1;
+    font-size: 0.9rem;
+  }
+
+  .toast-dismiss {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 0.5rem;
+    opacity: 0.7;
+    color: inherit;
+    line-height: 1;
+  }
+
+  .toast-dismiss:hover {
+    opacity: 1;
+  }
+
+  /* Mobile styles for modal and toast */
+  @media (max-width: 768px) {
+    .modal-content {
+      max-width: none;
+      margin: 0 1rem;
+    }
+
+    .toast-container {
+      left: 1rem;
+      right: 1rem;
+      max-width: none;
     }
   }
 </style>
