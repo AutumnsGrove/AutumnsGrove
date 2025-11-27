@@ -186,10 +186,12 @@
     display: flex;
     flex-direction: column;
     position: fixed;
-    top: 0.75rem;
-    bottom: 0.75rem;
-    left: 0.75rem;
-    height: auto;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    margin: 0.75rem;
+    margin-right: 0;
+    height: calc(100vh - 1.5rem);
     z-index: 1002;
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-standard);
