@@ -401,8 +401,9 @@ This repository uses a split license approach:
   - Blog posts, recipes, and original media
   - Requires attribution, non-commercial use, and share-alike
 
-- **Source Code** — Provided for reference and learning
-  - A fully open-source engine version is planned as a separate repository
+- **Source Code** — [MIT License](https://opensource.org/licenses/MIT)
+  - Free to use, modify, and distribute
+  - A standalone engine repository is also planned
 
 See [LICENSE](LICENSE) for full details.
 
