@@ -38,9 +38,9 @@ export async function PUT({ request, platform, locals }) {
 
     // Validate font_family value specifically
     if (setting_key === "font_family") {
-      const validFonts = ["alagard", "cozette"];
+      const validFonts = ["alagard", "cozette", "atkinson", "opendyslexic"];
       if (!validFonts.includes(setting_value)) {
-        throw error(400, "Invalid font value. Must be 'alagard' or 'cozette'");
+        throw error(400, "Invalid font value");
       }
     }
 

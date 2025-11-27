@@ -51,6 +51,46 @@
         <dd>MIT License</dd>
       </dl>
     </article>
+
+    <article class="credit-item">
+      <h3>Atkinson Hyperlegible</h3>
+      <p class="credit-description">
+        A typeface designed for greater legibility and readability for low vision readers.
+        Created by the Braille Institute.
+      </p>
+      <dl class="credit-details">
+        <dt>Author</dt>
+        <dd>Braille Institute of America</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://brailleinstitute.org/freefont" target="_blank" rel="noopener noreferrer">
+            Braille Institute - Atkinson Hyperlegible
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>SIL Open Font License 1.1</dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>OpenDyslexic</h3>
+      <p class="credit-description">
+        A typeface designed to mitigate some of the common reading errors caused by dyslexia.
+        Features weighted bottoms to help indicate direction.
+      </p>
+      <dl class="credit-details">
+        <dt>Author</dt>
+        <dd>Abbie Gonzalez</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://opendyslexic.org/" target="_blank" rel="noopener noreferrer">
+            OpenDyslexic.org
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>SIL Open Font License</dd>
+      </dl>
+    </article>
   </section>
 </div>
 

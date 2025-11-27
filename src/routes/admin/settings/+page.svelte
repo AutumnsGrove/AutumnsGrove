@@ -83,7 +83,9 @@
         // Apply immediately for preview
         const fontMap = {
           alagard: "'Alagard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          cozette: "'Cozette', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+          cozette: "'Cozette', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          atkinson: "'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          opendyslexic: "'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
         };
         document.documentElement.style.setProperty('--font-family-main', fontMap[currentFont]);
       } else {
@@ -201,6 +203,32 @@
           <div class="font-info">
             <span class="font-name" style="font-family: 'Cozette', sans-serif;">Cozette</span>
             <span class="font-description">Bitmap programming font</span>
+          </div>
+        </label>
+
+        <label class="font-option" class:selected={currentFont === 'atkinson'}>
+          <input
+            type="radio"
+            name="font"
+            value="atkinson"
+            bind:group={currentFont}
+          />
+          <div class="font-info">
+            <span class="font-name" style="font-family: 'Atkinson Hyperlegible', sans-serif;">Atkinson Hyperlegible</span>
+            <span class="font-description">Accessibility font for low vision</span>
+          </div>
+        </label>
+
+        <label class="font-option" class:selected={currentFont === 'opendyslexic'}>
+          <input
+            type="radio"
+            name="font"
+            value="opendyslexic"
+            bind:group={currentFont}
+          />
+          <div class="font-info">
+            <span class="font-name" style="font-family: 'OpenDyslexic', sans-serif;">OpenDyslexic</span>
+            <span class="font-description">Accessibility font for dyslexia</span>
           </div>
         </label>
       </div>

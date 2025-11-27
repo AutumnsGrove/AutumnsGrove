@@ -9,7 +9,9 @@
 	// Font family mapping - maps database values to CSS font stacks
 	const fontMap = {
 		alagard: "'Alagard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-		cozette: "'Cozette', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+		cozette: "'Cozette', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+		atkinson: "'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+		opendyslexic: "'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
 	};
 
 	// Apply font from server-loaded settings
@@ -367,6 +369,22 @@
 	@font-face {
 		font-family: 'Cozette';
 		src: url('/fonts/CozetteVector.ttf') format('truetype');
+		font-weight: normal;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: 'Atkinson Hyperlegible';
+		src: url('/fonts/AtkinsonHyperlegible-Regular.ttf') format('truetype');
+		font-weight: normal;
+		font-style: normal;
+		font-display: swap;
+	}
+
+	@font-face {
+		font-family: 'OpenDyslexic';
+		src: url('/fonts/OpenDyslexic-Regular.otf') format('opentype');
 		font-weight: normal;
 		font-style: normal;
 		font-display: swap;
