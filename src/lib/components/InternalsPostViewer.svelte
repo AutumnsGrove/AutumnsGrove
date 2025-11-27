@@ -300,7 +300,7 @@
 
 		.viewer-footer {
 			flex-direction: column;
-			gap: 0.5rem;
+			gap: 1rem;
 			align-items: flex-start;
 		}
 	}
