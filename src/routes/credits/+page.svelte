@@ -150,6 +150,326 @@
       </dl>
     </article>
   </section>
+
+  <section class="credits-section">
+    <h2>Frameworks & Build Tools</h2>
+
+    <article class="credit-item">
+      <h3>SvelteKit</h3>
+      <p class="credit-description">
+        The official application framework from the Svelte team, powered by Vite.
+        Provides SSR, client-side rendering, prerendering, and modern best practices.
+      </p>
+      <dl class="credit-details">
+        <dt>Author</dt>
+        <dd>Svelte Team</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://svelte.dev/docs/kit" target="_blank" rel="noopener noreferrer">
+            svelte.dev/docs/kit
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>MIT License</dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>Svelte 5</h3>
+      <p class="credit-description">
+        A compiler-based UI framework that lets you write concise components using HTML, CSS and JavaScript.
+        Version 5 features runes for reactivity and native TypeScript support.
+      </p>
+      <dl class="credit-details">
+        <dt>Author</dt>
+        <dd>Rich Harris & Svelte Team</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://svelte.dev/" target="_blank" rel="noopener noreferrer">
+            svelte.dev
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>MIT License</dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>Vite</h3>
+      <p class="credit-description">
+        Next-generation frontend build tool with extremely fast HMR using native ES modules
+        in development, and Rollup for production builds.
+      </p>
+      <dl class="credit-details">
+        <dt>Author</dt>
+        <dd>Evan You & Vite Team</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://vite.dev/" target="_blank" rel="noopener noreferrer">
+            vite.dev
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>MIT License</dd>
+      </dl>
+    </article>
+  </section>
+
+  <section class="credits-section">
+    <h2>Libraries</h2>
+
+    <article class="credit-item">
+      <h3>marked</h3>
+      <p class="credit-description">
+        Fast markdown parser and compiler supporting CommonMark and GitHub Flavored Markdown.
+        Powers all blog posts and recipe content on this site.
+      </p>
+      <dl class="credit-details">
+        <dt>Author</dt>
+        <dd>Christopher Jeffrey & marked contributors</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://marked.js.org/" target="_blank" rel="noopener noreferrer">
+            marked.js.org
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>MIT License</dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>gray-matter</h3>
+      <p class="credit-description">
+        Battle-tested YAML front matter parser. Extracts metadata from markdown files
+        including titles, dates, tags, and descriptions.
+      </p>
+      <dl class="credit-details">
+        <dt>Author</dt>
+        <dd>Jon Schlinkert</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://github.com/jonschlinkert/gray-matter" target="_blank" rel="noopener noreferrer">
+            GitHub - gray-matter
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>MIT License</dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>Mermaid</h3>
+      <p class="credit-description">
+        JavaScript diagramming tool that renders Markdown-inspired text into diagrams.
+        Winner of the 2019 JavaScript Open Source Award for "Most Exciting Use of Technology".
+      </p>
+      <dl class="credit-details">
+        <dt>Author</dt>
+        <dd>Knut Sveidqvist & Mermaid contributors</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://mermaid.js.org/" target="_blank" rel="noopener noreferrer">
+            mermaid.js.org
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>MIT License</dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>Chart.js</h3>
+      <p class="credit-description">
+        Open-source JavaScript charting library supporting 8 chart types.
+        Powers the GitHub dashboard statistics and activity visualizations.
+      </p>
+      <dl class="credit-details">
+        <dt>Author</dt>
+        <dd>Chart.js contributors</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://www.chartjs.org/" target="_blank" rel="noopener noreferrer">
+            chartjs.org
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>MIT License</dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>Lucide</h3>
+      <p class="credit-description">
+        Beautiful icon library with 1000+ SVG icons. Each icon renders as an inline SVG
+        component, fully tree-shakable. Fork of Feather Icons.
+      </p>
+      <dl class="credit-details">
+        <dt>Author</dt>
+        <dd>Lucide contributors</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://lucide.dev/" target="_blank" rel="noopener noreferrer">
+            lucide.dev
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>ISC License</dd>
+      </dl>
+    </article>
+  </section>
+
+  <section class="credits-section">
+    <h2>Platform & Infrastructure</h2>
+
+    <article class="credit-item">
+      <h3>Cloudflare Pages</h3>
+      <p class="credit-description">
+        JAMstack platform for deploying full-stack applications instantly to Cloudflare's
+        global network. Hosts this entire website with edge-side rendering.
+      </p>
+      <dl class="credit-details">
+        <dt>Provider</dt>
+        <dd>Cloudflare, Inc.</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://pages.cloudflare.com/" target="_blank" rel="noopener noreferrer">
+            pages.cloudflare.com
+          </a>
+        </dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>Cloudflare Workers</h3>
+      <p class="credit-description">
+        Serverless platform running code in 330+ cities across Cloudflare's global network.
+        Powers the backend API endpoints and server-side logic.
+      </p>
+      <dl class="credit-details">
+        <dt>Provider</dt>
+        <dd>Cloudflare, Inc.</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://workers.cloudflare.com/" target="_blank" rel="noopener noreferrer">
+            workers.cloudflare.com
+          </a>
+        </dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>Cloudflare D1</h3>
+      <p class="credit-description">
+        Serverless SQLite database with built-in disaster recovery.
+        Stores site settings, authentication data, and cached GitHub statistics.
+      </p>
+      <dl class="credit-details">
+        <dt>Provider</dt>
+        <dd>Cloudflare, Inc.</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://developers.cloudflare.com/d1/" target="_blank" rel="noopener noreferrer">
+            Cloudflare D1 Documentation
+          </a>
+        </dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>Cloudflare R2</h3>
+      <p class="credit-description">
+        S3-compatible object storage with zero egress fees.
+        Hosts all images and media files for the CDN.
+      </p>
+      <dl class="credit-details">
+        <dt>Provider</dt>
+        <dd>Cloudflare, Inc.</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://www.cloudflare.com/developer-platform/products/r2/" target="_blank" rel="noopener noreferrer">
+            Cloudflare R2
+          </a>
+        </dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>Cloudflare KV</h3>
+      <p class="credit-description">
+        Global, low-latency key-value store for high read volumes.
+        Caches API responses for improved performance.
+      </p>
+      <dl class="credit-details">
+        <dt>Provider</dt>
+        <dd>Cloudflare, Inc.</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://developers.cloudflare.com/kv/" target="_blank" rel="noopener noreferrer">
+            Cloudflare KV Documentation
+          </a>
+        </dd>
+      </dl>
+    </article>
+  </section>
+
+  <section class="credits-section">
+    <h2>APIs & Services</h2>
+
+    <article class="credit-item">
+      <h3>GitHub API</h3>
+      <p class="credit-description">
+        REST and GraphQL APIs for accessing GitHub data.
+        Powers the dashboard with repository stats, commit history, and contribution data.
+      </p>
+      <dl class="credit-details">
+        <dt>Provider</dt>
+        <dd>GitHub, Inc.</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://docs.github.com/en/rest" target="_blank" rel="noopener noreferrer">
+            GitHub REST API Documentation
+          </a>
+        </dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>Anthropic Claude API</h3>
+      <p class="credit-description">
+        High-performance AI platform excelling at language, reasoning, and analysis.
+        Provides AI-powered repository analysis on the dashboard.
+      </p>
+      <dl class="credit-details">
+        <dt>Provider</dt>
+        <dd>Anthropic</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://docs.anthropic.com/" target="_blank" rel="noopener noreferrer">
+            Anthropic API Documentation
+          </a>
+        </dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>Resend</h3>
+      <p class="credit-description">
+        Email API for developers with a simple REST interface.
+        Handles authentication emails for the admin panel.
+      </p>
+      <dl class="credit-details">
+        <dt>Provider</dt>
+        <dd>Resend, Inc.</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://resend.com/" target="_blank" rel="noopener noreferrer">
+            resend.com
+          </a>
+        </dd>
+      </dl>
+    </article>
+  </section>
 </div>
 
 <style>
