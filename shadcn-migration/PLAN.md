@@ -182,18 +182,47 @@ Each phase has a detailed prompt file in `./phases/`:
 
 ## Color Mapping Reference
 
-| AutumnsGrove Variable | Value | shadcn Variable |
-|-----------------------|-------|-----------------|
-| `--color-primary` | #2c5f2d | `--primary` |
-| `--color-primary-hover` | #4a9d4f | `--primary-hover` (custom) |
-| `--color-primary-light` | #5cb85f | Dark mode primary |
-| `--color-text` | #333 | `--foreground` |
-| `--color-text-muted` | #666 | `--muted-foreground` |
-| `--color-text-subtle` | #888 | Custom or muted variant |
-| `--color-bg-secondary` | #f5f5f5 | `--secondary` |
-| `--color-border` | #e0e0e0 | `--border` |
-| `--color-danger` | #d73a49 | `--destructive` |
-| `--tag-bg` | #7c4dab | `--accent` |
+> ✅ *HSL values verified with color conversion tool - 2025-11-28*
+
+| AutumnsGrove Variable | Hex Value | HSL Value | shadcn Variable |
+|-----------------------|-----------|-----------|-----------------|
+| `--color-primary` | #2c5f2d | 121 37% 27% | `--primary` |
+| `--color-primary-hover` | #4a9d4f | 124 36% 45% | `--primary-hover` (custom) |
+| `--color-primary-light` | #5cb85f | 122 39% 54% | Dark mode primary |
+| `--color-text` | #333 | 0 0% 20% | `--foreground` |
+| `--color-text-muted` | #666 | 0 0% 40% | `--muted-foreground` |
+| `--color-text-subtle` | #888 | 0 0% 53% | Custom or muted variant |
+| `--color-bg-secondary` | #f5f5f5 | 0 0% 96% | `--secondary` |
+| `--color-border` | #e0e0e0 | 0 0% 88% | `--border` |
+| `--color-danger` | #d73a49 | 354 66% 54% | `--destructive` |
+| `--tag-bg` | #7c4dab | 270 38% 49% | `--accent` |
+
+---
+
+## Rollback Strategy
+
+If the migration fails at any point or you decide not to proceed:
+
+```bash
+# Option 1: Abandon the branch entirely
+git checkout main
+git branch -D claude/explore-shadcn-integration-013yvUWs5fAGaXAmfEqtNddf
+
+# Option 2: Revert specific commits while keeping branch
+git log --oneline  # Find commit to revert to
+git reset --hard <commit-hash>
+
+# Option 3: Cherry-pick only working phases
+git checkout main
+git checkout -b shadcn-partial
+git cherry-pick <phase-1-commit> <phase-2-commit>  # etc.
+```
+
+**Key safety points:**
+- All changes are contained in the feature branch
+- `main` is never touched until PR merge
+- Each phase can be committed separately for granular rollback
+- The CSS variable mapping layer means existing code continues working during migration
 
 ---
 

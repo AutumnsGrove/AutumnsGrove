@@ -10,6 +10,25 @@ You are setting up the foundation for shadcn-svelte in an existing SvelteKit 5 p
 
 ## Tasks
 
+### 1.0 Record Bundle Size Baseline
+
+**Before making any changes**, record the current bundle size for comparison after migration:
+
+```bash
+# Build and capture bundle info
+npm run build 2>&1 | tee /tmp/pre-migration-build.log
+
+# Note the key sizes - look for output like:
+# .svelte-kit/output/client/_app/immutable/chunks/...
+# Total JS size, total CSS size
+```
+
+Save this output! We'll compare it in Phase 6 to ensure the migration doesn't bloat the bundle excessively.
+
+**Acceptable threshold**: Up to 15-20% increase is reasonable given we're adding Tailwind + shadcn. If it exceeds 25%, investigate what's being pulled in.
+
+---
+
 ### 1.1 Install Dependencies
 
 Run these commands:
@@ -28,15 +47,17 @@ Create a Tailwind config that:
 - Extends with custom values matching current design tokens
 
 **Color Mapping (hex → HSL):**
-- Primary: #2c5f2d → `142 36% 27%` (forest green)
-- Primary hover: #4a9d4f → `122 35% 45%`
-- Primary light (dark mode): #5cb85f → `121 40% 54%`
+> ✅ *Verified with color conversion tool - 2025-11-28*
+
+- Primary: #2c5f2d → `121 37% 27%` (forest green)
+- Primary hover: #4a9d4f → `124 36% 45%`
+- Primary light (dark mode): #5cb85f → `122 39% 54%`
 - Text: #333 → `0 0% 20%`
 - Text muted: #666 → `0 0% 40%`
 - Background secondary: #f5f5f5 → `0 0% 96%`
 - Border: #e0e0e0 → `0 0% 88%`
-- Danger: #d73a49 → `354 66% 53%`
-- Tags purple: #7c4dab → `268 38% 49%`
+- Danger: #d73a49 → `354 66% 54%`
+- Tags purple: #7c4dab → `270 38% 49%`
 
 ```javascript
 import { fontFamily } from "tailwindcss/defaultTheme";
@@ -127,9 +148,9 @@ Create the main CSS file with Tailwind directives and shadcn CSS variables:
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 20%;
 
-    --primary: 142 36% 27%;
+    --primary: 121 37% 27%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 122 35% 45%;
+    --primary-hover: 124 36% 45%;
 
     --secondary: 0 0% 96%;
     --secondary-foreground: 0 0% 20%;
@@ -137,15 +158,15 @@ Create the main CSS file with Tailwind directives and shadcn CSS variables:
     --muted: 0 0% 96%;
     --muted-foreground: 0 0% 40%;
 
-    --accent: 268 38% 49%;
+    --accent: 270 38% 49%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 354 66% 53%;
+    --destructive: 354 66% 54%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 0 0% 88%;
     --input: 0 0% 88%;
-    --ring: 142 36% 27%;
+    --ring: 121 37% 27%;
 
     --radius: 0.5rem;
 
@@ -162,9 +183,9 @@ Create the main CSS file with Tailwind directives and shadcn CSS variables:
     --popover: 0 0% 14%;
     --popover-foreground: 0 0% 94%;
 
-    --primary: 121 40% 54%;
+    --primary: 122 39% 54%;
     --primary-foreground: 0 0% 10%;
-    --primary-hover: 121 50% 64%;
+    --primary-hover: 122 49% 64%;
 
     --secondary: 0 0% 16%;
     --secondary-foreground: 0 0% 94%;
@@ -172,15 +193,15 @@ Create the main CSS file with Tailwind directives and shadcn CSS variables:
     --muted: 0 0% 16%;
     --muted-foreground: 0 0% 70%;
 
-    --accent: 268 45% 55%;
+    --accent: 270 45% 55%;
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 354 66% 53%;
+    --destructive: 354 66% 54%;
     --destructive-foreground: 0 0% 100%;
 
     --border: 0 0% 20%;
     --input: 0 0% 20%;
-    --ring: 121 40% 54%;
+    --ring: 122 39% 54%;
   }
 }
 

@@ -18,18 +18,23 @@ Components are migrated (Phases 2-3). Now we update the content styling system (
 
 ### 4.1 Configure Tailwind Typography
 
-Update `tailwind.config.js` to add typography customization:
+> 📝 **Config Split**: The typography configuration is large (~200 lines), so we'll split it into a separate file for maintainability.
+
+**Create `tailwind.typography.config.js`** (separate file for prose styles):
 
 ```javascript
-import { fontFamily } from "tailwindcss/defaultTheme";
-
-/** @type {import('tailwindcss').Config} */
-export default {
-  // ... existing config
-  theme: {
-    extend: {
-      // ... existing extends
-      typography: ({ theme }) => ({
+/**
+ * Tailwind Typography Configuration for AutumnsGrove
+ *
+ * This configures the prose styles for blog posts, recipes, and markdown content.
+ *
+ * IMPORTANT: This does NOT affect the 7 site fonts (Alagard, Cozette, Atkinson
+ * Hyperlegible, Cormorant, Lexend, Quicksand, OpenDyslexic). Those are loaded
+ * dynamically from D1 via --font-family-main in +layout.svelte.
+ *
+ * This only styles typography WITHIN prose content (headings, paragraphs, links, etc.)
+ */
+export const typographyConfig = ({ theme }) => ({
         DEFAULT: {
           css: {
             // Use our CSS variables for colors
@@ -218,12 +223,42 @@ export default {
             },
           },
         },
-      }),
+});
+```
+
+**Update `tailwind.config.js`** to import the typography config:
+
+```javascript
+import { fontFamily } from "tailwindcss/defaultTheme";
+import { typographyConfig } from "./tailwind.typography.config.js";
+
+/** @type {import('tailwindcss').Config} */
+export default {
+  darkMode: ["class"],
+  content: ["./src/**/*.{html,js,svelte,ts}"],
+  safelist: ["dark"],
+  theme: {
+    container: {
+      center: true,
+      padding: "2rem",
+      screens: {
+        "2xl": "1400px"
+      }
     },
+    extend: {
+      // ... existing color/borderRadius/fontFamily config from Phase 1 ...
+
+      // Typography plugin configuration (from separate file)
+      typography: typographyConfig,
+    }
   },
-  plugins: [require("@tailwindcss/typography")],
+  plugins: [require("@tailwindcss/typography")]
 };
 ```
+
+> 💡 **Font Preservation Note**: Your 7 beloved fonts (Alagard, Cozette, Atkinson Hyperlegible, Cormorant, Lexend, Quicksand, OpenDyslexic) are completely untouched by this config. They're loaded via `--font-family-main` from D1 settings in `+layout.svelte`. The typography config only affects how prose content (headings, paragraphs, links, code blocks) is styled within the selected font.
+
+---
 
 ### 4.2 Create Code Block Styles
 

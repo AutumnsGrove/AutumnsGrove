@@ -170,6 +170,11 @@ Create wrapper components in `$lib/components/ui/` that provide a simplified, co
 
 #### Dialog.svelte
 
+> ⚠️ **Test Note**: The `bind:open` with `$bindable()` pattern is correct for Svelte 5, but verify this works with shadcn-svelte's Dialog implementation when first testing. If binding doesn't work, use the controlled pattern instead:
+> ```svelte
+> <ShadcnDialog.Root open={open} onOpenChange={handleOpenChange}>
+> ```
+
 ```svelte
 <script lang="ts">
   import * as ShadcnDialog from "$lib/components/shadcn/dialog";

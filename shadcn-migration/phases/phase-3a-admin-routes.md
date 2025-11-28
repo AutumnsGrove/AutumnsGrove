@@ -158,11 +158,15 @@ Every admin route should start with:
 
 ### Toast Replacements
 
+**Complete migration pattern** - Remove ALL custom toast infrastructure:
+
 ```svelte
-<!-- BEFORE (custom toast system) -->
+<!-- ==================== BEFORE ==================== -->
 <script>
+  // REMOVE: Custom toast state
   let toasts = $state([]);
 
+  // REMOVE: Custom toast function
   function showToast(message, type = 'info') {
     const id = Date.now();
     toasts = [...toasts, { id, message, type }];
@@ -170,23 +174,52 @@ Every admin route should start with:
       toasts = toasts.filter(t => t.id !== id);
     }, 5000);
   }
+
+  // REMOVE: If using a store
+  import { toastStore } from '$lib/stores/toast';
 </script>
 
+<!-- REMOVE: Custom toast rendering -->
 {#each toasts as t}
   <div class="toast toast-{t.type}">{t.message}</div>
 {/each}
 
-<!-- AFTER -->
+<!-- ==================== AFTER ==================== -->
 <script>
+  // ADD: Single import
   import { toast } from "$lib/components/ui";
 
-  // Usage
+  // Usage - replace showToast() calls:
+  // showToast("Success!", "success")  →  toast.success("Success!")
+  // showToast("Error!", "error")      →  toast.error("Error!")
+  // showToast("Info")                 →  toast.info("Info")
+
+  // Examples:
   toast.success("Image uploaded successfully");
   toast.error("Failed to delete image");
   toast.info("Processing...");
+  toast.warning("Are you sure?");
+
+  // For promises (loading → success/error):
+  toast.promise(uploadImage(), {
+    loading: 'Uploading...',
+    success: 'Upload complete!',
+    error: 'Upload failed'
+  });
 </script>
 
-<!-- In +layout.svelte, add the Toast container -->
+<!-- NO toast markup needed here! -->
+<!-- The Toast container in +layout.svelte handles rendering -->
+```
+
+**In `/admin/+layout.svelte`** - Add the Toast container ONCE:
+
+```svelte
+<script>
+  import { Toast } from "$lib/components/ui";
+</script>
+
+<!-- At the end of the layout, add: -->
 <Toast position="bottom-right" />
 ```
 

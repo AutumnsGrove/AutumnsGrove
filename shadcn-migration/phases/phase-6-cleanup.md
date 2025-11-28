@@ -112,9 +112,11 @@ grep -r "<style>" src/routes/ src/lib/components/
 
 ### 6.4 Update Component Index Files
 
-Ensure all barrel exports are correct:
+Ensure all barrel exports are correct and **standardized to `.ts` extension**:
 
-**`src/lib/components/ui/index.ts`:**
+> 📝 **Standardization**: All index files should use `.ts` for consistency in this TypeScript project.
+
+**`src/lib/components/ui/index.ts`:** ✅ (already .ts)
 ```typescript
 // Verify all wrappers are exported
 export { default as Button } from "./Button.svelte";
@@ -140,8 +142,8 @@ export * as Tooltip from "$lib/components/shadcn/tooltip";
 export * as DropdownMenu from "$lib/components/shadcn/dropdown-menu";
 ```
 
-**`src/lib/components/custom/index.js`:**
-```javascript
+**`src/lib/components/custom/index.ts`:** (rename from .js → .ts)
+```typescript
 export { default as ContentWithGutter } from "./ContentWithGutter.svelte";
 export { default as LeftGutter } from "./LeftGutter.svelte";
 export { default as GutterItem } from "./GutterItem.svelte";
@@ -152,29 +154,38 @@ export { default as InternalsPostViewer } from "./InternalsPostViewer.svelte";
 // CollapsibleSection removed - use Accordion from ui/
 ```
 
-**`src/lib/components/gallery/index.js`:**
-```javascript
+**`src/lib/components/gallery/index.ts`:** (rename from .js → .ts)
+```typescript
 export { default as ImageGallery } from "./ImageGallery.svelte";
 export { default as Lightbox } from "./Lightbox.svelte";
 export { default as ZoomableImage } from "./ZoomableImage.svelte";
 // LightboxCaption removed - integrated into Lightbox
 ```
 
-**`src/lib/components/charts/index.js`:**
-```javascript
+**`src/lib/components/charts/index.ts`:** (rename from .js → .ts)
+```typescript
 export { default as Sparkline } from "./Sparkline.svelte";
 export { default as LOCBar } from "./LOCBar.svelte";
 export { default as RepoBreakdown } from "./RepoBreakdown.svelte";
 export { default as ActivityOverview } from "./ActivityOverview.svelte";
 ```
 
-**`src/lib/components/index.js`:**
-```javascript
+**`src/lib/components/index.ts`:** (rename from .js → .ts)
+```typescript
 // Re-export from all directories
 export * from "./ui";
 export * from "./custom";
 export * from "./gallery";
 export * from "./charts";
+```
+
+**Rename commands:**
+```bash
+# Rename all .js barrel exports to .ts
+mv src/lib/components/custom/index.js src/lib/components/custom/index.ts
+mv src/lib/components/gallery/index.js src/lib/components/gallery/index.ts
+mv src/lib/components/charts/index.js src/lib/components/charts/index.ts
+mv src/lib/components/index.js src/lib/components/index.ts
 ```
 
 ### 6.5 Check for Unused Dependencies
@@ -238,6 +249,34 @@ npm run preview
 - [ ] `npm run build` completes without errors
 - [ ] `npm run preview` works correctly
 - [ ] No console errors in browser
+
+### Bundle Size Comparison
+
+Compare the post-migration bundle to the baseline recorded in Phase 1:
+
+```bash
+# Build and capture current bundle info
+npm run build 2>&1 | tee /tmp/post-migration-build.log
+
+# Compare with pre-migration baseline
+echo "=== PRE-MIGRATION ===" && cat /tmp/pre-migration-build.log | grep -E "\.js|\.css" | tail -20
+echo ""
+echo "=== POST-MIGRATION ===" && cat /tmp/post-migration-build.log | grep -E "\.js|\.css" | tail -20
+```
+
+**Acceptable thresholds:**
+- ✅ **0-15% increase**: Expected - Tailwind + shadcn add some weight
+- ⚠️ **15-25% increase**: Acceptable but investigate tree-shaking
+- ❌ **>25% increase**: Investigate! Check for:
+  - Unused shadcn components being bundled
+  - Full Tailwind classes not being purged
+  - Duplicate dependencies
+
+**If bundle is too large:**
+1. Check `tailwind.config.js` content paths are correct (purge unused CSS)
+2. Verify only needed shadcn components are imported
+3. Consider lazy loading heavy components
+4. Run `npm run build -- --analyze` if available
 
 ### Visual Verification
 
