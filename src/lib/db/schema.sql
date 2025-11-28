@@ -100,6 +100,53 @@ CREATE TABLE IF NOT EXISTS daily_summaries (
     updated_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+-- Track AI usage and costs across providers
+CREATE TABLE IF NOT EXISTS ai_usage (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    usage_date TEXT NOT NULL,                 -- YYYY-MM-DD format
+    provider TEXT NOT NULL,                   -- 'anthropic', 'cloudflare', 'moonshot'
+    model TEXT NOT NULL,                      -- Full model ID
+    request_count INTEGER DEFAULT 1,
+    input_tokens INTEGER DEFAULT 0,
+    output_tokens INTEGER DEFAULT 0,
+    estimated_cost_usd REAL DEFAULT 0,        -- Estimated cost in USD
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE(usage_date, provider, model)
+);
+
+-- Track individual AI requests for detailed cost analysis
+CREATE TABLE IF NOT EXISTS ai_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    request_date TEXT NOT NULL,               -- YYYY-MM-DD format
+    request_time TEXT NOT NULL DEFAULT (datetime('now')),
+    provider TEXT NOT NULL,
+    model TEXT NOT NULL,
+    purpose TEXT,                             -- 'daily_summary', 'analysis', etc.
+    input_tokens INTEGER DEFAULT 0,
+    output_tokens INTEGER DEFAULT 0,
+    estimated_cost_usd REAL DEFAULT 0,
+    summary_date TEXT,                        -- Link to daily_summaries if applicable
+    success INTEGER DEFAULT 1,                -- 1 = success, 0 = failure
+    error_message TEXT
+);
+
+-- Track background jobs for async processing
+CREATE TABLE IF NOT EXISTS background_jobs (
+    id TEXT PRIMARY KEY,                       -- UUID for job
+    job_type TEXT NOT NULL,                    -- 'backfill', 'single_summary', etc.
+    status TEXT NOT NULL DEFAULT 'pending',    -- 'pending', 'processing', 'completed', 'failed'
+    progress INTEGER DEFAULT 0,                -- Percentage complete (0-100)
+    total_items INTEGER DEFAULT 0,             -- Total items to process
+    completed_items INTEGER DEFAULT 0,         -- Items completed so far
+    result TEXT,                               -- JSON result data
+    error_message TEXT,                        -- Error if failed
+    metadata TEXT,                             -- JSON metadata (dates, model, etc.)
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+    completed_at TEXT                          -- When job finished
+);
+
 -- Indexes for common queries
 CREATE INDEX IF NOT EXISTS idx_repo_snapshots_date ON repo_snapshots(snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_commits_committed_at ON commits(committed_at);
@@ -107,3 +154,7 @@ CREATE INDEX IF NOT EXISTS idx_commits_repo ON commits(repo_id);
 CREATE INDEX IF NOT EXISTS idx_todo_snapshots_date ON todo_snapshots(snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_commit_activity_date ON commit_activity(activity_date);
 CREATE INDEX IF NOT EXISTS idx_daily_summaries_date ON daily_summaries(summary_date DESC);
+CREATE INDEX IF NOT EXISTS idx_ai_usage_date ON ai_usage(usage_date DESC);
+CREATE INDEX IF NOT EXISTS idx_ai_requests_date ON ai_requests(request_date DESC);
+CREATE INDEX IF NOT EXISTS idx_background_jobs_status ON background_jobs(status);
+CREATE INDEX IF NOT EXISTS idx_background_jobs_created ON background_jobs(created_at DESC);

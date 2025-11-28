@@ -7,9 +7,33 @@
  * Triggers:
  * - Scheduled: 11:59 PM Eastern daily (cron)
  * - Manual: POST /trigger (for admin testing)
+ *
+ * AI Providers:
+ * - Anthropic (Claude Haiku 4.5) - Default
+ * - Cloudflare Workers AI (Llama, Gemma, Mistral)
+ * - Moonshot AI (Kimi K2) - Future
  */
 
-import { buildSummaryPrompt, parseAIResponse } from './prompts.js';
+import { buildSummaryPrompt, parseAIResponse, SYSTEM_PROMPT } from './prompts.js';
+import {
+  generateAIResponse,
+  getAllModels,
+  parseModelString,
+  calculateCost,
+  AI_PROVIDERS,
+  DEFAULT_PROVIDER,
+  DEFAULT_MODEL
+} from './providers.js';
+import {
+  createJob,
+  updateJobProgress,
+  completeJob,
+  failJob,
+  getJob,
+  getRecentJobs,
+  cleanupOldJobs,
+  JOB_TYPES
+} from './jobs.js';
 
 // GraphQL query to fetch commits for a specific date range
 const COMMITS_QUERY = `
@@ -44,44 +68,7 @@ query($username: String!, $first: Int!, $since: GitTimestamp!) {
 }`;
 
 /**
- * Get the start of today in the configured timezone
- * @param {string} timezone - IANA timezone string
- * @returns {Date} Start of day in UTC
- */
-function getStartOfDay(timezone) {
-  const now = new Date();
-
-  // Get current date parts in the target timezone
-  const formatter = new Intl.DateTimeFormat('en-US', {
-    timeZone: timezone,
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  });
-
-  const parts = formatter.formatToParts(now);
-  const year = parts.find(p => p.type === 'year').value;
-  const month = parts.find(p => p.type === 'month').value;
-  const day = parts.find(p => p.type === 'day').value;
-
-  // Create date string and parse it back
-  const dateStr = `${year}-${month}-${day}T00:00:00`;
-
-  // Create a date in the target timezone, then convert to UTC
-  const localDate = new Date(dateStr);
-
-  // Calculate timezone offset for the start of day
-  const utcDate = new Date(localDate.toLocaleString('en-US', { timeZone: 'UTC' }));
-  const tzDate = new Date(localDate.toLocaleString('en-US', { timeZone: timezone }));
-  const offset = utcDate - tzDate;
-
-  return new Date(localDate.getTime() + offset);
-}
-
-/**
  * Get formatted date string (YYYY-MM-DD) for today in timezone
- * @param {string} timezone - IANA timezone string
- * @returns {string} Date in YYYY-MM-DD format
  */
 function getTodayDateString(timezone) {
   const now = new Date();
@@ -96,20 +83,13 @@ function getTodayDateString(timezone) {
 
 /**
  * Fetch commits for a specific date from GitHub
- * @param {string} username - GitHub username
- * @param {string} token - GitHub API token
- * @param {string} dateStr - Date in YYYY-MM-DD format
- * @returns {Promise<Array>} Array of commit objects
  */
 async function fetchCommitsForDate(username, token, dateStr) {
-  // Calculate start and end of the target date (using UTC for consistency)
   const startOfDay = new Date(dateStr + 'T00:00:00Z');
   const endOfDay = new Date(dateStr + 'T23:59:59Z');
-
   const since = startOfDay.toISOString();
-  const until = endOfDay.toISOString();
 
-  console.log(`Fetching commits for ${dateStr}: ${since} to ${until}`);
+  console.log(`Fetching commits for ${dateStr}`);
 
   const response = await fetch('https://api.github.com/graphql', {
     method: 'POST',
@@ -120,11 +100,7 @@ async function fetchCommitsForDate(username, token, dateStr) {
     },
     body: JSON.stringify({
       query: COMMITS_QUERY,
-      variables: {
-        username,
-        first: 30,
-        since
-      }
+      variables: { username, first: 30, since }
     })
   });
 
@@ -138,7 +114,6 @@ async function fetchCommitsForDate(username, token, dateStr) {
     throw new Error(`GraphQL error: ${data.errors[0].message}`);
   }
 
-  // Extract and flatten commits
   const commits = [];
   const repos = data.data?.user?.repositories?.nodes || [];
 
@@ -146,14 +121,12 @@ async function fetchCommitsForDate(username, token, dateStr) {
     const history = repo.defaultBranchRef?.target?.history?.nodes || [];
 
     for (const commit of history) {
-      // Only include commits by this user
       if (commit.author?.user?.login?.toLowerCase() === username.toLowerCase()) {
-        // Filter by end date (GitHub API only supports 'since', not 'until')
         const commitDate = new Date(commit.committedDate);
         if (commitDate <= endOfDay) {
           commits.push({
             sha: commit.oid.substring(0, 7),
-            message: commit.message.split('\n')[0].substring(0, 100), // First line, max 100 chars
+            message: commit.message.split('\n')[0].substring(0, 100),
             date: commit.committedDate,
             repo: repo.name,
             additions: commit.additions || 0,
@@ -164,92 +137,88 @@ async function fetchCommitsForDate(username, token, dateStr) {
     }
   }
 
-  // Sort by date (newest first)
   commits.sort((a, b) => new Date(b.date) - new Date(a.date));
-
   return commits;
 }
 
 /**
- * Generate summary using Cloudflare Workers AI
- * @param {object} ai - AI binding
- * @param {Array} commits - Array of commit objects
- * @param {string} date - Date string
- * @param {string} ownerName - Name of the developer
- * @returns {Promise<object>} Summary object with brief, detailed, and gutter fields
+ * Track AI usage and costs in database
  */
-// Available AI models for summarization
-const AI_MODELS = {
-  '@cf/meta/llama-3.3-70b-instruct-fp8-fast': { name: 'Llama 3.3 70B (Fast)', quality: 'highest', speed: 'medium' },
-  '@cf/meta/llama-3.1-70b-instruct': { name: 'Llama 3.1 70B', quality: 'high', speed: 'medium' },
-  '@cf/google/gemma-3-12b-it': { name: 'Gemma 3 12B', quality: 'high', speed: 'fast' },
-  '@cf/mistralai/mistral-small-3.1-24b-instruct': { name: 'Mistral Small 24B', quality: 'high', speed: 'fast' },
-  '@cf/meta/llama-3.1-8b-instruct-fast': { name: 'Llama 3.1 8B (Fast)', quality: 'good', speed: 'fastest' }
-};
-
-const DEFAULT_MODEL = '@cf/meta/llama-3.1-70b-instruct';
-
-async function generateSummary(ai, db, commits, date, ownerName, modelId = DEFAULT_MODEL) {
-  const prompt = buildSummaryPrompt(commits, date, ownerName);
-  const model = AI_MODELS[modelId] ? modelId : DEFAULT_MODEL;
-
-  console.log(`Generating AI summary for ${ownerName} using ${model}...`);
-
-  const response = await ai.run(model, {
-    messages: [
-      {
-        role: 'system',
-        content: 'You write warm, authentic daily summaries for a personal coding journal. Your voice is cozy and genuine—like late-night tea with a friend. Always respond with valid JSON only.'
-      },
-      {
-        role: 'user',
-        content: prompt
-      }
-    ],
-    max_tokens: 2048,
-    temperature: 0.5
-  });
-
-  // Track AI usage
-  await trackAIUsage(db, model);
-
-  const result = parseAIResponse(response.response);
-  result.model = model;
-  return result;
-}
-
-/**
- * Track AI usage in database
- */
-async function trackAIUsage(db, model) {
+async function trackAIUsage(db, provider, model, inputTokens, outputTokens, cost, summaryDate, success = true, errorMessage = null) {
   const today = new Date().toISOString().split('T')[0];
+
   try {
+    // Update aggregate usage table
     await db.prepare(`
-      INSERT INTO ai_usage (usage_date, model, request_count, updated_at)
-      VALUES (?, ?, 1, datetime('now'))
-      ON CONFLICT(usage_date, model) DO UPDATE SET
+      INSERT INTO ai_usage (usage_date, provider, model, request_count, input_tokens, output_tokens, estimated_cost_usd, updated_at)
+      VALUES (?, ?, ?, 1, ?, ?, ?, datetime('now'))
+      ON CONFLICT(usage_date, provider, model) DO UPDATE SET
         request_count = request_count + 1,
+        input_tokens = input_tokens + excluded.input_tokens,
+        output_tokens = output_tokens + excluded.output_tokens,
+        estimated_cost_usd = estimated_cost_usd + excluded.estimated_cost_usd,
         updated_at = datetime('now')
-    `).bind(today, model).run();
+    `).bind(today, provider, model, inputTokens, outputTokens, cost).run();
+
+    // Insert individual request record
+    await db.prepare(`
+      INSERT INTO ai_requests (request_date, provider, model, purpose, input_tokens, output_tokens, estimated_cost_usd, summary_date, success, error_message)
+      VALUES (?, ?, ?, 'daily_summary', ?, ?, ?, ?, ?, ?)
+    `).bind(today, provider, model, inputTokens, outputTokens, cost, summaryDate, success ? 1 : 0, errorMessage).run();
+
   } catch (e) {
     console.error('Failed to track AI usage:', e);
   }
 }
 
 /**
+ * Generate summary using configured AI provider
+ */
+async function generateSummary(env, commits, date, ownerName, providerModel = null) {
+  const { provider, model } = parseModelString(providerModel || env.AI_MODEL || `${DEFAULT_PROVIDER}:${DEFAULT_MODEL}`);
+  const prompt = buildSummaryPrompt(commits, date, ownerName);
+
+  console.log(`Generating AI summary using ${provider}:${model}...`);
+
+  try {
+    const response = await generateAIResponse(env, provider, model, SYSTEM_PROMPT, prompt);
+
+    // Track usage
+    await trackAIUsage(
+      env.DB,
+      provider,
+      model,
+      response.inputTokens,
+      response.outputTokens,
+      response.cost,
+      date,
+      true
+    );
+
+    const result = parseAIResponse(response.content);
+    result.provider = provider;
+    result.model = model;
+    result.cost = response.cost;
+    result.inputTokens = response.inputTokens;
+    result.outputTokens = response.outputTokens;
+
+    return result;
+  } catch (error) {
+    // Track failed request
+    await trackAIUsage(env.DB, provider, model, 0, 0, 0, date, false, error.message);
+    throw error;
+  }
+}
+
+/**
  * Store daily summary in D1
- * @param {object} db - D1 database binding
- * @param {string} date - Date in YYYY-MM-DD format
- * @param {object} summary - Summary data
- * @param {Array} commits - Original commits array
  */
 async function storeSummary(db, date, summary, commits) {
   const reposActive = [...new Set(commits.map(c => c.repo))];
   const totalAdditions = commits.reduce((sum, c) => sum + c.additions, 0);
   const totalDeletions = commits.reduce((sum, c) => sum + c.deletions, 0);
-
-  // Convert gutter content to JSON string
   const gutterJson = summary.gutter ? JSON.stringify(summary.gutter) : null;
+  const modelString = `${summary.provider}:${summary.model}`;
 
   await db.prepare(`
     INSERT INTO daily_summaries (
@@ -276,14 +245,12 @@ async function storeSummary(db, date, summary, commits) {
     JSON.stringify(reposActive),
     totalAdditions,
     totalDeletions,
-    '@cf/meta/llama-3.1-70b-instruct'
+    modelString
   ).run();
 }
 
 /**
  * Store a rest day (no commits) in D1
- * @param {object} db - D1 database binding
- * @param {string} date - Date in YYYY-MM-DD format
  */
 async function storeRestDay(db, date) {
   await db.prepare(`
@@ -306,10 +273,8 @@ async function storeRestDay(db, date) {
 
 /**
  * Main summary generation logic
- * @param {object} env - Environment bindings
- * @param {string} targetDate - Optional specific date (YYYY-MM-DD) to generate summary for
  */
-async function generateDailySummary(env, targetDate = null) {
+async function generateDailySummary(env, targetDate = null, modelOverride = null) {
   const username = env.GITHUB_USERNAME || 'AutumnsGrove';
   const ownerName = env.OWNER_NAME || 'the developer';
   const timezone = env.TIMEZONE || 'America/New_York';
@@ -319,22 +284,18 @@ async function generateDailySummary(env, targetDate = null) {
     throw new Error('GITHUB_TOKEN secret not configured');
   }
 
-  // Use target date if provided, otherwise use today
   const summaryDate = targetDate || getTodayDateString(timezone);
 
-  // Validate date format
   if (!/^\d{4}-\d{2}-\d{2}$/.test(summaryDate)) {
     throw new Error(`Invalid date format: ${summaryDate}. Expected YYYY-MM-DD`);
   }
 
-  console.log(`Generating summary for ${summaryDate} (${timezone})`);
+  console.log(`Generating summary for ${summaryDate}`);
 
-  // Fetch commits for the target date
   const commits = await fetchCommitsForDate(username, token, summaryDate);
   console.log(`Found ${commits.length} commits for ${summaryDate}`);
 
   if (commits.length === 0) {
-    // Rest day - store null summary
     await storeRestDay(env.DB, summaryDate);
     return {
       success: true,
@@ -344,13 +305,8 @@ async function generateDailySummary(env, targetDate = null) {
     };
   }
 
-  // Get configured model or use default
-  const modelId = env.AI_MODEL || DEFAULT_MODEL;
-
-  // Generate AI summary
-  const summary = await generateSummary(env.AI, env.DB, commits, summaryDate, ownerName, modelId);
-
-  // Store in D1
+  const providerModel = modelOverride || env.AI_MODEL;
+  const summary = await generateSummary(env, commits, summaryDate, ownerName, providerModel);
   await storeSummary(env.DB, summaryDate, summary, commits);
 
   return {
@@ -360,7 +316,13 @@ async function generateDailySummary(env, targetDate = null) {
     commit_count: commits.length,
     repos: [...new Set(commits.map(c => c.repo))],
     brief: summary.brief,
-    model: summary.model
+    provider: summary.provider,
+    model: summary.model,
+    cost: summary.cost,
+    tokens: {
+      input: summary.inputTokens,
+      output: summary.outputTokens
+    }
   };
 }
 
@@ -378,13 +340,12 @@ function getCorsHeaders(env) {
 
 export default {
   /**
-   * HTTP fetch handler - for manual triggers and health checks
+   * HTTP fetch handler
    */
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
     const corsHeaders = getCorsHeaders(env);
 
-    // Handle CORS preflight
     if (request.method === 'OPTIONS') {
       return new Response(null, { headers: corsHeaders });
     }
@@ -392,79 +353,98 @@ export default {
     try {
       // Health check
       if (url.pathname === '/health') {
-        return new Response(JSON.stringify({ status: 'ok' }), {
+        return new Response(JSON.stringify({ status: 'ok', defaultProvider: DEFAULT_PROVIDER }), {
           headers: corsHeaders
         });
       }
 
       // Get available AI models
       if (url.pathname === '/models' && request.method === 'GET') {
+        const models = getAllModels();
+        const { provider, model } = parseModelString(env.AI_MODEL);
+
         return new Response(JSON.stringify({
-          models: Object.entries(AI_MODELS).map(([id, info]) => ({ id, ...info })),
-          default: DEFAULT_MODEL,
-          current: env.AI_MODEL || DEFAULT_MODEL
-        }), {
-          headers: corsHeaders
-        });
+          models,
+          providers: Object.entries(AI_PROVIDERS).map(([id, p]) => ({
+            id,
+            name: p.name,
+            notImplemented: p.notImplemented || false
+          })),
+          default: { provider: DEFAULT_PROVIDER, model: DEFAULT_MODEL },
+          current: { provider, model }
+        }), { headers: corsHeaders });
       }
 
-      // Get AI usage stats
+      // Get AI usage stats with costs
       if (url.pathname === '/usage' && request.method === 'GET') {
-        const days = parseInt(url.searchParams.get('days') || '7');
+        const days = parseInt(url.searchParams.get('days') || '30');
+
+        // Get aggregate usage
         const usage = await env.DB.prepare(`
-          SELECT usage_date, model, request_count
+          SELECT usage_date, provider, model, request_count, input_tokens, output_tokens, estimated_cost_usd
           FROM ai_usage
           WHERE usage_date >= date('now', '-' || ? || ' days')
-          ORDER BY usage_date DESC, model
+          ORDER BY usage_date DESC, provider, model
         `).bind(days).all();
 
-        // Aggregate totals
-        const totals = {};
-        let totalRequests = 0;
+        // Get recent individual requests
+        const requests = await env.DB.prepare(`
+          SELECT request_date, request_time, provider, model, purpose, input_tokens, output_tokens, estimated_cost_usd, summary_date, success
+          FROM ai_requests
+          WHERE request_date >= date('now', '-' || ? || ' days')
+          ORDER BY request_time DESC
+          LIMIT 100
+        `).bind(days).all();
+
+        // Calculate totals
+        const totals = { byProvider: {}, byModel: {}, totalRequests: 0, totalCost: 0, totalInputTokens: 0, totalOutputTokens: 0 };
+
         for (const row of usage.results) {
-          totals[row.model] = (totals[row.model] || 0) + row.request_count;
-          totalRequests += row.request_count;
+          totals.byProvider[row.provider] = (totals.byProvider[row.provider] || 0) + row.estimated_cost_usd;
+          totals.byModel[row.model] = (totals.byModel[row.model] || 0) + row.estimated_cost_usd;
+          totals.totalRequests += row.request_count;
+          totals.totalCost += row.estimated_cost_usd;
+          totals.totalInputTokens += row.input_tokens;
+          totals.totalOutputTokens += row.output_tokens;
+        }
+
+        // Calculate daily costs for charting
+        const dailyCosts = {};
+        for (const row of usage.results) {
+          dailyCosts[row.usage_date] = (dailyCosts[row.usage_date] || 0) + row.estimated_cost_usd;
         }
 
         return new Response(JSON.stringify({
           days,
           usage: usage.results,
+          requests: requests.results,
           totals,
-          totalRequests
-        }), {
-          headers: corsHeaders
-        });
+          dailyCosts: Object.entries(dailyCosts).map(([date, cost]) => ({ date, cost })).sort((a, b) => a.date.localeCompare(b.date))
+        }), { headers: corsHeaders });
       }
 
-      // Manual trigger endpoint (for admin testing)
-      // POST /trigger - Generate summary for today
-      // POST /trigger?date=YYYY-MM-DD - Generate summary for specific date
+      // Manual trigger endpoint
       if (url.pathname === '/trigger' && request.method === 'POST') {
-        // Verify authorization - require any valid bearer token
-        // The calling admin API has already authenticated the user via session
         const authHeader = request.headers.get('Authorization');
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-          return new Response(JSON.stringify({ error: 'Unauthorized - Bearer token required' }), {
+          return new Response(JSON.stringify({ error: 'Unauthorized' }), {
             status: 401,
             headers: corsHeaders
           });
         }
 
-        // Check for specific date parameter
         const targetDate = url.searchParams.get('date');
-        const result = await generateDailySummary(env, targetDate);
-        return new Response(JSON.stringify(result), {
-          headers: corsHeaders
-        });
+        const modelOverride = url.searchParams.get('model');
+        const result = await generateDailySummary(env, targetDate, modelOverride);
+
+        return new Response(JSON.stringify(result), { headers: corsHeaders });
       }
 
-      // Backfill endpoint - Generate summaries for a range of past dates
-      // POST /backfill?start=YYYY-MM-DD&end=YYYY-MM-DD
+      // Backfill endpoint
       if (url.pathname === '/backfill' && request.method === 'POST') {
-        // Verify authorization - require any valid bearer token
         const authHeader = request.headers.get('Authorization');
         if (!authHeader || !authHeader.startsWith('Bearer ')) {
-          return new Response(JSON.stringify({ error: 'Unauthorized - Bearer token required' }), {
+          return new Response(JSON.stringify({ error: 'Unauthorized' }), {
             status: 401,
             headers: corsHeaders
           });
@@ -472,6 +452,7 @@ export default {
 
         const startDate = url.searchParams.get('start');
         const endDate = url.searchParams.get('end') || startDate;
+        const modelOverride = url.searchParams.get('model');
 
         if (!startDate) {
           return new Response(JSON.stringify({ error: 'Missing start date parameter' }), {
@@ -480,7 +461,6 @@ export default {
           });
         }
 
-        // Validate date formats
         const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
         if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
           return new Response(JSON.stringify({ error: 'Invalid date format. Use YYYY-MM-DD' }), {
@@ -489,14 +469,12 @@ export default {
           });
         }
 
-        // Generate summaries for each date in range
         const results = [];
         const start = new Date(startDate);
         const end = new Date(endDate);
-
-        // Limit to 30 days max to prevent abuse
         const maxDays = 30;
         const daysDiff = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
         if (daysDiff > maxDays) {
           return new Response(JSON.stringify({ error: `Maximum ${maxDays} days allowed per request` }), {
             status: 400,
@@ -504,11 +482,14 @@ export default {
           });
         }
 
+        let totalCost = 0;
+
         for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
           const dateStr = d.toISOString().split('T')[0];
           try {
-            const result = await generateDailySummary(env, dateStr);
+            const result = await generateDailySummary(env, dateStr, modelOverride);
             results.push(result);
+            if (result.cost) totalCost += result.cost;
           } catch (error) {
             results.push({
               date: dateStr,
@@ -521,13 +502,12 @@ export default {
         return new Response(JSON.stringify({
           success: true,
           processed: results.length,
+          totalCost,
           results
-        }), {
-          headers: corsHeaders
-        });
+        }), { headers: corsHeaders });
       }
 
-      // Get latest summary (for quick status check)
+      // Get latest summary
       if (url.pathname === '/latest' && request.method === 'GET') {
         const latest = await env.DB.prepare(`
           SELECT * FROM daily_summaries
@@ -538,6 +518,125 @@ export default {
         return new Response(JSON.stringify(latest || { message: 'No summaries yet' }), {
           headers: corsHeaders
         });
+      }
+
+      // ======================================================================
+      // Background Job Endpoints
+      // ======================================================================
+
+      // Start async backfill job (returns immediately with job ID)
+      if (url.pathname === '/backfill/async' && request.method === 'POST') {
+        const authHeader = request.headers.get('Authorization');
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+          return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+            status: 401,
+            headers: corsHeaders
+          });
+        }
+
+        const startDate = url.searchParams.get('start');
+        const endDate = url.searchParams.get('end') || startDate;
+        const modelOverride = url.searchParams.get('model');
+
+        if (!startDate) {
+          return new Response(JSON.stringify({ error: 'Missing start date parameter' }), {
+            status: 400,
+            headers: corsHeaders
+          });
+        }
+
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
+          return new Response(JSON.stringify({ error: 'Invalid date format. Use YYYY-MM-DD' }), {
+            status: 400,
+            headers: corsHeaders
+          });
+        }
+
+        const start = new Date(startDate);
+        const end = new Date(endDate);
+        const maxDays = 60; // Allow more days for async processing
+        const daysDiff = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
+
+        if (daysDiff > maxDays) {
+          return new Response(JSON.stringify({ error: `Maximum ${maxDays} days allowed per request` }), {
+            status: 400,
+            headers: corsHeaders
+          });
+        }
+
+        // Generate list of dates
+        const dates = [];
+        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+          dates.push(d.toISOString().split('T')[0]);
+        }
+
+        // Create job record
+        const job = await createJob(env.DB, {
+          jobType: JOB_TYPES.BACKFILL,
+          totalItems: dates.length,
+          metadata: { startDate, endDate, model: modelOverride, dates }
+        });
+
+        // Queue the job for processing (if queue is available)
+        if (env.JOBS_QUEUE) {
+          await env.JOBS_QUEUE.send({
+            jobId: job.id,
+            type: JOB_TYPES.BACKFILL,
+            dates,
+            model: modelOverride
+          });
+        } else {
+          // Fallback: process in background using waitUntil
+          ctx.waitUntil(processBackfillJob(env, job.id, dates, modelOverride));
+        }
+
+        return new Response(JSON.stringify({
+          success: true,
+          jobId: job.id,
+          status: 'pending',
+          totalDays: dates.length,
+          message: 'Backfill job queued. Poll /jobs/{jobId} for status.'
+        }), { headers: corsHeaders });
+      }
+
+      // Get job status by ID
+      if (url.pathname.startsWith('/jobs/') && request.method === 'GET') {
+        const jobId = url.pathname.replace('/jobs/', '');
+
+        if (!jobId || jobId.length < 10) {
+          return new Response(JSON.stringify({ error: 'Invalid job ID' }), {
+            status: 400,
+            headers: corsHeaders
+          });
+        }
+
+        const job = await getJob(env.DB, jobId);
+
+        if (!job) {
+          return new Response(JSON.stringify({ error: 'Job not found' }), {
+            status: 404,
+            headers: corsHeaders
+          });
+        }
+
+        return new Response(JSON.stringify(job), { headers: corsHeaders });
+      }
+
+      // Get recent jobs list
+      if (url.pathname === '/jobs' && request.method === 'GET') {
+        const authHeader = request.headers.get('Authorization');
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+          return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+            status: 401,
+            headers: corsHeaders
+          });
+        }
+
+        const limit = parseInt(url.searchParams.get('limit') || '10');
+        const jobs = await getRecentJobs(env.DB, Math.min(limit, 50));
+
+        return new Response(JSON.stringify({ jobs }), { headers: corsHeaders });
       }
 
       return new Response(JSON.stringify({ error: 'Not Found' }), {
@@ -566,10 +665,80 @@ export default {
     try {
       const result = await generateDailySummary(env);
       console.log('Summary generated:', result);
+
+      // Clean up old jobs periodically
+      await cleanupOldJobs(env.DB);
     } catch (error) {
       console.error('Scheduled job failed:', error);
-      // Don't throw - we don't want the worker to report failure
-      // Logging is sufficient for debugging
+    }
+  },
+
+  /**
+   * Queue handler - processes background jobs from Cloudflare Queues
+   */
+  async queue(batch, env) {
+    for (const message of batch.messages) {
+      const { jobId, type, dates, model } = message.body;
+      console.log(`Processing queue message for job ${jobId}`);
+
+      try {
+        if (type === JOB_TYPES.BACKFILL) {
+          await processBackfillJob(env, jobId, dates, model);
+        }
+        message.ack();
+      } catch (error) {
+        console.error(`Queue job ${jobId} failed:`, error);
+        // Message will be retried based on queue config
+        message.retry();
+      }
     }
   }
 };
+
+/**
+ * Process a backfill job - generates summaries for multiple dates
+ * @param {object} env - Environment bindings
+ * @param {string} jobId - Job ID to update progress
+ * @param {string[]} dates - Array of date strings to process
+ * @param {string|null} modelOverride - Optional model override
+ */
+async function processBackfillJob(env, jobId, dates, modelOverride) {
+  console.log(`Starting backfill job ${jobId} for ${dates.length} dates`);
+
+  const results = [];
+  let totalCost = 0;
+  let completedCount = 0;
+
+  try {
+    for (const dateStr of dates) {
+      try {
+        const result = await generateDailySummary(env, dateStr, modelOverride);
+        results.push(result);
+        if (result.cost) totalCost += result.cost;
+      } catch (error) {
+        results.push({
+          date: dateStr,
+          success: false,
+          error: error.message
+        });
+      }
+
+      completedCount++;
+
+      // Update progress every date
+      await updateJobProgress(env.DB, jobId, completedCount, dates.length);
+    }
+
+    // Mark job complete with results
+    await completeJob(env.DB, jobId, {
+      processed: results.length,
+      totalCost,
+      results
+    });
+
+    console.log(`Backfill job ${jobId} completed: ${results.length} dates, $${totalCost.toFixed(4)} cost`);
+  } catch (error) {
+    console.error(`Backfill job ${jobId} failed:`, error);
+    await failJob(env.DB, jobId, error.message);
+  }
+}

@@ -170,28 +170,116 @@
 
 ### HIGH PRIORITY: AI Timeline Enhancements (Nov 28, 2025)
 
-**Status:** Partially complete - model selection backend done, admin UI pending
+**Status:** Major refactor complete - multi-provider support, cost tracking, background jobs
 
 **Completed:**
-- [x] Add model selector infrastructure to worker (5 models available)
+- [x] Add model selector infrastructure to worker (5+ models available)
 - [x] Add `/models` endpoint to list available models
-- [x] Add `/usage` endpoint for AI usage statistics
+- [x] Add `/usage` endpoint for AI usage statistics with costs
 - [x] Add GitHub repo links in timeline markdown headers
 - [x] Update credits page with Cloudflare Workers AI + Meta Llama
+- [x] **Switch default AI provider to Claude Haiku 4.5** (Anthropic API)
+- [x] Add multi-provider support (Anthropic Claude, Cloudflare Workers AI)
+- [x] Add Kimi K2 (Moonshot AI) stubs for future integration
+- [x] Create `ai_usage` and `ai_requests` tables in D1 schema for cost tracking
+- [x] Add model selector dropdown to admin timeline page
+- [x] Display AI usage stats with cost breakdown in admin panel
+- [x] **Improve prompt tone** - 6/10 professional, 4/10 fun, no cheerleader energy
+- [x] Make gutter comments dynamic (1-5 based on activity, not always 4)
+- [x] **Fix gutter positioning** - inline anchored comments under headers
+- [x] **Add background job processing with Cloudflare Queues**
+  - [x] Queue producer and consumer handlers
+  - [x] `background_jobs` table for job tracking
+  - [x] `/backfill/async` endpoint for async backfill
+  - [x] `/jobs/{jobId}` endpoint for polling job status
+  - [x] Progress tracking with percentage complete
+- [x] API proxy routes for all new endpoints
 
 **Remaining:**
-- [ ] Create `ai_usage` table in D1 schema for usage tracking
-- [ ] Add model selector dropdown to admin timeline page
-- [ ] Add "Re-run all" button for batch regeneration
-- [ ] Display AI usage stats in admin panel
-- [ ] Deploy worker and test new endpoints
+- [ ] Add visualizations to timeline (sparklines, charts)
+- [ ] Update admin UI with async backfill option and progress indicator
+- [ ] Deploy worker with `wrangler secret put ANTHROPIC_API_KEY`
+- [ ] Create Cloudflare Queue: `wrangler queues create daily-summary-jobs`
 
-**Available AI Models:**
-- `@cf/meta/llama-3.3-70b-instruct-fp8-fast` - Highest quality, medium speed
-- `@cf/meta/llama-3.1-70b-instruct` - High quality, medium speed (default)
-- `@cf/google/gemma-3-12b-it` - High quality, fast
-- `@cf/mistralai/mistral-small-3.1-24b-instruct` - High quality, fast
-- `@cf/meta/llama-3.1-8b-instruct-fast` - Good quality, fastest
+**Available AI Providers & Models:**
+
+| Provider | Model | Cost | Quality |
+|----------|-------|------|---------|
+| **Anthropic** | Claude Haiku 4.5 | $0.80/$4.00 per 1M | High (default) |
+| Anthropic | Claude Sonnet 4 | $3.00/$15.00 per 1M | Highest |
+| Cloudflare | Llama 3.3 70B | Free | Highest |
+| Cloudflare | Llama 3.1 70B | Free | High |
+| Cloudflare | Gemma 3 12B | Free | High |
+| Cloudflare | Mistral Small 24B | Free | High |
+| Cloudflare | Llama 3.1 8B | Free | Good |
+| *Moonshot* | *Kimi K2* | *TBD* | *High (future)* |
+
+---
+
+### PLANNING: Long-Horizon Context System (Nov 28, 2025)
+
+**Status:** Design phase - implementation deferred until basic features stable
+
+**Goal:** Provide AI with historical context to recognize and comment on multi-day tasks
+
+**Problem:**
+Currently each day's summary is generated in isolation. When working on a multi-day refactoring or feature implementation, the AI has no context that "this is day 7 of 15 of a larger effort."
+
+**Proposed Solution:**
+
+1. **Context Window Structure:**
+   - When generating a summary, include the past 3 days of summaries as context
+   - Use Anthropic prompt caching for the repeated historical context (reduces cost)
+   - Structure: `[Day N-3 summary] [Day N-2 summary] [Day N-1 summary] [Current day commits]`
+
+2. **Smart Multi-Day Detection:**
+   - Analyze commit messages and file changes for patterns
+   - Detect when the same files/areas are being modified across multiple days
+   - Identify keywords like "WIP", "part 2", "continued", "refactor", etc.
+   - Track repository focus - if same repo gets 80%+ of commits for 3+ days, it's a focused effort
+
+3. **Condensed Historical Summaries:**
+   - Don't pass full detailed summaries for historical context
+   - Create condensed "context briefs" for each day:
+     - Main focus areas (1-2 sentences)
+     - Key repos touched
+     - Lines changed (ballpark)
+     - Any detected ongoing tasks
+   - This prevents context overload while maintaining awareness
+
+4. **Multi-Day Progress Comments:**
+   - When multi-day task detected, add encouraging but non-cheerleader comments
+   - Examples:
+     - "Day 3 of the auth refactor. Steady progress."
+     - "Still on the timeline feature - the frontend is taking shape."
+     - "Week two of this migration. The end is in sight."
+   - Avoid: "You're crushing it!" / "Amazing work on day 5!"
+
+5. **Database Schema Additions:**
+   ```sql
+   -- Add to daily_summaries table
+   context_brief TEXT,           -- Condensed summary for context passing
+   detected_focus TEXT,          -- JSON: detected ongoing task/project
+   continuation_of TEXT,         -- Reference to previous day if detected as continuation
+   ```
+
+6. **Prompt Caching Strategy (Anthropic):**
+   - System prompt + voice guidelines = static (cacheable)
+   - Historical context briefs = semi-static (cacheable if unchanged)
+   - Current day commits = dynamic (not cached)
+   - Expected savings: 50-70% input token cost for context portion
+
+**Implementation Order:**
+1. Add `context_brief` generation to current summaries
+2. Update prompt to accept historical context
+3. Add multi-day detection logic
+4. Implement Anthropic prompt caching
+5. Add continuation comments to gutter
+
+**Dependencies:**
+- Stable AI provider integration (done)
+- Cost tracking to measure caching effectiveness (done)
+- Prompt refinement complete (done)
 
 ---
 
@@ -422,21 +510,40 @@ npx wrangler pages dev -- npm run dev
 
 When you return to work on this project:
 
-1. **Finish AI Timeline Enhancements (HIGH PRIORITY):**
-   - Create `ai_usage` table in D1 schema
-   - Add model selector dropdown to admin timeline page
-   - Add usage stats display to admin panel
-   - Deploy worker with `wrangler deploy`
+1. **Deploy AI Timeline Updates:**
+   ```bash
+   # Apply database migrations
+   wrangler d1 execute autumnsgrove-git-stats --file=src/lib/db/schema.sql
 
-2. **Other tasks to consider:**
+   # Add Anthropic API key (if not already set)
+   cd workers/daily-summary && wrangler secret put ANTHROPIC_API_KEY
+
+   # Create the Cloudflare Queue
+   wrangler queues create daily-summary-jobs
+
+   # Deploy the worker
+   wrangler deploy
+   ```
+
+2. **Test New Features:**
+   - Timeline page with inline gutter comments under headers
+   - Admin timeline page with:
+     - AI model selector dropdown
+     - Usage & cost tracking display
+     - Async backfill option (if queue is set up)
+   - Test Claude Haiku 4.5 output tone (should be less cheerleader-y)
+
+3. **Add Timeline Visualizations (next priority):**
+   - Activity sparklines per day
+   - Lines of code charts
+   - Project breakdown pie/bar charts
+   - Consider using D3.js (already in stack) or LayerCake (Svelte-native)
+
+4. **Other tasks to consider:**
+   - Update admin UI with async backfill progress indicator
    - RSS Feed implementation (medium priority)
    - Recipes D1 integration
-   - Project Comparison Charts (compare repos side-by-side)
-
-3. **Test recent features:**
-   - Timeline page with new GitHub repo link styling
-   - Credits page with updated AI attributions
-   - Admin panel at `/admin` - all sections working
+   - Long-horizon context system (see planning section above)
 
 ---
 

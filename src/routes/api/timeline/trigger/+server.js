@@ -28,9 +28,13 @@ export async function POST({ url, cookies, platform }) {
   }
 
   const targetDate = url.searchParams.get('date');
-  const workerUrl = targetDate
-    ? `${WORKER_URL}/trigger?date=${targetDate}`
-    : `${WORKER_URL}/trigger`;
+  const modelOverride = url.searchParams.get('model');
+
+  let workerUrl = `${WORKER_URL}/trigger`;
+  const params = new URLSearchParams();
+  if (targetDate) params.set('date', targetDate);
+  if (modelOverride) params.set('model', modelOverride);
+  if (params.toString()) workerUrl += `?${params.toString()}`;
 
   try {
     const response = await fetch(workerUrl, {

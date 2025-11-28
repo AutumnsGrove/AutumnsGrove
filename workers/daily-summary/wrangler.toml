@@ -12,6 +12,17 @@ database_id = "0ca4036f-93f7-4c8a-98a5-5353263acd44"
 [ai]
 binding = "AI"
 
+# Queue for background job processing
+[[queues.producers]]
+queue = "daily-summary-jobs"
+binding = "JOBS_QUEUE"
+
+[[queues.consumers]]
+queue = "daily-summary-jobs"
+max_batch_size = 1
+max_batch_timeout = 30
+max_retries = 2
+
 # Environment variables
 [vars]
 GITHUB_USERNAME = "AutumnsGrove"
@@ -39,8 +50,24 @@ database_id = "0ca4036f-93f7-4c8a-98a5-5353263acd44"
 [env.production.ai]
 binding = "AI"
 
+[[env.production.queues.producers]]
+queue = "daily-summary-jobs"
+binding = "JOBS_QUEUE"
+
+[[env.production.queues.consumers]]
+queue = "daily-summary-jobs"
+max_batch_size = 1
+max_batch_timeout = 30
+max_retries = 2
+
 [env.production.triggers]
 crons = ["59 4 * * *"]
 
-# Secrets (set using: wrangler secret put GITHUB_TOKEN)
+# Secrets (set using: wrangler secret put <SECRET_NAME>)
 # GITHUB_TOKEN - GitHub Personal Access Token with repo scope
+# ANTHROPIC_API_KEY - Anthropic API key for Claude models (required for default provider)
+# MOONSHOT_API_KEY - Moonshot AI API key for Kimi K2 (optional, future use)
+
+# Optional: Override default AI model via environment variable
+# AI_MODEL = "anthropic:claude-haiku-4-5-20250514"  # Default
+# AI_MODEL = "cloudflare:@cf/meta/llama-3.1-70b-instruct"  # Use Cloudflare instead

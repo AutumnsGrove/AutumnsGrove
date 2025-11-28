@@ -1,15 +1,15 @@
 /**
- * Timeline Backfill API - Proxy to Daily Summary Worker
+ * Timeline Async Backfill API - Start background backfill job
  *
- * POST /api/timeline/trigger/backfill?start=YYYY-MM-DD&end=YYYY-MM-DD
+ * POST /api/timeline/trigger/backfill/async?start=YYYY-MM-DD&end=YYYY-MM-DD
  *
- * Generates summaries for a range of past dates (max 30 days)
- * Requires admin authentication
+ * Starts an async backfill job that processes in the background.
+ * Returns immediately with job ID for polling.
+ * Requires admin authentication.
  */
 
 import { json, error } from '@sveltejs/kit';
 
-// Worker URL
 const WORKER_URL = 'https://autumnsgrove-daily-summary.m7jv4v7npb.workers.dev';
 
 export async function POST({ url, cookies, platform }) {
@@ -40,7 +40,8 @@ export async function POST({ url, cookies, platform }) {
 
   const params = new URLSearchParams({ start: startDate, end: endDate });
   if (modelOverride) params.set('model', modelOverride);
-  const workerUrl = `${WORKER_URL}/backfill?${params.toString()}`;
+
+  const workerUrl = `${WORKER_URL}/backfill/async?${params.toString()}`;
 
   try {
     const response = await fetch(workerUrl, {
@@ -59,8 +60,8 @@ export async function POST({ url, cookies, platform }) {
 
     return json(data);
   } catch (e) {
-    console.error('Timeline backfill error:', e);
+    console.error('Async backfill error:', e);
     if (e.status) throw e;
-    throw error(500, e.message || 'Failed to backfill summaries');
+    throw error(500, e.message || 'Failed to start async backfill');
   }
 }
