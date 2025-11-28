@@ -196,8 +196,8 @@
 - [x] API proxy routes for all new endpoints
 
 **Remaining:**
-- [ ] Add visualizations to timeline (sparklines, charts)
-- [ ] Update admin UI with async backfill option and progress indicator
+- [x] Add visualizations to timeline (sparklines, LOC bars, repo breakdown, activity heatmap)
+- [x] Update admin UI with async backfill option and progress indicator
 - [ ] Deploy worker with `wrangler secret put ANTHROPIC_API_KEY`
 - [ ] Create Cloudflare Queue: `wrangler queues create daily-summary-jobs`
 
@@ -533,14 +533,14 @@ When you return to work on this project:
      - Async backfill option (if queue is set up)
    - Test Claude Haiku 4.5 output tone (should be less cheerleader-y)
 
-3. **Add Timeline Visualizations (next priority):**
-   - Activity sparklines per day
-   - Lines of code charts
-   - Project breakdown pie/bar charts
-   - Consider using D3.js (already in stack) or LayerCake (Svelte-native)
+3. **Timeline Visualizations (DONE):**
+   - [x] Activity overview with GitHub-style heatmap and sparklines
+   - [x] LOC (lines of code) bar charts per day
+   - [x] Repo breakdown visualization
+   - [x] Activity API endpoint for aggregated data
+   - [x] Async backfill with visual progress bar in admin
 
 4. **Other tasks to consider:**
-   - Update admin UI with async backfill progress indicator
    - RSS Feed implementation (medium priority)
    - Recipes D1 integration
    - Long-horizon context system (see planning section above)
