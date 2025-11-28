@@ -25,14 +25,9 @@ import {
   DEFAULT_MODEL
 } from './providers.js';
 import {
-  createJob,
-  updateJobProgress,
-  completeJob,
-  failJob,
   getJob,
   getRecentJobs,
-  cleanupOldJobs,
-  JOB_TYPES
+  cleanupOldJobs
 } from './jobs.js';
 
 // GraphQL query to fetch commits for a specific date range
@@ -521,84 +516,9 @@ export default {
       }
 
       // ======================================================================
-      // Background Job Endpoints
+      // Background Job Endpoints (kept for future use)
+      // Note: Cloudflare Queues require paid plan. Consider D1+cron as alternative.
       // ======================================================================
-
-      // Start async backfill job (returns immediately with job ID)
-      if (url.pathname === '/backfill/async' && request.method === 'POST') {
-        const authHeader = request.headers.get('Authorization');
-        if (!authHeader || !authHeader.startsWith('Bearer ')) {
-          return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-            status: 401,
-            headers: corsHeaders
-          });
-        }
-
-        const startDate = url.searchParams.get('start');
-        const endDate = url.searchParams.get('end') || startDate;
-        const modelOverride = url.searchParams.get('model');
-
-        if (!startDate) {
-          return new Response(JSON.stringify({ error: 'Missing start date parameter' }), {
-            status: 400,
-            headers: corsHeaders
-          });
-        }
-
-        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-        if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
-          return new Response(JSON.stringify({ error: 'Invalid date format. Use YYYY-MM-DD' }), {
-            status: 400,
-            headers: corsHeaders
-          });
-        }
-
-        const start = new Date(startDate);
-        const end = new Date(endDate);
-        const maxDays = 60; // Allow more days for async processing
-        const daysDiff = Math.ceil((end - start) / (1000 * 60 * 60 * 24)) + 1;
-
-        if (daysDiff > maxDays) {
-          return new Response(JSON.stringify({ error: `Maximum ${maxDays} days allowed per request` }), {
-            status: 400,
-            headers: corsHeaders
-          });
-        }
-
-        // Generate list of dates
-        const dates = [];
-        for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-          dates.push(d.toISOString().split('T')[0]);
-        }
-
-        // Create job record
-        const job = await createJob(env.DB, {
-          jobType: JOB_TYPES.BACKFILL,
-          totalItems: dates.length,
-          metadata: { startDate, endDate, model: modelOverride, dates }
-        });
-
-        // Queue the job for processing (if queue is available)
-        if (env.JOBS_QUEUE) {
-          await env.JOBS_QUEUE.send({
-            jobId: job.id,
-            type: JOB_TYPES.BACKFILL,
-            dates,
-            model: modelOverride
-          });
-        } else {
-          // Fallback: process in background using waitUntil
-          ctx.waitUntil(processBackfillJob(env, job.id, dates, modelOverride));
-        }
-
-        return new Response(JSON.stringify({
-          success: true,
-          jobId: job.id,
-          status: 'pending',
-          totalDays: dates.length,
-          message: 'Backfill job queued. Poll /jobs/{jobId} for status.'
-        }), { headers: corsHeaders });
-      }
 
       // Get job status by ID
       if (url.pathname.startsWith('/jobs/') && request.method === 'GET') {
@@ -671,74 +591,5 @@ export default {
     } catch (error) {
       console.error('Scheduled job failed:', error);
     }
-  },
-
-  /**
-   * Queue handler - processes background jobs from Cloudflare Queues
-   */
-  async queue(batch, env) {
-    for (const message of batch.messages) {
-      const { jobId, type, dates, model } = message.body;
-      console.log(`Processing queue message for job ${jobId}`);
-
-      try {
-        if (type === JOB_TYPES.BACKFILL) {
-          await processBackfillJob(env, jobId, dates, model);
-        }
-        message.ack();
-      } catch (error) {
-        console.error(`Queue job ${jobId} failed:`, error);
-        // Message will be retried based on queue config
-        message.retry();
-      }
-    }
   }
 };
-
-/**
- * Process a backfill job - generates summaries for multiple dates
- * @param {object} env - Environment bindings
- * @param {string} jobId - Job ID to update progress
- * @param {string[]} dates - Array of date strings to process
- * @param {string|null} modelOverride - Optional model override
- */
-async function processBackfillJob(env, jobId, dates, modelOverride) {
-  console.log(`Starting backfill job ${jobId} for ${dates.length} dates`);
-
-  const results = [];
-  let totalCost = 0;
-  let completedCount = 0;
-
-  try {
-    for (const dateStr of dates) {
-      try {
-        const result = await generateDailySummary(env, dateStr, modelOverride);
-        results.push(result);
-        if (result.cost) totalCost += result.cost;
-      } catch (error) {
-        results.push({
-          date: dateStr,
-          success: false,
-          error: error.message
-        });
-      }
-
-      completedCount++;
-
-      // Update progress every date
-      await updateJobProgress(env.DB, jobId, completedCount, dates.length);
-    }
-
-    // Mark job complete with results
-    await completeJob(env.DB, jobId, {
-      processed: results.length,
-      totalCost,
-      results
-    });
-
-    console.log(`Backfill job ${jobId} completed: ${results.length} dates, $${totalCost.toFixed(4)} cost`);
-  } catch (error) {
-    console.error(`Backfill job ${jobId} failed:`, error);
-    await failJob(env.DB, jobId, error.message);
-  }
-}
