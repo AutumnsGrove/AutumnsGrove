@@ -1117,10 +1117,10 @@
         </div>
         <div class="draft-actions">
           <button type="button" class="draft-btn restore" onclick={restoreDraft}>
-            Restore
+            [<span class="key">r</span>estore]
           </button>
           <button type="button" class="draft-btn discard" onclick={discardDraft}>
-            Discard
+            [<span class="key">d</span>iscard]
           </button>
         </div>
       </div>
@@ -1136,30 +1136,24 @@
         onclick={() => insertHeading(1)}
         title="Heading 1"
         disabled={readonly}
-      >
-        H1
-      </button>
+      >[h<span class="key">1</span>]</button>
       <button
         type="button"
         class="toolbar-btn"
         onclick={() => insertHeading(2)}
         title="Heading 2"
         disabled={readonly}
-      >
-        H2
-      </button>
+      >[h<span class="key">2</span>]</button>
       <button
         type="button"
         class="toolbar-btn"
         onclick={() => insertHeading(3)}
         title="Heading 3"
         disabled={readonly}
-      >
-        H3
-      </button>
+      >[h<span class="key">3</span>]</button>
     </div>
 
-    <div class="toolbar-divider"></div>
+    <div class="toolbar-divider">|</div>
 
     <div class="toolbar-group">
       <button
@@ -1168,30 +1162,24 @@
         onclick={() => wrapSelection("**", "**")}
         title="Bold (Cmd+B)"
         disabled={readonly}
-      >
-        <strong>B</strong>
-      </button>
+      >[<span class="key">b</span>old]</button>
       <button
         type="button"
         class="toolbar-btn"
         onclick={() => wrapSelection("_", "_")}
         title="Italic (Cmd+I)"
         disabled={readonly}
-      >
-        <em>I</em>
-      </button>
+      >[<span class="key">i</span>talic]</button>
       <button
         type="button"
         class="toolbar-btn"
         onclick={() => wrapSelection("`", "`")}
         title="Inline Code"
         disabled={readonly}
-      >
-        {"</>"}
-      </button>
+      >[<span class="key">c</span>ode]</button>
     </div>
 
-    <div class="toolbar-divider"></div>
+    <div class="toolbar-divider">|</div>
 
     <div class="toolbar-group">
       <button
@@ -1200,30 +1188,24 @@
         onclick={insertLink}
         title="Link"
         disabled={readonly}
-      >
-        Link
-      </button>
+      >[<span class="key">l</span>ink]</button>
       <button
         type="button"
         class="toolbar-btn"
         onclick={insertImage}
         title="Image"
         disabled={readonly}
-      >
-        Img
-      </button>
+      >[i<span class="key">m</span>g]</button>
       <button
         type="button"
         class="toolbar-btn"
         onclick={insertCodeBlock}
         title="Code Block"
         disabled={readonly}
-      >
-        Code
-      </button>
+      >[bloc<span class="key">k</span>]</button>
     </div>
 
-    <div class="toolbar-divider"></div>
+    <div class="toolbar-divider">|</div>
 
     <div class="toolbar-group">
       <button
@@ -1232,18 +1214,14 @@
         onclick={insertList}
         title="List"
         disabled={readonly}
-      >
-        List
-      </button>
+      >[lis<span class="key">t</span>]</button>
       <button
         type="button"
         class="toolbar-btn"
         onclick={insertQuote}
         title="Quote"
         disabled={readonly}
-      >
-        Quote
-      </button>
+      >[<span class="key">q</span>uote]</button>
     </div>
 
     <div class="toolbar-spacer"></div>
@@ -1255,17 +1233,13 @@
         class:active={showPreview}
         onclick={() => (showPreview = !showPreview)}
         title="Toggle Preview"
-      >
-        {showPreview ? "Hide Preview" : "Show Preview"}
-      </button>
+      >{#if showPreview}[hide <span class="key">p</span>review]{:else}[show <span class="key">p</span>review]{/if}</button>
       <button
         type="button"
         class="toolbar-btn full-preview-btn"
         onclick={() => (showFullPreview = true)}
         title="Open Full Preview (site styling)"
-      >
-        Full Preview
-      </button>
+      >[<span class="key">f</span>ull]</button>
     </div>
   </div>
 
@@ -1300,7 +1274,7 @@
     {#if showPreview}
       <div class="preview-panel">
         <div class="preview-header">
-          <span class="preview-label">Preview</span>
+          <span class="preview-label">:: preview</span>
         </div>
         <div class="preview-content" bind:this={previewRef}>
           {#if previewHtml}
@@ -1372,7 +1346,7 @@
 <!-- Slash Commands Menu -->
 {#if slashMenu.open}
   <div class="slash-menu">
-    <div class="slash-menu-header">Commands</div>
+    <div class="slash-menu-header">:: commands</div>
     {#each filteredSlashCommands as cmd, i}
       <button
         type="button"
@@ -1384,7 +1358,7 @@
       </button>
     {/each}
     {#if filteredSlashCommands.length === 0}
-      <div class="slash-menu-empty">No commands found</div>
+      <div class="slash-menu-empty">; no commands found</div>
     {/if}
   </div>
 {/if}
@@ -1396,7 +1370,7 @@
       <input
         type="text"
         class="command-palette-input"
-        placeholder="Type a command..."
+        placeholder="> type a command..."
         bind:value={commandPalette.query}
         onkeydown={(e) => {
           if (e.key === "ArrowDown") {
@@ -1444,7 +1418,7 @@
       <span class="campfire-words">+{wordCount - campfireSession.startWordCount} words</span>
     </div>
     <button type="button" class="campfire-end" onclick={endCampfireSession}>
-      End Session
+      [<span class="key">e</span>nd]
     </button>
   </div>
 {/if}
@@ -1454,9 +1428,9 @@
   <div class="snippets-modal-overlay" onclick={closeSnippetsModal}>
     <div class="snippets-modal" onclick={(e) => e.stopPropagation()}>
       <div class="snippets-modal-header">
-        <h3>{snippetsModal.editingId ? "Edit Snippet" : "Create Snippet"}</h3>
+        <h3>:: {snippetsModal.editingId ? "edit snippet" : "new snippet"}</h3>
         <button type="button" class="snippets-modal-close" onclick={closeSnippetsModal}>
-          ×
+          [x]
         </button>
       </div>
 
@@ -1500,12 +1474,12 @@
                 class="snippet-btn delete"
                 onclick={() => deleteSnippet(snippetsModal.editingId)}
               >
-                Delete
+                [<span class="key">d</span>elete]
               </button>
             {/if}
             <div class="snippet-actions-right">
               <button type="button" class="snippet-btn cancel" onclick={closeSnippetsModal}>
-                Cancel
+                [<span class="key">c</span>ancel]
               </button>
               <button
                 type="button"
@@ -1513,7 +1487,7 @@
                 onclick={saveSnippet}
                 disabled={!snippetsModal.name.trim() || !snippetsModal.content.trim()}
               >
-                {snippetsModal.editingId ? "Update" : "Create"}
+                {#if snippetsModal.editingId}[<span class="key">u</span>pdate]{:else}[<span class="key">s</span>ave]{/if}
               </button>
             </div>
           </div>
@@ -1521,7 +1495,7 @@
 
         {#if snippets.length > 0 && !snippetsModal.editingId}
           <div class="snippets-list-divider">
-            <span>Your Snippets</span>
+            <span>:: your snippets</span>
           </div>
           <div class="snippets-list">
             {#each snippets as snippet}
@@ -1547,14 +1521,12 @@
 {#if ambientSounds.showPanel}
   <div class="sound-panel">
     <div class="sound-panel-header">
-      <span class="sound-panel-title">Ambient Sounds</span>
+      <span class="sound-panel-title">:: ambient sounds</span>
       <button
         type="button"
         class="sound-panel-close"
         onclick={() => ambientSounds.showPanel = false}
-      >
-        ×
-      </button>
+      >[x]</button>
     </div>
 
     <div class="sound-options">
@@ -1574,7 +1546,7 @@
 
     <div class="sound-controls">
       <label class="volume-label">
-        <span>Volume</span>
+        <span>vol:</span>
         <input
           type="range"
           min="0"
@@ -1592,19 +1564,12 @@
         class:playing={ambientSounds.enabled}
         onclick={toggleAmbientSound}
       >
-        {#if ambientSounds.enabled}
-          <span class="sound-pause-icon">◼</span>
-          Stop
-        {:else}
-          <span class="sound-play-icon">▶</span>
-          Play
-        {/if}
+        {#if ambientSounds.enabled}[<span class="key">s</span>top]{:else}[<span class="key">p</span>lay]{/if}
       </button>
     </div>
 
     <div class="sound-note">
-      <span class="sound-note-icon">ℹ</span>
-      <span>Add audio files to <code>/static/sounds/</code> folder</span>
+      <span>; add audio to /static/sounds/</span>
     </div>
   </div>
 {/if}
@@ -1615,14 +1580,14 @@
     <div class="full-preview-backdrop" onclick={() => (showFullPreview = false)}></div>
     <div class="full-preview-container">
       <header class="full-preview-header">
-        <h2>Full Preview</h2>
+        <h2>:: full preview</h2>
         <div class="full-preview-actions">
           <button
             type="button"
             class="full-preview-close"
             onclick={() => (showFullPreview = false)}
           >
-            Close
+            [<span class="key">c</span>lose]
           </button>
         </div>
       </header>
@@ -1829,94 +1794,112 @@
   }
 
   .draft-btn {
-    padding: 0.35rem 0.75rem;
-    border-radius: 4px;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0;
     font-size: 0.8rem;
-    font-weight: 500;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: color 0.1s ease;
+    background: transparent;
+    border: none;
   }
 
   .draft-btn.restore {
-    background: #4a7c4a;
-    border: 1px solid #5a9a5a;
-    color: #c8f0c8;
+    color: #8bc48b;
   }
 
   .draft-btn.restore:hover {
-    background: #5a9a5a;
+    color: #c8f0c8;
   }
 
   .draft-btn.discard {
-    background: transparent;
-    border: 1px solid #5a5a5a;
     color: #9d9d9d;
   }
 
   .draft-btn.discard:hover {
-    background: #3a3a3a;
     color: #d4d4d4;
+  }
+
+  /* Terminal Key Highlight */
+  .key {
+    color: #8bc48b;
+    font-weight: bold;
+    text-decoration: underline;
   }
 
   /* Toolbar */
   .toolbar {
     display: flex;
     align-items: center;
-    gap: 0.25rem;
-    padding: 0.5rem 0.75rem;
-    background: #252526;
+    gap: 0.15rem;
+    padding: 0.4rem 0.75rem;
+    background: #1a1a1a;
     border-bottom: 1px solid #3a3a3a;
     flex-wrap: wrap;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
   }
 
   .toolbar-group {
     display: flex;
-    gap: 0.125rem;
+    gap: 0.1rem;
   }
 
   .toolbar-btn {
-    padding: 0.35rem 0.6rem;
+    padding: 0.2rem 0.35rem;
     background: transparent;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    color: #9d9d9d;
+    border: none;
+    border-radius: 0;
+    color: #7a9a7a;
     font-family: inherit;
     font-size: 0.8rem;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: color 0.1s ease;
+    white-space: nowrap;
   }
 
   .toolbar-btn:hover:not(:disabled) {
-    background: #3a3a3a;
-    color: #d4d4d4;
+    color: #a8dca8;
+    background: transparent;
+  }
+
+  .toolbar-btn:hover:not(:disabled) .key {
+    color: #c8f0c8;
   }
 
   .toolbar-btn:disabled {
-    opacity: 0.4;
+    opacity: 0.3;
     cursor: not-allowed;
   }
 
   .toolbar-btn.toggle-btn {
-    background: #2d4a2d;
     color: #8bc48b;
-    border-color: #3d5a3d;
   }
 
   .toolbar-btn.toggle-btn:hover {
-    background: #3d5a3d;
-    color: #a8dca8;
-  }
-
-  .toolbar-btn.toggle-btn.active {
-    background: #4a7c4a;
     color: #c8f0c8;
   }
 
+  .toolbar-btn.toggle-btn.active {
+    color: #a8dca8;
+    text-shadow: 0 0 8px rgba(139, 196, 139, 0.5);
+  }
+
+  .toolbar-btn.full-preview-btn {
+    color: #7ab3ff;
+  }
+
+  .toolbar-btn.full-preview-btn:hover {
+    color: #9ac5ff;
+  }
+
+  .toolbar-btn.full-preview-btn .key {
+    color: #9ac5ff;
+  }
+
   .toolbar-divider {
-    width: 1px;
-    height: 20px;
-    background: #3a3a3a;
-    margin: 0 0.5rem;
+    color: #4a4a4a;
+    margin: 0 0.25rem;
+    font-size: 0.8rem;
   }
 
   .toolbar-spacer {
@@ -2020,9 +2003,8 @@
 
   .preview-label {
     color: #8bc48b;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-size: 0.85rem;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
   }
 
   .preview-content {
@@ -2270,29 +2252,29 @@
 
   .full-preview-header h2 {
     margin: 0;
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--color-text, #333);
+    font-size: 0.9rem;
+    font-weight: 500;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
+    color: #8bc48b;
   }
 
   :global(.dark) .full-preview-header h2 {
-    color: var(--color-text-dark, #e0e0e0);
+    color: #8bc48b;
   }
 
   .full-preview-close {
-    padding: 0.5rem 1rem;
-    background: var(--color-primary, #2c5f2d);
-    color: white;
+    padding: 0.3rem 0.5rem;
+    background: transparent;
+    color: #7a9a7a;
     border: none;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    font-weight: 500;
+    font-size: 0.85rem;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
     cursor: pointer;
-    transition: background-color 0.2s;
+    transition: color 0.1s ease;
   }
 
   .full-preview-close:hover {
-    background: var(--color-primary-hover, #4a9d4f);
+    color: #a8dca8;
   }
 
   .full-preview-scroll {
@@ -2448,18 +2430,17 @@
   }
 
   .campfire-end {
-    padding: 0.4rem 0.8rem;
+    padding: 0.3rem 0.5rem;
     background: transparent;
-    border: 1px solid #6b4a2b;
+    border: none;
     color: #c0a080;
-    border-radius: 4px;
     font-size: 0.8rem;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: color 0.1s ease;
   }
 
   .campfire-end:hover {
-    background: #4b3a2b;
     color: #f0d0a0;
   }
 
@@ -2481,10 +2462,9 @@
 
   .slash-menu-header {
     padding: 0.5rem 0.75rem;
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: #6a6a6a;
+    font-size: 0.8rem;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
+    color: #8bc48b;
     border-bottom: 1px solid #3a3a3a;
   }
 
@@ -2496,7 +2476,8 @@
     background: transparent;
     border: none;
     color: #d4d4d4;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
     text-align: left;
     cursor: pointer;
     transition: background-color 0.1s ease;
@@ -2513,8 +2494,9 @@
 
   .slash-menu-empty {
     padding: 0.75rem;
-    color: #6a6a6a;
-    font-style: italic;
+    color: #7a9a7a;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
+    font-size: 0.8rem;
     text-align: center;
   }
 
@@ -2548,12 +2530,12 @@
     border-bottom: 1px solid #3a3a3a;
     color: #d4d4d4;
     font-size: 1rem;
-    font-family: inherit;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
     outline: none;
   }
 
   .command-palette-input::placeholder {
-    color: #6a6a6a;
+    color: #7a9a7a;
   }
 
   .command-palette-list {
@@ -2571,6 +2553,7 @@
     border: none;
     color: #d4d4d4;
     font-size: 0.9rem;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
     text-align: left;
     cursor: pointer;
     transition: background-color 0.1s ease;
@@ -2712,30 +2695,27 @@
 
   .snippets-modal-header h3 {
     margin: 0;
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 0.9rem;
+    font-weight: 500;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
     color: #8bc48b;
   }
 
   .snippets-modal-close {
-    width: 28px;
-    height: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: transparent;
     border: none;
-    color: #6a6a6a;
-    font-size: 1.5rem;
-    line-height: 1;
+    color: #7a9a7a;
+    font-size: 0.85rem;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
     cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.15s ease;
+    transition: color 0.1s ease;
   }
 
   .snippets-modal-close:hover {
-    background: #3a3a3a;
-    color: #d4d4d4;
+    color: #a8dca8;
   }
 
   .snippets-modal-body {
@@ -2808,59 +2788,52 @@
   }
 
   .snippet-btn {
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
+    padding: 0.3rem 0.5rem;
+    border-radius: 0;
     font-size: 0.85rem;
-    font-weight: 500;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: color 0.1s ease;
+    background: transparent;
+    border: none;
   }
 
   .snippet-btn.save {
-    background: #4a7c4a;
-    border: 1px solid #5a9a5a;
-    color: #c8f0c8;
+    color: #8bc48b;
   }
 
   .snippet-btn.save:hover:not(:disabled) {
-    background: #5a9a5a;
+    color: #c8f0c8;
   }
 
   .snippet-btn.save:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
     cursor: not-allowed;
   }
 
   .snippet-btn.cancel {
-    background: transparent;
-    border: 1px solid #4a4a4a;
     color: #9d9d9d;
   }
 
   .snippet-btn.cancel:hover {
-    background: #3a3a3a;
     color: #d4d4d4;
   }
 
   .snippet-btn.delete {
-    background: transparent;
-    border: 1px solid #6b4040;
     color: #e08080;
   }
 
   .snippet-btn.delete:hover {
-    background: #4a2020;
-    border-color: #a05050;
+    color: #ff9090;
   }
 
   .snippets-list-divider {
     display: flex;
     align-items: center;
     margin: 1.25rem 0 0.75rem;
-    color: #6a6a6a;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    color: #8bc48b;
+    font-size: 0.8rem;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
   }
 
   .snippets-list-divider::before,
@@ -2993,29 +2966,27 @@
   }
 
   .sound-panel-title {
-    font-size: 0.9rem;
-    font-weight: 600;
+    font-size: 0.85rem;
+    font-weight: 500;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
     color: #8bc48b;
   }
 
   .sound-panel-close {
-    width: 24px;
-    height: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
     background: transparent;
     border: none;
-    color: #6a6a6a;
-    font-size: 1.25rem;
+    color: #7a9a7a;
+    font-size: 0.85rem;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
     cursor: pointer;
-    border-radius: 4px;
-    transition: all 0.15s ease;
+    transition: color 0.1s ease;
   }
 
   .sound-panel-close:hover {
-    background: #3a3a3a;
-    color: #d4d4d4;
+    color: #a8dca8;
   }
 
   .sound-options {
@@ -3122,30 +3093,27 @@
   .sound-play-btn {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.5rem 0.75rem;
-    background: #3a3a3a;
-    border: 1px solid #4a4a4a;
-    border-radius: 6px;
-    color: #d4d4d4;
+    gap: 0.25rem;
+    padding: 0.3rem 0.5rem;
+    background: transparent;
+    border: none;
+    color: #7a9a7a;
     font-size: 0.8rem;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: color 0.1s ease;
   }
 
   .sound-play-btn:hover {
-    background: #4a4a4a;
+    color: #a8dca8;
   }
 
   .sound-play-btn.playing {
-    background: #4a7c4a;
-    border-color: #5a9a5a;
-    color: #c8f0c8;
+    color: #8bc48b;
   }
 
-  .sound-play-icon,
-  .sound-pause-icon {
-    font-size: 0.7rem;
+  .sound-play-btn.playing:hover {
+    color: #c8f0c8;
   }
 
   .sound-note {
