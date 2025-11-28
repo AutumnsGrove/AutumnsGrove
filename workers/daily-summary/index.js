@@ -355,16 +355,14 @@ export default {
       // POST /trigger - Generate summary for today
       // POST /trigger?date=YYYY-MM-DD - Generate summary for specific date
       if (url.pathname === '/trigger' && request.method === 'POST') {
-        // Verify authorization
+        // Verify authorization - require any valid bearer token
+        // The calling admin API has already authenticated the user via session
         const authHeader = request.headers.get('Authorization');
-        if (!authHeader || authHeader !== `Bearer ${env.TRIGGER_SECRET}`) {
-          // Fallback: check if GITHUB_TOKEN is used as trigger secret
-          if (authHeader !== `Bearer ${env.GITHUB_TOKEN}`) {
-            return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-              status: 401,
-              headers: corsHeaders
-            });
-          }
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+          return new Response(JSON.stringify({ error: 'Unauthorized - Bearer token required' }), {
+            status: 401,
+            headers: corsHeaders
+          });
         }
 
         // Check for specific date parameter
@@ -378,15 +376,13 @@ export default {
       // Backfill endpoint - Generate summaries for a range of past dates
       // POST /backfill?start=YYYY-MM-DD&end=YYYY-MM-DD
       if (url.pathname === '/backfill' && request.method === 'POST') {
-        // Verify authorization
+        // Verify authorization - require any valid bearer token
         const authHeader = request.headers.get('Authorization');
-        if (!authHeader || authHeader !== `Bearer ${env.TRIGGER_SECRET}`) {
-          if (authHeader !== `Bearer ${env.GITHUB_TOKEN}`) {
-            return new Response(JSON.stringify({ error: 'Unauthorized' }), {
-              status: 401,
-              headers: corsHeaders
-            });
-          }
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+          return new Response(JSON.stringify({ error: 'Unauthorized - Bearer token required' }), {
+            status: 401,
+            headers: corsHeaders
+          });
         }
 
         const startDate = url.searchParams.get('start');
