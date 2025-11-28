@@ -1,5 +1,5 @@
 <script>
-  import { Calendar, Play, RefreshCw, Clock, CheckCircle, XCircle, Loader2, AlertTriangle } from 'lucide-svelte';
+  import { Calendar, Play, RefreshCw, Clock, CheckCircle, XCircle, Loader2, AlertTriangle, DollarSign, Cpu, TrendingUp, ChevronDown, Zap } from 'lucide-svelte';
 
   let triggerLoading = $state(false);
   let backfillLoading = $state(false);
@@ -13,12 +13,23 @@
   let backfillStart = $state('');
   let backfillEnd = $state('');
 
+  // Async backfill
+  let asyncBackfill = $state(false);
+  let activeJob = $state(null);
+  let jobPolling = $state(false);
+
   // Latest summary info
   let latestSummary = $state(null);
   let loadingLatest = $state(true);
 
-  // Worker URL - will be set after deployment
-  // For now, use the API proxy endpoint
+  // AI Models and Usage
+  let models = $state([]);
+  let currentModel = $state(null);
+  let selectedModel = $state('');
+  let usageStats = $state(null);
+  let loadingUsage = $state(true);
+  let usageDays = $state(30);
+
   const WORKER_URL = '/api/timeline/trigger';
 
   async function fetchLatestSummary() {
@@ -33,16 +44,48 @@
     loadingLatest = false;
   }
 
+  async function fetchModels() {
+    try {
+      const res = await fetch('/api/timeline/models');
+      if (res.ok) {
+        const data = await res.json();
+        models = data.models || [];
+        currentModel = data.current;
+        // Set default selection to current model
+        if (currentModel) {
+          selectedModel = `${currentModel.provider}:${currentModel.model}`;
+        }
+      }
+    } catch (e) {
+      console.error('Failed to fetch models:', e);
+    }
+  }
+
+  async function fetchUsageStats() {
+    loadingUsage = true;
+    try {
+      const res = await fetch(`/api/timeline/usage?days=${usageDays}`);
+      if (res.ok) {
+        usageStats = await res.json();
+      }
+    } catch (e) {
+      console.error('Failed to fetch usage stats:', e);
+    }
+    loadingUsage = false;
+  }
+
   async function triggerSummary() {
     triggerLoading = true;
     error = null;
     result = null;
 
     try {
-      const res = await fetch(`${WORKER_URL}?date=${triggerDate}`, {
-        method: 'POST'
-      });
+      let url = `${WORKER_URL}?date=${triggerDate}`;
+      if (selectedModel) {
+        url += `&model=${encodeURIComponent(selectedModel)}`;
+      }
 
+      const res = await fetch(url, { method: 'POST' });
       const data = await res.json();
 
       if (!res.ok) {
@@ -50,8 +93,7 @@
       }
 
       result = data;
-      // Refresh latest summary
-      await fetchLatestSummary();
+      await Promise.all([fetchLatestSummary(), fetchUsageStats()]);
     } catch (e) {
       error = e.message;
     } finally {
@@ -71,10 +113,43 @@
 
     try {
       const end = backfillEnd || backfillStart;
-      const res = await fetch(`${WORKER_URL}/backfill?start=${backfillStart}&end=${end}`, {
-        method: 'POST'
-      });
 
+      // Use async backfill if checkbox is checked
+      if (asyncBackfill) {
+        let url = `${WORKER_URL}/backfill/async?start=${backfillStart}&end=${end}`;
+        if (selectedModel) {
+          url += `&model=${encodeURIComponent(selectedModel)}`;
+        }
+
+        const res = await fetch(url, { method: 'POST' });
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to start async backfill');
+        }
+
+        activeJob = {
+          id: data.jobId,
+          status: 'pending',
+          progress: 0,
+          totalItems: data.totalDays || 0,
+          startDate: backfillStart,
+          endDate: end
+        };
+
+        // Start polling for job status
+        startJobPolling(data.jobId);
+        backfillLoading = false;
+        return;
+      }
+
+      // Synchronous backfill (original behavior)
+      let url = `${WORKER_URL}/backfill?start=${backfillStart}&end=${end}`;
+      if (selectedModel) {
+        url += `&model=${encodeURIComponent(selectedModel)}`;
+      }
+
+      const res = await fetch(url, { method: 'POST' });
       const data = await res.json();
 
       if (!res.ok) {
@@ -82,8 +157,7 @@
       }
 
       result = data;
-      // Refresh latest summary
-      await fetchLatestSummary();
+      await Promise.all([fetchLatestSummary(), fetchUsageStats()]);
     } catch (e) {
       error = e.message;
     } finally {
@@ -91,9 +165,83 @@
     }
   }
 
+  async function startJobPolling(jobId) {
+    jobPolling = true;
+    let attempts = 0;
+    const maxAttempts = 120; // 10 minutes at 5s intervals
+
+    const poll = async () => {
+      if (attempts >= maxAttempts) {
+        jobPolling = false;
+        error = 'Job polling timed out';
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/timeline/jobs/${jobId}`);
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.error || 'Failed to fetch job status');
+        }
+
+        activeJob = {
+          ...activeJob,
+          status: data.status,
+          progress: data.progress || 0,
+          completedItems: data.completed_items || 0,
+          totalItems: data.total_items || activeJob.totalItems,
+          result: data.result ? JSON.parse(data.result) : null
+        };
+
+        if (data.status === 'completed') {
+          jobPolling = false;
+          result = activeJob.result;
+          await Promise.all([fetchLatestSummary(), fetchUsageStats()]);
+        } else if (data.status === 'failed') {
+          jobPolling = false;
+          error = data.result?.error || 'Job failed';
+        } else {
+          // Continue polling
+          attempts++;
+          setTimeout(poll, 5000);
+        }
+      } catch (e) {
+        attempts++;
+        if (attempts >= maxAttempts) {
+          jobPolling = false;
+          error = e.message;
+        } else {
+          setTimeout(poll, 5000);
+        }
+      }
+    };
+
+    poll();
+  }
+
+  function cancelJobPolling() {
+    jobPolling = false;
+    activeJob = null;
+  }
+
+  function formatCost(cost) {
+    if (cost === 0) return 'Free';
+    if (cost < 0.01) return '<$0.01';
+    return `$${cost.toFixed(4)}`;
+  }
+
+  function formatTokens(tokens) {
+    if (tokens >= 1000000) return `${(tokens / 1000000).toFixed(1)}M`;
+    if (tokens >= 1000) return `${(tokens / 1000).toFixed(1)}K`;
+    return tokens.toString();
+  }
+
   // Fetch on mount
   $effect(() => {
     fetchLatestSummary();
+    fetchModels();
+    fetchUsageStats();
   });
 </script>
 
@@ -102,6 +250,91 @@
     <h1><Calendar size={24} /> Timeline Management</h1>
     <p>Generate and manage daily development summaries</p>
   </header>
+
+  <!-- AI Usage Stats -->
+  <section class="usage-section">
+    <div class="usage-header">
+      <h2><TrendingUp size={18} /> AI Usage & Costs</h2>
+      <select bind:value={usageDays} onchange={() => fetchUsageStats()}>
+        <option value={7}>Last 7 days</option>
+        <option value={30}>Last 30 days</option>
+        <option value={90}>Last 90 days</option>
+      </select>
+    </div>
+
+    {#if loadingUsage}
+      <div class="status-loading">
+        <Loader2 size={20} class="spinner" />
+        <span>Loading usage stats...</span>
+      </div>
+    {:else if usageStats}
+      <div class="usage-grid">
+        <div class="usage-card">
+          <div class="usage-label">Total Requests</div>
+          <div class="usage-value">{usageStats.totals.totalRequests}</div>
+        </div>
+        <div class="usage-card cost">
+          <div class="usage-label">Total Cost</div>
+          <div class="usage-value">{formatCost(usageStats.totals.totalCost)}</div>
+        </div>
+        <div class="usage-card">
+          <div class="usage-label">Input Tokens</div>
+          <div class="usage-value">{formatTokens(usageStats.totals.totalInputTokens)}</div>
+        </div>
+        <div class="usage-card">
+          <div class="usage-label">Output Tokens</div>
+          <div class="usage-value">{formatTokens(usageStats.totals.totalOutputTokens)}</div>
+        </div>
+      </div>
+
+      {#if Object.keys(usageStats.totals.byProvider).length > 0}
+        <div class="provider-breakdown">
+          <h3>Cost by Provider</h3>
+          <div class="breakdown-list">
+            {#each Object.entries(usageStats.totals.byProvider) as [provider, cost]}
+              <div class="breakdown-item">
+                <span class="provider-name">{provider}</span>
+                <span class="provider-cost">{formatCost(cost)}</span>
+              </div>
+            {/each}
+          </div>
+        </div>
+      {/if}
+
+      {#if usageStats.requests && usageStats.requests.length > 0}
+        <details class="recent-requests">
+          <summary>
+            <ChevronDown size={16} />
+            Recent Requests ({usageStats.requests.length})
+          </summary>
+          <div class="requests-table-wrapper">
+            <table class="requests-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Model</th>
+                  <th>Tokens</th>
+                  <th>Cost</th>
+                </tr>
+              </thead>
+              <tbody>
+                {#each usageStats.requests.slice(0, 20) as req}
+                  <tr class:failed={!req.success}>
+                    <td>{req.summary_date || req.request_date}</td>
+                    <td class="model-cell">{req.model.split('/').pop().split('-').slice(0, 2).join('-')}</td>
+                    <td>{formatTokens(req.input_tokens + req.output_tokens)}</td>
+                    <td>{formatCost(req.estimated_cost_usd)}</td>
+                  </tr>
+                {/each}
+              </tbody>
+            </table>
+          </div>
+        </details>
+      {/if}
+    {:else}
+      <div class="no-usage">No usage data yet</div>
+    {/if}
+  </section>
 
   <!-- Latest Summary Status -->
   <section class="status-section">
@@ -118,6 +351,9 @@
           {#if latestSummary.commit_count > 0}
             <span class="stat">{latestSummary.commit_count} commits</span>
             <span class="stat">+{latestSummary.total_additions} / -{latestSummary.total_deletions}</span>
+            {#if latestSummary.ai_model}
+              <span class="stat model">{latestSummary.ai_model.split(':').pop().split('-').slice(0, 2).join('-')}</span>
+            {/if}
           {:else}
             <span class="stat rest">Rest Day</span>
           {/if}
@@ -139,14 +375,30 @@
     <h2><Play size={18} /> Generate Summary</h2>
     <p class="section-desc">Generate an AI summary for a specific date</p>
 
-    <div class="input-group">
-      <label for="trigger-date">Date</label>
-      <input
-        type="date"
-        id="trigger-date"
-        bind:value={triggerDate}
-        max={new Date().toISOString().split('T')[0]}
-      />
+    <div class="input-row">
+      <div class="input-group">
+        <label for="trigger-date">Date</label>
+        <input
+          type="date"
+          id="trigger-date"
+          bind:value={triggerDate}
+          max={new Date().toISOString().split('T')[0]}
+        />
+      </div>
+
+      <div class="input-group">
+        <label for="model-select">AI Model</label>
+        <select id="model-select" bind:value={selectedModel}>
+          {#each models as model}
+            <option
+              value="{model.provider}:{model.id}"
+              disabled={model.notImplemented}
+            >
+              {model.name} ({model.providerName}){model.notImplemented ? ' - Coming Soon' : ''}
+            </option>
+          {/each}
+        </select>
+      </div>
     </div>
 
     <button
@@ -192,19 +444,58 @@
       </div>
     </div>
 
+    <div class="async-option">
+      <label class="checkbox-label">
+        <input type="checkbox" bind:checked={asyncBackfill} />
+        <Zap size={14} />
+        <span>Run in background (async)</span>
+      </label>
+      <span class="option-hint">Safe to leave page while processing</span>
+    </div>
+
     <button
       class="action-btn secondary"
       onclick={backfillSummaries}
-      disabled={backfillLoading || !backfillStart}
+      disabled={backfillLoading || !backfillStart || jobPolling}
     >
       {#if backfillLoading}
         <Loader2 size={16} class="spinner" />
-        <span>Backfilling...</span>
+        <span>Starting...</span>
       {:else}
         <RefreshCw size={16} />
         <span>Backfill Summaries</span>
       {/if}
     </button>
+
+    <!-- Active Job Progress -->
+    {#if activeJob}
+      <div class="job-progress">
+        <div class="job-header">
+          <span class="job-id">Job: {activeJob.id.slice(0, 8)}...</span>
+          <span class="job-status" class:pending={activeJob.status === 'pending'} class:processing={activeJob.status === 'processing'} class:completed={activeJob.status === 'completed'} class:failed={activeJob.status === 'failed'}>
+            {activeJob.status}
+          </span>
+        </div>
+
+        <div class="progress-bar">
+          <div
+            class="progress-fill"
+            style="width: {activeJob.progress}%;"
+          ></div>
+        </div>
+
+        <div class="job-details">
+          <span>{activeJob.completedItems || 0} / {activeJob.totalItems} days processed</span>
+          <span class="job-range">{activeJob.startDate} → {activeJob.endDate}</span>
+        </div>
+
+        {#if jobPolling}
+          <button class="cancel-btn" onclick={cancelJobPolling}>
+            Stop Watching
+          </button>
+        {/if}
+      </div>
+    {/if}
   </section>
 
   <!-- Result Display -->
@@ -221,10 +512,16 @@
       <div class="result-content">
         {#if result.processed}
           <p><strong>Backfill Complete:</strong> {result.processed} days processed</p>
+          {#if result.totalCost > 0}
+            <p class="cost-info">Total cost: {formatCost(result.totalCost)}</p>
+          {/if}
           <ul class="result-list">
             {#each result.results as r}
               <li class:rest={r.type === 'rest_day'} class:error={!r.success}>
                 {r.date}: {r.success ? (r.type === 'rest_day' ? 'Rest day' : `${r.commit_count} commits`) : r.error}
+                {#if r.cost > 0}
+                  <span class="item-cost">({formatCost(r.cost)})</span>
+                {/if}
               </li>
             {/each}
           </ul>
@@ -232,6 +529,9 @@
           <p><strong>{result.date}:</strong> {result.type === 'rest_day' ? 'Rest day (no commits)' : `${result.commit_count} commits`}</p>
           {#if result.brief}
             <p class="brief">{result.brief}</p>
+          {/if}
+          {#if result.cost > 0}
+            <p class="cost-info">Cost: {formatCost(result.cost)} ({formatTokens(result.tokens?.input || 0)} in / {formatTokens(result.tokens?.output || 0)} out)</p>
           {/if}
         {/if}
       </div>
@@ -273,6 +573,251 @@
 
   :global(.dark) .page-header p {
     color: #999;
+  }
+
+  /* Usage Section */
+  .usage-section {
+    background: linear-gradient(135deg, #f0f7f0 0%, #e8f5e9 100%);
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    border: 1px solid #c8e6c9;
+  }
+
+  :global(.dark) .usage-section {
+    background: linear-gradient(135deg, #1a2a1a 0%, #1b3a1b 100%);
+    border-color: #2d4a2d;
+  }
+
+  .usage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .usage-header h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    margin: 0;
+    color: #2c5f2d;
+  }
+
+  :global(.dark) .usage-header h2 {
+    color: #5cb85f;
+  }
+
+  .usage-header select {
+    padding: 0.35rem 0.75rem;
+    border: 1px solid #c8e6c9;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    background: white;
+    color: #333;
+  }
+
+  :global(.dark) .usage-header select {
+    background: #252525;
+    border-color: #3d5a3d;
+    color: #eee;
+  }
+
+  .usage-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 600px) {
+    .usage-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .usage-card {
+    background: white;
+    padding: 0.75rem;
+    border-radius: 6px;
+    text-align: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  }
+
+  :global(.dark) .usage-card {
+    background: #252525;
+  }
+
+  .usage-card.cost {
+    background: #2c5f2d;
+    color: white;
+  }
+
+  :global(.dark) .usage-card.cost {
+    background: #3d6a3d;
+  }
+
+  .usage-label {
+    font-size: 0.75rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+  }
+
+  :global(.dark) .usage-label {
+    color: #999;
+  }
+
+  .usage-card.cost .usage-label {
+    color: rgba(255,255,255,0.8);
+  }
+
+  .usage-value {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #2c5f2d;
+  }
+
+  :global(.dark) .usage-value {
+    color: #5cb85f;
+  }
+
+  .usage-card.cost .usage-value {
+    color: white;
+  }
+
+  .provider-breakdown {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #c8e6c9;
+  }
+
+  :global(.dark) .provider-breakdown {
+    border-top-color: #3d5a3d;
+  }
+
+  .provider-breakdown h3 {
+    font-size: 0.85rem;
+    color: #555;
+    margin: 0 0 0.5rem;
+  }
+
+  :global(.dark) .provider-breakdown h3 {
+    color: #aaa;
+  }
+
+  .breakdown-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+
+  .breakdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: white;
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.85rem;
+  }
+
+  :global(.dark) .breakdown-item {
+    background: #252525;
+  }
+
+  .provider-name {
+    color: #666;
+    text-transform: capitalize;
+  }
+
+  :global(.dark) .provider-name {
+    color: #999;
+  }
+
+  .provider-cost {
+    font-weight: 600;
+    color: #2c5f2d;
+  }
+
+  :global(.dark) .provider-cost {
+    color: #5cb85f;
+  }
+
+  .recent-requests {
+    margin-top: 1rem;
+  }
+
+  .recent-requests summary {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #555;
+    user-select: none;
+  }
+
+  :global(.dark) .recent-requests summary {
+    color: #aaa;
+  }
+
+  .recent-requests[open] summary :global(svg) {
+    transform: rotate(180deg);
+  }
+
+  .requests-table-wrapper {
+    margin-top: 0.75rem;
+    overflow-x: auto;
+  }
+
+  .requests-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.8rem;
+  }
+
+  .requests-table th,
+  .requests-table td {
+    padding: 0.5rem;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  :global(.dark) .requests-table th,
+  :global(.dark) .requests-table td {
+    border-bottom-color: #333;
+  }
+
+  .requests-table th {
+    font-weight: 600;
+    color: #555;
+    background: rgba(255,255,255,0.5);
+  }
+
+  :global(.dark) .requests-table th {
+    color: #aaa;
+    background: rgba(0,0,0,0.2);
+  }
+
+  .requests-table tr.failed {
+    opacity: 0.6;
+    background: #fef0f0;
+  }
+
+  :global(.dark) .requests-table tr.failed {
+    background: #3a2020;
+  }
+
+  .model-cell {
+    font-family: monospace;
+    font-size: 0.75rem;
+  }
+
+  .no-usage {
+    text-align: center;
+    color: #888;
+    padding: 1rem;
   }
 
   /* Status Section */
@@ -336,6 +881,18 @@
   .summary-stats .rest {
     color: #888;
     font-style: italic;
+  }
+
+  .summary-stats .model {
+    font-family: monospace;
+    font-size: 0.8rem;
+    background: #e8f5e9;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+  }
+
+  :global(.dark) .summary-stats .model {
+    background: #1b3a1b;
   }
 
   .summary-brief {
@@ -403,7 +960,6 @@
     display: flex;
     flex-direction: column;
     gap: 0.35rem;
-    margin-bottom: 1rem;
     flex: 1;
   }
 
@@ -417,7 +973,8 @@
     color: #aaa;
   }
 
-  .input-group input {
+  .input-group input,
+  .input-group select {
     padding: 0.5rem 0.75rem;
     border: 1px solid #ddd;
     border-radius: 6px;
@@ -426,7 +983,8 @@
     color: #333;
   }
 
-  :global(.dark) .input-group input {
+  :global(.dark) .input-group input,
+  :global(.dark) .input-group select {
     background: #333;
     border-color: #444;
     color: #eee;
@@ -477,6 +1035,185 @@
     to { transform: rotate(360deg); }
   }
 
+  /* Async Option */
+  .async-option {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    padding: 0.5rem 0;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: #555;
+  }
+
+  :global(.dark) .checkbox-label {
+    color: #bbb;
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #5cb85f;
+  }
+
+  .option-hint {
+    font-size: 0.75rem;
+    color: #888;
+    font-style: italic;
+  }
+
+  :global(.dark) .option-hint {
+    color: #666;
+  }
+
+  /* Job Progress */
+  .job-progress {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: #f0f7f0;
+    border-radius: 8px;
+    border: 1px solid #c8e6c9;
+  }
+
+  :global(.dark) .job-progress {
+    background: #1a2a1a;
+    border-color: #2d4a2d;
+  }
+
+  .job-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .job-id {
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: #666;
+  }
+
+  :global(.dark) .job-id {
+    color: #999;
+  }
+
+  .job-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .job-status.pending {
+    background: #fff3cd;
+    color: #856404;
+  }
+
+  .job-status.processing {
+    background: #cce5ff;
+    color: #004085;
+  }
+
+  .job-status.completed {
+    background: #d4edda;
+    color: #155724;
+  }
+
+  .job-status.failed {
+    background: #f8d7da;
+    color: #721c24;
+  }
+
+  :global(.dark) .job-status.pending {
+    background: #3d3a20;
+    color: #ffc107;
+  }
+
+  :global(.dark) .job-status.processing {
+    background: #1a3a5c;
+    color: #5bc0de;
+  }
+
+  :global(.dark) .job-status.completed {
+    background: #1a3a1a;
+    color: #5cb85f;
+  }
+
+  :global(.dark) .job-status.failed {
+    background: #3a1a1a;
+    color: #e57373;
+  }
+
+  .progress-bar {
+    height: 8px;
+    background: #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  :global(.dark) .progress-bar {
+    background: #333;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #5cb85f 0%, #4cae4c 100%);
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  .job-details {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #555;
+  }
+
+  :global(.dark) .job-details {
+    color: #aaa;
+  }
+
+  .job-range {
+    font-family: monospace;
+    font-size: 0.75rem;
+  }
+
+  .cancel-btn {
+    margin-top: 0.75rem;
+    padding: 0.35rem 0.75rem;
+    background: transparent;
+    border: 1px solid #888;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .cancel-btn:hover {
+    background: #eee;
+    border-color: #666;
+  }
+
+  :global(.dark) .cancel-btn {
+    border-color: #555;
+    color: #999;
+  }
+
+  :global(.dark) .cancel-btn:hover {
+    background: #333;
+    border-color: #777;
+  }
+
   /* Results */
   .result {
     display: flex;
@@ -520,6 +1257,11 @@
     opacity: 0.9;
   }
 
+  .cost-info {
+    font-size: 0.85rem;
+    opacity: 0.8;
+  }
+
   .result-list {
     margin: 0.5rem 0 0;
     padding-left: 1.25rem;
@@ -540,6 +1282,11 @@
 
   :global(.dark) .result-list li.error {
     color: #f88;
+  }
+
+  .item-cost {
+    font-size: 0.8rem;
+    opacity: 0.7;
   }
 
   /* Footer */
@@ -567,6 +1314,12 @@
   @media (max-width: 600px) {
     .input-row {
       flex-direction: column;
+    }
+
+    .usage-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
     }
   }
 </style>

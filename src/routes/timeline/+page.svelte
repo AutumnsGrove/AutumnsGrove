@@ -1,6 +1,7 @@
 <script>
 	import { marked } from 'marked';
-	import { Calendar, GitCommit, Plus, Minus, FolderGit2, ChevronDown, ChevronUp, Cloud, Loader2, MessageCircle } from 'lucide-svelte';
+	import { Calendar, GitCommit, Plus, Minus, FolderGit2, ChevronDown, ChevronUp, Cloud, Loader2, MessageCircle, TrendingUp } from 'lucide-svelte';
+	import { ActivityOverview, LOCBar, RepoBreakdown } from '$lib/components/charts';
 
 	/** @type {{ summaries: any[], pagination: any, error?: string }} */
 	let { data } = $props();
@@ -9,6 +10,30 @@
 	let pagination = $state(data.pagination);
 	let loadingMore = $state(false);
 	let expandedCards = $state(new Set());
+
+	// Activity data for the overview chart
+	let activityData = $state([]);
+	let loadingActivity = $state(true);
+
+	// Fetch activity data on mount
+	async function fetchActivity() {
+		loadingActivity = true;
+		try {
+			const res = await fetch('/api/timeline/activity?days=14');
+			if (res.ok) {
+				const data = await res.json();
+				activityData = data.activity || [];
+			}
+		} catch (e) {
+			console.error('Failed to fetch activity:', e);
+		}
+		loadingActivity = false;
+	}
+
+	// Fetch activity on mount
+	$effect(() => {
+		fetchActivity();
+	});
 
 	// Configure marked for safe rendering
 	marked.setOptions({
@@ -71,12 +96,33 @@
 	// GitHub username for repo links
 	const GITHUB_USERNAME = 'AutumnsGrove';
 
-	// Render markdown to HTML with repo links
-	function renderMarkdown(text) {
+	/**
+	 * Get gutter items grouped by their anchor header
+	 */
+	function getGutterItemsByAnchor(gutterItems) {
+		const grouped = {};
+		for (const item of gutterItems) {
+			// Extract header name from anchor (e.g., "### ProjectName" -> "ProjectName")
+			const headerName = item.anchor?.replace(/^#+\s*/, '').trim() || 'General';
+			if (!grouped[headerName]) {
+				grouped[headerName] = [];
+			}
+			grouped[headerName].push(item);
+		}
+		return grouped;
+	}
+
+	/**
+	 * Render markdown to HTML with repo links and inject gutter comments after headers
+	 */
+	function renderMarkdownWithGutter(text, gutterItems = []) {
 		if (!text) return '';
 
+		// Group gutter items by their anchor header
+		const gutterByHeader = getGutterItemsByAnchor(gutterItems);
+
 		// Convert ### RepoName headers to GitHub links
-		const withRepoLinks = text.replace(
+		let withRepoLinks = text.replace(
 			/^### (.+)$/gm,
 			(match, repoName) => {
 				const cleanName = repoName.trim();
@@ -84,7 +130,57 @@
 			}
 		);
 
-		return marked.parse(withRepoLinks);
+		// Parse to HTML first
+		let html = marked.parse(withRepoLinks);
+
+		// Inject gutter comments after their corresponding h3 headers
+		for (const [headerName, items] of Object.entries(gutterByHeader)) {
+			// Build the gutter HTML for this header
+			const gutterHtml = items.map(item =>
+				`<div class="inline-gutter-comment"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/></svg><span>${escapeHtml(item.content)}</span></div>`
+			).join('');
+
+			// Find the h3 with this header name (as a link or plain text)
+			// Match both linked and unlinked versions
+			const linkPattern = new RegExp(
+				`(<h3>\\s*<a[^>]*>\\s*${escapeRegex(headerName)}\\s*</a>\\s*</h3>)`,
+				'i'
+			);
+			const plainPattern = new RegExp(
+				`(<h3>\\s*${escapeRegex(headerName)}\\s*</h3>)`,
+				'i'
+			);
+
+			// Try linked version first, then plain
+			if (linkPattern.test(html)) {
+				html = html.replace(linkPattern, `$1\n<div class="header-gutter-group">${gutterHtml}</div>`);
+			} else if (plainPattern.test(html)) {
+				html = html.replace(plainPattern, `$1\n<div class="header-gutter-group">${gutterHtml}</div>`);
+			}
+		}
+
+		return html;
+	}
+
+	// Helper to escape HTML special characters (SSR-safe)
+	function escapeHtml(text) {
+		if (!text) return '';
+		return text
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#039;');
+	}
+
+	// Helper to escape regex special characters
+	function escapeRegex(str) {
+		return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+	}
+
+	// Legacy function for backwards compatibility
+	function renderMarkdown(text) {
+		return renderMarkdownWithGutter(text, []);
 	}
 
 	// Toggle card expansion
@@ -141,6 +237,16 @@
 			<p>Daily summaries will appear here once the automated system starts generating them.</p>
 		</div>
 	{:else}
+		<!-- Activity Overview Chart -->
+		{#if !loadingActivity && activityData.length > 0}
+			<ActivityOverview data={activityData} days={14} />
+		{:else if loadingActivity}
+			<div class="activity-loading">
+				<Loader2 size={16} class="spinner" />
+				<span>Loading activity...</span>
+			</div>
+		{/if}
+
 		<div class="timeline-cards">
 			{#each summaries as summary (summary.id)}
 				{@const isRestDay = summary.commit_count === 0}
@@ -186,6 +292,23 @@
 								</span>
 							</div>
 
+							<!-- Visual charts for this day -->
+							<div class="day-charts">
+								<LOCBar
+									additions={summary.total_additions}
+									deletions={summary.total_deletions}
+									maxWidth={120}
+									height={6}
+								/>
+								{#if summary.repos_active?.length > 1}
+									<RepoBreakdown
+										repos={summary.repos_active.map(name => ({ name }))}
+										maxWidth={120}
+										showLegend={false}
+									/>
+								{/if}
+							</div>
+
 							{#if summary.detailed_timeline}
 								<button
 									class="expand-btn"
@@ -203,21 +326,9 @@
 
 								{#if isExpanded}
 									<div class="detailed-section">
-										<!-- Gutter comments (if any) -->
-										{#if gutterItems.length > 0}
-											<aside class="gutter-comments">
-												{#each gutterItems as item}
-													<div class="gutter-comment">
-														<MessageCircle size={14} />
-														<span>{item.content}</span>
-													</div>
-												{/each}
-											</aside>
-										{/if}
-
-										<!-- Rendered markdown -->
+										<!-- Rendered markdown with inline gutter comments -->
 										<div class="detailed-timeline markdown-content">
-											{@html renderMarkdown(summary.detailed_timeline)}
+											{@html renderMarkdownWithGutter(summary.detailed_timeline, gutterItems)}
 										</div>
 									</div>
 								{/if}
@@ -282,6 +393,25 @@
 
 	:global(.dark) .timeline-header p {
 		color: var(--color-text-muted-dark, #999);
+	}
+
+	/* Activity Loading */
+	.activity-loading {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 1rem;
+		color: #666;
+		font-size: 0.85rem;
+	}
+
+	:global(.dark) .activity-loading {
+		color: #999;
+	}
+
+	.activity-loading :global(.spinner) {
+		animation: spin 1s linear infinite;
 	}
 
 	/* Error and Empty States */
@@ -489,6 +619,19 @@
 		color: #dc3545;
 	}
 
+	/* Day Charts */
+	.day-charts {
+		display: flex;
+		gap: 1rem;
+		margin: 0.5rem 0;
+		padding: 0.5rem 0;
+		border-top: 1px dashed #eee;
+	}
+
+	:global(.dark) .day-charts {
+		border-top-color: #333;
+	}
+
 	/* Expand Button */
 	.expand-btn {
 		display: flex;
@@ -519,57 +662,43 @@
 		border-color: #555;
 	}
 
-	/* Detailed Section with Gutter */
+	/* Detailed Section */
 	.detailed-section {
-		margin-top: 1rem;
-		display: grid;
-		grid-template-columns: 1fr;
-		gap: 1rem;
+		margin-top: 0.75rem;
 	}
 
-	@media (min-width: 768px) {
-		.detailed-section {
-			grid-template-columns: 180px 1fr;
-		}
-	}
-
-	/* Gutter Comments */
-	.gutter-comments {
+	/* Inline Gutter Comments - anchored below headers */
+	.markdown-content :global(.header-gutter-group) {
 		display: flex;
-		flex-direction: column;
-		gap: 0.75rem;
-	}
-
-	@media (max-width: 767px) {
-		.gutter-comments {
-			flex-direction: row;
-			flex-wrap: wrap;
-			gap: 0.5rem;
-		}
-	}
-
-	.gutter-comment {
-		display: flex;
-		align-items: flex-start;
+		flex-wrap: wrap;
 		gap: 0.5rem;
-		padding: 0.6rem 0.75rem;
-		background: #f0f7f0;
-		border-left: 3px solid #5cb85f;
-		border-radius: 0 6px 6px 0;
-		font-size: 0.8rem;
-		color: #555;
-		line-height: 1.4;
+		margin: 0.35rem 0 0.75rem;
 	}
 
-	:global(.dark) .gutter-comment {
-		background: #1a2a1a;
+	.markdown-content :global(.inline-gutter-comment) {
+		display: inline-flex;
+		align-items: flex-start;
+		gap: 0.35rem;
+		padding: 0.4rem 0.6rem;
+		background: linear-gradient(135deg, #f0f7f0 0%, #e8f5e9 100%);
+		border-left: 2px solid #5cb85f;
+		border-radius: 0 4px 4px 0;
+		font-size: 0.78rem;
+		color: #555;
+		line-height: 1.35;
+		font-style: italic;
+	}
+
+	:global(.dark) .markdown-content :global(.inline-gutter-comment) {
+		background: linear-gradient(135deg, #1a2a1a 0%, #1b3a1b 100%);
 		border-left-color: #5cb85f;
 		color: #aaa;
 	}
 
-	.gutter-comment :global(svg) {
+	.markdown-content :global(.inline-gutter-comment svg) {
 		flex-shrink: 0;
 		color: #5cb85f;
+		opacity: 0.7;
 		margin-top: 0.1rem;
 	}
 

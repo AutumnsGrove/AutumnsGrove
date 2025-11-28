@@ -1,6 +1,11 @@
 /**
  * AI Prompt templates for daily summary generation
- * Using Cloudflare Workers AI with @cf/meta/llama-3.1-70b-instruct
+ *
+ * Voice Guidelines:
+ * - Professional/Technical: 6/10 (clear, competent, factual)
+ * - Warmth/Personality: 4/10 (genuine but understated)
+ * - NO cheerleader energy ("killing it", "crushing it", "amazing work!")
+ * - Think: thoughtful developer journal, not motivational poster
  */
 
 /**
@@ -25,56 +30,78 @@ export function buildSummaryPrompt(commits, date, ownerName = 'the developer') {
     .map(([repo, msgs]) => `${repo}: ${msgs.length} commits`)
     .join(', ');
 
-  return `You are writing daily summaries for ${ownerName}'s personal coding journal on ${date}.
+  // Determine gutter comment count based on activity (1-5)
+  const gutterCount = Math.min(5, Math.max(1, Math.ceil(commits.length / 3)));
 
-THE VOICE:
-- Warm and introspective, like a late-night conversation over tea
-- Genuinely celebrates the work without being performative or over-the-top
-- Queer-friendly, cozy, unapologetically authentic
-- Finds meaning in the small moments of building something
-- One emoji per section is fine if it fits naturally, but don't force it
-- On busy days: quietly proud. On slow days: gentle and understanding
+  return `You are writing a daily development summary for ${ownerName}'s personal coding journal on ${date}.
+
+VOICE & TONE:
+- Write like a thoughtful developer reflecting on their own work
+- Professional clarity (6/10) with genuine warmth (4/10)
+- Factual and specific about what was done
+- Quietly satisfied on productive days, understanding on light days
+- NEVER use phrases like: "killing it", "crushing it", "amazing work", "fantastic", "awesome job"
+- AVOID exclamation marks except sparingly when genuinely warranted
+- Think: late-night reflection over tea, not motivational speech
 
 COMMITS TODAY (${commits.length} total across: ${repoSummary}):
 ${commitList}
 
-TASK - Generate THREE things:
+GENERATE THREE OUTPUTS:
 
-1. BRIEF SUMMARY (2-3 sentences MAX):
-   - Open with something that feels real, not performative
-   - Mention what mattered today
-   - Like you're writing in your own journal, not presenting to an audience
+1. BRIEF SUMMARY (2-3 sentences, no more):
+   Write a grounded summary of what mattered today.
+   - Start with what was actually worked on, not how you feel about it
+   - Be specific about the nature of the work
+   - End with a quiet observation if one feels natural
+   Example tone: "Focused on the authentication flow today, sorting out edge cases around session expiry. Also touched up some timeline styling. Steady progress."
 
 2. DETAILED BREAKDOWN (markdown):
-   - Use "## Projects" as main header
-   - Each project gets "### ProjectName"
-   - List key changes as bullet points
-   - Keep it factual but friendly
+   - Header: "## Projects"
+   - Each project: "### ProjectName" (exactly as shown in commits)
+   - Bullet points for key changes
+   - Be factual and clear, not effusive
+   - Group related commits logically
 
-3. GUTTER COMMENTS (cozy marginalia):
-   - Little notes that float alongside the content, like scribbles in the margin
-   - Add 2-4 warm observations or gentle encouragements
-   - Each needs an "anchor" (which header/project it appears next to)
-   - Keep them SHORT (1-2 sentences max)
-   - Think: supportive friend energy, not cheerleader energy
-   - Examples: "This one took some untangling.", "Building something meaningful here.", "The small fixes matter too."
+3. GUTTER COMMENTS (${gutterCount} margin notes):
+   These are small observations that float alongside the content.
+   - Generate exactly ${gutterCount} comments
+   - Each must have an "anchor" matching a "### ProjectName" from the detailed section
+   - Keep them SHORT (10 words max, ideally under 8)
+   - Thoughtful, not cheerful
+   - Good: "This took longer than expected." / "Cleanup work pays off." / "Subtle but important."
+   - Bad: "Great work on this!" / "You're doing amazing!" / "Keep it up!"
 
 OUTPUT FORMAT (respond with valid JSON only):
 {
-  "brief": "Your 2-3 sentence personality-filled summary here",
-  "detailed": "## Projects\\n\\n### ProjectName\\n- Change one\\n- Change two\\n\\n### OtherProject\\n- Another change",
+  "brief": "Your 2-3 sentence summary here",
+  "detailed": "## Projects\\n\\n### ProjectName\\n- Change one\\n- Change two",
   "gutter": [
-    {"anchor": "### ProjectName", "type": "comment", "content": "Fun observation here!"},
-    {"anchor": "### OtherProject", "type": "comment", "content": "Another witty note"}
+    {"anchor": "### ProjectName", "type": "comment", "content": "Short observation"}
   ]
 }
 
 IMPORTANT:
 - Respond with JSON only, no markdown code blocks
 - Escape newlines as \\n in JSON strings
-- Keep brief summary UNDER 3 sentences
-- Gutter anchors must match exact header text from detailed section`;
+- Gutter anchors must EXACTLY match headers from detailed section
+- Match the number of gutter comments to ${gutterCount}`;
 }
+
+/**
+ * System prompt for the AI - sets overall personality
+ */
+export const SYSTEM_PROMPT = `You write daily development summaries for a personal coding journal.
+
+Your voice is:
+- Clear and technically competent
+- Genuinely warm but never performative
+- Like a developer writing notes for their future self
+- Queer-friendly, authentic, unpretentious
+
+You never sound like a cheerleader or motivational speaker. You sound like someone who genuinely cares about their craft and finds quiet satisfaction in steady progress.
+
+Always respond with valid JSON only.`;
 
 /**
  * Parse the AI response into structured data
@@ -94,21 +121,30 @@ export function parseAIResponse(response) {
 
     const parsed = JSON.parse(jsonStr);
 
+    // Validate gutter items have required fields
+    const validGutter = (parsed.gutter || []).filter(item =>
+      item.anchor && item.content && typeof item.content === 'string'
+    ).map(item => ({
+      anchor: item.anchor,
+      type: item.type || 'comment',
+      content: item.content.trim()
+    }));
+
     return {
       success: true,
-      brief: parsed.brief || 'Another day of coding adventures!',
-      detailed: parsed.detailed || '## Projects\n\nWork was done today.',
-      gutter: parsed.gutter || []
+      brief: parsed.brief || 'Worked on a few things today.',
+      detailed: parsed.detailed || '## Projects\n\nSome progress was made.',
+      gutter: validGutter
     };
   } catch (error) {
     console.error('Failed to parse AI response:', error);
     console.error('Raw response:', response);
 
-    // Fallback - keep it simple and warm
+    // Fallback - keep it simple and authentic
     return {
       success: false,
-      brief: 'Some quiet work happened today. The details got a little tangled, but the commits are there.',
-      detailed: '## Projects\n\nWork continued across various projects today.',
+      brief: 'Some work happened today. The summary got a bit tangled, but the commits tell the story.',
+      detailed: '## Projects\n\nWork continued across various projects.',
       gutter: []
     };
   }
