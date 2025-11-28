@@ -84,9 +84,25 @@ CREATE TABLE IF NOT EXISTS commit_activity (
     UNIQUE(repo_id, activity_date, hour)
 );
 
+-- Store daily development summaries for timeline display
+CREATE TABLE IF NOT EXISTS daily_summaries (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    summary_date TEXT NOT NULL UNIQUE,       -- YYYY-MM-DD format
+    brief_summary TEXT,                       -- 1-2 sentence overview (null for rest days)
+    detailed_timeline TEXT,                   -- Full markdown breakdown
+    commit_count INTEGER DEFAULT 0,
+    repos_active TEXT,                        -- JSON array of repo names
+    total_additions INTEGER DEFAULT 0,
+    total_deletions INTEGER DEFAULT 0,
+    ai_model TEXT,                            -- Model used for generation
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
 -- Indexes for common queries
 CREATE INDEX IF NOT EXISTS idx_repo_snapshots_date ON repo_snapshots(snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_commits_committed_at ON commits(committed_at);
 CREATE INDEX IF NOT EXISTS idx_commits_repo ON commits(repo_id);
 CREATE INDEX IF NOT EXISTS idx_todo_snapshots_date ON todo_snapshots(snapshot_date);
 CREATE INDEX IF NOT EXISTS idx_commit_activity_date ON commit_activity(activity_date);
+CREATE INDEX IF NOT EXISTS idx_daily_summaries_date ON daily_summaries(summary_date DESC);

@@ -1,0 +1,45 @@
+name = "autumnsgrove-daily-summary"
+main = "index.js"
+compatibility_date = "2025-01-01"
+
+# D1 Database binding (same as main site)
+[[d1_databases]]
+binding = "DB"
+database_name = "autumnsgrove-git-stats"
+database_id = "0ca4036f-93f7-4c8a-98a5-5353263acd44"
+
+# Workers AI binding (no API key needed!)
+[ai]
+binding = "AI"
+
+# Environment variables
+[vars]
+GITHUB_USERNAME = "AutumnsGrove"
+TIMEZONE = "America/New_York"
+GITHUB_API_URL = "https://api.github.com/graphql"
+ALLOWED_ORIGIN = "https://autumnsgrove.com"
+
+# Run at 11:59 PM Eastern Time daily
+# Cron is in UTC: 11:59 PM ET = 4:59 AM UTC (EST) or 3:59 AM UTC (EDT)
+# Using 4:59 AM UTC for EST (winter), adjust for DST manually if needed
+[triggers]
+crons = ["59 4 * * *"]
+
+# Production environment
+[env.production.vars]
+ENVIRONMENT = "production"
+ALLOWED_ORIGIN = "https://autumnsgrove.com"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "autumnsgrove-git-stats"
+database_id = "0ca4036f-93f7-4c8a-98a5-5353263acd44"
+
+[env.production.ai]
+binding = "AI"
+
+[env.production.triggers]
+crons = ["59 4 * * *"]
+
+# Secrets (set using: wrangler secret put GITHUB_TOKEN)
+# GITHUB_TOKEN - GitHub Personal Access Token with repo scope

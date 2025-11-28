@@ -65,6 +65,10 @@
         <span class="nav-icon">&#x1F4CA;</span>
         Analytics
       </a>
+      <a href="/admin/timeline" class="nav-item" onclick={closeSidebar}>
+        <span class="nav-icon">&#x1F4C5;</span>
+        Timeline
+      </a>
       <a href="/admin/logs" class="nav-item" onclick={closeSidebar}>
         <span class="nav-icon">&#x1F5A5;</span>
         Console

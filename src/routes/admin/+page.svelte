@@ -92,6 +92,10 @@
         <span class="action-icon">&#x1F4CA;</span>
         <span class="action-label">View Analytics</span>
       </a>
+      <a href="/admin/timeline" class="action-card">
+        <span class="action-icon">&#x1F4C5;</span>
+        <span class="action-label">Timeline</span>
+      </a>
       <a href="/admin/logs" class="action-card">
         <span class="action-icon">&#x1F5A5;</span>
         <span class="action-label">System Console</span>

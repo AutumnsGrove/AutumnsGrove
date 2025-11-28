@@ -219,6 +219,7 @@
 				<a href="/blog" class:active={$page.url.pathname.startsWith('/blog')}>Blog</a>
 				<a href="/gallery" class:active={$page.url.pathname.startsWith('/gallery')}>Gallery</a>
 				<a href="/recipes" class:active={$page.url.pathname.startsWith('/recipes')}>Recipes</a>
+				<a href="/timeline" class:active={$page.url.pathname.startsWith('/timeline')}>Timeline</a>
 				<a href="/about" class:active={$page.url.pathname.startsWith('/about')}>About</a>
 
 				<!-- Search -->
@@ -308,6 +309,7 @@
 			<a href="/blog" class:active={$page.url.pathname.startsWith('/blog')} onclick={closeMobileMenu}>Blog</a>
 			<a href="/gallery" class:active={$page.url.pathname.startsWith('/gallery')} onclick={closeMobileMenu}>Gallery</a>
 			<a href="/recipes" class:active={$page.url.pathname.startsWith('/recipes')} onclick={closeMobileMenu}>Recipes</a>
+			<a href="/timeline" class:active={$page.url.pathname.startsWith('/timeline')} onclick={closeMobileMenu}>Timeline</a>
 			<a href="/about" class:active={$page.url.pathname.startsWith('/about')} onclick={closeMobileMenu}>About</a>
 		</div>
 	</header>
