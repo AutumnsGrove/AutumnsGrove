@@ -68,10 +68,23 @@
 		return dateStr === today;
 	}
 
-	// Render markdown to HTML
+	// GitHub username for repo links
+	const GITHUB_USERNAME = 'AutumnsGrove';
+
+	// Render markdown to HTML with repo links
 	function renderMarkdown(text) {
 		if (!text) return '';
-		return marked.parse(text);
+
+		// Convert ### RepoName headers to GitHub links
+		const withRepoLinks = text.replace(
+			/^### (.+)$/gm,
+			(match, repoName) => {
+				const cleanName = repoName.trim();
+				return `### [${cleanName}](https://github.com/${GITHUB_USERNAME}/${cleanName})`;
+			}
+		);
+
+		return marked.parse(withRepoLinks);
 	}
 
 	// Toggle card expansion
@@ -597,6 +610,36 @@
 
 	:global(.dark) .markdown-content :global(h3) {
 		color: #ddd;
+	}
+
+	.markdown-content :global(h3 a) {
+		color: #2c5f2d;
+		text-decoration: none;
+		border-bottom: 1px dashed #2c5f2d;
+		transition: all 0.15s ease;
+	}
+
+	.markdown-content :global(h3 a:hover) {
+		color: #4cae4c;
+		border-bottom-style: solid;
+	}
+
+	:global(.dark) .markdown-content :global(h3 a) {
+		color: #5cb85f;
+		border-bottom-color: #5cb85f;
+	}
+
+	:global(.dark) .markdown-content :global(h3 a:hover) {
+		color: #7cd97f;
+	}
+
+	.markdown-content :global(a) {
+		color: #2c5f2d;
+		text-decoration: underline;
+	}
+
+	:global(.dark) .markdown-content :global(a) {
+		color: #5cb85f;
 	}
 
 	.markdown-content :global(ul) {

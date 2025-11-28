@@ -178,12 +178,24 @@ async function fetchCommitsForDate(username, token, dateStr) {
  * @param {string} ownerName - Name of the developer
  * @returns {Promise<object>} Summary object with brief, detailed, and gutter fields
  */
-async function generateSummary(ai, commits, date, ownerName) {
+// Available AI models for summarization
+const AI_MODELS = {
+  '@cf/meta/llama-3.3-70b-instruct-fp8-fast': { name: 'Llama 3.3 70B (Fast)', quality: 'highest', speed: 'medium' },
+  '@cf/meta/llama-3.1-70b-instruct': { name: 'Llama 3.1 70B', quality: 'high', speed: 'medium' },
+  '@cf/google/gemma-3-12b-it': { name: 'Gemma 3 12B', quality: 'high', speed: 'fast' },
+  '@cf/mistralai/mistral-small-3.1-24b-instruct': { name: 'Mistral Small 24B', quality: 'high', speed: 'fast' },
+  '@cf/meta/llama-3.1-8b-instruct-fast': { name: 'Llama 3.1 8B (Fast)', quality: 'good', speed: 'fastest' }
+};
+
+const DEFAULT_MODEL = '@cf/meta/llama-3.1-70b-instruct';
+
+async function generateSummary(ai, db, commits, date, ownerName, modelId = DEFAULT_MODEL) {
   const prompt = buildSummaryPrompt(commits, date, ownerName);
+  const model = AI_MODELS[modelId] ? modelId : DEFAULT_MODEL;
 
-  console.log(`Generating AI summary for ${ownerName}...`);
+  console.log(`Generating AI summary for ${ownerName} using ${model}...`);
 
-  const response = await ai.run('@cf/meta/llama-3.1-70b-instruct', {
+  const response = await ai.run(model, {
     messages: [
       {
         role: 'system',
@@ -194,11 +206,34 @@ async function generateSummary(ai, commits, date, ownerName) {
         content: prompt
       }
     ],
-    max_tokens: 2048, // Increased for gutter content
-    temperature: 0.5 // Slightly higher for more personality
+    max_tokens: 2048,
+    temperature: 0.5
   });
 
-  return parseAIResponse(response.response);
+  // Track AI usage
+  await trackAIUsage(db, model);
+
+  const result = parseAIResponse(response.response);
+  result.model = model;
+  return result;
+}
+
+/**
+ * Track AI usage in database
+ */
+async function trackAIUsage(db, model) {
+  const today = new Date().toISOString().split('T')[0];
+  try {
+    await db.prepare(`
+      INSERT INTO ai_usage (usage_date, model, request_count, updated_at)
+      VALUES (?, ?, 1, datetime('now'))
+      ON CONFLICT(usage_date, model) DO UPDATE SET
+        request_count = request_count + 1,
+        updated_at = datetime('now')
+    `).bind(today, model).run();
+  } catch (e) {
+    console.error('Failed to track AI usage:', e);
+  }
 }
 
 /**
@@ -309,8 +344,11 @@ async function generateDailySummary(env, targetDate = null) {
     };
   }
 
+  // Get configured model or use default
+  const modelId = env.AI_MODEL || DEFAULT_MODEL;
+
   // Generate AI summary
-  const summary = await generateSummary(env.AI, commits, summaryDate, ownerName);
+  const summary = await generateSummary(env.AI, env.DB, commits, summaryDate, ownerName, modelId);
 
   // Store in D1
   await storeSummary(env.DB, summaryDate, summary, commits);
@@ -321,7 +359,8 @@ async function generateDailySummary(env, targetDate = null) {
     type: 'summary',
     commit_count: commits.length,
     repos: [...new Set(commits.map(c => c.repo))],
-    brief: summary.brief
+    brief: summary.brief,
+    model: summary.model
   };
 }
 
@@ -354,6 +393,45 @@ export default {
       // Health check
       if (url.pathname === '/health') {
         return new Response(JSON.stringify({ status: 'ok' }), {
+          headers: corsHeaders
+        });
+      }
+
+      // Get available AI models
+      if (url.pathname === '/models' && request.method === 'GET') {
+        return new Response(JSON.stringify({
+          models: Object.entries(AI_MODELS).map(([id, info]) => ({ id, ...info })),
+          default: DEFAULT_MODEL,
+          current: env.AI_MODEL || DEFAULT_MODEL
+        }), {
+          headers: corsHeaders
+        });
+      }
+
+      // Get AI usage stats
+      if (url.pathname === '/usage' && request.method === 'GET') {
+        const days = parseInt(url.searchParams.get('days') || '7');
+        const usage = await env.DB.prepare(`
+          SELECT usage_date, model, request_count
+          FROM ai_usage
+          WHERE usage_date >= date('now', '-' || ? || ' days')
+          ORDER BY usage_date DESC, model
+        `).bind(days).all();
+
+        // Aggregate totals
+        const totals = {};
+        let totalRequests = 0;
+        for (const row of usage.results) {
+          totals[row.model] = (totals[row.model] || 0) + row.request_count;
+          totalRequests += row.request_count;
+        }
+
+        return new Response(JSON.stringify({
+          days,
+          usage: usage.results,
+          totals,
+          totalRequests
+        }), {
           headers: corsHeaders
         });
       }

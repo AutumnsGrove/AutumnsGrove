@@ -435,20 +435,40 @@
     </article>
 
     <article class="credit-item">
-      <h3>Anthropic Claude API</h3>
+      <h3>Cloudflare Workers AI</h3>
       <p class="credit-description">
-        High-performance AI platform excelling at language, reasoning, and analysis.
-        Provides AI-powered repository analysis on the dashboard.
+        Serverless AI inference running on Cloudflare's global network.
+        Powers the daily timeline summaries with whimsical AI-generated content.
       </p>
       <dl class="credit-details">
         <dt>Provider</dt>
-        <dd>Anthropic</dd>
+        <dd>Cloudflare, Inc.</dd>
         <dt>Source</dt>
         <dd>
-          <a href="https://docs.anthropic.com/" target="_blank" rel="noopener noreferrer">
-            Anthropic API Documentation
+          <a href="https://developers.cloudflare.com/workers-ai/" target="_blank" rel="noopener noreferrer">
+            Cloudflare Workers AI Documentation
           </a>
         </dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>Meta Llama</h3>
+      <p class="credit-description">
+        Open-source large language models from Meta AI. The timeline uses Llama 3.1 70B
+        and Llama 3.3 70B for generating daily development summaries.
+      </p>
+      <dl class="credit-details">
+        <dt>Provider</dt>
+        <dd>Meta AI</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://llama.meta.com/" target="_blank" rel="noopener noreferrer">
+            llama.meta.com
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>Llama 3.1 Community License</dd>
       </dl>
     </article>
 
