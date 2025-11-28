@@ -1,6 +1,6 @@
 # TODOs for AutumnsGrove
 
-> **Last Updated:** November 24, 2025 - Updated with recent completions
+> **Last Updated:** November 28, 2025 - Added AI timeline enhancements
 
 ---
 
@@ -165,6 +165,33 @@
 - [x] GITHUB_TOKEN secret configured
 
 **Worker URL:** `https://autumnsgrove-daily-summary.m7jv4v7npb.workers.dev`
+
+---
+
+### HIGH PRIORITY: AI Timeline Enhancements (Nov 28, 2025)
+
+**Status:** Partially complete - model selection backend done, admin UI pending
+
+**Completed:**
+- [x] Add model selector infrastructure to worker (5 models available)
+- [x] Add `/models` endpoint to list available models
+- [x] Add `/usage` endpoint for AI usage statistics
+- [x] Add GitHub repo links in timeline markdown headers
+- [x] Update credits page with Cloudflare Workers AI + Meta Llama
+
+**Remaining:**
+- [ ] Create `ai_usage` table in D1 schema for usage tracking
+- [ ] Add model selector dropdown to admin timeline page
+- [ ] Add "Re-run all" button for batch regeneration
+- [ ] Display AI usage stats in admin panel
+- [ ] Deploy worker and test new endpoints
+
+**Available AI Models:**
+- `@cf/meta/llama-3.3-70b-instruct-fp8-fast` - Highest quality, medium speed
+- `@cf/meta/llama-3.1-70b-instruct` - High quality, medium speed (default)
+- `@cf/google/gemma-3-12b-it` - High quality, fast
+- `@cf/mistralai/mistral-small-3.1-24b-instruct` - High quality, fast
+- `@cf/meta/llama-3.1-8b-instruct-fast` - Good quality, fastest
 
 ---
 
@@ -395,16 +422,22 @@ npx wrangler pages dev -- npm run dev
 
 When you return to work on this project:
 
-1. **Pick a task from remaining items:**
-   - RSS Feed implementation (medium priority)
-   - Project Comparison Charts (compare repos side-by-side)
-   - UI polish (loading states, animations, mobile tweaks)
+1. **Finish AI Timeline Enhancements (HIGH PRIORITY):**
+   - Create `ai_usage` table in D1 schema
+   - Add model selector dropdown to admin timeline page
+   - Add usage stats display to admin panel
+   - Deploy worker with `wrangler deploy`
 
-2. **Test recent features:**
+2. **Other tasks to consider:**
+   - RSS Feed implementation (medium priority)
+   - Recipes D1 integration
+   - Project Comparison Charts (compare repos side-by-side)
+
+3. **Test recent features:**
+   - Timeline page with new GitHub repo link styling
+   - Credits page with updated AI attributions
    - Admin panel at `/admin` - all sections working
-   - System console logs streaming
-   - Code block copy buttons
 
 ---
 
-*Last updated: November 24, 2025*
+*Last updated: November 28, 2025*
