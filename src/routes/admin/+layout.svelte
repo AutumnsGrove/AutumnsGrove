@@ -23,7 +23,8 @@
       <span class="hamburger-line"></span>
       <span class="hamburger-line"></span>
     </button>
-    <h2>Admin Panel</h2>
+    <a href="/" class="mobile-home-link" aria-label="Go to home page">The Grove</a>
+    <span class="mobile-header-spacer"></span>
   </header>
 
   <!-- Overlay for mobile -->
@@ -110,8 +111,8 @@
     background: var(--mobile-menu-bg);
     color: var(--color-text);
     align-items: center;
+    justify-content: space-between;
     padding: 0 1rem;
-    gap: 1rem;
     z-index: 1000;
     border-bottom: 1px solid var(--color-border);
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
@@ -123,10 +124,28 @@
     border-bottom-color: var(--color-border-dark);
   }
 
-  .mobile-header h2 {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 600;
+  .mobile-home-link {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  :global(.dark) .mobile-home-link {
+    color: var(--color-primary-light);
+  }
+
+  .mobile-home-link:hover {
+    color: var(--color-primary-hover);
+  }
+
+  :global(.dark) .mobile-home-link:hover {
+    color: var(--color-primary-light-hover);
+  }
+
+  .mobile-header-spacer {
+    width: 36px; /* Match hamburger button width for centering */
   }
 
   .hamburger {
