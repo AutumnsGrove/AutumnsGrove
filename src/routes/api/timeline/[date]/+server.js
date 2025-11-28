@@ -74,7 +74,7 @@ export async function PUT({ params, request, platform, cookies }) {
   }
 
   try {
-    const user = await verifySession(sessionToken, platform.env);
+    const user = await verifySession(sessionToken, platform.env.SESSION_SECRET);
     if (!user) {
       throw error(401, 'Invalid session');
     }

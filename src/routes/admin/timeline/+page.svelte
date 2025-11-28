@@ -39,6 +39,7 @@
   let saving = $state(false);
   let editError = $state(null);
   let editSuccess = $state(null);
+  let gutterJsonError = $state(null);
 
   const WORKER_URL = '/api/timeline/trigger';
 
@@ -183,6 +184,7 @@
     };
     editError = null;
     editSuccess = null;
+    gutterJsonError = null;
     editModalOpen = true;
   }
 
@@ -650,14 +652,26 @@
           <p class="gutter-hint">JSON array of gutter items. Edit with care.</p>
           <textarea
             class="gutter-textarea"
+            class:json-invalid={gutterJsonError}
             value={JSON.stringify(editForm.gutter_content, null, 2)}
             oninput={(e) => {
               try {
-                editForm.gutter_content = JSON.parse(e.target.value);
-              } catch {}
+                const parsed = JSON.parse(e.target.value);
+                if (!Array.isArray(parsed)) {
+                  gutterJsonError = 'Must be a JSON array';
+                } else {
+                  editForm.gutter_content = parsed;
+                  gutterJsonError = null;
+                }
+              } catch (err) {
+                gutterJsonError = 'Invalid JSON syntax';
+              }
             }}
             rows="6"
           ></textarea>
+          {#if gutterJsonError}
+            <p class="json-error">{gutterJsonError}</p>
+          {/if}
         </details>
       </div>
 
@@ -665,7 +679,7 @@
         <button class="modal-btn cancel" onclick={closeEditModal}>
           Cancel
         </button>
-        <button class="modal-btn save" onclick={saveEntry} disabled={saving}>
+        <button class="modal-btn save" onclick={saveEntry} disabled={saving || gutterJsonError}>
           {#if saving}
             <Loader2 size={16} class="spinner" />
             <span>Saving...</span>
@@ -1634,6 +1648,26 @@
     background: #1a1a1a;
     border-color: #444;
     color: #ccc;
+  }
+
+  .gutter-textarea.json-invalid {
+    border-color: #c00;
+    background: #fff5f5;
+  }
+
+  :global(.dark) .gutter-textarea.json-invalid {
+    border-color: #f66;
+    background: #2a1a1a;
+  }
+
+  .json-error {
+    color: #c00;
+    font-size: 0.8rem;
+    margin: 0.35rem 0 0;
+  }
+
+  :global(.dark) .json-error {
+    color: #f88;
   }
 
   .modal-footer {
