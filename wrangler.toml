@@ -22,6 +22,12 @@ binding = "GIT_STATS_DB"
 database_name = "autumnsgrove-git-stats"
 database_id = "0ca4036f-93f7-4c8a-98a5-5353263acd44"
 
+# D1 Database for blog posts
+[[d1_databases]]
+binding = "POSTS_DB"
+database_name = "autumnsgrove-posts"
+database_id = "510badf3-457a-4892-bf2a-45d4bfd7a7bb"
+
 # Non-sensitive environment variables
 [vars]
 GITHUB_API_URL = "https://api.github.com/graphql"
