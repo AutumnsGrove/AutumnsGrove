@@ -1,5 +1,5 @@
 <script>
-  import { Calendar, Play, RefreshCw, Clock, CheckCircle, XCircle, Loader2, AlertTriangle, DollarSign, Cpu, TrendingUp, ChevronDown, Zap } from 'lucide-svelte';
+  import { Calendar, Play, RefreshCw, Clock, CheckCircle, XCircle, Loader2, AlertTriangle, DollarSign, Cpu, TrendingUp, ChevronDown } from 'lucide-svelte';
 
   let triggerLoading = $state(false);
   let backfillLoading = $state(false);
@@ -12,11 +12,6 @@
   // Backfill range
   let backfillStart = $state('');
   let backfillEnd = $state('');
-
-  // Async backfill
-  let asyncBackfill = $state(false);
-  let activeJob = $state(null);
-  let jobPolling = $state(false);
 
   // Latest summary info
   let latestSummary = $state(null);
@@ -114,36 +109,6 @@
     try {
       const end = backfillEnd || backfillStart;
 
-      // Use async backfill if checkbox is checked
-      if (asyncBackfill) {
-        let url = `${WORKER_URL}/backfill/async?start=${backfillStart}&end=${end}`;
-        if (selectedModel) {
-          url += `&model=${encodeURIComponent(selectedModel)}`;
-        }
-
-        const res = await fetch(url, { method: 'POST' });
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.error || 'Failed to start async backfill');
-        }
-
-        activeJob = {
-          id: data.jobId,
-          status: 'pending',
-          progress: 0,
-          totalItems: data.totalDays || 0,
-          startDate: backfillStart,
-          endDate: end
-        };
-
-        // Start polling for job status
-        startJobPolling(data.jobId);
-        backfillLoading = false;
-        return;
-      }
-
-      // Synchronous backfill (original behavior)
       let url = `${WORKER_URL}/backfill?start=${backfillStart}&end=${end}`;
       if (selectedModel) {
         url += `&model=${encodeURIComponent(selectedModel)}`;
@@ -163,66 +128,6 @@
     } finally {
       backfillLoading = false;
     }
-  }
-
-  async function startJobPolling(jobId) {
-    jobPolling = true;
-    let attempts = 0;
-    const maxAttempts = 120; // 10 minutes at 5s intervals
-
-    const poll = async () => {
-      if (attempts >= maxAttempts) {
-        jobPolling = false;
-        error = 'Job polling timed out';
-        return;
-      }
-
-      try {
-        const res = await fetch(`/api/timeline/jobs/${jobId}`);
-        const data = await res.json();
-
-        if (!res.ok) {
-          throw new Error(data.error || 'Failed to fetch job status');
-        }
-
-        activeJob = {
-          ...activeJob,
-          status: data.status,
-          progress: data.progress || 0,
-          completedItems: data.completed_items || 0,
-          totalItems: data.total_items || activeJob.totalItems,
-          result: data.result ? JSON.parse(data.result) : null
-        };
-
-        if (data.status === 'completed') {
-          jobPolling = false;
-          result = activeJob.result;
-          await Promise.all([fetchLatestSummary(), fetchUsageStats()]);
-        } else if (data.status === 'failed') {
-          jobPolling = false;
-          error = data.result?.error || 'Job failed';
-        } else {
-          // Continue polling
-          attempts++;
-          setTimeout(poll, 5000);
-        }
-      } catch (e) {
-        attempts++;
-        if (attempts >= maxAttempts) {
-          jobPolling = false;
-          error = e.message;
-        } else {
-          setTimeout(poll, 5000);
-        }
-      }
-    };
-
-    poll();
-  }
-
-  function cancelJobPolling() {
-    jobPolling = false;
-    activeJob = null;
   }
 
   function formatCost(cost) {
@@ -444,58 +349,19 @@
       </div>
     </div>
 
-    <div class="async-option">
-      <label class="checkbox-label">
-        <input type="checkbox" bind:checked={asyncBackfill} />
-        <Zap size={14} />
-        <span>Run in background (async)</span>
-      </label>
-      <span class="option-hint">Safe to leave page while processing</span>
-    </div>
-
     <button
       class="action-btn secondary"
       onclick={backfillSummaries}
-      disabled={backfillLoading || !backfillStart || jobPolling}
+      disabled={backfillLoading || !backfillStart}
     >
       {#if backfillLoading}
         <Loader2 size={16} class="spinner" />
-        <span>Starting...</span>
+        <span>Processing...</span>
       {:else}
         <RefreshCw size={16} />
         <span>Backfill Summaries</span>
       {/if}
     </button>
-
-    <!-- Active Job Progress -->
-    {#if activeJob}
-      <div class="job-progress">
-        <div class="job-header">
-          <span class="job-id">Job: {activeJob.id.slice(0, 8)}...</span>
-          <span class="job-status" class:pending={activeJob.status === 'pending'} class:processing={activeJob.status === 'processing'} class:completed={activeJob.status === 'completed'} class:failed={activeJob.status === 'failed'}>
-            {activeJob.status}
-          </span>
-        </div>
-
-        <div class="progress-bar">
-          <div
-            class="progress-fill"
-            style="width: {activeJob.progress}%;"
-          ></div>
-        </div>
-
-        <div class="job-details">
-          <span>{activeJob.completedItems || 0} / {activeJob.totalItems} days processed</span>
-          <span class="job-range">{activeJob.startDate} → {activeJob.endDate}</span>
-        </div>
-
-        {#if jobPolling}
-          <button class="cancel-btn" onclick={cancelJobPolling}>
-            Stop Watching
-          </button>
-        {/if}
-      </div>
-    {/if}
   </section>
 
   <!-- Result Display -->
@@ -1033,185 +899,6 @@
   @keyframes spin {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
-  }
-
-  /* Async Option */
-  .async-option {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    margin-bottom: 1rem;
-    padding: 0.5rem 0;
-  }
-
-  .checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    cursor: pointer;
-    font-size: 0.9rem;
-    color: #555;
-  }
-
-  :global(.dark) .checkbox-label {
-    color: #bbb;
-  }
-
-  .checkbox-label input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    accent-color: #5cb85f;
-  }
-
-  .option-hint {
-    font-size: 0.75rem;
-    color: #888;
-    font-style: italic;
-  }
-
-  :global(.dark) .option-hint {
-    color: #666;
-  }
-
-  /* Job Progress */
-  .job-progress {
-    margin-top: 1rem;
-    padding: 1rem;
-    background: #f0f7f0;
-    border-radius: 8px;
-    border: 1px solid #c8e6c9;
-  }
-
-  :global(.dark) .job-progress {
-    background: #1a2a1a;
-    border-color: #2d4a2d;
-  }
-
-  .job-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.75rem;
-  }
-
-  .job-id {
-    font-family: monospace;
-    font-size: 0.8rem;
-    color: #666;
-  }
-
-  :global(.dark) .job-id {
-    color: #999;
-  }
-
-  .job-status {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    padding: 0.15rem 0.5rem;
-    border-radius: 4px;
-  }
-
-  .job-status.pending {
-    background: #fff3cd;
-    color: #856404;
-  }
-
-  .job-status.processing {
-    background: #cce5ff;
-    color: #004085;
-  }
-
-  .job-status.completed {
-    background: #d4edda;
-    color: #155724;
-  }
-
-  .job-status.failed {
-    background: #f8d7da;
-    color: #721c24;
-  }
-
-  :global(.dark) .job-status.pending {
-    background: #3d3a20;
-    color: #ffc107;
-  }
-
-  :global(.dark) .job-status.processing {
-    background: #1a3a5c;
-    color: #5bc0de;
-  }
-
-  :global(.dark) .job-status.completed {
-    background: #1a3a1a;
-    color: #5cb85f;
-  }
-
-  :global(.dark) .job-status.failed {
-    background: #3a1a1a;
-    color: #e57373;
-  }
-
-  .progress-bar {
-    height: 8px;
-    background: #ddd;
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 0.5rem;
-  }
-
-  :global(.dark) .progress-bar {
-    background: #333;
-  }
-
-  .progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #5cb85f 0%, #4cae4c 100%);
-    border-radius: 4px;
-    transition: width 0.3s ease;
-  }
-
-  .job-details {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.8rem;
-    color: #555;
-  }
-
-  :global(.dark) .job-details {
-    color: #aaa;
-  }
-
-  .job-range {
-    font-family: monospace;
-    font-size: 0.75rem;
-  }
-
-  .cancel-btn {
-    margin-top: 0.75rem;
-    padding: 0.35rem 0.75rem;
-    background: transparent;
-    border: 1px solid #888;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    color: #666;
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-
-  .cancel-btn:hover {
-    background: #eee;
-    border-color: #666;
-  }
-
-  :global(.dark) .cancel-btn {
-    border-color: #555;
-    color: #999;
-  }
-
-  :global(.dark) .cancel-btn:hover {
-    background: #333;
-    border-color: #777;
   }
 
   /* Results */

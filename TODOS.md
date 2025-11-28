@@ -197,9 +197,13 @@
 
 **Remaining:**
 - [x] Add visualizations to timeline (sparklines, LOC bars, repo breakdown, activity heatmap)
-- [x] Update admin UI with async backfill option and progress indicator
+- [x] ~~Update admin UI with async backfill option and progress indicator~~ (removed - Queues require paid plan)
 - [ ] Deploy worker with `wrangler secret put ANTHROPIC_API_KEY`
-- [ ] Create Cloudflare Queue: `wrangler queues create daily-summary-jobs`
+
+**Note:** Cloudflare Queues require a paid Workers plan. The async backfill UI has been removed.
+Sync backfill works fine and is sufficient for current needs. Future options:
+- D1 + cron for scheduled background processing
+- Upgrade to paid plan if Queues are needed
 
 **Available AI Providers & Models:**
 
@@ -518,9 +522,6 @@ When you return to work on this project:
    # Add Anthropic API key (if not already set)
    cd workers/daily-summary && wrangler secret put ANTHROPIC_API_KEY
 
-   # Create the Cloudflare Queue
-   wrangler queues create daily-summary-jobs
-
    # Deploy the worker
    wrangler deploy
    ```
@@ -530,7 +531,7 @@ When you return to work on this project:
    - Admin timeline page with:
      - AI model selector dropdown
      - Usage & cost tracking display
-     - Async backfill option (if queue is set up)
+     - Sync backfill for past dates (async removed - Queues require paid plan)
    - Test Claude Haiku 4.5 output tone (should be less cheerleader-y)
 
 3. **Timeline Visualizations (DONE):**
@@ -538,7 +539,6 @@ When you return to work on this project:
    - [x] LOC (lines of code) bar charts per day
    - [x] Repo breakdown visualization
    - [x] Activity API endpoint for aggregated data
-   - [x] Async backfill with visual progress bar in admin
 
 4. **Other tasks to consider:**
    - RSS Feed implementation (medium priority)
@@ -547,4 +547,4 @@ When you return to work on this project:
 
 ---
 
-*Last updated: November 28, 2025*
+*Last updated: November 28, 2025 - Removed async backfill UI (Queues require paid plan)*
