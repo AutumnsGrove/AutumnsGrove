@@ -1,5 +1,8 @@
-import { getPostBySlug, getAllPosts, extractHeaders, processAnchorTags } from '$lib/utils/markdown.js';
+import { getPostBySlug, processAnchorTags } from '$lib/utils/markdown.js';
 import { error } from '@sveltejs/kit';
+
+// Disable prerendering - D1 posts are fetched dynamically at runtime
+export const prerender = false;
 
 export async function load({ params, platform }) {
 	const { slug } = params;
@@ -100,9 +103,3 @@ function extractHeadersFromHtml(html) {
 	return headers;
 }
 
-// Generate static paths for UserContent posts during build
-// D1 posts are handled dynamically at runtime
-export function entries() {
-	const posts = getAllPosts();
-	return posts.map(post => ({ slug: post.slug }));
-}
