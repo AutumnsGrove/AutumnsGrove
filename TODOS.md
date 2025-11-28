@@ -498,8 +498,17 @@ Commits:     ████████ AutumnsGrove (150)
   - Snippets appear in slash command menu with 📝 icon
   - Snippets modal with list of existing snippets
 
+#### Phase 6 Features - COMPLETED
+- [x] **Ambient Sounds**
+  - Sound panel accessible from status bar (icon shows current sound)
+  - Five ambient soundscapes: Forest, Rain, Campfire, Night, Café
+  - Volume control slider with persistence
+  - Play/stop toggle with visual feedback
+  - Settings saved to localStorage
+  - Graceful fallback if audio files missing
+  - Note: Add your own audio files to `/static/sounds/`
+
 #### Future Enhancements
-- [ ] Ambient sounds (forest/rain sounds toggle)
 - [ ] Version history time machine
 - [ ] Custom themes/color schemes
 - [ ] Collaborative editing (far future)

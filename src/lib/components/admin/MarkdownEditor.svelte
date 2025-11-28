@@ -131,6 +131,51 @@
     trigger: "", // Optional shortcut trigger like "sig" for signature
   });
 
+  // Ambient sounds state
+  let ambientSounds = $state({
+    enabled: false,
+    currentSound: "forest",
+    volume: 0.3,
+    showPanel: false,
+  });
+  let audioElement = $state(null);
+
+  // Sound definitions with free ambient loops
+  const soundLibrary = {
+    forest: {
+      name: "Forest",
+      icon: "🌲",
+      // Using freesound.org URLs for ambient sounds (CC0 licensed)
+      // These are placeholder paths - user can provide their own audio files
+      url: "/sounds/forest-ambience.mp3",
+      description: "Birds chirping, wind through trees",
+    },
+    rain: {
+      name: "Rain",
+      icon: "🌧️",
+      url: "/sounds/rain-ambience.mp3",
+      description: "Gentle rainfall on leaves",
+    },
+    campfire: {
+      name: "Campfire",
+      icon: "🔥",
+      url: "/sounds/campfire-ambience.mp3",
+      description: "Crackling fire, warm embers",
+    },
+    night: {
+      name: "Night",
+      icon: "🌙",
+      url: "/sounds/night-ambience.mp3",
+      description: "Crickets, gentle breeze",
+    },
+    cafe: {
+      name: "Café",
+      icon: "☕",
+      url: "/sounds/cafe-ambience.mp3",
+      description: "Soft murmurs, clinking cups",
+    },
+  };
+
   // Line numbers container ref for scroll sync
   let lineNumbersRef = $state(null);
 
@@ -342,6 +387,11 @@
   // Global keyboard handler for modals
   function handleGlobalKeydown(e) {
     if (e.key === "Escape") {
+      if (ambientSounds.showPanel) {
+        ambientSounds.showPanel = false;
+        e.preventDefault();
+        return;
+      }
       if (snippetsModal.open) {
         closeSnippetsModal();
         e.preventDefault();
@@ -446,6 +496,8 @@
     { id: "goal", label: "Set Writing Goal", shortcut: "", action: () => promptWritingGoal() },
     { id: "snippets", label: "Manage Snippets", shortcut: "", action: () => openSnippetsModal() },
     { id: "newSnippet", label: "Create New Snippet", shortcut: "", action: () => openSnippetsModal() },
+    { id: "sounds", label: "Toggle Ambient Sounds", shortcut: "", action: () => toggleAmbientSound() },
+    { id: "soundPanel", label: "Sound Settings", shortcut: "", action: () => toggleSoundPanel() },
   ];
 
   let filteredPaletteCommands = $derived(
@@ -589,6 +641,102 @@
   function insertSnippet(snippet) {
     insertAtCursor(snippet.content);
     slashMenu.open = false;
+  }
+
+  // Ambient sound controls
+  const SOUNDS_STORAGE_KEY = "grove-editor-sounds";
+
+  function loadSoundSettings() {
+    try {
+      const stored = localStorage.getItem(SOUNDS_STORAGE_KEY);
+      if (stored) {
+        const settings = JSON.parse(stored);
+        ambientSounds.currentSound = settings.currentSound || "forest";
+        ambientSounds.volume = settings.volume ?? 0.3;
+        // Don't auto-enable on load - user must click to start
+      }
+    } catch (e) {
+      console.warn("Failed to load sound settings:", e);
+    }
+  }
+
+  function saveSoundSettings() {
+    try {
+      localStorage.setItem(SOUNDS_STORAGE_KEY, JSON.stringify({
+        currentSound: ambientSounds.currentSound,
+        volume: ambientSounds.volume,
+      }));
+    } catch (e) {
+      console.warn("Failed to save sound settings:", e);
+    }
+  }
+
+  function toggleAmbientSound() {
+    if (ambientSounds.enabled) {
+      stopSound();
+    } else {
+      playSound(ambientSounds.currentSound);
+    }
+  }
+
+  function playSound(soundKey) {
+    const sound = soundLibrary[soundKey];
+    if (!sound) return;
+
+    // Stop current sound if playing
+    if (audioElement) {
+      audioElement.pause();
+      audioElement = null;
+    }
+
+    // Create new audio element
+    audioElement = new Audio(sound.url);
+    audioElement.loop = true;
+    audioElement.volume = ambientSounds.volume;
+
+    // Handle playback errors gracefully
+    audioElement.onerror = () => {
+      console.warn(`Sound file not found: ${sound.url}`);
+      ambientSounds.enabled = false;
+    };
+
+    audioElement.play().then(() => {
+      ambientSounds.enabled = true;
+      ambientSounds.currentSound = soundKey;
+      saveSoundSettings();
+    }).catch((e) => {
+      console.warn("Failed to play sound:", e);
+      ambientSounds.enabled = false;
+    });
+  }
+
+  function stopSound() {
+    if (audioElement) {
+      audioElement.pause();
+      audioElement = null;
+    }
+    ambientSounds.enabled = false;
+  }
+
+  function setVolume(newVolume) {
+    ambientSounds.volume = newVolume;
+    if (audioElement) {
+      audioElement.volume = newVolume;
+    }
+    saveSoundSettings();
+  }
+
+  function selectSound(soundKey) {
+    if (ambientSounds.enabled) {
+      playSound(soundKey);
+    } else {
+      ambientSounds.currentSound = soundKey;
+      saveSoundSettings();
+    }
+  }
+
+  function toggleSoundPanel() {
+    ambientSounds.showPanel = !ambientSounds.showPanel;
   }
 
   // Typewriter scrolling - keep cursor line centered
@@ -898,6 +1046,7 @@
   onMount(() => {
     updateCursorPosition();
     loadSnippets();
+    loadSoundSettings();
 
     // Check for existing draft on mount
     if (draftKey) {
@@ -909,6 +1058,14 @@
         lastSavedContent = content;
       }
     }
+
+    // Cleanup audio on unmount
+    return () => {
+      if (audioElement) {
+        audioElement.pause();
+        audioElement = null;
+      }
+    };
   });
 </script>
 
@@ -1184,6 +1341,19 @@
       {/if}
     </div>
     <div class="status-right">
+      <button
+        type="button"
+        class="status-sound-btn"
+        class:playing={ambientSounds.enabled}
+        onclick={toggleSoundPanel}
+        title="Ambient sounds"
+      >
+        {soundLibrary[ambientSounds.currentSound]?.icon || "🔊"}
+        {#if ambientSounds.enabled}
+          <span class="sound-wave"></span>
+        {/if}
+      </button>
+      <span class="status-divider">|</span>
       {#if editorSettings.typewriterMode}
         <span class="status-mode">Typewriter</span>
         <span class="status-divider">|</span>
@@ -1369,6 +1539,72 @@
           </div>
         {/if}
       </div>
+    </div>
+  </div>
+{/if}
+
+<!-- Ambient Sound Panel -->
+{#if ambientSounds.showPanel}
+  <div class="sound-panel">
+    <div class="sound-panel-header">
+      <span class="sound-panel-title">Ambient Sounds</span>
+      <button
+        type="button"
+        class="sound-panel-close"
+        onclick={() => ambientSounds.showPanel = false}
+      >
+        ×
+      </button>
+    </div>
+
+    <div class="sound-options">
+      {#each Object.entries(soundLibrary) as [key, sound]}
+        <button
+          type="button"
+          class="sound-option"
+          class:active={ambientSounds.currentSound === key}
+          class:playing={ambientSounds.enabled && ambientSounds.currentSound === key}
+          onclick={() => selectSound(key)}
+        >
+          <span class="sound-icon">{sound.icon}</span>
+          <span class="sound-name">{sound.name}</span>
+        </button>
+      {/each}
+    </div>
+
+    <div class="sound-controls">
+      <label class="volume-label">
+        <span>Volume</span>
+        <input
+          type="range"
+          min="0"
+          max="1"
+          step="0.05"
+          value={ambientSounds.volume}
+          oninput={(e) => setVolume(parseFloat(e.target.value))}
+          class="volume-slider"
+        />
+      </label>
+
+      <button
+        type="button"
+        class="sound-play-btn"
+        class:playing={ambientSounds.enabled}
+        onclick={toggleAmbientSound}
+      >
+        {#if ambientSounds.enabled}
+          <span class="sound-pause-icon">◼</span>
+          Stop
+        {:else}
+          <span class="sound-play-icon">▶</span>
+          Play
+        {/if}
+      </button>
+    </div>
+
+    <div class="sound-note">
+      <span class="sound-note-icon">ℹ</span>
+      <span>Add audio files to <code>/static/sounds/</code> folder</span>
     </div>
   </div>
 {/if}
@@ -2677,5 +2913,262 @@
     background: #1a2a3a;
     padding: 0.15rem 0.4rem;
     border-radius: 3px;
+  }
+
+  /* Status Bar Sound Button */
+  .status-sound-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.15rem 0.4rem;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    color: #7a9a7a;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    position: relative;
+  }
+
+  .status-sound-btn:hover {
+    background: rgba(139, 196, 139, 0.1);
+    color: #a8dca8;
+  }
+
+  .status-sound-btn.playing {
+    color: #8bc48b;
+  }
+
+  .sound-wave {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #8bc48b;
+    animation: sound-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes sound-pulse {
+    0%, 100% {
+      opacity: 0.4;
+      transform: scale(0.8);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Sound Panel */
+  .sound-panel {
+    position: fixed;
+    bottom: 3.5rem;
+    right: 1rem;
+    width: 280px;
+    background: #1e1e1e;
+    border: 1px solid #3a3a3a;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+    animation: slide-up 0.2s ease;
+  }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .sound-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #3a3a3a;
+  }
+
+  .sound-panel-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #8bc48b;
+  }
+
+  .sound-panel-close {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #6a6a6a;
+    font-size: 1.25rem;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+  }
+
+  .sound-panel-close:hover {
+    background: #3a3a3a;
+    color: #d4d4d4;
+  }
+
+  .sound-options {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+
+  .sound-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.25rem;
+    background: #252526;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .sound-option:hover {
+    background: #2a2a2a;
+    border-color: #3a3a3a;
+  }
+
+  .sound-option.active {
+    background: #2d4a2d;
+    border-color: #4a7c4a;
+  }
+
+  .sound-option.playing {
+    border-color: #8bc48b;
+    box-shadow: 0 0 8px rgba(139, 196, 139, 0.3);
+  }
+
+  .sound-icon {
+    font-size: 1.25rem;
+  }
+
+  .sound-name {
+    font-size: 0.65rem;
+    color: #9d9d9d;
+    text-align: center;
+  }
+
+  .sound-option.active .sound-name {
+    color: #a8dca8;
+  }
+
+  .sound-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1rem 1rem;
+  }
+
+  .volume-label {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .volume-label span {
+    font-size: 0.75rem;
+    color: #7a9a7a;
+  }
+
+  .volume-slider {
+    width: 100%;
+    height: 4px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: #3a3a3a;
+    border-radius: 2px;
+    cursor: pointer;
+  }
+
+  .volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    background: #8bc48b;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+
+  .volume-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+  }
+
+  .volume-slider::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: #8bc48b;
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+  }
+
+  .sound-play-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.5rem 0.75rem;
+    background: #3a3a3a;
+    border: 1px solid #4a4a4a;
+    border-radius: 6px;
+    color: #d4d4d4;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .sound-play-btn:hover {
+    background: #4a4a4a;
+  }
+
+  .sound-play-btn.playing {
+    background: #4a7c4a;
+    border-color: #5a9a5a;
+    color: #c8f0c8;
+  }
+
+  .sound-play-icon,
+  .sound-pause-icon {
+    font-size: 0.7rem;
+  }
+
+  .sound-note {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: #252526;
+    border-top: 1px solid #3a3a3a;
+    border-radius: 0 0 12px 12px;
+    font-size: 0.7rem;
+    color: #6a6a6a;
+  }
+
+  .sound-note-icon {
+    font-size: 0.85rem;
+  }
+
+  .sound-note code {
+    background: #1a1a1a;
+    padding: 0.1rem 0.3rem;
+    border-radius: 3px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.65rem;
   }
 </style>
