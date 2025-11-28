@@ -1,36 +1,40 @@
 # Ambient Sounds
 
-Add your own ambient audio files to this directory for the Grove Writer editor.
+Ambient audio files for the Grove Writer editor.
 
-## Required Files
+## Included Sound Files
 
-The editor looks for these audio files:
+| File | Source | License | Duration |
+|------|--------|---------|----------|
+| `forest-ambience.mp3` | [BigSoundBank](https://bigsoundbank.com/forest-s0100.html) by Joseph SARDIN | CC0 (Public Domain) | 54s |
+| `rain-ambience.mp3` | [Orange Free Sounds](https://orangefreesounds.com/rain-ambience/) | CC BY 4.0 | 2:31 |
+| `campfire-ambience.mp3` | [Orange Free Sounds](https://orangefreesounds.com/forest-campfire-ambience/) | CC BY-NC 4.0 | 1:35 |
+| `night-ambience.mp3` | [Orange Free Sounds](https://orangefreesounds.com/night-ambience-with-crickets/) | CC BY-NC 4.0 | 1:44 |
+| `cafe-ambience.mp3` | [Orange Free Sounds](https://orangefreesounds.com/coffee-shop-background-noise/) by Alexander | CC BY-NC 4.0 | 36s |
 
-- `forest-ambience.mp3` - Birds chirping, wind through trees
-- `rain-ambience.mp3` - Gentle rainfall on leaves
-- `campfire-ambience.mp3` - Crackling fire, warm embers
-- `night-ambience.mp3` - Crickets, gentle breeze
-- `cafe-ambience.mp3` - Soft murmurs, clinking cups
+## License Notes
 
-## Recommendations
+- **CC0**: Public domain, no attribution required
+- **CC BY 4.0**: Attribution required (see Credits section in site footer)
+- **CC BY-NC 4.0**: Attribution required, non-commercial use only
 
-- Use **loopable** audio files (seamless start/end transitions)
-- Keep files under **5MB** each for reasonable load times
-- MP3 format recommended for broad browser support
-- Aim for **30-60 second** loops minimum
+<!-- TODO: Migrate sounds to Cloudflare R2 for better CDN delivery -->
+<!-- TODO: Consider replacing CC BY-NC sounds with fully open alternatives for commercial use -->
+
+## Adding Custom Sounds
+
+To replace with your own sounds:
+
+1. Use **loopable** audio files (seamless start/end transitions)
+2. Keep files under **5MB** each for reasonable load times
+3. MP3 format recommended for broad browser support
+4. Aim for **30-60 second** loops minimum
 
 ## Free Sound Sources
 
-- [Freesound.org](https://freesound.org) - CC0 and Creative Commons sounds
-- [Zapsplat](https://www.zapsplat.com) - Free sound effects
+- [BigSoundBank](https://bigsoundbank.com) - CC0 (Public Domain)
+- [Freesound.org](https://freesound.org) - CC0 and Creative Commons
+- [Pixabay](https://pixabay.com/sound-effects/) - Royalty-free, no attribution
 - [Mixkit](https://mixkit.co/free-sound-effects/) - Free ambient sounds
-- [BBC Sound Effects](https://sound-effects.bbcrewind.co.uk/) - Personal/educational use
-
-## Usage
-
-1. Download ambient sounds from the sources above
-2. Rename files to match the expected names
-3. Place in this `/static/sounds/` directory
-4. The editor will automatically detect and play them
 
 If a sound file is missing, the editor will gracefully show a console warning.

@@ -140,39 +140,154 @@
   });
   let audioElement = $state(null);
 
+  // Theme system
+  const themes = {
+    grove: {
+      name: "grove",
+      label: "Grove",
+      desc: "forest green",
+      accent: "#8bc48b",
+      accentDim: "#7a9a7a",
+      accentBright: "#a8dca8",
+      accentGlow: "#c8f0c8",
+      bg: "#1e1e1e",
+      bgSecondary: "#252526",
+      bgTertiary: "#1a1a1a",
+      border: "#3a3a3a",
+      borderAccent: "#4a7c4a",
+      text: "#d4d4d4",
+      textDim: "#9d9d9d",
+      statusBg: "#2d4a2d",
+      statusBorder: "#3d5a3d",
+    },
+    amber: {
+      name: "amber",
+      label: "Amber",
+      desc: "classic terminal",
+      accent: "#ffb000",
+      accentDim: "#c98b00",
+      accentBright: "#ffc940",
+      accentGlow: "#ffe080",
+      bg: "#1a1400",
+      bgSecondary: "#241c00",
+      bgTertiary: "#140e00",
+      border: "#3a3000",
+      borderAccent: "#5a4800",
+      text: "#ffcc66",
+      textDim: "#aa8844",
+      statusBg: "#2a2000",
+      statusBorder: "#3a3000",
+    },
+    matrix: {
+      name: "matrix",
+      label: "Matrix",
+      desc: "digital rain",
+      accent: "#00ff00",
+      accentDim: "#00aa00",
+      accentBright: "#44ff44",
+      accentGlow: "#88ff88",
+      bg: "#0a0a0a",
+      bgSecondary: "#111111",
+      bgTertiary: "#050505",
+      border: "#1a3a1a",
+      borderAccent: "#00aa00",
+      text: "#00dd00",
+      textDim: "#008800",
+      statusBg: "#0a1a0a",
+      statusBorder: "#1a3a1a",
+    },
+    dracula: {
+      name: "dracula",
+      label: "Dracula",
+      desc: "purple night",
+      accent: "#bd93f9",
+      accentDim: "#9580c9",
+      accentBright: "#d4b0ff",
+      accentGlow: "#e8d0ff",
+      bg: "#282a36",
+      bgSecondary: "#343746",
+      bgTertiary: "#21222c",
+      border: "#44475a",
+      borderAccent: "#6272a4",
+      text: "#f8f8f2",
+      textDim: "#a0a0a0",
+      statusBg: "#3a3c4e",
+      statusBorder: "#44475a",
+    },
+    nord: {
+      name: "nord",
+      label: "Nord",
+      desc: "arctic frost",
+      accent: "#88c0d0",
+      accentDim: "#6a9aa8",
+      accentBright: "#a3d4e2",
+      accentGlow: "#c0e8f0",
+      bg: "#2e3440",
+      bgSecondary: "#3b4252",
+      bgTertiary: "#272c36",
+      border: "#434c5e",
+      borderAccent: "#5e81ac",
+      text: "#eceff4",
+      textDim: "#a0a8b0",
+      statusBg: "#3b4252",
+      statusBorder: "#434c5e",
+    },
+    rose: {
+      name: "rose",
+      label: "Rose",
+      desc: "soft pink",
+      accent: "#f5a9b8",
+      accentDim: "#c98a96",
+      accentBright: "#ffccd5",
+      accentGlow: "#ffe0e6",
+      bg: "#1f1a1b",
+      bgSecondary: "#2a2224",
+      bgTertiary: "#171314",
+      border: "#3a3234",
+      borderAccent: "#5a4a4e",
+      text: "#e8d8dc",
+      textDim: "#a09498",
+      statusBg: "#2a2224",
+      statusBorder: "#3a3234",
+    },
+  };
+
+  let currentTheme = $state("grove");
+  const THEME_STORAGE_KEY = "grove-editor-theme";
+
   // Sound definitions with free ambient loops
   const soundLibrary = {
     forest: {
-      name: "Forest",
-      icon: "🌲",
+      name: "forest",
+      key: "f",
       // Using freesound.org URLs for ambient sounds (CC0 licensed)
       // These are placeholder paths - user can provide their own audio files
       url: "/sounds/forest-ambience.mp3",
-      description: "Birds chirping, wind through trees",
+      description: "birds, wind",
     },
     rain: {
-      name: "Rain",
-      icon: "🌧️",
+      name: "rain",
+      key: "r",
       url: "/sounds/rain-ambience.mp3",
-      description: "Gentle rainfall on leaves",
+      description: "gentle rainfall",
     },
     campfire: {
-      name: "Campfire",
-      icon: "🔥",
+      name: "fire",
+      key: "i",
       url: "/sounds/campfire-ambience.mp3",
-      description: "Crackling fire, warm embers",
+      description: "crackling embers",
     },
     night: {
-      name: "Night",
-      icon: "🌙",
+      name: "night",
+      key: "n",
       url: "/sounds/night-ambience.mp3",
-      description: "Crickets, gentle breeze",
+      description: "crickets, breeze",
     },
     cafe: {
-      name: "Café",
-      icon: "☕",
+      name: "cafe",
+      key: "a",
       url: "/sounds/cafe-ambience.mp3",
-      description: "Soft murmurs, clinking cups",
+      description: "soft murmurs",
     },
   };
 
@@ -425,7 +540,7 @@
   let allSlashCommands = $derived(() => {
     const snippetCommands = snippets.map(s => ({
       id: s.id,
-      label: `📝 ${s.name}`,
+      label: `> ${s.name}`,
       insert: s.content,
       isSnippet: true,
     }));
@@ -482,7 +597,7 @@
   }
 
   // Command palette actions
-  const paletteCommands = [
+  const basePaletteCommands = [
     { id: "save", label: "Save", shortcut: "⌘S", action: () => onSave() },
     { id: "preview", label: "Toggle Preview", shortcut: "", action: () => showPreview = !showPreview },
     { id: "fullPreview", label: "Full Preview", shortcut: "", action: () => showFullPreview = true },
@@ -500,8 +615,19 @@
     { id: "soundPanel", label: "Sound Settings", shortcut: "", action: () => toggleSoundPanel() },
   ];
 
+  // Add theme commands dynamically
+  let paletteCommands = $derived(() => {
+    const themeCommands = Object.entries(themes).map(([key, theme]) => ({
+      id: `theme-${key}`,
+      label: `Theme: ${theme.label} (${theme.desc})`,
+      shortcut: currentTheme === key ? "●" : "",
+      action: () => setTheme(key),
+    }));
+    return [...basePaletteCommands, ...themeCommands];
+  });
+
   let filteredPaletteCommands = $derived(
-    paletteCommands.filter(cmd =>
+    paletteCommands().filter(cmd =>
       cmd.label.toLowerCase().includes(commandPalette.query.toLowerCase())
     )
   );
@@ -737,6 +863,55 @@
 
   function toggleSoundPanel() {
     ambientSounds.showPanel = !ambientSounds.showPanel;
+  }
+
+  // Theme controls
+  function loadTheme() {
+    try {
+      const stored = localStorage.getItem(THEME_STORAGE_KEY);
+      if (stored && themes[stored]) {
+        currentTheme = stored;
+        applyTheme(stored);
+      }
+    } catch (e) {
+      console.warn("Failed to load theme:", e);
+    }
+  }
+
+  function saveTheme(themeName) {
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, themeName);
+    } catch (e) {
+      console.warn("Failed to save theme:", e);
+    }
+  }
+
+  function applyTheme(themeName) {
+    const theme = themes[themeName];
+    if (!theme) return;
+
+    const root = document.documentElement;
+    root.style.setProperty("--editor-accent", theme.accent);
+    root.style.setProperty("--editor-accent-dim", theme.accentDim);
+    root.style.setProperty("--editor-accent-bright", theme.accentBright);
+    root.style.setProperty("--editor-accent-glow", theme.accentGlow);
+    root.style.setProperty("--editor-bg", theme.bg);
+    root.style.setProperty("--editor-bg-secondary", theme.bgSecondary);
+    root.style.setProperty("--editor-bg-tertiary", theme.bgTertiary);
+    root.style.setProperty("--editor-border", theme.border);
+    root.style.setProperty("--editor-border-accent", theme.borderAccent);
+    root.style.setProperty("--editor-text", theme.text);
+    root.style.setProperty("--editor-text-dim", theme.textDim);
+    root.style.setProperty("--editor-status-bg", theme.statusBg);
+    root.style.setProperty("--editor-status-border", theme.statusBorder);
+  }
+
+  function setTheme(themeName) {
+    if (!themes[themeName]) return;
+    currentTheme = themeName;
+    applyTheme(themeName);
+    saveTheme(themeName);
+    commandPalette.open = false;
   }
 
   // Typewriter scrolling - keep cursor line centered
@@ -1047,6 +1222,7 @@
     updateCursorPosition();
     loadSnippets();
     loadSoundSettings();
+    loadTheme();
 
     // Check for existing draft on mount
     if (draftKey) {
@@ -1310,7 +1486,7 @@
       {#if campfireSession.active}
         <span class="status-divider">|</span>
         <span class="status-campfire">
-          🔥 {campfireElapsed()}
+          ~ {campfireElapsed()}
         </span>
       {/if}
     </div>
@@ -1322,10 +1498,7 @@
         onclick={toggleSoundPanel}
         title="Ambient sounds"
       >
-        {soundLibrary[ambientSounds.currentSound]?.icon || "🔊"}
-        {#if ambientSounds.enabled}
-          <span class="sound-wave"></span>
-        {/if}
+        [{soundLibrary[ambientSounds.currentSound]?.name || "snd"}]{#if ambientSounds.enabled}<span class="sound-wave">~</span>{/if}
       </button>
       <span class="status-divider">|</span>
       {#if editorSettings.typewriterMode}
@@ -1538,8 +1711,7 @@
           class:playing={ambientSounds.enabled && ambientSounds.currentSound === key}
           onclick={() => selectSound(key)}
         >
-          <span class="sound-icon">{sound.icon}</span>
-          <span class="sound-name">{sound.name}</span>
+          [<span class="key">{sound.key}</span>] {sound.name}
         </button>
       {/each}
     </div>
@@ -1642,8 +1814,8 @@
     flex-direction: column;
     height: 100%;
     min-height: 500px;
-    background: #1e1e1e;
-    border: 1px solid #3a3a3a;
+    background: var(--editor-bg, #1e1e1e);
+    border: 1px solid var(--editor-border, #3a3a3a);
     border-radius: 8px;
     overflow: hidden;
     font-family: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
@@ -1651,20 +1823,20 @@
   }
 
   .editor-container.dragging {
-    border-color: #8bc48b;
-    box-shadow: 0 0 0 2px rgba(139, 196, 139, 0.3);
+    border-color: var(--editor-accent, #8bc48b);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--editor-accent, #8bc48b) 30%, transparent);
   }
 
   /* Drag overlay */
   .drag-overlay {
     position: absolute;
     inset: 0;
-    background: rgba(30, 30, 30, 0.95);
+    background: color-mix(in srgb, var(--editor-bg, #1e1e1e) 95%, transparent);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 100;
-    border: 3px dashed #8bc48b;
+    border: 3px dashed var(--editor-accent, #8bc48b);
     border-radius: 8px;
   }
 
@@ -1673,7 +1845,7 @@
     flex-direction: column;
     align-items: center;
     gap: 1rem;
-    color: #8bc48b;
+    color: var(--editor-accent, #8bc48b);
   }
 
   .drag-icon {
@@ -1684,7 +1856,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 2px dashed #8bc48b;
+    border: 2px dashed var(--editor-accent, #8bc48b);
     border-radius: 50%;
   }
 
@@ -1822,7 +1994,7 @@
 
   /* Terminal Key Highlight */
   .key {
-    color: #8bc48b;
+    color: var(--editor-accent, #8bc48b);
     font-weight: bold;
     text-decoration: underline;
   }
@@ -1833,8 +2005,8 @@
     align-items: center;
     gap: 0.15rem;
     padding: 0.4rem 0.75rem;
-    background: #1a1a1a;
-    border-bottom: 1px solid #3a3a3a;
+    background: var(--editor-bg-tertiary, #1a1a1a);
+    border-bottom: 1px solid var(--editor-border, #3a3a3a);
     flex-wrap: wrap;
     font-family: "JetBrains Mono", "Fira Code", monospace;
   }
@@ -1849,7 +2021,7 @@
     background: transparent;
     border: none;
     border-radius: 0;
-    color: #7a9a7a;
+    color: var(--editor-accent-dim, #7a9a7a);
     font-family: inherit;
     font-size: 0.8rem;
     cursor: pointer;
@@ -1858,12 +2030,12 @@
   }
 
   .toolbar-btn:hover:not(:disabled) {
-    color: #a8dca8;
+    color: var(--editor-accent-bright, #a8dca8);
     background: transparent;
   }
 
   .toolbar-btn:hover:not(:disabled) .key {
-    color: #c8f0c8;
+    color: var(--editor-accent-glow, #c8f0c8);
   }
 
   .toolbar-btn:disabled {
@@ -1872,16 +2044,16 @@
   }
 
   .toolbar-btn.toggle-btn {
-    color: #8bc48b;
+    color: var(--editor-accent, #8bc48b);
   }
 
   .toolbar-btn.toggle-btn:hover {
-    color: #c8f0c8;
+    color: var(--editor-accent-glow, #c8f0c8);
   }
 
   .toolbar-btn.toggle-btn.active {
-    color: #a8dca8;
-    text-shadow: 0 0 8px rgba(139, 196, 139, 0.5);
+    color: var(--editor-accent-bright, #a8dca8);
+    text-shadow: 0 0 8px color-mix(in srgb, var(--editor-accent, #8bc48b) 50%, transparent);
   }
 
   .toolbar-btn.full-preview-btn {
@@ -1940,8 +2112,8 @@
     display: flex;
     flex-direction: column;
     padding: 1rem 0;
-    background: #1a1a1a;
-    border-right: 1px solid #2a2a2a;
+    background: var(--editor-bg-tertiary, #1a1a1a);
+    border-right: 1px solid var(--editor-border, #2a2a2a);
     min-width: 3rem;
     text-align: right;
     user-select: none;
@@ -1950,24 +2122,24 @@
 
   .line-numbers span {
     padding: 0 0.75rem;
-    color: #5a5a5a;
+    color: var(--editor-text-dim, #5a5a5a);
     font-size: 0.85rem;
     line-height: 1.6;
     height: 1.6em;
   }
 
   .line-numbers span.current {
-    color: #8bc48b;
-    background: rgba(139, 196, 139, 0.1);
+    color: var(--editor-accent, #8bc48b);
+    background: color-mix(in srgb, var(--editor-accent, #8bc48b) 10%, transparent);
   }
 
   /* Editor Textarea */
   .editor-textarea {
     flex: 1;
     padding: 1rem;
-    background: #1e1e1e;
+    background: var(--editor-bg, #1e1e1e);
     border: none;
-    color: #d4d4d4;
+    color: var(--editor-text, #d4d4d4);
     font-family: inherit;
     font-size: 0.9rem;
     line-height: 1.6;
@@ -1977,7 +2149,7 @@
   }
 
   .editor-textarea::placeholder {
-    color: #5a5a5a;
+    color: var(--editor-text-dim, #5a5a5a);
     font-style: italic;
   }
 
@@ -2121,10 +2293,10 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.35rem 0.75rem;
-    background: #2d4a2d;
-    border-top: 1px solid #3d5a3d;
+    background: var(--editor-status-bg, #2d4a2d);
+    border-top: 1px solid var(--editor-status-border, #3d5a3d);
     font-size: 0.75rem;
-    color: #a8dca8;
+    color: var(--editor-accent-bright, #a8dca8);
   }
 
   .status-left,
@@ -2329,7 +2501,7 @@
 
   /* Status bar enhancements */
   .status-goal {
-    color: #8bc48b;
+    color: var(--editor-accent, #8bc48b);
     font-weight: 500;
   }
 

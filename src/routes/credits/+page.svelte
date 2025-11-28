@@ -490,6 +490,100 @@
       </dl>
     </article>
   </section>
+
+  <section class="credits-section">
+    <h2>Ambient Sounds</h2>
+    <p class="section-note">Audio files used in the Grove Writer editor for ambient writing sessions.</p>
+
+    <article class="credit-item">
+      <h3>Forest Ambience</h3>
+      <p class="credit-description">
+        Realistic forest ambience recorded outdoors in calm weather with birdsong and wind.
+      </p>
+      <dl class="credit-details">
+        <dt>Author</dt>
+        <dd>Joseph SARDIN</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://bigsoundbank.com/forest-s0100.html" target="_blank" rel="noopener noreferrer">
+            BigSoundBank
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>CC0 (Public Domain)</dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>Rain Ambience</h3>
+      <p class="credit-description">
+        Gentle rainfall sound effect for creating a calming atmosphere.
+      </p>
+      <dl class="credit-details">
+        <dt>Source</dt>
+        <dd>
+          <a href="https://orangefreesounds.com/rain-ambience/" target="_blank" rel="noopener noreferrer">
+            Orange Free Sounds
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>CC BY 4.0 (Attribution Required)</dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>Campfire Ambience</h3>
+      <p class="credit-description">
+        Crackling campfire sounds with warm embers for cozy writing sessions.
+      </p>
+      <dl class="credit-details">
+        <dt>Source</dt>
+        <dd>
+          <a href="https://orangefreesounds.com/forest-campfire-ambience/" target="_blank" rel="noopener noreferrer">
+            Orange Free Sounds
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>CC BY-NC 4.0 (Attribution, Non-Commercial)</dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>Night Ambience</h3>
+      <p class="credit-description">
+        Peaceful nighttime atmosphere with crickets and gentle breeze.
+      </p>
+      <dl class="credit-details">
+        <dt>Source</dt>
+        <dd>
+          <a href="https://orangefreesounds.com/night-ambience-with-crickets/" target="_blank" rel="noopener noreferrer">
+            Orange Free Sounds
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>CC BY-NC 4.0 (Attribution, Non-Commercial)</dd>
+      </dl>
+    </article>
+
+    <article class="credit-item">
+      <h3>Cafe Ambience</h3>
+      <p class="credit-description">
+        Coffee shop background noise with soft conversations for productive writing.
+      </p>
+      <dl class="credit-details">
+        <dt>Author</dt>
+        <dd>Alexander</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://orangefreesounds.com/coffee-shop-background-noise/" target="_blank" rel="noopener noreferrer">
+            Orange Free Sounds
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>CC BY-NC 4.0 (Attribution, Non-Commercial)</dd>
+      </dl>
+    </article>
+  </section>
 </div>
 
 <style>
@@ -520,6 +614,17 @@
   }
 
   :global(.dark) .subtitle {
+    color: var(--color-text-subtle-dark);
+  }
+
+  .section-note {
+    margin: 0 0 1.5rem 0;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  :global(.dark) .section-note {
     color: var(--color-text-subtle-dark);
   }
 
