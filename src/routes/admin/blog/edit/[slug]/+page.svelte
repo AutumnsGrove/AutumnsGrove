@@ -1,6 +1,7 @@
 <script>
   import { goto } from "$app/navigation";
   import MarkdownEditor from "$lib/components/admin/MarkdownEditor.svelte";
+  import GutterManager from "$lib/components/admin/GutterManager.svelte";
 
   let { data } = $props();
 
@@ -13,12 +14,17 @@
     Array.isArray(data.post.tags) ? data.post.tags.join(", ") : ""
   );
   let content = $state(data.post.markdown_content || "");
+  let gutterItems = $state(data.post.gutter_content ? JSON.parse(data.post.gutter_content) : []);
+
+  // Editor reference for anchor insertion
+  let editorRef = $state(null);
 
   // UI state
   let saving = $state(false);
   let error = $state(null);
   let success = $state(null);
   let hasUnsavedChanges = $state(false);
+  let showGutter = $state(true);
 
   // Track changes
   $effect(() => {
@@ -65,6 +71,7 @@
           description: description.trim(),
           tags: parseTags(tagsInput),
           markdown_content: content,
+          gutter_content: JSON.stringify(gutterItems),
         }),
       });
 
@@ -276,7 +283,32 @@
 
     <!-- Editor Panel -->
     <main class="editor-main">
-      <MarkdownEditor bind:content {saving} onSave={handleSave} />
+      <div class="editor-with-gutter">
+        <div class="editor-section">
+          <MarkdownEditor
+            bind:this={editorRef}
+            bind:content
+            {saving}
+            onSave={handleSave}
+          />
+        </div>
+        {#if showGutter}
+          <aside class="gutter-section">
+            <GutterManager
+              bind:gutterItems
+              availableAnchors={editorRef?.availableAnchors || []}
+              onInsertAnchor={(name) => editorRef?.insertAnchor(name)}
+            />
+          </aside>
+        {/if}
+      </div>
+      <button
+        class="toggle-gutter-btn"
+        onclick={() => (showGutter = !showGutter)}
+        title={showGutter ? "Hide gutter panel" : "Show gutter panel"}
+      >
+        {showGutter ? "Hide Gutter ◀" : "▶ Gutter Content"}
+      </button>
     </main>
   </div>
 </div>
@@ -736,7 +768,51 @@
     flex-direction: column;
   }
 
+  .editor-with-gutter {
+    display: flex;
+    gap: 1rem;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .editor-section {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .gutter-section {
+    width: 300px;
+    flex-shrink: 0;
+    overflow-y: auto;
+  }
+
+  .toggle-gutter-btn {
+    margin-top: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    background: #252526;
+    border: 1px solid #3a3a3a;
+    border-radius: 4px;
+    color: #8bc48b;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    align-self: flex-end;
+  }
+
+  .toggle-gutter-btn:hover {
+    background: #3a3a3a;
+    color: #a8dca8;
+  }
+
   /* Responsive */
+  @media (max-width: 1200px) {
+    .gutter-section {
+      width: 250px;
+    }
+  }
+
   @media (max-width: 900px) {
     .editor-layout {
       flex-direction: column;
@@ -754,6 +830,15 @@
 
     .editor-main {
       min-height: 500px;
+    }
+
+    .editor-with-gutter {
+      flex-direction: column;
+    }
+
+    .gutter-section {
+      width: 100%;
+      max-height: 300px;
     }
 
     .header-actions {

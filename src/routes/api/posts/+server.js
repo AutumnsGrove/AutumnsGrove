@@ -83,24 +83,45 @@ export async function POST({ request, platform, locals }) {
     const now = new Date().toISOString();
     const tags = JSON.stringify(data.tags || []);
 
-    await platform.env.POSTS_DB.prepare(
-      `INSERT INTO posts (slug, title, date, tags, description, markdown_content, html_content, file_hash, last_synced, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    )
-      .bind(
-        slug,
-        data.title,
-        data.date || now.split("T")[0],
-        tags,
-        data.description || "",
-        data.markdown_content,
-        html_content,
-        file_hash,
-        now,
-        now,
-        now
-      )
-      .run();
+    // Build the insert query - include gutter_content if provided
+    const hasGutterContent = data.gutter_content !== undefined;
+
+    const insertQuery = hasGutterContent
+      ? `INSERT INTO posts (slug, title, date, tags, description, markdown_content, html_content, gutter_content, file_hash, last_synced, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      : `INSERT INTO posts (slug, title, date, tags, description, markdown_content, html_content, file_hash, last_synced, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+    const params = hasGutterContent
+      ? [
+          slug,
+          data.title,
+          data.date || now.split("T")[0],
+          tags,
+          data.description || "",
+          data.markdown_content,
+          html_content,
+          data.gutter_content || "[]",
+          file_hash,
+          now,
+          now,
+          now,
+        ]
+      : [
+          slug,
+          data.title,
+          data.date || now.split("T")[0],
+          tags,
+          data.description || "",
+          data.markdown_content,
+          html_content,
+          file_hash,
+          now,
+          now,
+          now,
+        ];
+
+    await platform.env.POSTS_DB.prepare(insertQuery).bind(...params).run();
 
     return json({
       success: true,

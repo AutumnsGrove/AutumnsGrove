@@ -14,7 +14,7 @@ export async function load({ params, platform, locals }) {
   if (platform?.env?.POSTS_DB) {
     try {
       const post = await platform.env.POSTS_DB.prepare(
-        `SELECT slug, title, date, tags, description, markdown_content, html_content, last_synced, updated_at
+        `SELECT slug, title, date, tags, description, markdown_content, html_content, gutter_content, last_synced, updated_at
          FROM posts
          WHERE slug = ?`
       )
@@ -27,6 +27,7 @@ export async function load({ params, platform, locals }) {
           post: {
             ...post,
             tags: post.tags ? JSON.parse(post.tags) : [],
+            gutter_content: post.gutter_content || "[]",
           },
         };
       }
@@ -58,6 +59,8 @@ export async function load({ params, platform, locals }) {
     const rawContent = entry[1];
     const { data, content: markdownContent } = matter(rawContent);
 
+    // TODO: Load gutter content from UserContent/Posts/{slug}/gutter/manifest.json
+    // For now, return empty gutter for filesystem posts
     return {
       source: "filesystem",
       post: {
@@ -67,6 +70,7 @@ export async function load({ params, platform, locals }) {
         tags: data.tags || [],
         description: data.description || "",
         markdown_content: markdownContent,
+        gutter_content: "[]",
       },
     };
   } catch (err) {

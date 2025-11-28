@@ -514,7 +514,38 @@ npx wrangler pages dev -- npm run dev
 
 When you return to work on this project:
 
-1. **Deploy AI Timeline Updates:**
+1. **Deploy Markdown Editor (Phase 1 + Phase 2):**
+   ```bash
+   # The POSTS_DB binding was added to wrangler.toml
+   # Posts database already exists: autumnsgrove-posts (510badf3-457a-4892-bf2a-45d4bfd7a7bb)
+
+   # Add gutter_content column to posts table (for Phase 2 gutter manager)
+   wrangler d1 execute autumnsgrove-posts --command "ALTER TABLE posts ADD COLUMN gutter_content TEXT DEFAULT '[]'"
+
+   # Deploy the main site with new editor routes
+   npm run build && wrangler pages deploy .svelte-kit/cloudflare
+
+   # Or for local testing:
+   npx wrangler pages dev -- npm run dev
+   ```
+
+   **New Routes:**
+   - `/admin/blog/new` - Create new post with markdown editor
+   - `/admin/blog/edit/[slug]` - Edit existing posts
+
+   **New API Endpoints:**
+   - `GET /api/posts` - List all posts
+   - `POST /api/posts` - Create new post
+   - `GET /api/posts/[slug]` - Get single post
+   - `PUT /api/posts/[slug]` - Update post
+   - `DELETE /api/posts/[slug]` - Delete post
+
+   **Phase 2 Features:**
+   - GutterManager component for adding comments, photos, galleries
+   - Visual anchor insertion from editor
+   - CDN image picker integration for selecting images
+
+2. **Deploy AI Timeline Updates:**
    ```bash
    # Apply database migrations
    wrangler d1 execute autumnsgrove-git-stats --file=src/lib/db/schema.sql
@@ -526,7 +557,7 @@ When you return to work on this project:
    wrangler deploy
    ```
 
-2. **Test New Features:**
+3. **Test New Features:**
    - Timeline page with inline gutter comments under headers
    - Admin timeline page with:
      - AI model selector dropdown

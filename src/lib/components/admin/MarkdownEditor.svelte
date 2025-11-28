@@ -26,6 +26,28 @@
   let lineCount = $derived(content.split("\n").length);
   let previewHtml = $derived(content ? marked.parse(content) : "");
 
+  // Extract available anchors from content (headings and custom anchors)
+  export let availableAnchors = $derived.by(() => {
+    const anchors = [];
+    // Extract headings
+    const headingRegex = /^(#{1,6})\s+(.+)$/gm;
+    let match;
+    while ((match = headingRegex.exec(content)) !== null) {
+      anchors.push(match[0].trim());
+    }
+    // Extract custom anchors
+    const anchorRegex = /<!--\s*anchor:([\w-]+)\s*-->/g;
+    while ((match = anchorRegex.exec(content)) !== null) {
+      anchors.push(`anchor:${match[1]}`);
+    }
+    return anchors;
+  });
+
+  // Public function to insert an anchor at cursor position
+  export function insertAnchor(name) {
+    insertAtCursor(`<!-- anchor:${name} -->\n`);
+  }
+
   // Update line numbers when content changes
   $effect(() => {
     const lines = content.split("\n").length;
