@@ -14,16 +14,23 @@ const FALLBACK_MODELS = {
     name: 'Anthropic',
     models: {
       'claude-haiku-4-5-20250514': {
-        name: 'Claude Haiku 4.5',
+        name: 'Claude 4.5 Haiku',
         quality: 'high',
-        speed: 'fast',
+        speed: 'fastest',
         inputCostPer1M: 0.80,
         outputCostPer1M: 4.00,
       },
       'claude-sonnet-4-20250514': {
-        name: 'Claude Sonnet 4',
+        name: 'Claude 4 Sonnet',
         quality: 'highest',
         speed: 'medium',
+        inputCostPer1M: 3.00,
+        outputCostPer1M: 15.00,
+      },
+      'claude-sonnet-4-5-20250514': {
+        name: 'Claude 4.5 Sonnet',
+        quality: 'highest',
+        speed: 'fast',
         inputCostPer1M: 3.00,
         outputCostPer1M: 15.00,
       },
