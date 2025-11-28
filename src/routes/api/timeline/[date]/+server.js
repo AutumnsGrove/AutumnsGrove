@@ -147,10 +147,21 @@ export async function PUT({ params, request, platform, cookies }) {
         if (!Array.isArray(value)) {
           throw error(400, 'gutter_content must be an array');
         }
-        // Validate array items have expected structure (line, type, content)
-        for (const item of value) {
+        // Validate array items have expected structure
+        for (let i = 0; i < value.length; i++) {
+          const item = value[i];
           if (typeof item !== 'object' || item === null) {
-            throw error(400, 'gutter_content items must be objects');
+            throw error(400, `gutter_content[${i}] must be an object`);
+          }
+          // Validate expected fields if present
+          if (item.line !== undefined && typeof item.line !== 'number') {
+            throw error(400, `gutter_content[${i}].line must be a number`);
+          }
+          if (item.type !== undefined && typeof item.type !== 'string') {
+            throw error(400, `gutter_content[${i}].type must be a string`);
+          }
+          if (item.content !== undefined && typeof item.content !== 'string') {
+            throw error(400, `gutter_content[${i}].content must be a string`);
           }
         }
       }

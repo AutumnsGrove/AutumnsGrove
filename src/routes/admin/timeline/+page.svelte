@@ -250,7 +250,9 @@
       if (!res.ok) {
         // Special handling for conflict (race condition)
         if (res.status === 409) {
-          throw new Error('This entry was modified by someone else. Please close and reopen to get the latest version.');
+          // Refresh entries list so user can get latest version
+          await fetchEntries();
+          throw new Error('This entry was modified by someone else. The list has been refreshed - please close and reopen to see the latest version.');
         }
         throw new Error(data.message || `Server error (${res.status})`);
       }
