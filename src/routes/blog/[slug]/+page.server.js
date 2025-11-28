@@ -20,16 +20,38 @@ export async function load({ params, platform }) {
 				// Note: For D1 posts, we extract from HTML since we don't store raw markdown
 				const headers = extractHeadersFromHtml(processedHtml);
 
+				// Safe JSON parsing for tags
+				let tags = [];
+				if (post.tags) {
+					try {
+						tags = JSON.parse(post.tags);
+					} catch (e) {
+						console.warn('Failed to parse tags:', e);
+						tags = [];
+					}
+				}
+
+				// Safe JSON parsing for gutter content
+				let gutterContent = [];
+				if (post.gutter_content) {
+					try {
+						gutterContent = JSON.parse(post.gutter_content);
+					} catch (e) {
+						console.warn('Failed to parse gutter_content:', e);
+						gutterContent = [];
+					}
+				}
+
 				return {
 					post: {
 						slug: post.slug,
 						title: post.title,
 						date: post.date,
-						tags: post.tags ? JSON.parse(post.tags) : [],
+						tags,
 						description: post.description || '',
 						content: processedHtml,
 						headers,
-						gutterContent: post.gutter_content ? JSON.parse(post.gutter_content) : [],
+						gutterContent,
 						font: post.font || 'default'
 					}
 				};
