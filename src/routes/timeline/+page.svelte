@@ -1,6 +1,7 @@
 <script>
 	import { marked } from 'marked';
-	import { Calendar, GitCommit, Plus, Minus, FolderGit2, ChevronDown, ChevronUp, Cloud, Loader2, MessageCircle } from 'lucide-svelte';
+	import { Calendar, GitCommit, Plus, Minus, FolderGit2, ChevronDown, ChevronUp, Cloud, Loader2, MessageCircle, TrendingUp } from 'lucide-svelte';
+	import { ActivityOverview, LOCBar, RepoBreakdown } from '$lib/components/charts';
 
 	/** @type {{ summaries: any[], pagination: any, error?: string }} */
 	let { data } = $props();
@@ -9,6 +10,30 @@
 	let pagination = $state(data.pagination);
 	let loadingMore = $state(false);
 	let expandedCards = $state(new Set());
+
+	// Activity data for the overview chart
+	let activityData = $state([]);
+	let loadingActivity = $state(true);
+
+	// Fetch activity data on mount
+	async function fetchActivity() {
+		loadingActivity = true;
+		try {
+			const res = await fetch('/api/timeline/activity?days=14');
+			if (res.ok) {
+				const data = await res.json();
+				activityData = data.activity || [];
+			}
+		} catch (e) {
+			console.error('Failed to fetch activity:', e);
+		}
+		loadingActivity = false;
+	}
+
+	// Fetch activity on mount
+	$effect(() => {
+		fetchActivity();
+	});
 
 	// Configure marked for safe rendering
 	marked.setOptions({
@@ -212,6 +237,16 @@
 			<p>Daily summaries will appear here once the automated system starts generating them.</p>
 		</div>
 	{:else}
+		<!-- Activity Overview Chart -->
+		{#if !loadingActivity && activityData.length > 0}
+			<ActivityOverview data={activityData} days={14} />
+		{:else if loadingActivity}
+			<div class="activity-loading">
+				<Loader2 size={16} class="spinner" />
+				<span>Loading activity...</span>
+			</div>
+		{/if}
+
 		<div class="timeline-cards">
 			{#each summaries as summary (summary.id)}
 				{@const isRestDay = summary.commit_count === 0}
@@ -255,6 +290,23 @@
 									<Minus size={14} class="minus-icon" />
 									{summary.total_deletions.toLocaleString()}
 								</span>
+							</div>
+
+							<!-- Visual charts for this day -->
+							<div class="day-charts">
+								<LOCBar
+									additions={summary.total_additions}
+									deletions={summary.total_deletions}
+									maxWidth={120}
+									height={6}
+								/>
+								{#if summary.repos_active?.length > 1}
+									<RepoBreakdown
+										repos={summary.repos_active.map(name => ({ name }))}
+										maxWidth={120}
+										showLegend={false}
+									/>
+								{/if}
 							</div>
 
 							{#if summary.detailed_timeline}
@@ -341,6 +393,25 @@
 
 	:global(.dark) .timeline-header p {
 		color: var(--color-text-muted-dark, #999);
+	}
+
+	/* Activity Loading */
+	.activity-loading {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 1rem;
+		color: #666;
+		font-size: 0.85rem;
+	}
+
+	:global(.dark) .activity-loading {
+		color: #999;
+	}
+
+	.activity-loading :global(.spinner) {
+		animation: spin 1s linear infinite;
 	}
 
 	/* Error and Empty States */
@@ -546,6 +617,19 @@
 
 	.changes :global(.minus-icon) {
 		color: #dc3545;
+	}
+
+	/* Day Charts */
+	.day-charts {
+		display: flex;
+		gap: 1rem;
+		margin: 0.5rem 0;
+		padding: 0.5rem 0;
+		border-top: 1px dashed #eee;
+	}
+
+	:global(.dark) .day-charts {
+		border-top-color: #333;
 	}
 
 	/* Expand Button */
