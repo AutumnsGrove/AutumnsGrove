@@ -41,6 +41,9 @@
   let editSuccess = $state(null);
   let gutterJsonError = $state(null);
 
+  // Validation constants (must match server-side)
+  const MAX_BRIEF_SUMMARY_LENGTH = 500;
+  const MAX_DETAILED_TIMELINE_LENGTH = 50000;
   const WORKER_URL = '/api/timeline/trigger';
 
   async function fetchLatestSummary() {
@@ -198,6 +201,27 @@
   async function saveEntry() {
     if (!editingEntry) return;
 
+    // Client-side validation
+    if (!editForm.brief_summary?.trim()) {
+      editError = 'Brief summary is required';
+      return;
+    }
+
+    if (editForm.brief_summary.length > MAX_BRIEF_SUMMARY_LENGTH) {
+      editError = `Brief summary exceeds ${MAX_BRIEF_SUMMARY_LENGTH} characters`;
+      return;
+    }
+
+    if (editForm.detailed_timeline?.length > MAX_DETAILED_TIMELINE_LENGTH) {
+      editError = `Detailed timeline exceeds ${MAX_DETAILED_TIMELINE_LENGTH} characters`;
+      return;
+    }
+
+    if (gutterJsonError) {
+      editError = 'Please fix the JSON error in gutter content';
+      return;
+    }
+
     saving = true;
     editError = null;
     editSuccess = null;
@@ -213,10 +237,16 @@
         })
       });
 
-      const data = await res.json();
+      // Handle network errors vs API errors
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error('Network error. Please check your connection and try again.');
+      }
 
       if (!res.ok) {
-        throw new Error(data.message || 'Failed to save');
+        throw new Error(data.message || `Server error (${res.status})`);
       }
 
       editSuccess = 'Entry updated successfully!';
@@ -239,7 +269,8 @@
       }, 1000);
 
     } catch (e) {
-      editError = e.message;
+      editError = e.message || 'An unexpected error occurred';
+      console.error('Save error:', e);
     } finally {
       saving = false;
     }

@@ -7,22 +7,11 @@
 
 import { json, error } from '@sveltejs/kit';
 import { verifySession } from '$lib/auth/session.js';
+import { safeJsonParse } from '$lib/utils/json.js';
 
-/**
- * Safely parse JSON with fallback for corrupted data
- * @param {string} str - JSON string to parse
- * @param {*} fallback - Fallback value if parsing fails
- * @returns {*} Parsed value or fallback
- */
-function safeJsonParse(str, fallback = []) {
-  if (!str) return fallback;
-  try {
-    return JSON.parse(str);
-  } catch (e) {
-    console.warn('Failed to parse JSON from database:', e.message);
-    return fallback;
-  }
-}
+// Validation constants
+const MAX_BRIEF_SUMMARY_LENGTH = 500;
+const MAX_DETAILED_TIMELINE_LENGTH = 50000;
 
 export async function GET({ params, platform }) {
   const db = platform?.env?.GIT_STATS_DB;
@@ -123,13 +112,46 @@ export async function PUT({ params, request, platform, cookies }) {
     throw error(400, 'Invalid JSON body');
   }
 
-  // Whitelist allowed fields
+  // Whitelist allowed fields and validate
   const allowedFields = ['brief_summary', 'detailed_timeline', 'gutter_content'];
   const updates = {};
 
   for (const field of allowedFields) {
     if (field in body) {
-      updates[field] = body[field];
+      const value = body[field];
+
+      // Validate field-specific constraints
+      if (field === 'brief_summary') {
+        if (typeof value !== 'string') {
+          throw error(400, 'brief_summary must be a string');
+        }
+        if (value.length > MAX_BRIEF_SUMMARY_LENGTH) {
+          throw error(400, `brief_summary exceeds maximum length of ${MAX_BRIEF_SUMMARY_LENGTH} characters`);
+        }
+      }
+
+      if (field === 'detailed_timeline') {
+        if (typeof value !== 'string') {
+          throw error(400, 'detailed_timeline must be a string');
+        }
+        if (value.length > MAX_DETAILED_TIMELINE_LENGTH) {
+          throw error(400, `detailed_timeline exceeds maximum length of ${MAX_DETAILED_TIMELINE_LENGTH} characters`);
+        }
+      }
+
+      if (field === 'gutter_content') {
+        if (!Array.isArray(value)) {
+          throw error(400, 'gutter_content must be an array');
+        }
+        // Validate array items have expected structure (line, type, content)
+        for (const item of value) {
+          if (typeof item !== 'object' || item === null) {
+            throw error(400, 'gutter_content items must be objects');
+          }
+        }
+      }
+
+      updates[field] = value;
     }
   }
 
