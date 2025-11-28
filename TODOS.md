@@ -1,6 +1,6 @@
 # TODOs for AutumnsGrove
 
-> **Last Updated:** November 28, 2025 - Added AI timeline enhancements
+> **Last Updated:** November 28, 2025 - Completed in-website markdown editor (all 3 phases)
 
 ---
 
@@ -379,54 +379,56 @@ Commits:     ████████ AutumnsGrove (150)
 
 ## 💡 Future Ideas & Enhancements
 
-### Content Management Modernization
+### ~~Content Management Modernization~~ COMPLETED
 
-#### In-Website Markdown Editor (High Priority Future)
-**Goal:** Move away from GitHub-based editing to admin panel editing
+#### ~~In-Website Markdown Editor~~ COMPLETED (Nov 28, 2025)
+**Status:** Fully implemented with all planned features
 
-**Features:**
-- [ ] Full markdown editor with live preview
-- [ ] Frontmatter editor UI (title, date, tags, description)
-- [ ] Integrated gutter content management:
-  - [ ] Add images from CDN gallery
-  - [ ] Create comment/note sidebars
-  - [ ] Add image galleries
-  - [ ] Position gutter items with visual anchors
-- [ ] Save directly to D1 database (bypass GitHub for new posts)
-- [ ] **Keep GitHub fallback as emergency backup option**
-- [ ] Syntax highlighting for code blocks
-- [ ] Image upload integration with R2/CDN
-- [ ] Auto-save drafts
-- [ ] Preview mode with actual site styling
+**Completed Features:**
+- [x] Full markdown editor with live preview (split-pane, synchronized scroll)
+- [x] Terminal-grove aesthetic (monospace font, dark theme, green accents)
+- [x] Frontmatter editor UI (title, date, tags, description)
+- [x] Integrated gutter content management:
+  - [x] GutterManager component for comments, photos, galleries
+  - [x] CDN image picker for selecting R2 images
+  - [x] Visual anchor insertion from editor (headings, custom anchors)
+  - [x] Position gutter items with anchor selection
+- [x] Save directly to D1 database (bypasses GitHub)
+- [x] **Drag-and-drop image upload to R2** (Phase 3)
+- [x] **Paste image support** (auto-uploads pasted screenshots)
+- [x] **Auto-save drafts to localStorage** (Phase 3)
+- [x] **Full preview mode with actual site styling** (Phase 3)
+- [x] Line numbers with current line highlight
+- [x] Keyboard shortcuts (Cmd+S save, Cmd+B bold, Cmd+I italic)
+- [x] Toolbar with formatting buttons (headings, bold, italic, code, links, lists, quotes)
+- [x] Status bar (line/column, word count, character count)
 
-**Dependencies:**
-- D1 database already set up for posts
-- R2 bucket already configured for images
-- Admin authentication already working
+**Routes:**
+- `/admin/blog/new` - Create new post
+- `/admin/blog/edit/[slug]` - Edit existing posts
 
-**Benefits:**
-- No more manual sidecar JSON files
-- Simpler gutter content workflow
-- Faster publishing (no git commit/push cycle)
-- Better user experience for content creation
+**API Endpoints:**
+- `GET /api/posts` - List all posts
+- `POST /api/posts` - Create new post (with gutter_content)
+- `GET /api/posts/[slug]` - Get single post
+- `PUT /api/posts/[slug]` - Update post (with gutter_content)
+- `DELETE /api/posts/[slug]` - Delete post
+
+**Components:**
+- `src/lib/components/admin/MarkdownEditor.svelte` - Main editor component
+- `src/lib/components/admin/GutterManager.svelte` - Gutter content management
 
 ---
 
-#### "Create a Post" Button
-**Goal:** Quick post creation from `/blog` route page
+#### ~~"Create a Post" Button~~ COMPLETED
+**Status:** Implemented via admin panel
 
-**Features:**
-- [ ] Add/enhance "Create Post" button on `/blog` route (already exists)
-- [ ] Opens in-website markdown editor (once built)
-- [ ] Fills in basic template (frontmatter, date, slug)
-- [ ] **Fallback to GitHub editor** (always available as backup)
-- [ ] Same approach for recipes at `/recipes` route
-
-**Implementation notes:**
-- Button already exists on /blog page
-- Depends on markdown editor being built first
-- GitHub fallback ensures content creation always possible
-- Template should match current UserContent structure
+**Implementation:**
+- [x] "New Post" button on `/admin/blog` links to `/admin/blog/new`
+- [x] Edit buttons link to `/admin/blog/edit/[slug]`
+- [x] Auto-generates slug from title
+- [x] Auto-fills current date
+- [x] Gutter content management integrated
 
 ---
 
@@ -514,12 +516,12 @@ npx wrangler pages dev -- npm run dev
 
 When you return to work on this project:
 
-1. **Deploy Markdown Editor (Phase 1 + Phase 2):**
+1. **Deploy Markdown Editor (ALL PHASES COMPLETE):**
    ```bash
    # The POSTS_DB binding was added to wrangler.toml
    # Posts database already exists: autumnsgrove-posts (510badf3-457a-4892-bf2a-45d4bfd7a7bb)
 
-   # Add gutter_content column to posts table (for Phase 2 gutter manager)
+   # Add gutter_content column to posts table (required for gutter manager)
    wrangler d1 execute autumnsgrove-posts --command "ALTER TABLE posts ADD COLUMN gutter_content TEXT DEFAULT '[]'"
 
    # Deploy the main site with new editor routes
@@ -529,21 +531,21 @@ When you return to work on this project:
    npx wrangler pages dev -- npm run dev
    ```
 
-   **New Routes:**
-   - `/admin/blog/new` - Create new post with markdown editor
+   **Routes:**
+   - `/admin/blog/new` - Create new post with full markdown editor
    - `/admin/blog/edit/[slug]` - Edit existing posts
 
-   **New API Endpoints:**
+   **API Endpoints:**
    - `GET /api/posts` - List all posts
-   - `POST /api/posts` - Create new post
+   - `POST /api/posts` - Create new post (with gutter_content)
    - `GET /api/posts/[slug]` - Get single post
-   - `PUT /api/posts/[slug]` - Update post
+   - `PUT /api/posts/[slug]` - Update post (with gutter_content)
    - `DELETE /api/posts/[slug]` - Delete post
 
-   **Phase 2 Features:**
-   - GutterManager component for adding comments, photos, galleries
-   - Visual anchor insertion from editor
-   - CDN image picker integration for selecting images
+   **All Implemented Features:**
+   - Phase 1: Core markdown editor with live preview, terminal-grove styling
+   - Phase 2: GutterManager, CDN image picker, anchor insertion
+   - Phase 3: Drag-drop image upload to R2, auto-save drafts, full preview mode
 
 2. **Deploy AI Timeline Updates:**
    ```bash
@@ -578,4 +580,4 @@ When you return to work on this project:
 
 ---
 
-*Last updated: November 28, 2025 - Removed async backfill UI (Queues require paid plan)*
+*Last updated: November 28, 2025 - Completed in-website markdown editor with all Phase 3 features*

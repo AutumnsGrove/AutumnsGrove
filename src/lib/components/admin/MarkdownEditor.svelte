@@ -1,6 +1,7 @@
 <script>
   import { marked } from "marked";
   import { onMount } from "svelte";
+  import "$lib/styles/content.css";
 
   // Props
   let {
@@ -8,6 +9,12 @@
     onSave = () => {},
     saving = false,
     readonly = false,
+    draftKey = null, // Unique key for localStorage draft storage
+    onDraftRestored = () => {}, // Callback when draft is restored
+    // Optional metadata for full preview mode
+    previewTitle = "",
+    previewDate = "",
+    previewTags = [],
   } = $props();
 
   // Local state
@@ -17,6 +24,23 @@
   let lineNumbers = $state([]);
   let cursorLine = $state(1);
   let cursorCol = $state(1);
+
+  // Image upload state
+  let isDragging = $state(false);
+  let isUploading = $state(false);
+  let uploadProgress = $state("");
+  let uploadError = $state(null);
+
+  // Auto-save draft state
+  let lastSavedContent = $state("");
+  let draftSaveTimer = $state(null);
+  let hasDraft = $state(false);
+  let draftRestorePrompt = $state(false);
+  let storedDraft = $state(null);
+  const AUTO_SAVE_DELAY = 2000; // 2 seconds
+
+  // Full preview mode state
+  let showFullPreview = $state(false);
 
   // Computed values
   let wordCount = $derived(
@@ -182,12 +206,268 @@
     }
   }
 
+  // Drag and drop image upload
+  function handleDragEnter(e) {
+    e.preventDefault();
+    if (readonly) return;
+
+    // Check if dragging files
+    if (e.dataTransfer?.types?.includes("Files")) {
+      isDragging = true;
+    }
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+    if (readonly) return;
+
+    if (e.dataTransfer?.types?.includes("Files")) {
+      e.dataTransfer.dropEffect = "copy";
+      isDragging = true;
+    }
+  }
+
+  function handleDragLeave(e) {
+    e.preventDefault();
+    // Only set to false if leaving the container entirely
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      isDragging = false;
+    }
+  }
+
+  async function handleDrop(e) {
+    e.preventDefault();
+    isDragging = false;
+    if (readonly) return;
+
+    const files = Array.from(e.dataTransfer?.files || []);
+    const imageFiles = files.filter((f) => f.type.startsWith("image/"));
+
+    if (imageFiles.length === 0) {
+      uploadError = "No image files detected";
+      setTimeout(() => (uploadError = null), 3000);
+      return;
+    }
+
+    // Upload each image
+    for (const file of imageFiles) {
+      await uploadImage(file);
+    }
+  }
+
+  async function uploadImage(file) {
+    isUploading = true;
+    uploadProgress = `Uploading ${file.name}...`;
+    uploadError = null;
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("folder", "blog");
+
+      const response = await fetch("/api/images/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Upload failed");
+      }
+
+      // Insert markdown image at cursor
+      const altText = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+      const imageMarkdown = `![${altText}](${result.url})\n`;
+      insertAtCursor(imageMarkdown);
+
+      uploadProgress = "";
+    } catch (err) {
+      uploadError = err.message;
+      setTimeout(() => (uploadError = null), 5000);
+    } finally {
+      isUploading = false;
+      uploadProgress = "";
+    }
+  }
+
+  // Handle paste for images
+  function handlePaste(e) {
+    if (readonly) return;
+
+    const items = Array.from(e.clipboardData?.items || []);
+    const imageItem = items.find((item) => item.type.startsWith("image/"));
+
+    if (imageItem) {
+      e.preventDefault();
+      const file = imageItem.getAsFile();
+      if (file) {
+        // Generate a filename for pasted images
+        const timestamp = Date.now();
+        const extension = file.type.split("/")[1] || "png";
+        const renamedFile = new File([file], `pasted-${timestamp}.${extension}`, {
+          type: file.type,
+        });
+        uploadImage(renamedFile);
+      }
+    }
+  }
+
+  // Auto-save draft to localStorage
+  $effect(() => {
+    if (!draftKey || readonly) return;
+
+    // Clear previous timer
+    if (draftSaveTimer) {
+      clearTimeout(draftSaveTimer);
+    }
+
+    // Don't save if content hasn't changed from last saved version
+    if (content === lastSavedContent) return;
+
+    // Schedule a draft save
+    draftSaveTimer = setTimeout(() => {
+      saveDraft();
+    }, AUTO_SAVE_DELAY);
+
+    return () => {
+      if (draftSaveTimer) {
+        clearTimeout(draftSaveTimer);
+      }
+    };
+  });
+
+  function saveDraft() {
+    if (!draftKey || readonly) return;
+
+    try {
+      const draft = {
+        content,
+        savedAt: new Date().toISOString(),
+      };
+      localStorage.setItem(`draft:${draftKey}`, JSON.stringify(draft));
+      lastSavedContent = content;
+      hasDraft = true;
+    } catch (e) {
+      console.warn("Failed to save draft:", e);
+    }
+  }
+
+  function loadDraft() {
+    if (!draftKey) return null;
+
+    try {
+      const stored = localStorage.getItem(`draft:${draftKey}`);
+      if (stored) {
+        return JSON.parse(stored);
+      }
+    } catch (e) {
+      console.warn("Failed to load draft:", e);
+    }
+    return null;
+  }
+
+  export function clearDraft() {
+    if (!draftKey) return;
+
+    try {
+      localStorage.removeItem(`draft:${draftKey}`);
+      hasDraft = false;
+      storedDraft = null;
+      draftRestorePrompt = false;
+    } catch (e) {
+      console.warn("Failed to clear draft:", e);
+    }
+  }
+
+  export function getDraftStatus() {
+    return { hasDraft, storedDraft };
+  }
+
+  function restoreDraft() {
+    if (storedDraft) {
+      content = storedDraft.content;
+      lastSavedContent = storedDraft.content;
+      onDraftRestored(storedDraft);
+    }
+    draftRestorePrompt = false;
+  }
+
+  function discardDraft() {
+    clearDraft();
+    lastSavedContent = content;
+  }
+
   onMount(() => {
     updateCursorPosition();
+
+    // Check for existing draft on mount
+    if (draftKey) {
+      const draft = loadDraft();
+      if (draft && draft.content !== content) {
+        storedDraft = draft;
+        draftRestorePrompt = true;
+      } else {
+        lastSavedContent = content;
+      }
+    }
   });
 </script>
 
-<div class="editor-container">
+<div
+  class="editor-container"
+  class:dragging={isDragging}
+  ondragenter={handleDragEnter}
+  ondragover={handleDragOver}
+  ondragleave={handleDragLeave}
+  ondrop={handleDrop}
+>
+  <!-- Drag overlay -->
+  {#if isDragging}
+    <div class="drag-overlay">
+      <div class="drag-overlay-content">
+        <span class="drag-icon">+</span>
+        <span class="drag-text">Drop image to upload</span>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Upload status -->
+  {#if isUploading || uploadError}
+    <div class="upload-status" class:error={uploadError}>
+      {#if isUploading}
+        <span class="upload-spinner"></span>
+        <span>{uploadProgress}</span>
+      {:else if uploadError}
+        <span class="upload-error-icon">!</span>
+        <span>{uploadError}</span>
+      {/if}
+    </div>
+  {/if}
+
+  <!-- Draft restore prompt -->
+  {#if draftRestorePrompt && storedDraft}
+    <div class="draft-prompt">
+      <div class="draft-prompt-content">
+        <span class="draft-icon">~</span>
+        <div class="draft-message">
+          <strong>Unsaved draft found</strong>
+          <span class="draft-time">
+            Saved {new Date(storedDraft.savedAt).toLocaleString()}
+          </span>
+        </div>
+        <div class="draft-actions">
+          <button type="button" class="draft-btn restore" onclick={restoreDraft}>
+            Restore
+          </button>
+          <button type="button" class="draft-btn discard" onclick={discardDraft}>
+            Discard
+          </button>
+        </div>
+      </div>
+    </div>
+  {/if}
+
   <!-- Toolbar -->
   <div class="toolbar">
     <div class="toolbar-group">
@@ -319,6 +599,14 @@
       >
         {showPreview ? "Hide Preview" : "Show Preview"}
       </button>
+      <button
+        type="button"
+        class="toolbar-btn full-preview-btn"
+        onclick={() => (showFullPreview = true)}
+        title="Open Full Preview (site styling)"
+      >
+        Full Preview
+      </button>
     </div>
   </div>
 
@@ -340,7 +628,8 @@
           onkeyup={updateCursorPosition}
           onkeydown={handleKeydown}
           onscroll={handleScroll}
-          placeholder="Start writing your post..."
+          onpaste={handlePaste}
+          placeholder="Start writing your post... (Drag & drop or paste images)"
           spellcheck="true"
           disabled={readonly}
           class="editor-textarea"
@@ -383,12 +672,76 @@
     <div class="status-right">
       {#if saving}
         <span class="status-saving">Saving...</span>
+      {:else if draftKey && content !== lastSavedContent}
+        <span class="status-draft">Draft saved</span>
       {:else}
         <span class="status-item">Markdown</span>
       {/if}
     </div>
   </div>
 </div>
+
+<!-- Full Preview Modal -->
+{#if showFullPreview}
+  <div class="full-preview-modal" role="dialog" aria-modal="true">
+    <div class="full-preview-backdrop" onclick={() => (showFullPreview = false)}></div>
+    <div class="full-preview-container">
+      <header class="full-preview-header">
+        <h2>Full Preview</h2>
+        <div class="full-preview-actions">
+          <button
+            type="button"
+            class="full-preview-close"
+            onclick={() => (showFullPreview = false)}
+          >
+            Close
+          </button>
+        </div>
+      </header>
+      <div class="full-preview-scroll">
+        <article class="full-preview-article">
+          <!-- Post Header -->
+          {#if previewTitle || previewDate || previewTags.length > 0}
+            <header class="content-header">
+              {#if previewTitle}
+                <h1>{previewTitle}</h1>
+              {/if}
+              {#if previewDate || previewTags.length > 0}
+                <div class="post-meta">
+                  {#if previewDate}
+                    <time datetime={previewDate}>
+                      {new Date(previewDate).toLocaleDateString("en-US", {
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })}
+                    </time>
+                  {/if}
+                  {#if previewTags.length > 0}
+                    <div class="tags">
+                      {#each previewTags as tag}
+                        <span class="tag">{tag}</span>
+                      {/each}
+                    </div>
+                  {/if}
+                </div>
+              {/if}
+            </header>
+          {/if}
+
+          <!-- Rendered Content -->
+          <div class="content-body">
+            {#if previewHtml}
+              {@html previewHtml}
+            {:else}
+              <p class="preview-placeholder">Start writing to see your content here...</p>
+            {/if}
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+{/if}
 
 <style>
   .editor-container {
@@ -401,6 +754,180 @@
     border-radius: 8px;
     overflow: hidden;
     font-family: "JetBrains Mono", "Fira Code", "SF Mono", Consolas, monospace;
+    position: relative;
+  }
+
+  .editor-container.dragging {
+    border-color: #8bc48b;
+    box-shadow: 0 0 0 2px rgba(139, 196, 139, 0.3);
+  }
+
+  /* Drag overlay */
+  .drag-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(30, 30, 30, 0.95);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    border: 3px dashed #8bc48b;
+    border-radius: 8px;
+  }
+
+  .drag-overlay-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: #8bc48b;
+  }
+
+  .drag-icon {
+    font-size: 3rem;
+    font-weight: 300;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px dashed #8bc48b;
+    border-radius: 50%;
+  }
+
+  .drag-text {
+    font-size: 1.1rem;
+    font-weight: 500;
+  }
+
+  /* Upload status */
+  .upload-status {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.25rem;
+    background: rgba(45, 74, 45, 0.95);
+    border: 1px solid #4a7c4a;
+    border-radius: 6px;
+    color: #a8dca8;
+    font-size: 0.9rem;
+    z-index: 99;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  }
+
+  .upload-status.error {
+    background: rgba(80, 40, 40, 0.95);
+    border-color: #a85050;
+    color: #ffb0b0;
+  }
+
+  .upload-spinner {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #4a7c4a;
+    border-top-color: #a8dca8;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .upload-error-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: #a85050;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: bold;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Draft prompt */
+  .draft-prompt {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(45, 60, 45, 0.98);
+    border-bottom: 1px solid #4a7c4a;
+    z-index: 98;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .draft-prompt-content {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .draft-icon {
+    font-size: 1.25rem;
+    color: #8bc48b;
+    font-weight: bold;
+  }
+
+  .draft-message {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    color: #d4d4d4;
+    flex: 1;
+  }
+
+  .draft-message strong {
+    color: #a8dca8;
+  }
+
+  .draft-time {
+    font-size: 0.75rem;
+    color: #7a9a7a;
+  }
+
+  .draft-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .draft-btn {
+    padding: 0.35rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .draft-btn.restore {
+    background: #4a7c4a;
+    border: 1px solid #5a9a5a;
+    color: #c8f0c8;
+  }
+
+  .draft-btn.restore:hover {
+    background: #5a9a5a;
+  }
+
+  .draft-btn.discard {
+    background: transparent;
+    border: 1px solid #5a5a5a;
+    color: #9d9d9d;
+  }
+
+  .draft-btn.discard:hover {
+    background: #3a3a3a;
+    color: #d4d4d4;
   }
 
   /* Toolbar */
@@ -710,6 +1237,11 @@
     animation: pulse 1s ease-in-out infinite;
   }
 
+  .status-draft {
+    color: #7a9a7a;
+    font-style: italic;
+  }
+
   @keyframes pulse {
     0%,
     100% {
@@ -746,5 +1278,137 @@
       padding: 0.3rem 0.5rem;
       font-size: 0.75rem;
     }
+  }
+
+  /* Full Preview Button */
+  .full-preview-btn {
+    background: #2d3a4d;
+    color: #7ab3ff;
+    border-color: #3d4a5d;
+  }
+
+  .full-preview-btn:hover {
+    background: #3d4a5d;
+    color: #9ac5ff;
+  }
+
+  /* Full Preview Modal */
+  .full-preview-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .full-preview-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  .full-preview-container {
+    position: relative;
+    width: 90%;
+    max-width: 900px;
+    height: 90vh;
+    background: var(--color-bg, #ffffff);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  }
+
+  :global(.dark) .full-preview-container {
+    background: var(--color-bg-dark, #0d1117);
+  }
+
+  .full-preview-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    background: var(--color-bg-secondary, #f5f5f5);
+    border-bottom: 1px solid var(--color-border, #e0e0e0);
+    flex-shrink: 0;
+  }
+
+  :global(.dark) .full-preview-header {
+    background: var(--color-bg-secondary-dark, #1a1a1a);
+    border-color: var(--color-border-dark, #333);
+  }
+
+  .full-preview-header h2 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text, #333);
+  }
+
+  :global(.dark) .full-preview-header h2 {
+    color: var(--color-text-dark, #e0e0e0);
+  }
+
+  .full-preview-close {
+    padding: 0.5rem 1rem;
+    background: var(--color-primary, #2c5f2d);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+
+  .full-preview-close:hover {
+    background: var(--color-primary-hover, #4a9d4f);
+  }
+
+  .full-preview-scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 2rem;
+  }
+
+  .full-preview-article {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  /* Post meta styling in full preview */
+  .full-preview-article .post-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  .full-preview-article time {
+    color: #888;
+    font-size: 1rem;
+    transition: color 0.3s ease;
+  }
+
+  :global(.dark) .full-preview-article time {
+    color: var(--color-text-subtle-dark, #666);
+  }
+
+  .full-preview-article .tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .full-preview-article .tag {
+    padding: 0.25rem 0.75rem;
+    background: var(--tag-bg, #2c5f2d);
+    color: white;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    font-weight: 500;
   }
 </style>

@@ -81,6 +81,9 @@
         throw new Error(result.message || "Failed to update post");
       }
 
+      // Clear draft on successful save
+      editorRef?.clearDraft();
+
       success = "Post saved successfully!";
       hasUnsavedChanges = false;
 
@@ -290,6 +293,10 @@
             bind:content
             {saving}
             onSave={handleSave}
+            draftKey={`edit-${slug}`}
+            previewTitle={title}
+            previewDate={date}
+            previewTags={parseTags(tagsInput)}
           />
         </div>
         {#if showGutter}

@@ -86,6 +86,9 @@
         throw new Error(result.message || "Failed to create post");
       }
 
+      // Clear draft on successful save
+      editorRef?.clearDraft();
+
       // Redirect to the edit page or blog admin
       goto(`/admin/blog/edit/${result.slug}`);
     } catch (err) {
@@ -201,6 +204,10 @@
             bind:content
             {saving}
             onSave={handleSave}
+            draftKey="new-post"
+            previewTitle={title}
+            previewDate={date}
+            previewTags={parseTags(tagsInput)}
           />
         </div>
         {#if showGutter}
