@@ -8,6 +8,22 @@
 import { json, error } from '@sveltejs/kit';
 import { verifySession } from '$lib/auth/session.js';
 
+/**
+ * Safely parse JSON with fallback for corrupted data
+ * @param {string} str - JSON string to parse
+ * @param {*} fallback - Fallback value if parsing fails
+ * @returns {*} Parsed value or fallback
+ */
+function safeJsonParse(str, fallback = []) {
+  if (!str) return fallback;
+  try {
+    return JSON.parse(str);
+  } catch (e) {
+    console.warn('Failed to parse JSON from database:', e.message);
+    return fallback;
+  }
+}
+
 export async function GET({ params, platform }) {
   const db = platform?.env?.GIT_STATS_DB;
   const { date } = params;
@@ -46,8 +62,8 @@ export async function GET({ params, platform }) {
 
     return json({
       ...entry,
-      repos_active: entry.repos_active ? JSON.parse(entry.repos_active) : [],
-      gutter_content: entry.gutter_content ? JSON.parse(entry.gutter_content) : [],
+      repos_active: safeJsonParse(entry.repos_active, []),
+      gutter_content: safeJsonParse(entry.gutter_content, []),
       is_rest_day: entry.commit_count === 0
     });
 
@@ -68,6 +84,9 @@ export async function PUT({ params, request, platform, cookies }) {
   }
 
   // Verify admin authentication
+  // Note: verifySession returns a user only for valid sessions. In this app,
+  // only admins can create sessions (via OAuth with allowed emails list),
+  // so a valid session implies admin privileges.
   const sessionToken = cookies.get('session');
   if (!sessionToken) {
     throw error(401, 'Authentication required');
@@ -147,17 +166,24 @@ export async function PUT({ params, request, platform, cookies }) {
     await db.prepare(query).bind(...values).run();
 
     // Invalidate relevant cache entries
+    // Cache key format: timeline:{limit}:{offset}:{year}:{month}
+    // See /api/timeline/+server.js for cache key generation.
+    // KV doesn't support wildcard deletion, so we clear the most common patterns.
+    // This covers: default view (30 items), year filter, and year+month filter.
+    // Note: Entries with different limit/offset may show stale data until TTL expires (5 min).
     if (kv) {
       try {
-        // Clear timeline cache (we can't easily enumerate all keys, so clear common ones)
+        const year = date.slice(0, 4);
+        const month = date.slice(5, 7);
         const cachePatterns = [
-          `timeline:30:0::`,
-          `timeline:30:0:${date.slice(0, 4)}:`,
-          `timeline:30:0:${date.slice(0, 4)}:${date.slice(5, 7)}`
+          `timeline:30:0::`,                    // Default view (no filters)
+          `timeline:30:0:${year}:`,             // Year filter
+          `timeline:30:0:${year}:${month}`      // Year + month filter
         ];
         for (const pattern of cachePatterns) {
           await kv.delete(pattern);
         }
+        console.log(`Cache invalidated for date ${date}: ${cachePatterns.length} keys`);
       } catch (e) {
         console.warn('Cache invalidation error:', e);
       }
@@ -186,8 +212,8 @@ export async function PUT({ params, request, platform, cookies }) {
       success: true,
       entry: {
         ...updated,
-        repos_active: updated.repos_active ? JSON.parse(updated.repos_active) : [],
-        gutter_content: updated.gutter_content ? JSON.parse(updated.gutter_content) : [],
+        repos_active: safeJsonParse(updated.repos_active, []),
+        gutter_content: safeJsonParse(updated.gutter_content, []),
         is_rest_day: updated.commit_count === 0
       }
     });
