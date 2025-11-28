@@ -124,12 +124,6 @@
     border-bottom-color: var(--color-border-dark);
   }
 
-  .mobile-header h2 {
-    margin: 0;
-    font-size: 1.1rem;
-    font-weight: 600;
-  }
-
   .mobile-home-link {
     font-size: 1.25rem;
     font-weight: bold;
