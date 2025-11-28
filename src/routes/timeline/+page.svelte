@@ -12,17 +12,31 @@
 	let expandedCards = $state(new Set());
 
 	// Activity data for the overview chart
-	let activityData = $state([]);
+	let contributionData = $state([]);  // For heatmap (from GitHub contributions API)
+	let locData = $state({ additions: 0, deletions: 0 });  // For footer (from DB)
 	let loadingActivity = $state(true);
 
-	// Fetch activity data on mount
+	// Fetch activity data on mount - dual fetch for contributions + LOC
 	async function fetchActivity() {
 		loadingActivity = true;
 		try {
-			const res = await fetch('/api/timeline/activity?days=14');
-			if (res.ok) {
-				const data = await res.json();
-				activityData = data.activity || [];
+			// Fetch both in parallel: GitHub contributions for heatmap, DB for LOC
+			const [contribRes, activityRes] = await Promise.all([
+				fetch('/api/git/contributions/AutumnMorning'),
+				fetch('/api/timeline/activity?days=14')
+			]);
+
+			if (contribRes.ok) {
+				const data = await contribRes.json();
+				contributionData = data.activity || [];
+			}
+
+			if (activityRes.ok) {
+				const data = await activityRes.json();
+				locData = {
+					additions: data.totals?.additions || 0,
+					deletions: data.totals?.deletions || 0
+				};
 			}
 		} catch (e) {
 			console.error('Failed to fetch activity:', e);
@@ -238,8 +252,8 @@
 		</div>
 	{:else}
 		<!-- Activity Overview Chart -->
-		{#if !loadingActivity && activityData.length > 0}
-			<ActivityOverview data={activityData} days={14} />
+		{#if !loadingActivity && contributionData.length > 0}
+			<ActivityOverview data={contributionData} {locData} days={14} />
 		{:else if loadingActivity}
 			<div class="activity-loading">
 				<Loader2 size={16} class="spinner" />

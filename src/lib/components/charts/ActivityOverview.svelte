@@ -2,33 +2,50 @@
   /**
    * ActivityOverview - Weekly activity visualization
    * Shows a GitHub-style contribution chart for recent days
+   *
+   * Data format: { activity_date: string, commit_count: number }[]
+   * (matches GitHub contributions API format)
    */
   import Sparkline from './Sparkline.svelte';
 
   /**
-   * @type {{ date: string, commits: number, additions: number, deletions: number }[]}
+   * @type {{ activity_date: string, commit_count: number }[]}
    */
   let {
     data = [],
+    locData = { additions: 0, deletions: 0 },  // LOC from separate DB fetch
     days = 14
   } = $props();
 
-  // Ensure we have the right number of days
+  // Format date as YYYY-MM-DD in local timezone (not UTC!)
+  // This matches how GitHub attributes contributions to user's timezone
+  function formatDateKey(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  // Ensure we have the right number of days, using local timezone
   const filledData = $derived(() => {
     const result = [];
     const today = new Date();
 
+    // Build activity map for quick lookup
+    const activityMap = {};
+    for (const item of data) {
+      activityMap[item.activity_date] = item.commit_count;
+    }
+
     for (let i = days - 1; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(date.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
+      const dateStr = formatDateKey(date);  // Local timezone!
 
-      const dayData = data.find(d => d.date === dateStr);
+      const commits = activityMap[dateStr] || 0;
       result.push({
         date: dateStr,
-        commits: dayData?.commits || 0,
-        additions: dayData?.additions || 0,
-        deletions: dayData?.deletions || 0,
+        commits,
         dayOfWeek: date.toLocaleDateString('en-US', { weekday: 'short' }),
         isToday: i === 0
       });
@@ -37,15 +54,11 @@
     return result;
   });
 
-  const commitData = $derived(filledData().map(d => d.commits));
-  const locData = $derived(filledData().map(d => d.additions + d.deletions));
+  const commitDataArr = $derived(filledData().map(d => d.commits));
 
   const totalCommits = $derived(filledData().reduce((sum, d) => sum + d.commits, 0));
-  const totalAdditions = $derived(filledData().reduce((sum, d) => sum + d.additions, 0));
-  const totalDeletions = $derived(filledData().reduce((sum, d) => sum + d.deletions, 0));
   const activeDays = $derived(filledData().filter(d => d.commits > 0).length);
   const peakCommits = $derived(Math.max(...filledData().map(d => d.commits), 0));
-  const peakLOC = $derived(Math.max(...filledData().map(d => d.additions + d.deletions), 0));
 
   // Get intensity level for heatmap (0-4)
   function getIntensity(commits) {
@@ -89,7 +102,7 @@
       <div class="sparkline-row">
         <span class="sparkline-label">Commits</span>
         <Sparkline
-          data={commitData}
+          data={commitDataArr}
           width={140}
           height={20}
           strokeColor="#5cb85f"
@@ -97,24 +110,13 @@
         />
         <span class="sparkline-peak" title="Peak commits in a day">↑{peakCommits}</span>
       </div>
-      <div class="sparkline-row">
-        <span class="sparkline-label">LOC</span>
-        <Sparkline
-          data={locData}
-          width={140}
-          height={20}
-          strokeColor="#5bc0de"
-          fillColor="rgba(91, 192, 222, 0.15)"
-        />
-        <span class="sparkline-peak" title="Peak lines changed in a day">↑{peakLOC.toLocaleString()}</span>
-      </div>
     </div>
   </div>
 
   <div class="overview-footer">
     <div class="loc-summary">
-      <span class="add">+{totalAdditions.toLocaleString()}</span>
-      <span class="del">-{totalDeletions.toLocaleString()}</span>
+      <span class="add">+{locData.additions.toLocaleString()}</span>
+      <span class="del">-{locData.deletions.toLocaleString()}</span>
     </div>
   </div>
 </div>
