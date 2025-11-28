@@ -22,7 +22,7 @@ export async function GET({ params, platform, locals }) {
   if (platform?.env?.POSTS_DB) {
     try {
       const post = await platform.env.POSTS_DB.prepare(
-        `SELECT slug, title, date, tags, description, markdown_content, html_content, gutter_content, last_synced, updated_at
+        `SELECT slug, title, date, tags, description, markdown_content, html_content, gutter_content, font, last_synced, updated_at
          FROM posts
          WHERE slug = ?`
       )
@@ -126,41 +126,24 @@ export async function PUT({ params, request, platform, locals }) {
     const now = new Date().toISOString();
     const tags = JSON.stringify(data.tags || []);
 
-    // Build the update query - include gutter_content if provided
-    const hasGutterContent = data.gutter_content !== undefined;
+    // Build the update query with all fields
+    const updateQuery = `UPDATE posts
+       SET title = ?, date = ?, tags = ?, description = ?, markdown_content = ?, html_content = ?, file_hash = ?, gutter_content = ?, font = ?, updated_at = ?
+       WHERE slug = ?`;
 
-    const updateQuery = hasGutterContent
-      ? `UPDATE posts
-         SET title = ?, date = ?, tags = ?, description = ?, markdown_content = ?, html_content = ?, file_hash = ?, gutter_content = ?, updated_at = ?
-         WHERE slug = ?`
-      : `UPDATE posts
-         SET title = ?, date = ?, tags = ?, description = ?, markdown_content = ?, html_content = ?, file_hash = ?, updated_at = ?
-         WHERE slug = ?`;
-
-    const params = hasGutterContent
-      ? [
-          data.title,
-          data.date || now.split("T")[0],
-          tags,
-          data.description || "",
-          data.markdown_content,
-          html_content,
-          file_hash,
-          data.gutter_content || "[]",
-          now,
-          slug,
-        ]
-      : [
-          data.title,
-          data.date || now.split("T")[0],
-          tags,
-          data.description || "",
-          data.markdown_content,
-          html_content,
-          file_hash,
-          now,
-          slug,
-        ];
+    const params = [
+      data.title,
+      data.date || now.split("T")[0],
+      tags,
+      data.description || "",
+      data.markdown_content,
+      html_content,
+      file_hash,
+      data.gutter_content || "[]",
+      data.font || "default",
+      now,
+      slug,
+    ];
 
     await platform.env.POSTS_DB.prepare(updateQuery).bind(...params).run();
 
