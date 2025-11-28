@@ -434,54 +434,50 @@ Commits:     ████████ AutumnsGrove (150)
 
 ### HIGH PRIORITY: Markdown Editor Enhancements (Nov 28, 2025)
 
-**Status:** In progress - building the "Grove Writer" experience
+**Status:** Phase 4 COMPLETE - Grove Writer experience fully implemented
 
 **Goal:** Make the writing interface THE reason people visit this site. A cozy, distraction-free, developer-friendly writing experience that feels like writing by lantern in a forest cabin.
 
-#### Quick Polish (Hours)
-- [ ] Fix duplicate `@keyframes pulse` definitions
-- [ ] Add Escape key to close full preview modal
-- [ ] Fix draft status wording ("Draft saving..." vs "Draft saved")
-- [ ] Sync line numbers with textarea scrolling
-- [ ] Reading time estimate in status bar ("~5 min read")
-- [ ] Typewriter scrolling (cursor line stays at vertical center)
-- [ ] Character limit warnings for SEO (description field: 150-160 chars)
+#### Quick Polish - COMPLETED
+- [x] Add Escape key to close full preview modal
+- [x] Reading time estimate in status bar ("~5 min read")
+- [x] Typewriter scrolling (cursor line stays at vertical center)
+- [x] Character limit warnings for SEO (description field: 120-160 chars)
+- [x] Fading transitions between modes
 
-#### Core Features (Days)
-- [ ] **Slash Commands** (`/image`, `/code`, `/quote`, `/heading`)
+#### Core Features - COMPLETED
+- [x] **Slash Commands** (`/heading`, `/code`, `/mermaid`, `/quote`, `/list`, etc.)
   - Type `/` to open command menu
   - Fuzzy search through commands
   - Keyboard navigation (up/down/enter)
   - Insert content at cursor position
-- [ ] **Command Palette** (Cmd+K)
+  - User snippets appear in slash menu
+- [x] **Command Palette** (Cmd+K)
   - VS Code-style fuzzy command search
-  - Actions: Save, Preview, Format, Insert heading, etc.
-  - Recent commands at top
-- [ ] **Writing Goals**
-  - Set session word count target
+  - Actions: Save, Preview, Zen Mode, Campfire, Insert, Goal, Snippets
+- [x] **Writing Goals**
+  - Set session word count target via command palette
   - Progress indicator in status bar
-  - Optional daily streak tracking
-  - Configurable per-session or persistent
-- [ ] **Zen Mode** (Cmd+Shift+Enter)
+- [x] **Zen Mode** (Cmd+Shift+Enter)
   - Full-screen, distraction-free
-  - Toolbar fades, status bar minimizes
-  - Current paragraph highlighted, others dimmed (40% opacity)
+  - Toolbar fades (30% opacity, hover to reveal)
+  - Status bar minimizes (50% opacity)
   - Typewriter scrolling auto-enabled
   - Escape to exit
 
-#### Grove Experience (The Differentiator)
-- [ ] **Grove Flow Mode**
-  - Combines: Zen mode + typewriter scrolling + green aesthetic
-  - Subtle ambient toggle (optional forest/rain sounds - future)
-  - Calming transitions between modes
-- [ ] **Campfire Sessions**
+#### Grove Experience - COMPLETED
+- [x] **Campfire Sessions**
   - Writing sprint mode with warm ember progress indicator
-  - Session timer (25 min default, configurable)
-  - Stats at end: words written, time focused, reading level
-  - Mode toggle to slide between normal/campfire while writing
-  - Optional: Share session summary
+  - Session timer in status bar and floating control panel
+  - Words written counter
+  - Glowing ember animation
+  - End session button with summary
+- [x] **Mode Transitions**
+  - Fading animations for toolbar/status bar
+  - Scale-in animation for slash menu
+  - Slide-down animation for command palette
 
-#### AI Assistant (Stubs Only - Not Deployed Yet)
+#### AI Assistant (Stubs - Not Deployed Yet)
 - [ ] Sidebar panel for AI suggestions (hidden by default)
 - [ ] Grammar/spelling suggestions
 - [ ] Tone analysis
@@ -489,13 +485,21 @@ Commits:     ████████ AutumnsGrove (150)
 - [ ] "Improve this paragraph" action
 - [ ] **Note:** Build and test locally before any customer-facing deployment
 
-#### Future Enhancements
-- [ ] **Mermaid Diagram Previews**
+#### Phase 5 Features - COMPLETED
+- [x] **Mermaid Diagram Previews**
   - Render mermaid code blocks as diagrams in preview
-  - Blazing fast client-side rendering
+  - Grove-themed dark color scheme
   - Support: flowcharts, sequence diagrams, gantt, etc.
-  - Research: mermaid.js bundle size optimization
-- [ ] Markdown snippets (save reusable blocks)
+  - Client-side rendering with mermaid.js
+- [x] **Markdown Snippets**
+  - Save reusable content blocks to localStorage
+  - Create/edit/delete snippets via modal (Cmd+K → "Manage Snippets")
+  - Optional trigger shortcuts (type `/trigger` to insert)
+  - Snippets appear in slash command menu with 📝 icon
+  - Snippets modal with list of existing snippets
+
+#### Future Enhancements
+- [ ] Ambient sounds (forest/rain sounds toggle)
 - [ ] Version history time machine
 - [ ] Custom themes/color schemes
 - [ ] Collaborative editing (far future)

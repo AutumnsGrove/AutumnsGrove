@@ -1,7 +1,37 @@
 <script>
   import { marked } from "marked";
-  import { onMount } from "svelte";
+  import mermaid from "mermaid";
+  import { onMount, tick } from "svelte";
   import "$lib/styles/content.css";
+
+  // Initialize mermaid with grove-themed dark config
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: "dark",
+    themeVariables: {
+      primaryColor: "#2d5a2d",
+      primaryTextColor: "#d4d4d4",
+      primaryBorderColor: "#4a7c4a",
+      lineColor: "#8bc48b",
+      secondaryColor: "#1e3a1e",
+      tertiaryColor: "#2a2a2a",
+      background: "#1e1e1e",
+      mainBkg: "#252526",
+      secondBkg: "#1e1e1e",
+      nodeBorder: "#4a7c4a",
+      clusterBkg: "#1a2a1a",
+      titleColor: "#8bc48b",
+      edgeLabelBackground: "#252526",
+    },
+    flowchart: {
+      curve: "basis",
+      padding: 15,
+    },
+    sequence: {
+      actorMargin: 50,
+      boxMargin: 10,
+    },
+  });
 
   // Props
   let {
@@ -91,6 +121,16 @@
     isAnalyzing: false,
   });
 
+  // Markdown snippets state
+  let snippets = $state([]);
+  let snippetsModal = $state({
+    open: false,
+    editingId: null,
+    name: "",
+    content: "",
+    trigger: "", // Optional shortcut trigger like "sig" for signature
+  });
+
   // Line numbers container ref for scroll sync
   let lineNumbersRef = $state(null);
 
@@ -100,7 +140,42 @@
   );
   let charCount = $derived(content.length);
   let lineCount = $derived(content.split("\n").length);
+  // Custom marked renderer for mermaid blocks
+  const renderer = new marked.Renderer();
+  const originalCodeRenderer = renderer.code.bind(renderer);
+
+  renderer.code = function ({ text, lang }) {
+    if (lang === "mermaid") {
+      // Wrap mermaid code in a special container for rendering
+      const id = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
+      return `<div class="mermaid-container"><pre class="mermaid" id="${id}">${text}</pre></div>`;
+    }
+    return originalCodeRenderer({ text, lang });
+  };
+
+  marked.use({ renderer });
+
   let previewHtml = $derived(content ? marked.parse(content) : "");
+
+  // Render mermaid diagrams after preview updates
+  async function renderMermaidDiagrams() {
+    await tick();
+    const mermaidElements = document.querySelectorAll(".preview-content .mermaid, .full-preview-scroll .mermaid");
+    if (mermaidElements.length > 0) {
+      try {
+        await mermaid.run({ nodes: mermaidElements });
+      } catch (e) {
+        console.warn("Mermaid rendering error:", e);
+      }
+    }
+  }
+
+  // Trigger mermaid rendering when preview HTML changes
+  $effect(() => {
+    if (previewHtml && (showPreview || showFullPreview)) {
+      renderMermaidDiagrams();
+    }
+  });
 
   // Reading time estimate (average 200 words per minute)
   let readingTime = $derived(() => {
@@ -206,13 +281,14 @@
 
     // Navigate slash menu
     if (slashMenu.open) {
+      const cmdCount = filteredSlashCommands.length;
       if (e.key === "ArrowDown") {
         e.preventDefault();
-        slashMenu.selectedIndex = (slashMenu.selectedIndex + 1) % slashCommands.length;
+        slashMenu.selectedIndex = (slashMenu.selectedIndex + 1) % cmdCount;
       }
       if (e.key === "ArrowUp") {
         e.preventDefault();
-        slashMenu.selectedIndex = (slashMenu.selectedIndex - 1 + slashCommands.length) % slashCommands.length;
+        slashMenu.selectedIndex = (slashMenu.selectedIndex - 1 + cmdCount) % cmdCount;
       }
     }
 
@@ -266,6 +342,11 @@
   // Global keyboard handler for modals
   function handleGlobalKeydown(e) {
     if (e.key === "Escape") {
+      if (snippetsModal.open) {
+        closeSnippetsModal();
+        e.preventDefault();
+        return;
+      }
       if (showFullPreview) {
         showFullPreview = false;
         e.preventDefault();
@@ -279,6 +360,7 @@
     { id: "heading2", label: "Heading 2", insert: "## " },
     { id: "heading3", label: "Heading 3", insert: "### " },
     { id: "code", label: "Code Block", insert: "```\n\n```", cursorOffset: 4 },
+    { id: "mermaid", label: "Mermaid Diagram", insert: "```mermaid\nflowchart TD\n    A[Start] --> B[End]\n```", cursorOffset: 32 },
     { id: "quote", label: "Quote", insert: "> " },
     { id: "list", label: "Bullet List", insert: "- " },
     { id: "numbered", label: "Numbered List", insert: "1. " },
@@ -286,11 +368,23 @@
     { id: "image", label: "Image", insert: "![alt](url)", cursorOffset: 2 },
     { id: "divider", label: "Divider", insert: "\n---\n" },
     { id: "anchor", label: "Custom Anchor", insert: "<!-- anchor:name -->\n", cursorOffset: 14 },
+    { id: "newSnippet", label: "Create New Snippet...", insert: "", isAction: true, action: () => openSnippetsModal() },
   ];
+
+  // Dynamic slash commands including user snippets
+  let allSlashCommands = $derived(() => {
+    const snippetCommands = snippets.map(s => ({
+      id: s.id,
+      label: `📝 ${s.name}`,
+      insert: s.content,
+      isSnippet: true,
+    }));
+    return [...slashCommands, ...snippetCommands];
+  });
 
   // Filtered slash commands based on query
   let filteredSlashCommands = $derived(
-    slashCommands.filter(cmd =>
+    allSlashCommands().filter(cmd =>
       cmd.label.toLowerCase().includes(slashMenu.query.toLowerCase())
     )
   );
@@ -304,6 +398,20 @@
   function executeSlashCommand(index) {
     const cmd = filteredSlashCommands[index];
     if (!cmd) return;
+
+    // Handle action commands (like "Create New Snippet...")
+    if (cmd.isAction && cmd.action) {
+      // Remove the slash that triggered the menu
+      const pos = textareaRef.selectionStart;
+      const textBefore = content.substring(0, pos);
+      const lastSlashIndex = textBefore.lastIndexOf("/");
+      if (lastSlashIndex >= 0) {
+        content = content.substring(0, lastSlashIndex) + content.substring(pos);
+      }
+      slashMenu.open = false;
+      cmd.action();
+      return;
+    }
 
     // Remove the slash that triggered the menu
     const pos = textareaRef.selectionStart;
@@ -336,6 +444,8 @@
     { id: "link", label: "Insert Link", shortcut: "", action: () => insertLink() },
     { id: "image", label: "Insert Image", shortcut: "", action: () => insertImage() },
     { id: "goal", label: "Set Writing Goal", shortcut: "", action: () => promptWritingGoal() },
+    { id: "snippets", label: "Manage Snippets", shortcut: "", action: () => openSnippetsModal() },
+    { id: "newSnippet", label: "Create New Snippet", shortcut: "", action: () => openSnippetsModal() },
   ];
 
   let filteredPaletteCommands = $derived(
@@ -384,6 +494,101 @@
       writingGoal.targetWords = parseInt(target);
       writingGoal.sessionWords = wordCount;
     }
+  }
+
+  // Snippet management
+  const SNIPPETS_STORAGE_KEY = "grove-editor-snippets";
+
+  function loadSnippets() {
+    try {
+      const stored = localStorage.getItem(SNIPPETS_STORAGE_KEY);
+      if (stored) {
+        snippets = JSON.parse(stored);
+      }
+    } catch (e) {
+      console.warn("Failed to load snippets:", e);
+    }
+  }
+
+  function saveSnippets() {
+    try {
+      localStorage.setItem(SNIPPETS_STORAGE_KEY, JSON.stringify(snippets));
+    } catch (e) {
+      console.warn("Failed to save snippets:", e);
+    }
+  }
+
+  function openSnippetsModal(editId = null) {
+    if (editId) {
+      const snippet = snippets.find(s => s.id === editId);
+      if (snippet) {
+        snippetsModal.editingId = editId;
+        snippetsModal.name = snippet.name;
+        snippetsModal.content = snippet.content;
+        snippetsModal.trigger = snippet.trigger || "";
+      }
+    } else {
+      snippetsModal.editingId = null;
+      snippetsModal.name = "";
+      snippetsModal.content = "";
+      snippetsModal.trigger = "";
+    }
+    snippetsModal.open = true;
+    commandPalette.open = false;
+  }
+
+  function closeSnippetsModal() {
+    snippetsModal.open = false;
+    snippetsModal.editingId = null;
+    snippetsModal.name = "";
+    snippetsModal.content = "";
+    snippetsModal.trigger = "";
+  }
+
+  function saveSnippet() {
+    if (!snippetsModal.name.trim() || !snippetsModal.content.trim()) return;
+
+    if (snippetsModal.editingId) {
+      // Update existing snippet
+      snippets = snippets.map(s =>
+        s.id === snippetsModal.editingId
+          ? {
+              ...s,
+              name: snippetsModal.name.trim(),
+              content: snippetsModal.content,
+              trigger: snippetsModal.trigger.trim() || null,
+            }
+          : s
+      );
+    } else {
+      // Create new snippet
+      const newSnippet = {
+        id: `snippet-${Date.now()}`,
+        name: snippetsModal.name.trim(),
+        content: snippetsModal.content,
+        trigger: snippetsModal.trigger.trim() || null,
+        createdAt: new Date().toISOString(),
+      };
+      snippets = [...snippets, newSnippet];
+    }
+
+    saveSnippets();
+    closeSnippetsModal();
+  }
+
+  function deleteSnippet(id) {
+    if (confirm("Delete this snippet?")) {
+      snippets = snippets.filter(s => s.id !== id);
+      saveSnippets();
+      if (snippetsModal.editingId === id) {
+        closeSnippetsModal();
+      }
+    }
+  }
+
+  function insertSnippet(snippet) {
+    insertAtCursor(snippet.content);
+    slashMenu.open = false;
   }
 
   // Typewriter scrolling - keep cursor line centered
@@ -692,6 +897,7 @@
 
   onMount(() => {
     updateCursorPosition();
+    loadSnippets();
 
     // Check for existing draft on mount
     if (draftKey) {
@@ -1070,6 +1276,100 @@
     <button type="button" class="campfire-end" onclick={endCampfireSession}>
       End Session
     </button>
+  </div>
+{/if}
+
+<!-- Snippets Modal -->
+{#if snippetsModal.open}
+  <div class="snippets-modal-overlay" onclick={closeSnippetsModal}>
+    <div class="snippets-modal" onclick={(e) => e.stopPropagation()}>
+      <div class="snippets-modal-header">
+        <h3>{snippetsModal.editingId ? "Edit Snippet" : "Create Snippet"}</h3>
+        <button type="button" class="snippets-modal-close" onclick={closeSnippetsModal}>
+          ×
+        </button>
+      </div>
+
+      <div class="snippets-modal-body">
+        <div class="snippets-form">
+          <div class="snippet-field">
+            <label for="snippet-name">Name</label>
+            <input
+              id="snippet-name"
+              type="text"
+              bind:value={snippetsModal.name}
+              placeholder="e.g., Blog signature"
+            />
+          </div>
+
+          <div class="snippet-field">
+            <label for="snippet-trigger">Trigger (optional)</label>
+            <input
+              id="snippet-trigger"
+              type="text"
+              bind:value={snippetsModal.trigger}
+              placeholder="e.g., sig"
+            />
+            <span class="field-hint">Type /trigger to quickly insert</span>
+          </div>
+
+          <div class="snippet-field">
+            <label for="snippet-content">Content</label>
+            <textarea
+              id="snippet-content"
+              bind:value={snippetsModal.content}
+              placeholder="Enter your markdown snippet..."
+              rows="6"
+            ></textarea>
+          </div>
+
+          <div class="snippet-actions">
+            {#if snippetsModal.editingId}
+              <button
+                type="button"
+                class="snippet-btn delete"
+                onclick={() => deleteSnippet(snippetsModal.editingId)}
+              >
+                Delete
+              </button>
+            {/if}
+            <div class="snippet-actions-right">
+              <button type="button" class="snippet-btn cancel" onclick={closeSnippetsModal}>
+                Cancel
+              </button>
+              <button
+                type="button"
+                class="snippet-btn save"
+                onclick={saveSnippet}
+                disabled={!snippetsModal.name.trim() || !snippetsModal.content.trim()}
+              >
+                {snippetsModal.editingId ? "Update" : "Create"}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {#if snippets.length > 0 && !snippetsModal.editingId}
+          <div class="snippets-list-divider">
+            <span>Your Snippets</span>
+          </div>
+          <div class="snippets-list">
+            {#each snippets as snippet}
+              <button
+                type="button"
+                class="snippet-list-item"
+                onclick={() => openSnippetsModal(snippet.id)}
+              >
+                <span class="snippet-name">{snippet.name}</span>
+                {#if snippet.trigger}
+                  <span class="snippet-trigger">/{snippet.trigger}</span>
+                {/if}
+              </button>
+            {/each}
+          </div>
+        {/if}
+      </div>
+    </div>
   </div>
 {/if}
 
@@ -2053,5 +2353,329 @@
     font-size: 0.75rem;
     color: #6a6a6a;
     font-family: "JetBrains Mono", monospace;
+  }
+
+  /* Mermaid Diagram Styles */
+  :global(.mermaid-container) {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    background: #1a1a1a;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    overflow-x: auto;
+  }
+
+  :global(.mermaid) {
+    display: flex;
+    justify-content: center;
+  }
+
+  :global(.mermaid svg) {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* Mermaid error styling */
+  :global(.mermaid-container .error) {
+    color: #e07030;
+    padding: 0.5rem;
+    font-family: monospace;
+    font-size: 0.85rem;
+  }
+
+  /* Mode Transitions */
+  .editor-container {
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .toolbar,
+  .status-bar {
+    transition: opacity 0.3s ease;
+  }
+
+  .campfire-controls {
+    animation: fade-in 0.3s ease;
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .slash-menu,
+  .command-palette {
+    animation: scale-in 0.15s ease;
+  }
+
+  @keyframes scale-in {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+
+  .command-palette {
+    animation: slide-down 0.2s ease;
+  }
+
+  @keyframes slide-down {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Snippets Modal */
+  .snippets-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1003;
+    animation: fade-in 0.2s ease;
+  }
+
+  .snippets-modal {
+    width: 90%;
+    max-width: 500px;
+    max-height: 80vh;
+    background: #1e1e1e;
+    border: 1px solid #3a3a3a;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 16px 64px rgba(0, 0, 0, 0.5);
+    animation: scale-in 0.2s ease;
+  }
+
+  .snippets-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    background: #252526;
+    border-bottom: 1px solid #3a3a3a;
+  }
+
+  .snippets-modal-header h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #8bc48b;
+  }
+
+  .snippets-modal-close {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #6a6a6a;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.15s ease;
+  }
+
+  .snippets-modal-close:hover {
+    background: #3a3a3a;
+    color: #d4d4d4;
+  }
+
+  .snippets-modal-body {
+    padding: 1.25rem;
+    overflow-y: auto;
+  }
+
+  .snippets-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .snippet-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .snippet-field label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #a8dca8;
+  }
+
+  .snippet-field input,
+  .snippet-field textarea {
+    padding: 0.6rem 0.75rem;
+    background: #252526;
+    border: 1px solid #3a3a3a;
+    border-radius: 6px;
+    color: #d4d4d4;
+    font-family: inherit;
+    font-size: 0.9rem;
+    transition: border-color 0.2s ease;
+  }
+
+  .snippet-field input:focus,
+  .snippet-field textarea:focus {
+    outline: none;
+    border-color: #4a7c4a;
+  }
+
+  .snippet-field textarea {
+    resize: vertical;
+    min-height: 100px;
+    font-family: "JetBrains Mono", "Fira Code", monospace;
+    line-height: 1.5;
+  }
+
+  .field-hint {
+    font-size: 0.75rem;
+    color: #6a6a6a;
+    font-style: italic;
+  }
+
+  .snippet-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 0.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #2a2a2a;
+  }
+
+  .snippet-actions-right {
+    display: flex;
+    gap: 0.5rem;
+    margin-left: auto;
+  }
+
+  .snippet-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .snippet-btn.save {
+    background: #4a7c4a;
+    border: 1px solid #5a9a5a;
+    color: #c8f0c8;
+  }
+
+  .snippet-btn.save:hover:not(:disabled) {
+    background: #5a9a5a;
+  }
+
+  .snippet-btn.save:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .snippet-btn.cancel {
+    background: transparent;
+    border: 1px solid #4a4a4a;
+    color: #9d9d9d;
+  }
+
+  .snippet-btn.cancel:hover {
+    background: #3a3a3a;
+    color: #d4d4d4;
+  }
+
+  .snippet-btn.delete {
+    background: transparent;
+    border: 1px solid #6b4040;
+    color: #e08080;
+  }
+
+  .snippet-btn.delete:hover {
+    background: #4a2020;
+    border-color: #a05050;
+  }
+
+  .snippets-list-divider {
+    display: flex;
+    align-items: center;
+    margin: 1.25rem 0 0.75rem;
+    color: #6a6a6a;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .snippets-list-divider::before,
+  .snippets-list-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #3a3a3a;
+  }
+
+  .snippets-list-divider span {
+    padding: 0 0.75rem;
+  }
+
+  .snippets-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .snippet-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    background: #252526;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    color: #d4d4d4;
+    font-size: 0.9rem;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .snippet-list-item:hover {
+    background: #2a2a2a;
+    border-color: #3a3a3a;
+  }
+
+  .snippet-name {
+    font-weight: 500;
+  }
+
+  .snippet-trigger {
+    font-size: 0.75rem;
+    color: #7ab3ff;
+    font-family: "JetBrains Mono", monospace;
+    background: #1a2a3a;
+    padding: 0.15rem 0.4rem;
+    border-radius: 3px;
   }
 </style>
