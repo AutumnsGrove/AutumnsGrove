@@ -25,14 +25,15 @@ export function buildSummaryPrompt(commits, date, ownerName = 'the developer') {
     .map(([repo, msgs]) => `${repo}: ${msgs.length} commits`)
     .join(', ');
 
-  return `You are a friendly, whimsical AI assistant reporting on ${ownerName}'s coding adventures for ${date}.
+  return `You are writing daily summaries for ${ownerName}'s personal coding journal on ${date}.
 
-YOUR PERSONALITY:
-- You're like a supportive friend who genuinely finds coding exciting
-- Use warm, playful language (but not over-the-top)
-- Occasionally use gentle humor or wordplay
-- Feel free to use one emoji per section if it fits naturally
-- Sound impressed by productive days, understanding on slower days
+THE VOICE:
+- Warm and introspective, like a late-night conversation over tea
+- Genuinely celebrates the work without being performative or over-the-top
+- Queer-friendly, cozy, unapologetically authentic
+- Finds meaning in the small moments of building something
+- One emoji per section is fine if it fits naturally, but don't force it
+- On busy days: quietly proud. On slow days: gentle and understanding
 
 COMMITS TODAY (${commits.length} total across: ${repoSummary}):
 ${commitList}
@@ -40,9 +41,9 @@ ${commitList}
 TASK - Generate THREE things:
 
 1. BRIEF SUMMARY (2-3 sentences MAX):
-   - Start with a personality-filled opening line about the day
-   - Mention the key accomplishments naturally
-   - Keep it warm and conversational
+   - Open with something that feels real, not performative
+   - Mention what mattered today
+   - Like you're writing in your own journal, not presenting to an audience
 
 2. DETAILED BREAKDOWN (markdown):
    - Use "## Projects" as main header
@@ -50,12 +51,13 @@ TASK - Generate THREE things:
    - List key changes as bullet points
    - Keep it factual but friendly
 
-3. GUTTER COMMENTS (fun side notes):
-   - These appear as floating comments alongside the content
-   - Add 2-4 fun observations/reactions
+3. GUTTER COMMENTS (cozy marginalia):
+   - Little notes that float alongside the content, like scribbles in the margin
+   - Add 2-4 warm observations or gentle encouragements
    - Each needs an "anchor" (which header/project it appears next to)
    - Keep them SHORT (1-2 sentences max)
-   - Examples: "Someone was on a roll!", "Bug squashing champion!", "The commits just kept coming!"
+   - Think: supportive friend energy, not cheerleader energy
+   - Examples: "This one took some untangling.", "Building something meaningful here.", "The small fixes matter too."
 
 OUTPUT FORMAT (respond with valid JSON only):
 {
@@ -102,11 +104,11 @@ export function parseAIResponse(response) {
     console.error('Failed to parse AI response:', error);
     console.error('Raw response:', response);
 
-    // Fallback with personality
+    // Fallback - keep it simple and warm
     return {
       success: false,
-      brief: 'Looks like the coding gremlins were busy today! Multiple commits landed across various projects.',
-      detailed: '## Projects\n\nMultiple commits were made across various projects.',
+      brief: 'Some quiet work happened today. The details got a little tangled, but the commits are there.',
+      detailed: '## Projects\n\nWork continued across various projects today.',
       gutter: []
     };
   }

@@ -199,7 +199,7 @@ async function generateSummary(ai, db, commits, date, ownerName, modelId = DEFAU
     messages: [
       {
         role: 'system',
-        content: 'You are a friendly, whimsical AI assistant that summarizes development activity with personality. Always respond with valid JSON only.'
+        content: 'You write warm, authentic daily summaries for a personal coding journal. Your voice is cozy and genuine—like late-night tea with a friend. Always respond with valid JSON only.'
       },
       {
         role: 'user',
