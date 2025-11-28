@@ -44,6 +44,8 @@
   const totalAdditions = $derived(filledData().reduce((sum, d) => sum + d.additions, 0));
   const totalDeletions = $derived(filledData().reduce((sum, d) => sum + d.deletions, 0));
   const activeDays = $derived(filledData().filter(d => d.commits > 0).length);
+  const peakCommits = $derived(Math.max(...filledData().map(d => d.commits), 0));
+  const peakLOC = $derived(Math.max(...filledData().map(d => d.additions + d.deletions), 0));
 
   // Get intensity level for heatmap (0-4)
   function getIntensity(commits) {
@@ -62,8 +64,8 @@
       <span class="stat">
         <strong>{totalCommits}</strong> commits
       </span>
-      <span class="stat">
-        <strong>{activeDays}</strong>/{days} days
+      <span class="stat active-days">
+        <strong>{activeDays}</strong> of {days} days active
       </span>
     </div>
   </div>
@@ -93,6 +95,7 @@
           strokeColor="#5cb85f"
           fillColor="rgba(92, 184, 95, 0.15)"
         />
+        <span class="sparkline-peak" title="Peak commits in a day">↑{peakCommits}</span>
       </div>
       <div class="sparkline-row">
         <span class="sparkline-label">LOC</span>
@@ -103,6 +106,7 @@
           strokeColor="#5bc0de"
           fillColor="rgba(91, 192, 222, 0.15)"
         />
+        <span class="sparkline-peak" title="Peak lines changed in a day">↑{peakLOC.toLocaleString()}</span>
       </div>
     </div>
   </div>
@@ -274,6 +278,17 @@
 
   :global(.dark) .sparkline-label {
     color: #777;
+  }
+
+  .sparkline-peak {
+    font-size: 0.65rem;
+    color: #999;
+    margin-left: 0.35rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  :global(.dark) .sparkline-peak {
+    color: #666;
   }
 
   /* Footer */
