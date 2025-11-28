@@ -1,5 +1,5 @@
 <script>
-  import { Calendar, Play, RefreshCw, Clock, CheckCircle, XCircle, Loader2, AlertTriangle, DollarSign, Cpu, TrendingUp, ChevronDown } from 'lucide-svelte';
+  import { Calendar, Play, RefreshCw, Clock, CheckCircle, XCircle, Loader2, AlertTriangle, DollarSign, Cpu, TrendingUp, ChevronDown, Edit3, X, Save, List } from 'lucide-svelte';
 
   let triggerLoading = $state(false);
   let backfillLoading = $state(false);
@@ -25,6 +25,25 @@
   let loadingUsage = $state(true);
   let usageDays = $state(30);
 
+  // Entry browsing and editing
+  let entries = $state([]);
+  let loadingEntries = $state(false);
+  let entriesPage = $state(0);
+  let entriesTotal = $state(0);
+  const entriesLimit = 10;
+
+  // Edit modal state
+  let editModalOpen = $state(false);
+  let editingEntry = $state(null);
+  let editForm = $state({ brief_summary: '', detailed_timeline: '', gutter_content: [] });
+  let saving = $state(false);
+  let editError = $state(null);
+  let editSuccess = $state(null);
+  let gutterJsonError = $state(null);
+
+  // Validation constants (must match server-side)
+  const MAX_BRIEF_SUMMARY_LENGTH = 500;
+  const MAX_DETAILED_TIMELINE_LENGTH = 50000;
   const WORKER_URL = '/api/timeline/trigger';
 
   async function fetchLatestSummary() {
@@ -142,11 +161,151 @@
     return tokens.toString();
   }
 
+  // Entry browsing functions
+  async function fetchEntries() {
+    loadingEntries = true;
+    try {
+      const offset = entriesPage * entriesLimit;
+      const res = await fetch(`/api/timeline?limit=${entriesLimit}&offset=${offset}`);
+      if (res.ok) {
+        const data = await res.json();
+        entries = data.summaries || [];
+        entriesTotal = data.pagination?.total || 0;
+      }
+    } catch (e) {
+      console.error('Failed to fetch entries:', e);
+    }
+    loadingEntries = false;
+  }
+
+  function openEditModal(entry) {
+    editingEntry = entry;
+    editForm = {
+      brief_summary: entry.brief_summary || '',
+      detailed_timeline: entry.detailed_timeline || '',
+      gutter_content: entry.gutter_content || []
+    };
+    editError = null;
+    editSuccess = null;
+    gutterJsonError = null;
+    editModalOpen = true;
+  }
+
+  function closeEditModal() {
+    editModalOpen = false;
+    editingEntry = null;
+    editError = null;
+    editSuccess = null;
+  }
+
+  async function saveEntry() {
+    if (!editingEntry) return;
+
+    // Client-side validation
+    if (!editForm.brief_summary?.trim()) {
+      editError = 'Brief summary is required';
+      return;
+    }
+
+    if (editForm.brief_summary.length > MAX_BRIEF_SUMMARY_LENGTH) {
+      editError = `Brief summary exceeds ${MAX_BRIEF_SUMMARY_LENGTH} characters`;
+      return;
+    }
+
+    if (editForm.detailed_timeline?.length > MAX_DETAILED_TIMELINE_LENGTH) {
+      editError = `Detailed timeline exceeds ${MAX_DETAILED_TIMELINE_LENGTH} characters`;
+      return;
+    }
+
+    if (gutterJsonError) {
+      editError = 'Please fix the JSON error in gutter content';
+      return;
+    }
+
+    saving = true;
+    editError = null;
+    editSuccess = null;
+
+    try {
+      const res = await fetch(`/api/timeline/${editingEntry.summary_date}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          brief_summary: editForm.brief_summary,
+          detailed_timeline: editForm.detailed_timeline,
+          gutter_content: editForm.gutter_content,
+          // Include for optimistic locking to prevent race conditions
+          expected_updated_at: editingEntry.updated_at
+        })
+      });
+
+      // Handle network errors vs API errors
+      let data;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error('Network error. Please check your connection and try again.');
+      }
+
+      if (!res.ok) {
+        // Special handling for conflict (race condition)
+        if (res.status === 409) {
+          // Refresh entries list so user can get latest version
+          await fetchEntries();
+          throw new Error('This entry was modified by someone else. The list has been refreshed - please close and reopen to see the latest version.');
+        }
+        throw new Error(data.message || `Server error (${res.status})`);
+      }
+
+      editSuccess = 'Entry updated successfully!';
+
+      // Update local entries list
+      const idx = entries.findIndex(e => e.summary_date === editingEntry.summary_date);
+      if (idx >= 0 && data.entry) {
+        entries[idx] = data.entry;
+        entries = [...entries];
+      }
+
+      // Refresh latest summary if this was it
+      if (latestSummary?.summary_date === editingEntry.summary_date) {
+        await fetchLatestSummary();
+      }
+
+      // Close after short delay to show success message
+      setTimeout(() => {
+        closeEditModal();
+      }, 1000);
+
+    } catch (e) {
+      editError = e.message || 'An unexpected error occurred';
+      console.error('Save error:', e);
+    } finally {
+      saving = false;
+    }
+  }
+
+  function handleModalKeydown(e) {
+    if (e.key === 'Escape') {
+      closeEditModal();
+    }
+  }
+
   // Fetch on mount
   $effect(() => {
     fetchLatestSummary();
     fetchModels();
     fetchUsageStats();
+  });
+
+  // Fetch entries on mount and when page changes
+  let entriesInitialized = false;
+  $effect(() => {
+    // Track entriesPage to trigger refetch on change
+    const page = entriesPage;
+    if (!entriesInitialized) {
+      entriesInitialized = true;
+    }
+    fetchEntries();
   });
 </script>
 
@@ -404,10 +563,174 @@
     </div>
   {/if}
 
+  <!-- Browse & Edit Entries -->
+  <section class="entries-section">
+    <h2><List size={18} /> Browse & Edit Entries</h2>
+    <p class="section-desc">View and edit existing timeline summaries</p>
+
+    {#if loadingEntries}
+      <div class="status-loading">
+        <Loader2 size={20} class="spinner" />
+        <span>Loading entries...</span>
+      </div>
+    {:else if entries.length > 0}
+      <div class="entries-list">
+        {#each entries as entry}
+          <div class="entry-item" class:rest-day={entry.is_rest_day}>
+            <div class="entry-info">
+              <span class="entry-date">{entry.summary_date}</span>
+              <span class="entry-stats">
+                {#if entry.is_rest_day}
+                  <span class="rest-badge">Rest Day</span>
+                {:else}
+                  {entry.commit_count} commits &bull; +{entry.total_additions}/-{entry.total_deletions}
+                {/if}
+              </span>
+            </div>
+            {#if entry.brief_summary}
+              <p class="entry-brief">{entry.brief_summary.slice(0, 100)}{entry.brief_summary.length > 100 ? '...' : ''}</p>
+            {/if}
+            <button class="edit-btn" onclick={() => openEditModal(entry)} disabled={entry.is_rest_day}>
+              <Edit3 size={14} />
+              <span>Edit</span>
+            </button>
+          </div>
+        {/each}
+      </div>
+
+      <div class="pagination">
+        <button
+          class="page-btn"
+          onclick={() => entriesPage = Math.max(0, entriesPage - 1)}
+          disabled={entriesPage === 0}
+        >
+          Previous
+        </button>
+        <span class="page-info">
+          Page {entriesPage + 1} of {Math.ceil(entriesTotal / entriesLimit)}
+        </span>
+        <button
+          class="page-btn"
+          onclick={() => entriesPage = entriesPage + 1}
+          disabled={(entriesPage + 1) * entriesLimit >= entriesTotal}
+        >
+          Next
+        </button>
+      </div>
+    {:else}
+      <div class="no-entries">No timeline entries yet</div>
+    {/if}
+  </section>
+
   <footer class="page-footer">
     <a href="/timeline" target="_blank" class="view-link">View Public Timeline</a>
   </footer>
 </div>
+
+<!-- Edit Modal -->
+{#if editModalOpen && editingEntry}
+  <div
+    class="modal-overlay"
+    onclick={closeEditModal}
+    onkeydown={handleModalKeydown}
+    role="presentation"
+  >
+    <div
+      class="modal-content"
+      onclick={(e) => e.stopPropagation()}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="edit-modal-title"
+    >
+      <div class="modal-header">
+        <h3 id="edit-modal-title">
+          <Edit3 size={18} />
+          Edit Entry: {editingEntry.summary_date}
+        </h3>
+        <button class="close-btn" onclick={closeEditModal} aria-label="Close">
+          <X size={20} />
+        </button>
+      </div>
+
+      <div class="modal-body">
+        {#if editError}
+          <div class="edit-message error">
+            <XCircle size={16} />
+            {editError}
+          </div>
+        {/if}
+        {#if editSuccess}
+          <div class="edit-message success">
+            <CheckCircle size={16} />
+            {editSuccess}
+          </div>
+        {/if}
+
+        <div class="form-group">
+          <label for="edit-brief">Brief Summary</label>
+          <textarea
+            id="edit-brief"
+            bind:value={editForm.brief_summary}
+            rows="3"
+            placeholder="A 1-2 sentence overview of the day's work..."
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-detailed">Detailed Timeline (Markdown)</label>
+          <textarea
+            id="edit-detailed"
+            bind:value={editForm.detailed_timeline}
+            rows="12"
+            placeholder="Detailed markdown breakdown of the day's work..."
+          ></textarea>
+        </div>
+
+        <details class="gutter-section">
+          <summary>Gutter Comments ({editForm.gutter_content?.length || 0})</summary>
+          <p class="gutter-hint">JSON array of gutter items. Edit with care.</p>
+          <textarea
+            class="gutter-textarea"
+            class:json-invalid={gutterJsonError}
+            value={JSON.stringify(editForm.gutter_content, null, 2)}
+            oninput={(e) => {
+              try {
+                const parsed = JSON.parse(e.target.value);
+                if (!Array.isArray(parsed)) {
+                  gutterJsonError = 'Must be a JSON array';
+                } else {
+                  editForm.gutter_content = parsed;
+                  gutterJsonError = null;
+                }
+              } catch (err) {
+                gutterJsonError = 'Invalid JSON syntax';
+              }
+            }}
+            rows="6"
+          ></textarea>
+          {#if gutterJsonError}
+            <p class="json-error">{gutterJsonError}</p>
+          {/if}
+        </details>
+      </div>
+
+      <div class="modal-footer">
+        <button class="modal-btn cancel" onclick={closeEditModal}>
+          Cancel
+        </button>
+        <button class="modal-btn save" onclick={saveEntry} disabled={saving || gutterJsonError}>
+          {#if saving}
+            <Loader2 size={16} class="spinner" />
+            <span>Saving...</span>
+          {:else}
+            <Save size={16} />
+            <span>Save Changes</span>
+          {/if}
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}
 
 <style>
   .timeline-admin {
@@ -997,6 +1320,457 @@
     text-decoration: underline;
   }
 
+  /* Entries Section */
+  .entries-section {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  :global(.dark) .entries-section {
+    background: #252525;
+    border-color: #333;
+  }
+
+  .entries-section h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    margin: 0 0 0.25rem;
+    color: #333;
+  }
+
+  :global(.dark) .entries-section h2 {
+    color: #eee;
+  }
+
+  .entries-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+  }
+
+  .entry-item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: #f9f9f9;
+    border-radius: 6px;
+    border: 1px solid #eee;
+  }
+
+  :global(.dark) .entry-item {
+    background: #2a2a2a;
+    border-color: #333;
+  }
+
+  .entry-item.rest-day {
+    opacity: 0.6;
+  }
+
+  .entry-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 140px;
+  }
+
+  .entry-date {
+    font-weight: 600;
+    color: #2c5f2d;
+    font-size: 0.95rem;
+  }
+
+  :global(.dark) .entry-date {
+    color: #5cb85f;
+  }
+
+  .entry-stats {
+    font-size: 0.8rem;
+    color: #666;
+  }
+
+  :global(.dark) .entry-stats {
+    color: #999;
+  }
+
+  .rest-badge {
+    background: #888;
+    color: white;
+    padding: 0.1rem 0.4rem;
+    border-radius: 3px;
+    font-size: 0.75rem;
+  }
+
+  .entry-brief {
+    flex: 1;
+    margin: 0;
+    font-size: 0.85rem;
+    color: #555;
+    min-width: 200px;
+  }
+
+  :global(.dark) .entry-brief {
+    color: #bbb;
+  }
+
+  .edit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    background: #5cb85f;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .edit-btn:hover:not(:disabled) {
+    background: #4cae4c;
+  }
+
+  .edit-btn:disabled {
+    background: #888;
+    cursor: not-allowed;
+  }
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #eee;
+  }
+
+  :global(.dark) .pagination {
+    border-top-color: #333;
+  }
+
+  .page-btn {
+    padding: 0.4rem 0.75rem;
+    background: #2c5f2d;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+
+  .page-btn:hover:not(:disabled) {
+    background: #224822;
+  }
+
+  .page-btn:disabled {
+    background: #888;
+    cursor: not-allowed;
+  }
+
+  .page-info {
+    font-size: 0.85rem;
+    color: #666;
+  }
+
+  :global(.dark) .page-info {
+    color: #999;
+  }
+
+  .no-entries {
+    text-align: center;
+    color: #888;
+    padding: 2rem;
+  }
+
+  /* Modal Styles */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+  }
+
+  .modal-content {
+    background: white;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+  }
+
+  :global(.dark) .modal-content {
+    background: #1e1e1e;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e0e0e0;
+    background: #f9f9f9;
+  }
+
+  :global(.dark) .modal-header {
+    background: #252525;
+    border-bottom-color: #333;
+  }
+
+  .modal-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    font-size: 1.1rem;
+    color: #2c5f2d;
+  }
+
+  :global(.dark) .modal-header h3 {
+    color: #5cb85f;
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #666;
+    padding: 0.25rem;
+    border-radius: 4px;
+  }
+
+  .close-btn:hover {
+    background: #e0e0e0;
+  }
+
+  :global(.dark) .close-btn {
+    color: #aaa;
+  }
+
+  :global(.dark) .close-btn:hover {
+    background: #333;
+  }
+
+  .modal-body {
+    padding: 1.25rem;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  .edit-message {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .edit-message.error {
+    background: #fdecea;
+    color: #c00;
+  }
+
+  :global(.dark) .edit-message.error {
+    background: #3a2020;
+    color: #f88;
+  }
+
+  .edit-message.success {
+    background: #e8f5e9;
+    color: #2c5f2d;
+  }
+
+  :global(.dark) .edit-message.success {
+    background: #1b3a1b;
+    color: #5cb85f;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.35rem;
+    color: #333;
+    font-size: 0.9rem;
+  }
+
+  :global(.dark) .form-group label {
+    color: #ddd;
+  }
+
+  .form-group textarea {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-family: inherit;
+    resize: vertical;
+    background: white;
+    color: #333;
+  }
+
+  :global(.dark) .form-group textarea {
+    background: #2a2a2a;
+    border-color: #444;
+    color: #eee;
+  }
+
+  .form-group textarea:focus {
+    outline: none;
+    border-color: #5cb85f;
+    box-shadow: 0 0 0 2px rgba(92, 184, 95, 0.2);
+  }
+
+  .gutter-section {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e0e0e0;
+  }
+
+  :global(.dark) .gutter-section {
+    border-top-color: #333;
+  }
+
+  .gutter-section summary {
+    cursor: pointer;
+    font-weight: 500;
+    color: #555;
+    font-size: 0.9rem;
+    user-select: none;
+  }
+
+  :global(.dark) .gutter-section summary {
+    color: #aaa;
+  }
+
+  .gutter-hint {
+    font-size: 0.8rem;
+    color: #888;
+    margin: 0.5rem 0;
+  }
+
+  .gutter-textarea {
+    width: 100%;
+    padding: 0.6rem;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-family: monospace;
+    resize: vertical;
+    background: #f5f5f5;
+    color: #333;
+  }
+
+  :global(.dark) .gutter-textarea {
+    background: #1a1a1a;
+    border-color: #444;
+    color: #ccc;
+  }
+
+  .gutter-textarea.json-invalid {
+    border-color: #c00;
+    background: #fff5f5;
+  }
+
+  :global(.dark) .gutter-textarea.json-invalid {
+    border-color: #f66;
+    background: #2a1a1a;
+  }
+
+  .json-error {
+    color: #c00;
+    font-size: 0.8rem;
+    margin: 0.35rem 0 0;
+  }
+
+  :global(.dark) .json-error {
+    color: #f88;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    border-top: 1px solid #e0e0e0;
+    background: #f9f9f9;
+  }
+
+  :global(.dark) .modal-footer {
+    background: #252525;
+    border-top-color: #333;
+  }
+
+  .modal-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .modal-btn.cancel {
+    background: #ddd;
+    color: #333;
+  }
+
+  .modal-btn.cancel:hover {
+    background: #ccc;
+  }
+
+  :global(.dark) .modal-btn.cancel {
+    background: #444;
+    color: #ddd;
+  }
+
+  :global(.dark) .modal-btn.cancel:hover {
+    background: #555;
+  }
+
+  .modal-btn.save {
+    background: #5cb85f;
+    color: white;
+  }
+
+  .modal-btn.save:hover:not(:disabled) {
+    background: #4cae4c;
+  }
+
+  .modal-btn.save:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  .modal-btn :global(.spinner) {
+    animation: spin 1s linear infinite;
+  }
+
   /* Mobile */
   @media (max-width: 600px) {
     .input-row {
@@ -1007,6 +1781,27 @@
       flex-direction: column;
       align-items: flex-start;
       gap: 0.5rem;
+    }
+
+    .entry-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .entry-info {
+      width: 100%;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .edit-btn {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .modal-content {
+      max-height: 95vh;
     }
   }
 </style>

@@ -12,6 +12,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { safeJsonParse } from '$lib/utils/json.js';
 
 export async function GET({ url, platform }) {
   const db = platform?.env?.GIT_STATS_DB;
@@ -81,24 +82,29 @@ export async function GET({ url, platform }) {
 
     const summaries = await db.prepare(query).bind(...params).all();
 
-    // Get total count for pagination
+    // Get total count for pagination (using parameterized query to prevent SQL injection)
     let countQuery = `SELECT COUNT(*) as total FROM daily_summaries`;
+    const countParams = [];
     if (year) {
       if (month) {
         const monthPadded = month.padStart(2, '0');
-        countQuery += ` WHERE summary_date LIKE '${year}-${monthPadded}-%'`;
+        countQuery += ` WHERE summary_date LIKE ?`;
+        countParams.push(`${year}-${monthPadded}-%`);
       } else {
-        countQuery += ` WHERE summary_date LIKE '${year}-%'`;
+        countQuery += ` WHERE summary_date LIKE ?`;
+        countParams.push(`${year}-%`);
       }
     }
-    const countResult = await db.prepare(countQuery).first();
+    const countResult = countParams.length > 0
+      ? await db.prepare(countQuery).bind(...countParams).first()
+      : await db.prepare(countQuery).first();
     const total = countResult?.total || 0;
 
-    // Parse JSON fields
+    // Parse JSON fields (using safe parsing to handle corrupted data)
     const results = summaries.results.map(s => ({
       ...s,
-      repos_active: s.repos_active ? JSON.parse(s.repos_active) : [],
-      gutter_content: s.gutter_content ? JSON.parse(s.gutter_content) : [],
+      repos_active: safeJsonParse(s.repos_active, []),
+      gutter_content: safeJsonParse(s.gutter_content, []),
       is_rest_day: s.commit_count === 0
     }));
 

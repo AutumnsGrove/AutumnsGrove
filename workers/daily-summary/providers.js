@@ -16,18 +16,31 @@ export const AI_PROVIDERS = {
     name: 'Anthropic',
     models: {
       'claude-haiku-4-5-20250514': {
-        name: 'Claude Haiku 4.5',
+        name: 'Claude 4.5 Haiku',
         quality: 'high',
-        speed: 'fast',
-        inputCostPer1M: 0.80,   // $0.80 per 1M input tokens
-        outputCostPer1M: 4.00,  // $4.00 per 1M output tokens
+        speed: 'fastest',
+        inputCostPer1M: 0.80,
+        outputCostPer1M: 4.00,
+        cacheWritePer1M: 1.00,  // Cache write cost
+        cacheReadPer1M: 0.08,   // Cache read cost (90% discount)
       },
       'claude-sonnet-4-20250514': {
-        name: 'Claude Sonnet 4',
+        name: 'Claude 4 Sonnet',
         quality: 'highest',
         speed: 'medium',
         inputCostPer1M: 3.00,
         outputCostPer1M: 15.00,
+        cacheWritePer1M: 3.75,
+        cacheReadPer1M: 0.30,
+      },
+      'claude-sonnet-4-5-20250514': {
+        name: 'Claude 4.5 Sonnet',
+        quality: 'highest',
+        speed: 'fast',
+        inputCostPer1M: 3.00,
+        outputCostPer1M: 15.00,
+        cacheWritePer1M: 3.75,
+        cacheReadPer1M: 0.30,
       },
     },
     defaultModel: 'claude-haiku-4-5-20250514',
@@ -105,21 +118,32 @@ export const DEFAULT_MODEL = 'claude-haiku-4-5-20250514';
  * Calculate estimated cost for a request
  * @param {string} provider - Provider ID
  * @param {string} model - Model ID
- * @param {number} inputTokens - Number of input tokens
+ * @param {number} inputTokens - Number of input tokens (uncached)
  * @param {number} outputTokens - Number of output tokens
+ * @param {object} cacheStats - Optional cache statistics { cacheReadTokens, cacheWriteTokens }
  * @returns {number} Estimated cost in USD
  */
-export function calculateCost(provider, model, inputTokens, outputTokens) {
+export function calculateCost(provider, model, inputTokens, outputTokens, cacheStats = {}) {
   const providerConfig = AI_PROVIDERS[provider];
   if (!providerConfig) return 0;
 
   const modelConfig = providerConfig.models[model];
   if (!modelConfig) return 0;
 
+  // Base input cost (uncached tokens)
   const inputCost = (inputTokens / 1_000_000) * modelConfig.inputCostPer1M;
   const outputCost = (outputTokens / 1_000_000) * modelConfig.outputCostPer1M;
 
-  return inputCost + outputCost;
+  // Cache costs (if applicable)
+  let cacheCost = 0;
+  if (cacheStats.cacheReadTokens && modelConfig.cacheReadPer1M) {
+    cacheCost += (cacheStats.cacheReadTokens / 1_000_000) * modelConfig.cacheReadPer1M;
+  }
+  if (cacheStats.cacheWriteTokens && modelConfig.cacheWritePer1M) {
+    cacheCost += (cacheStats.cacheWriteTokens / 1_000_000) * modelConfig.cacheWritePer1M;
+  }
+
+  return inputCost + outputCost + cacheCost;
 }
 
 /**
@@ -137,21 +161,38 @@ export function estimateTokens(text) {
 // =============================================================================
 
 /**
- * Call Anthropic Claude API
+ * Call Anthropic Claude API with prompt caching
+ *
+ * Uses prompt caching to reduce costs on repeated calls with the same system prompt.
+ * Cache TTL is 5 minutes by default (or 1 hour with ttl: "1h"), refreshed on each use.
+ * Prompt caching is now GA - just use cache_control in the content, no beta header needed.
  */
 async function callAnthropic(apiKey, model, systemPrompt, userPrompt) {
+  // Calculate if system prompt is large enough to benefit from caching
+  // Minimum: 1024 tokens for Sonnet/Opus, 2048 for Haiku
+  const systemTokens = estimateTokens(systemPrompt);
+  const isHaiku = model.includes('haiku');
+  const minCacheTokens = isHaiku ? 2048 : 1024;
+  const useCache = systemTokens >= minCacheTokens;
+
+  // Build system content - use array format for cache control
+  const systemContent = useCache
+    ? [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }]
+    : systemPrompt;
+
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'x-api-key': apiKey,
       'anthropic-version': '2023-06-01',
+      // Prompt caching is now GA - no beta header needed
     },
     body: JSON.stringify({
       model: model,
       max_tokens: 2048,
       temperature: 0.5,
-      system: systemPrompt,
+      system: systemContent,
       messages: [
         { role: 'user', content: userPrompt }
       ],
@@ -165,10 +206,25 @@ async function callAnthropic(apiKey, model, systemPrompt, userPrompt) {
 
   const data = await response.json();
 
+  // Extract cache stats from response
+  const usage = data.usage || {};
+  const cacheReadTokens = usage.cache_read_input_tokens || 0;
+  const cacheWriteTokens = usage.cache_creation_input_tokens || 0;
+  const uncachedTokens = usage.input_tokens || 0;
+
+  // Log cache performance
+  if (useCache) {
+    console.log(`Anthropic cache stats: read=${cacheReadTokens}, write=${cacheWriteTokens}, uncached=${uncachedTokens}`);
+  }
+
   return {
     content: data.content[0].text,
-    inputTokens: data.usage?.input_tokens || estimateTokens(systemPrompt + userPrompt),
-    outputTokens: data.usage?.output_tokens || estimateTokens(data.content[0].text),
+    inputTokens: uncachedTokens + cacheReadTokens + cacheWriteTokens,
+    outputTokens: usage.output_tokens || estimateTokens(data.content[0].text),
+    // Include cache stats for cost tracking
+    cacheReadTokens,
+    cacheWriteTokens,
+    cacheUsed: useCache && (cacheReadTokens > 0 || cacheWriteTokens > 0),
   };
 }
 
@@ -286,8 +342,12 @@ export async function generateAIResponse(env, provider, model, systemPrompt, use
       throw new Error(`Unsupported provider: ${provider}`);
   }
 
-  // Calculate cost
-  const cost = calculateCost(provider, model, result.inputTokens, result.outputTokens);
+  // Calculate cost (include cache stats if available)
+  const cacheStats = {
+    cacheReadTokens: result.cacheReadTokens || 0,
+    cacheWriteTokens: result.cacheWriteTokens || 0,
+  };
+  const cost = calculateCost(provider, model, result.inputTokens, result.outputTokens, cacheStats);
 
   return {
     ...result,
