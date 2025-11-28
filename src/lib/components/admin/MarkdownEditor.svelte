@@ -42,6 +42,58 @@
   // Full preview mode state
   let showFullPreview = $state(false);
 
+  // Editor settings (configurable, persisted to localStorage)
+  let editorSettings = $state({
+    typewriterMode: false,
+    zenMode: false,
+    showLineNumbers: true,
+    wordWrap: true,
+  });
+
+  // Zen mode state
+  let isZenMode = $state(false);
+
+  // Campfire session state
+  let campfireSession = $state({
+    active: false,
+    startTime: null,
+    targetMinutes: 25,
+    startWordCount: 0,
+  });
+
+  // Writing goals
+  let writingGoal = $state({
+    enabled: false,
+    targetWords: 500,
+    sessionWords: 0,
+  });
+
+  // Slash commands state
+  let slashMenu = $state({
+    open: false,
+    query: "",
+    position: { x: 0, y: 0 },
+    selectedIndex: 0,
+  });
+
+  // Command palette state
+  let commandPalette = $state({
+    open: false,
+    query: "",
+    selectedIndex: 0,
+  });
+
+  // AI Assistant state (stubs - not deployed yet)
+  let aiAssistant = $state({
+    enabled: false, // Keep disabled for now
+    panelOpen: false,
+    suggestions: [],
+    isAnalyzing: false,
+  });
+
+  // Line numbers container ref for scroll sync
+  let lineNumbersRef = $state(null);
+
   // Computed values
   let wordCount = $derived(
     content.trim() ? content.trim().split(/\s+/).length : 0
@@ -49,6 +101,29 @@
   let charCount = $derived(content.length);
   let lineCount = $derived(content.split("\n").length);
   let previewHtml = $derived(content ? marked.parse(content) : "");
+
+  // Reading time estimate (average 200 words per minute)
+  let readingTime = $derived(() => {
+    const minutes = Math.ceil(wordCount / 200);
+    return minutes < 1 ? "< 1 min" : `~${minutes} min read`;
+  });
+
+  // Writing goal progress
+  let goalProgress = $derived(() => {
+    if (!writingGoal.enabled) return 0;
+    const wordsWritten = wordCount - writingGoal.sessionWords;
+    return Math.min(100, Math.round((wordsWritten / writingGoal.targetWords) * 100));
+  });
+
+  // Campfire session elapsed time
+  let campfireElapsed = $derived(() => {
+    if (!campfireSession.active || !campfireSession.startTime) return "0:00";
+    const now = Date.now();
+    const elapsed = Math.floor((now - campfireSession.startTime) / 1000);
+    const mins = Math.floor(elapsed / 60);
+    const secs = elapsed % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  });
 
   // Extract available anchors from content (headings and custom anchors)
   export let availableAnchors = $derived.by(() => {
@@ -91,6 +166,70 @@
 
   // Handle tab key for indentation
   function handleKeydown(e) {
+    // Escape key handling
+    if (e.key === "Escape") {
+      if (slashMenu.open) {
+        slashMenu.open = false;
+        return;
+      }
+      if (commandPalette.open) {
+        commandPalette.open = false;
+        return;
+      }
+      if (isZenMode) {
+        isZenMode = false;
+        return;
+      }
+    }
+
+    // Slash commands trigger
+    if (e.key === "/" && !slashMenu.open) {
+      const pos = textareaRef.selectionStart;
+      const textBefore = content.substring(0, pos);
+      // Only trigger at start of line or after whitespace
+      if (pos === 0 || /\s$/.test(textBefore)) {
+        // Don't prevent default yet - let the slash be typed
+        setTimeout(() => {
+          openSlashMenu();
+        }, 0);
+      }
+    }
+
+    // Close slash menu on space or enter if open
+    if (slashMenu.open && (e.key === " " || e.key === "Enter")) {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        executeSlashCommand(slashMenu.selectedIndex);
+      }
+      slashMenu.open = false;
+    }
+
+    // Navigate slash menu
+    if (slashMenu.open) {
+      if (e.key === "ArrowDown") {
+        e.preventDefault();
+        slashMenu.selectedIndex = (slashMenu.selectedIndex + 1) % slashCommands.length;
+      }
+      if (e.key === "ArrowUp") {
+        e.preventDefault();
+        slashMenu.selectedIndex = (slashMenu.selectedIndex - 1 + slashCommands.length) % slashCommands.length;
+      }
+    }
+
+    // Command palette: Cmd+K
+    if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      commandPalette.open = !commandPalette.open;
+      commandPalette.query = "";
+      commandPalette.selectedIndex = 0;
+    }
+
+    // Zen mode: Cmd+Shift+Enter
+    if (e.key === "Enter" && (e.metaKey || e.ctrlKey) && e.shiftKey) {
+      e.preventDefault();
+      toggleZenMode();
+    }
+
     if (e.key === "Tab") {
       e.preventDefault();
       const start = textareaRef.selectionStart;
@@ -121,6 +260,148 @@
     if (e.key === "i" && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
       wrapSelection("_", "_");
+    }
+  }
+
+  // Global keyboard handler for modals
+  function handleGlobalKeydown(e) {
+    if (e.key === "Escape") {
+      if (showFullPreview) {
+        showFullPreview = false;
+        e.preventDefault();
+      }
+    }
+  }
+
+  // Slash commands definition
+  const slashCommands = [
+    { id: "heading1", label: "Heading 1", insert: "# " },
+    { id: "heading2", label: "Heading 2", insert: "## " },
+    { id: "heading3", label: "Heading 3", insert: "### " },
+    { id: "code", label: "Code Block", insert: "```\n\n```", cursorOffset: 4 },
+    { id: "quote", label: "Quote", insert: "> " },
+    { id: "list", label: "Bullet List", insert: "- " },
+    { id: "numbered", label: "Numbered List", insert: "1. " },
+    { id: "link", label: "Link", insert: "[](url)", cursorOffset: 1 },
+    { id: "image", label: "Image", insert: "![alt](url)", cursorOffset: 2 },
+    { id: "divider", label: "Divider", insert: "\n---\n" },
+    { id: "anchor", label: "Custom Anchor", insert: "<!-- anchor:name -->\n", cursorOffset: 14 },
+  ];
+
+  // Filtered slash commands based on query
+  let filteredSlashCommands = $derived(
+    slashCommands.filter(cmd =>
+      cmd.label.toLowerCase().includes(slashMenu.query.toLowerCase())
+    )
+  );
+
+  function openSlashMenu() {
+    slashMenu.open = true;
+    slashMenu.query = "";
+    slashMenu.selectedIndex = 0;
+  }
+
+  function executeSlashCommand(index) {
+    const cmd = filteredSlashCommands[index];
+    if (!cmd) return;
+
+    // Remove the slash that triggered the menu
+    const pos = textareaRef.selectionStart;
+    const textBefore = content.substring(0, pos);
+    const lastSlashIndex = textBefore.lastIndexOf("/");
+
+    if (lastSlashIndex >= 0) {
+      content = content.substring(0, lastSlashIndex) + cmd.insert + content.substring(pos);
+
+      setTimeout(() => {
+        const newPos = lastSlashIndex + (cmd.cursorOffset || cmd.insert.length);
+        textareaRef.selectionStart = textareaRef.selectionEnd = newPos;
+        textareaRef.focus();
+      }, 0);
+    }
+
+    slashMenu.open = false;
+  }
+
+  // Command palette actions
+  const paletteCommands = [
+    { id: "save", label: "Save", shortcut: "⌘S", action: () => onSave() },
+    { id: "preview", label: "Toggle Preview", shortcut: "", action: () => showPreview = !showPreview },
+    { id: "fullPreview", label: "Full Preview", shortcut: "", action: () => showFullPreview = true },
+    { id: "zen", label: "Toggle Zen Mode", shortcut: "⌘⇧↵", action: () => toggleZenMode() },
+    { id: "campfire", label: "Start Campfire Session", shortcut: "", action: () => startCampfireSession() },
+    { id: "bold", label: "Bold", shortcut: "⌘B", action: () => wrapSelection("**", "**") },
+    { id: "italic", label: "Italic", shortcut: "⌘I", action: () => wrapSelection("_", "_") },
+    { id: "code", label: "Insert Code Block", shortcut: "", action: () => insertCodeBlock() },
+    { id: "link", label: "Insert Link", shortcut: "", action: () => insertLink() },
+    { id: "image", label: "Insert Image", shortcut: "", action: () => insertImage() },
+    { id: "goal", label: "Set Writing Goal", shortcut: "", action: () => promptWritingGoal() },
+  ];
+
+  let filteredPaletteCommands = $derived(
+    paletteCommands.filter(cmd =>
+      cmd.label.toLowerCase().includes(commandPalette.query.toLowerCase())
+    )
+  );
+
+  function executePaletteCommand(index) {
+    const cmd = filteredPaletteCommands[index];
+    if (cmd) {
+      cmd.action();
+      commandPalette.open = false;
+    }
+  }
+
+  // Zen mode toggle
+  function toggleZenMode() {
+    isZenMode = !isZenMode;
+    if (isZenMode) {
+      editorSettings.typewriterMode = true;
+    }
+  }
+
+  // Campfire session controls
+  function startCampfireSession() {
+    campfireSession.active = true;
+    campfireSession.startTime = Date.now();
+    campfireSession.startWordCount = wordCount;
+  }
+
+  function endCampfireSession() {
+    const wordsWritten = wordCount - campfireSession.startWordCount;
+    const elapsed = campfireSession.startTime ? Math.floor((Date.now() - campfireSession.startTime) / 1000) : 0;
+
+    // Could show a summary modal here
+    campfireSession.active = false;
+    campfireSession.startTime = null;
+  }
+
+  // Writing goal prompt
+  function promptWritingGoal() {
+    const target = prompt("Set your word goal for this session:", "500");
+    if (target && !isNaN(parseInt(target))) {
+      writingGoal.enabled = true;
+      writingGoal.targetWords = parseInt(target);
+      writingGoal.sessionWords = wordCount;
+    }
+  }
+
+  // Typewriter scrolling - keep cursor line centered
+  function applyTypewriterScroll() {
+    if (!textareaRef || !editorSettings.typewriterMode) return;
+
+    const lineHeight = parseFloat(getComputedStyle(textareaRef).lineHeight) || 24;
+    const viewportHeight = textareaRef.clientHeight;
+    const centerOffset = viewportHeight / 2;
+    const targetScroll = (cursorLine - 1) * lineHeight - centerOffset + lineHeight / 2;
+
+    textareaRef.scrollTop = Math.max(0, targetScroll);
+  }
+
+  // Sync line numbers scroll with textarea
+  function syncLineNumbersScroll() {
+    if (lineNumbersRef && textareaRef) {
+      lineNumbersRef.scrollTop = textareaRef.scrollTop;
     }
   }
 
@@ -197,6 +478,10 @@
 
   // Sync scroll between editor and preview (optional)
   function handleScroll() {
+    // Sync line numbers
+    syncLineNumbersScroll();
+
+    // Sync preview
     if (textareaRef && previewRef && showPreview) {
       const scrollRatio =
         textareaRef.scrollTop /
@@ -205,6 +490,13 @@
         scrollRatio * (previewRef.scrollHeight - previewRef.clientHeight);
     }
   }
+
+  // Apply typewriter scroll when cursor moves
+  $effect(() => {
+    if (editorSettings.typewriterMode && cursorLine) {
+      applyTypewriterScroll();
+    }
+  });
 
   // Drag and drop image upload
   function handleDragEnter(e) {
@@ -414,9 +706,13 @@
   });
 </script>
 
+<svelte:window onkeydown={handleGlobalKeydown} />
+
 <div
   class="editor-container"
   class:dragging={isDragging}
+  class:zen-mode={isZenMode}
+  class:campfire-mode={campfireSession.active}
   ondragenter={handleDragEnter}
   ondragover={handleDragOver}
   ondragleave={handleDragLeave}
@@ -615,7 +911,7 @@
     <!-- Editor Panel -->
     <div class="editor-panel">
       <div class="editor-wrapper">
-        <div class="line-numbers" aria-hidden="true">
+        <div class="line-numbers" aria-hidden="true" bind:this={lineNumbersRef}>
           {#each lineNumbers as num}
             <span class:current={num === cursorLine}>{num}</span>
           {/each}
@@ -667,19 +963,115 @@
       <span class="status-divider">|</span>
       <span class="status-item">{wordCount} words</span>
       <span class="status-divider">|</span>
-      <span class="status-item">{charCount} chars</span>
+      <span class="status-item">{readingTime()}</span>
+      {#if writingGoal.enabled}
+        <span class="status-divider">|</span>
+        <span class="status-goal">
+          Goal: {goalProgress()}%
+        </span>
+      {/if}
+      {#if campfireSession.active}
+        <span class="status-divider">|</span>
+        <span class="status-campfire">
+          🔥 {campfireElapsed()}
+        </span>
+      {/if}
     </div>
     <div class="status-right">
+      {#if editorSettings.typewriterMode}
+        <span class="status-mode">Typewriter</span>
+        <span class="status-divider">|</span>
+      {/if}
       {#if saving}
         <span class="status-saving">Saving...</span>
       {:else if draftKey && content !== lastSavedContent}
-        <span class="status-draft">Draft saved</span>
+        <span class="status-draft">Draft saving...</span>
       {:else}
         <span class="status-item">Markdown</span>
       {/if}
     </div>
   </div>
 </div>
+
+<!-- Slash Commands Menu -->
+{#if slashMenu.open}
+  <div class="slash-menu">
+    <div class="slash-menu-header">Commands</div>
+    {#each filteredSlashCommands as cmd, i}
+      <button
+        type="button"
+        class="slash-menu-item"
+        class:selected={i === slashMenu.selectedIndex}
+        onclick={() => executeSlashCommand(i)}
+      >
+        <span class="slash-cmd-label">{cmd.label}</span>
+      </button>
+    {/each}
+    {#if filteredSlashCommands.length === 0}
+      <div class="slash-menu-empty">No commands found</div>
+    {/if}
+  </div>
+{/if}
+
+<!-- Command Palette -->
+{#if commandPalette.open}
+  <div class="command-palette-overlay" onclick={() => commandPalette.open = false}>
+    <div class="command-palette" onclick={(e) => e.stopPropagation()}>
+      <input
+        type="text"
+        class="command-palette-input"
+        placeholder="Type a command..."
+        bind:value={commandPalette.query}
+        onkeydown={(e) => {
+          if (e.key === "ArrowDown") {
+            e.preventDefault();
+            commandPalette.selectedIndex = (commandPalette.selectedIndex + 1) % filteredPaletteCommands.length;
+          }
+          if (e.key === "ArrowUp") {
+            e.preventDefault();
+            commandPalette.selectedIndex = (commandPalette.selectedIndex - 1 + filteredPaletteCommands.length) % filteredPaletteCommands.length;
+          }
+          if (e.key === "Enter") {
+            e.preventDefault();
+            executePaletteCommand(commandPalette.selectedIndex);
+          }
+          if (e.key === "Escape") {
+            commandPalette.open = false;
+          }
+        }}
+      />
+      <div class="command-palette-list">
+        {#each filteredPaletteCommands as cmd, i}
+          <button
+            type="button"
+            class="command-palette-item"
+            class:selected={i === commandPalette.selectedIndex}
+            onclick={() => executePaletteCommand(i)}
+          >
+            <span class="palette-cmd-label">{cmd.label}</span>
+            {#if cmd.shortcut}
+              <span class="palette-cmd-shortcut">{cmd.shortcut}</span>
+            {/if}
+          </button>
+        {/each}
+      </div>
+    </div>
+  </div>
+{/if}
+
+<!-- Campfire Session Controls (when active) -->
+{#if campfireSession.active}
+  <div class="campfire-controls">
+    <div class="campfire-ember"></div>
+    <div class="campfire-stats">
+      <span class="campfire-time">{campfireElapsed()}</span>
+      <span class="campfire-words">+{wordCount - campfireSession.startWordCount} words</span>
+    </div>
+    <button type="button" class="campfire-end" onclick={endCampfireSession}>
+      End Session
+    </button>
+  </div>
+{/if}
 
 <!-- Full Preview Modal -->
 {#if showFullPreview}
@@ -1410,5 +1802,256 @@
     border-radius: 12px;
     font-size: 0.8rem;
     font-weight: 500;
+  }
+
+  /* Line numbers scroll sync */
+  .line-numbers {
+    overflow: hidden;
+  }
+
+  /* Status bar enhancements */
+  .status-goal {
+    color: #8bc48b;
+    font-weight: 500;
+  }
+
+  .status-campfire {
+    color: #f0a060;
+  }
+
+  .status-mode {
+    color: #7ab3ff;
+    font-size: 0.75rem;
+  }
+
+  /* Zen Mode Styles */
+  .editor-container.zen-mode {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    border-radius: 0;
+    border: none;
+  }
+
+  .editor-container.zen-mode .toolbar {
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+  }
+
+  .editor-container.zen-mode .toolbar:hover {
+    opacity: 1;
+  }
+
+  .editor-container.zen-mode .status-bar {
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+  }
+
+  .editor-container.zen-mode .status-bar:hover {
+    opacity: 1;
+  }
+
+  .editor-container.zen-mode .editor-area {
+    height: calc(100vh - 80px);
+  }
+
+  /* Campfire Mode Styles */
+  .editor-container.campfire-mode {
+    border-color: #8b5a2b;
+    box-shadow: 0 0 30px rgba(240, 160, 96, 0.15);
+  }
+
+  .campfire-controls {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1.25rem;
+    background: rgba(40, 30, 20, 0.95);
+    border: 1px solid #8b5a2b;
+    border-radius: 8px;
+    color: #f0d0a0;
+    z-index: 1000;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .campfire-ember {
+    width: 12px;
+    height: 12px;
+    background: linear-gradient(135deg, #ff6b35, #f0a060);
+    border-radius: 50%;
+    animation: ember-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes ember-glow {
+    0%, 100% {
+      box-shadow: 0 0 8px #ff6b35, 0 0 16px rgba(240, 107, 53, 0.5);
+    }
+    50% {
+      box-shadow: 0 0 12px #f0a060, 0 0 24px rgba(240, 160, 96, 0.6);
+    }
+  }
+
+  .campfire-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .campfire-time {
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: "JetBrains Mono", monospace;
+  }
+
+  .campfire-words {
+    font-size: 0.75rem;
+    color: #c0a080;
+  }
+
+  .campfire-end {
+    padding: 0.4rem 0.8rem;
+    background: transparent;
+    border: 1px solid #6b4a2b;
+    color: #c0a080;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .campfire-end:hover {
+    background: #4b3a2b;
+    color: #f0d0a0;
+  }
+
+  /* Slash Commands Menu */
+  .slash-menu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 220px;
+    max-height: 300px;
+    overflow-y: auto;
+    background: #252526;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    z-index: 1001;
+  }
+
+  .slash-menu-header {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6a6a6a;
+    border-bottom: 1px solid #3a3a3a;
+  }
+
+  .slash-menu-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0.6rem 0.75rem;
+    background: transparent;
+    border: none;
+    color: #d4d4d4;
+    font-size: 0.9rem;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+  }
+
+  .slash-menu-item:hover,
+  .slash-menu-item.selected {
+    background: #3a3a3a;
+  }
+
+  .slash-menu-item.selected {
+    color: #8bc48b;
+  }
+
+  .slash-menu-empty {
+    padding: 0.75rem;
+    color: #6a6a6a;
+    font-style: italic;
+    text-align: center;
+  }
+
+  /* Command Palette */
+  .command-palette-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 15vh;
+    z-index: 1002;
+  }
+
+  .command-palette {
+    width: 100%;
+    max-width: 500px;
+    background: #1e1e1e;
+    border: 1px solid #3a3a3a;
+    border-radius: 8px;
+    box-shadow: 0 16px 64px rgba(0, 0, 0, 0.6);
+    overflow: hidden;
+  }
+
+  .command-palette-input {
+    width: 100%;
+    padding: 1rem;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid #3a3a3a;
+    color: #d4d4d4;
+    font-size: 1rem;
+    font-family: inherit;
+    outline: none;
+  }
+
+  .command-palette-input::placeholder {
+    color: #6a6a6a;
+  }
+
+  .command-palette-list {
+    max-height: 300px;
+    overflow-y: auto;
+  }
+
+  .command-palette-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    background: transparent;
+    border: none;
+    color: #d4d4d4;
+    font-size: 0.9rem;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.1s ease;
+  }
+
+  .command-palette-item:hover,
+  .command-palette-item.selected {
+    background: #2a2a2a;
+  }
+
+  .command-palette-item.selected {
+    color: #8bc48b;
+  }
+
+  .palette-cmd-shortcut {
+    font-size: 0.75rem;
+    color: #6a6a6a;
+    font-family: "JetBrains Mono", monospace;
   }
 </style>

@@ -432,6 +432,82 @@ Commits:     ████████ AutumnsGrove (150)
 
 ---
 
+### HIGH PRIORITY: Markdown Editor Enhancements (Nov 28, 2025)
+
+**Status:** In progress - building the "Grove Writer" experience
+
+**Goal:** Make the writing interface THE reason people visit this site. A cozy, distraction-free, developer-friendly writing experience that feels like writing by lantern in a forest cabin.
+
+#### Quick Polish (Hours)
+- [ ] Fix duplicate `@keyframes pulse` definitions
+- [ ] Add Escape key to close full preview modal
+- [ ] Fix draft status wording ("Draft saving..." vs "Draft saved")
+- [ ] Sync line numbers with textarea scrolling
+- [ ] Reading time estimate in status bar ("~5 min read")
+- [ ] Typewriter scrolling (cursor line stays at vertical center)
+- [ ] Character limit warnings for SEO (description field: 150-160 chars)
+
+#### Core Features (Days)
+- [ ] **Slash Commands** (`/image`, `/code`, `/quote`, `/heading`)
+  - Type `/` to open command menu
+  - Fuzzy search through commands
+  - Keyboard navigation (up/down/enter)
+  - Insert content at cursor position
+- [ ] **Command Palette** (Cmd+K)
+  - VS Code-style fuzzy command search
+  - Actions: Save, Preview, Format, Insert heading, etc.
+  - Recent commands at top
+- [ ] **Writing Goals**
+  - Set session word count target
+  - Progress indicator in status bar
+  - Optional daily streak tracking
+  - Configurable per-session or persistent
+- [ ] **Zen Mode** (Cmd+Shift+Enter)
+  - Full-screen, distraction-free
+  - Toolbar fades, status bar minimizes
+  - Current paragraph highlighted, others dimmed (40% opacity)
+  - Typewriter scrolling auto-enabled
+  - Escape to exit
+
+#### Grove Experience (The Differentiator)
+- [ ] **Grove Flow Mode**
+  - Combines: Zen mode + typewriter scrolling + green aesthetic
+  - Subtle ambient toggle (optional forest/rain sounds - future)
+  - Calming transitions between modes
+- [ ] **Campfire Sessions**
+  - Writing sprint mode with warm ember progress indicator
+  - Session timer (25 min default, configurable)
+  - Stats at end: words written, time focused, reading level
+  - Mode toggle to slide between normal/campfire while writing
+  - Optional: Share session summary
+
+#### AI Assistant (Stubs Only - Not Deployed Yet)
+- [ ] Sidebar panel for AI suggestions (hidden by default)
+- [ ] Grammar/spelling suggestions
+- [ ] Tone analysis
+- [ ] Readability scoring (Flesch-Kincaid)
+- [ ] "Improve this paragraph" action
+- [ ] **Note:** Build and test locally before any customer-facing deployment
+
+#### Future Enhancements
+- [ ] **Mermaid Diagram Previews**
+  - Render mermaid code blocks as diagrams in preview
+  - Blazing fast client-side rendering
+  - Support: flowcharts, sequence diagrams, gantt, etc.
+  - Research: mermaid.js bundle size optimization
+- [ ] Markdown snippets (save reusable blocks)
+- [ ] Version history time machine
+- [ ] Custom themes/color schemes
+- [ ] Collaborative editing (far future)
+
+**Design Principles:**
+- Everything configurable (localStorage settings)
+- Keyboard-first, mouse-optional
+- Forest terminal aesthetic throughout
+- Simple surface, power underneath
+
+---
+
 ### Content Migration Strategy
 
 #### UserContent Legacy Support (v1.0 Plan)

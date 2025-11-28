@@ -164,14 +164,25 @@
       </div>
 
       <div class="form-group">
-        <label for="description">Description</label>
+        <label for="description">
+          Description
+          <span class="char-count" class:warning={description.length > 160} class:good={description.length >= 120 && description.length <= 160}>
+            {description.length}/160
+          </span>
+        </label>
         <textarea
           id="description"
           bind:value={description}
-          placeholder="A brief summary of your post..."
+          placeholder="A brief summary of your post (120-160 chars for SEO)..."
           rows="3"
           class="form-input form-textarea"
+          class:char-warning={description.length > 160}
         ></textarea>
+        {#if description.length > 160}
+          <span class="form-warning">Description exceeds recommended SEO length</span>
+        {:else if description.length > 0 && description.length < 120}
+          <span class="form-hint">Add {120 - description.length} more chars for optimal SEO</span>
+        {/if}
       </div>
 
       <div class="form-group">
@@ -502,6 +513,33 @@
 
   :global(.dark) .form-hint {
     color: var(--color-text-subtle-dark);
+  }
+
+  .form-warning {
+    display: block;
+    margin-top: 0.35rem;
+    font-size: 0.75rem;
+    color: #e07030;
+    transition: color 0.3s ease;
+  }
+
+  .char-count {
+    font-size: 0.75rem;
+    font-weight: normal;
+    color: var(--color-text-subtle);
+    margin-left: 0.5rem;
+  }
+
+  .char-count.good {
+    color: #5cb85f;
+  }
+
+  .char-count.warning {
+    color: #e07030;
+  }
+
+  .form-input.char-warning {
+    border-color: #e07030;
   }
 
   .tags-preview {
