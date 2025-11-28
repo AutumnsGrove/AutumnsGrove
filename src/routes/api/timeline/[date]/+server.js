@@ -6,7 +6,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import { verifySession } from '$lib/auth/session.js';
+import { verifySession, isAllowedAdmin } from '$lib/auth/session.js';
 import { safeJsonParse } from '$lib/utils/json.js';
 
 // Validation constants
@@ -72,17 +72,15 @@ export async function PUT({ params, request, platform, cookies }) {
     throw error(500, 'Database not available');
   }
 
-  // Verify admin authentication
-  // Note: verifySession returns a user only for valid sessions. In this app,
-  // only admins can create sessions (via OAuth with allowed emails list),
-  // so a valid session implies admin privileges.
+  // Verify admin authentication with defense in depth
   const sessionToken = cookies.get('session');
   if (!sessionToken) {
     throw error(401, 'Authentication required');
   }
 
+  let user;
   try {
-    const user = await verifySession(sessionToken, platform.env.SESSION_SECRET);
+    user = await verifySession(sessionToken, platform.env.SESSION_SECRET);
     if (!user) {
       throw error(401, 'Invalid session');
     }
@@ -90,14 +88,20 @@ export async function PUT({ params, request, platform, cookies }) {
     throw error(401, 'Authentication failed');
   }
 
+  // Explicit admin check for defense in depth
+  const allowedAdmins = platform.env.ALLOWED_EMAILS || '';
+  if (!isAllowedAdmin(user.email, allowedAdmins)) {
+    throw error(403, 'Admin access required');
+  }
+
   // Validate date format
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     throw error(400, 'Invalid date format. Use YYYY-MM-DD');
   }
 
-  // Check entry exists
+  // Check entry exists and get current updated_at for optimistic locking
   const existing = await db.prepare(
-    'SELECT id FROM daily_summaries WHERE summary_date = ?'
+    'SELECT id, updated_at FROM daily_summaries WHERE summary_date = ?'
   ).bind(date).first();
 
   if (!existing) {
@@ -159,6 +163,9 @@ export async function PUT({ params, request, platform, cookies }) {
     throw error(400, 'No valid fields to update');
   }
 
+  // Get expected_updated_at for optimistic locking (optional)
+  const expectedUpdatedAt = body.expected_updated_at;
+
   try {
     // Build dynamic update query
     const setClauses = [];
@@ -177,17 +184,29 @@ export async function PUT({ params, request, platform, cookies }) {
     // Add updated_at timestamp
     setClauses.push("updated_at = datetime('now')");
 
+    // Build WHERE clause with optimistic locking if expected_updated_at provided
+    let whereClause = 'summary_date = ?';
+    values.push(date);
+
+    if (expectedUpdatedAt) {
+      whereClause += ' AND (updated_at = ? OR updated_at IS NULL)';
+      values.push(expectedUpdatedAt);
+    }
+
     const query = `
       UPDATE daily_summaries
       SET ${setClauses.join(', ')}
-      WHERE summary_date = ?
+      WHERE ${whereClause}
     `;
 
-    values.push(date);
+    const result = await db.prepare(query).bind(...values).run();
 
-    await db.prepare(query).bind(...values).run();
+    // Check if update succeeded (optimistic locking)
+    if (result.meta?.changes === 0 && expectedUpdatedAt) {
+      throw error(409, 'Entry was modified by another user. Please refresh and try again.');
+    }
 
-    // Invalidate relevant cache entries
+    // Invalidate relevant cache entries in parallel
     // Cache key format: timeline:{limit}:{offset}:{year}:{month}
     // See /api/timeline/+server.js for cache key generation.
     // KV doesn't support wildcard deletion, so we clear the most common patterns.
@@ -202,9 +221,8 @@ export async function PUT({ params, request, platform, cookies }) {
           `timeline:30:0:${year}:`,             // Year filter
           `timeline:30:0:${year}:${month}`      // Year + month filter
         ];
-        for (const pattern of cachePatterns) {
-          await kv.delete(pattern);
-        }
+        // Delete cache entries in parallel for better performance
+        await Promise.all(cachePatterns.map(pattern => kv.delete(pattern)));
         console.log(`Cache invalidated for date ${date}: ${cachePatterns.length} keys`);
       } catch (e) {
         console.warn('Cache invalidation error:', e);

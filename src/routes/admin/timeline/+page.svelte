@@ -233,7 +233,9 @@
         body: JSON.stringify({
           brief_summary: editForm.brief_summary,
           detailed_timeline: editForm.detailed_timeline,
-          gutter_content: editForm.gutter_content
+          gutter_content: editForm.gutter_content,
+          // Include for optimistic locking to prevent race conditions
+          expected_updated_at: editingEntry.updated_at
         })
       });
 
@@ -246,6 +248,10 @@
       }
 
       if (!res.ok) {
+        // Special handling for conflict (race condition)
+        if (res.status === 409) {
+          throw new Error('This entry was modified by someone else. Please close and reopen to get the latest version.');
+        }
         throw new Error(data.message || `Server error (${res.status})`);
       }
 
