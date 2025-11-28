@@ -175,26 +175,27 @@ async function fetchCommitsForDate(username, token, dateStr) {
  * @param {object} ai - AI binding
  * @param {Array} commits - Array of commit objects
  * @param {string} date - Date string
- * @returns {Promise<object>} Summary object with brief and detailed fields
+ * @param {string} ownerName - Name of the developer
+ * @returns {Promise<object>} Summary object with brief, detailed, and gutter fields
  */
-async function generateSummary(ai, commits, date) {
-  const prompt = buildSummaryPrompt(commits, date);
+async function generateSummary(ai, commits, date, ownerName) {
+  const prompt = buildSummaryPrompt(commits, date, ownerName);
 
-  console.log('Generating AI summary...');
+  console.log(`Generating AI summary for ${ownerName}...`);
 
   const response = await ai.run('@cf/meta/llama-3.1-70b-instruct', {
     messages: [
       {
         role: 'system',
-        content: 'You are a helpful assistant that summarizes development activity. Always respond with valid JSON only.'
+        content: 'You are a friendly, whimsical AI assistant that summarizes development activity with personality. Always respond with valid JSON only.'
       },
       {
         role: 'user',
         content: prompt
       }
     ],
-    max_tokens: 1024,
-    temperature: 0.3 // Lower temperature for more consistent output
+    max_tokens: 2048, // Increased for gutter content
+    temperature: 0.5 // Slightly higher for more personality
   });
 
   return parseAIResponse(response.response);
@@ -212,15 +213,19 @@ async function storeSummary(db, date, summary, commits) {
   const totalAdditions = commits.reduce((sum, c) => sum + c.additions, 0);
   const totalDeletions = commits.reduce((sum, c) => sum + c.deletions, 0);
 
+  // Convert gutter content to JSON string
+  const gutterJson = summary.gutter ? JSON.stringify(summary.gutter) : null;
+
   await db.prepare(`
     INSERT INTO daily_summaries (
-      summary_date, brief_summary, detailed_timeline,
+      summary_date, brief_summary, detailed_timeline, gutter_content,
       commit_count, repos_active, total_additions, total_deletions,
       ai_model, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
     ON CONFLICT(summary_date) DO UPDATE SET
       brief_summary = excluded.brief_summary,
       detailed_timeline = excluded.detailed_timeline,
+      gutter_content = excluded.gutter_content,
       commit_count = excluded.commit_count,
       repos_active = excluded.repos_active,
       total_additions = excluded.total_additions,
@@ -231,6 +236,7 @@ async function storeSummary(db, date, summary, commits) {
     date,
     summary.brief,
     summary.detailed,
+    gutterJson,
     commits.length,
     JSON.stringify(reposActive),
     totalAdditions,
@@ -270,6 +276,7 @@ async function storeRestDay(db, date) {
  */
 async function generateDailySummary(env, targetDate = null) {
   const username = env.GITHUB_USERNAME || 'AutumnsGrove';
+  const ownerName = env.OWNER_NAME || 'the developer';
   const timezone = env.TIMEZONE || 'America/New_York';
   const token = env.GITHUB_TOKEN;
 
@@ -303,7 +310,7 @@ async function generateDailySummary(env, targetDate = null) {
   }
 
   // Generate AI summary
-  const summary = await generateSummary(env.AI, commits, summaryDate);
+  const summary = await generateSummary(env.AI, commits, summaryDate, ownerName);
 
   // Store in D1
   await storeSummary(env.DB, summaryDate, summary, commits);

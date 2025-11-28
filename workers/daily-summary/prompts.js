@@ -7,29 +7,71 @@
  * Generate the prompt for summarizing daily commits
  * @param {Array} commits - Array of commit objects
  * @param {string} date - Date in YYYY-MM-DD format
+ * @param {string} ownerName - Name of the developer (e.g., "Autumn")
  * @returns {string} The formatted prompt
  */
-export function buildSummaryPrompt(commits, date) {
+export function buildSummaryPrompt(commits, date, ownerName = 'the developer') {
   const commitList = commits.map((c, i) =>
     `${i + 1}. [${c.repo}] ${c.message} (+${c.additions}/-${c.deletions})`
   ).join('\n');
 
-  return `You are summarizing a developer's GitHub activity for ${date}.
+  // Group commits by repo for context
+  const repoGroups = {};
+  commits.forEach(c => {
+    if (!repoGroups[c.repo]) repoGroups[c.repo] = [];
+    repoGroups[c.repo].push(c.message);
+  });
+  const repoSummary = Object.entries(repoGroups)
+    .map(([repo, msgs]) => `${repo}: ${msgs.length} commits`)
+    .join(', ');
 
-COMMITS TODAY (${commits.length} total):
+  return `You are a friendly, whimsical AI assistant reporting on ${ownerName}'s coding adventures for ${date}.
+
+YOUR PERSONALITY:
+- You're like a supportive friend who genuinely finds coding exciting
+- Use warm, playful language (but not over-the-top)
+- Occasionally use gentle humor or wordplay
+- Feel free to use one emoji per section if it fits naturally
+- Sound impressed by productive days, understanding on slower days
+
+COMMITS TODAY (${commits.length} total across: ${repoSummary}):
 ${commitList}
 
-TASK:
-1. Write a brief 1-2 sentence summary of what was accomplished today
-2. Write a detailed markdown breakdown grouped by project
+TASK - Generate THREE things:
+
+1. BRIEF SUMMARY (2-3 sentences MAX):
+   - Start with a personality-filled opening line about the day
+   - Mention the key accomplishments naturally
+   - Keep it warm and conversational
+
+2. DETAILED BREAKDOWN (markdown):
+   - Use "## Projects" as main header
+   - Each project gets "### ProjectName"
+   - List key changes as bullet points
+   - Keep it factual but friendly
+
+3. GUTTER COMMENTS (fun side notes):
+   - These appear as floating comments alongside the content
+   - Add 2-4 fun observations/reactions
+   - Each needs an "anchor" (which header/project it appears next to)
+   - Keep them SHORT (1-2 sentences max)
+   - Examples: "Someone was on a roll!", "Bug squashing champion!", "The commits just kept coming!"
 
 OUTPUT FORMAT (respond with valid JSON only):
 {
-  "brief": "Short summary here (1-2 sentences, no markdown)",
-  "detailed": "## Projects\\n\\n### ProjectName\\n- What was done\\n- Another thing\\n\\n### OtherProject\\n- Changes made"
+  "brief": "Your 2-3 sentence personality-filled summary here",
+  "detailed": "## Projects\\n\\n### ProjectName\\n- Change one\\n- Change two\\n\\n### OtherProject\\n- Another change",
+  "gutter": [
+    {"anchor": "### ProjectName", "type": "comment", "content": "Fun observation here!"},
+    {"anchor": "### OtherProject", "type": "comment", "content": "Another witty note"}
+  ]
 }
 
-Respond with JSON only. No markdown code blocks.`;
+IMPORTANT:
+- Respond with JSON only, no markdown code blocks
+- Escape newlines as \\n in JSON strings
+- Keep brief summary UNDER 3 sentences
+- Gutter anchors must match exact header text from detailed section`;
 }
 
 /**
@@ -52,18 +94,20 @@ export function parseAIResponse(response) {
 
     return {
       success: true,
-      brief: parsed.brief || 'Development work completed.',
-      detailed: parsed.detailed || '## Summary\n\nWork was done today.'
+      brief: parsed.brief || 'Another day of coding adventures!',
+      detailed: parsed.detailed || '## Projects\n\nWork was done today.',
+      gutter: parsed.gutter || []
     };
   } catch (error) {
     console.error('Failed to parse AI response:', error);
     console.error('Raw response:', response);
 
-    // Fallback: try to extract any useful text
+    // Fallback with personality
     return {
       success: false,
-      brief: 'Development work completed today.',
-      detailed: '## Summary\n\nMultiple commits were made across various projects.'
+      brief: 'Looks like the coding gremlins were busy today! Multiple commits landed across various projects.',
+      detailed: '## Projects\n\nMultiple commits were made across various projects.',
+      gutter: []
     };
   }
 }

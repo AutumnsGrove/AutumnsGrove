@@ -90,6 +90,7 @@ CREATE TABLE IF NOT EXISTS daily_summaries (
     summary_date TEXT NOT NULL UNIQUE,       -- YYYY-MM-DD format
     brief_summary TEXT,                       -- 1-2 sentence overview (null for rest days)
     detailed_timeline TEXT,                   -- Full markdown breakdown
+    gutter_content TEXT,                      -- JSON array of gutter items for side comments
     commit_count INTEGER DEFAULT 0,
     repos_active TEXT,                        -- JSON array of repo names
     total_additions INTEGER DEFAULT 0,

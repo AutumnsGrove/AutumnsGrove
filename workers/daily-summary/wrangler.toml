@@ -15,6 +15,7 @@ binding = "AI"
 # Environment variables
 [vars]
 GITHUB_USERNAME = "AutumnsGrove"
+OWNER_NAME = "Autumn"
 TIMEZONE = "America/New_York"
 GITHUB_API_URL = "https://api.github.com/graphql"
 ALLOWED_ORIGIN = "https://autumnsgrove.com"

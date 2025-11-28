@@ -50,6 +50,7 @@ export async function GET({ url, platform }) {
         summary_date,
         brief_summary,
         detailed_timeline,
+        gutter_content,
         commit_count,
         repos_active,
         total_additions,
@@ -93,10 +94,11 @@ export async function GET({ url, platform }) {
     const countResult = await db.prepare(countQuery).first();
     const total = countResult?.total || 0;
 
-    // Parse repos_active JSON
+    // Parse JSON fields
     const results = summaries.results.map(s => ({
       ...s,
       repos_active: s.repos_active ? JSON.parse(s.repos_active) : [],
+      gutter_content: s.gutter_content ? JSON.parse(s.gutter_content) : [],
       is_rest_day: s.commit_count === 0
     }));
 

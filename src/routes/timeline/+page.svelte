@@ -1,5 +1,6 @@
 <script>
-	import { Calendar, GitCommit, Plus, Minus, FolderGit2, ChevronDown, ChevronUp, Cloud, Loader2 } from 'lucide-svelte';
+	import { marked } from 'marked';
+	import { Calendar, GitCommit, Plus, Minus, FolderGit2, ChevronDown, ChevronUp, Cloud, Loader2, MessageCircle } from 'lucide-svelte';
 
 	/** @type {{ summaries: any[], pagination: any, error?: string }} */
 	let { data } = $props();
@@ -8,6 +9,13 @@
 	let pagination = $state(data.pagination);
 	let loadingMore = $state(false);
 	let expandedCards = $state(new Set());
+
+	// Configure marked for safe rendering
+	marked.setOptions({
+		headerIds: false,
+		mangle: false,
+		breaks: true
+	});
 
 	// Fun rest day messages
 	const REST_DAY_MESSAGES = [
@@ -27,7 +35,7 @@
 		"Plot twist: no bugs to fix today"
 	];
 
-	// Get a consistent random message for a date (so it doesn't change on re-render)
+	// Get a consistent random message for a date
 	function getRestDayMessage(date) {
 		const hash = date.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
 		return REST_DAY_MESSAGES[hash % REST_DAY_MESSAGES.length];
@@ -35,7 +43,7 @@
 
 	// Format date nicely
 	function formatDate(dateStr) {
-		const date = new Date(dateStr + 'T12:00:00'); // Add time to avoid timezone issues
+		const date = new Date(dateStr + 'T12:00:00');
 		return date.toLocaleDateString('en-US', {
 			weekday: 'long',
 			year: 'numeric',
@@ -58,6 +66,12 @@
 	function isToday(dateStr) {
 		const today = new Date().toISOString().split('T')[0];
 		return dateStr === today;
+	}
+
+	// Render markdown to HTML
+	function renderMarkdown(text) {
+		if (!text) return '';
+		return marked.parse(text);
 	}
 
 	// Toggle card expansion
@@ -100,7 +114,7 @@
 <div class="timeline-page">
 	<header class="timeline-header">
 		<h1><Calendar size={28} /> Development Timeline</h1>
-		<p>Daily summaries of coding activity, powered by AI</p>
+		<p>Daily summaries of Autumn's coding adventures, powered by AI</p>
 	</header>
 
 	{#if data.error}
@@ -118,6 +132,7 @@
 			{#each summaries as summary (summary.id)}
 				{@const isRestDay = summary.commit_count === 0}
 				{@const isExpanded = expandedCards.has(summary.id)}
+				{@const gutterItems = summary.gutter_content || []}
 
 				<article class="timeline-card" class:rest-day={isRestDay} class:today={isToday(summary.summary_date)}>
 					<header class="card-header">
@@ -174,8 +189,23 @@
 								</button>
 
 								{#if isExpanded}
-									<div class="detailed-timeline">
-										{@html summary.detailed_timeline.replace(/\n/g, '<br>')}
+									<div class="detailed-section">
+										<!-- Gutter comments (if any) -->
+										{#if gutterItems.length > 0}
+											<aside class="gutter-comments">
+												{#each gutterItems as item}
+													<div class="gutter-comment">
+														<MessageCircle size={14} />
+														<span>{item.content}</span>
+													</div>
+												{/each}
+											</aside>
+										{/if}
+
+										<!-- Rendered markdown -->
+										<div class="detailed-timeline markdown-content">
+											{@html renderMarkdown(summary.detailed_timeline)}
+										</div>
 									</div>
 								{/if}
 							{/if}
@@ -208,7 +238,7 @@
 
 <style>
 	.timeline-page {
-		max-width: 800px;
+		max-width: 900px;
 		margin: 0 auto;
 		padding: 1rem;
 	}
@@ -476,9 +506,62 @@
 		border-color: #555;
 	}
 
-	/* Detailed Timeline */
-	.detailed-timeline {
+	/* Detailed Section with Gutter */
+	.detailed-section {
 		margin-top: 1rem;
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+
+	@media (min-width: 768px) {
+		.detailed-section {
+			grid-template-columns: 180px 1fr;
+		}
+	}
+
+	/* Gutter Comments */
+	.gutter-comments {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	@media (max-width: 767px) {
+		.gutter-comments {
+			flex-direction: row;
+			flex-wrap: wrap;
+			gap: 0.5rem;
+		}
+	}
+
+	.gutter-comment {
+		display: flex;
+		align-items: flex-start;
+		gap: 0.5rem;
+		padding: 0.6rem 0.75rem;
+		background: #f0f7f0;
+		border-left: 3px solid #5cb85f;
+		border-radius: 0 6px 6px 0;
+		font-size: 0.8rem;
+		color: #555;
+		line-height: 1.4;
+	}
+
+	:global(.dark) .gutter-comment {
+		background: #1a2a1a;
+		border-left-color: #5cb85f;
+		color: #aaa;
+	}
+
+	.gutter-comment :global(svg) {
+		flex-shrink: 0;
+		color: #5cb85f;
+		margin-top: 0.1rem;
+	}
+
+	/* Detailed Timeline - Markdown Content */
+	.detailed-timeline {
 		padding: 1rem;
 		background: #f9f9f9;
 		border-radius: 8px;
@@ -490,6 +573,54 @@
 	:global(.dark) .detailed-timeline {
 		background: #222;
 		color: #ccc;
+	}
+
+	/* Markdown Styling */
+	.markdown-content :global(h2) {
+		font-size: 1.1rem;
+		color: #2c5f2d;
+		margin: 0 0 0.75rem;
+		padding-bottom: 0.5rem;
+		border-bottom: 1px solid #e0e0e0;
+	}
+
+	:global(.dark) .markdown-content :global(h2) {
+		color: #5cb85f;
+		border-bottom-color: #333;
+	}
+
+	.markdown-content :global(h3) {
+		font-size: 1rem;
+		color: #444;
+		margin: 1rem 0 0.5rem;
+	}
+
+	:global(.dark) .markdown-content :global(h3) {
+		color: #ddd;
+	}
+
+	.markdown-content :global(ul) {
+		margin: 0.5rem 0;
+		padding-left: 1.25rem;
+	}
+
+	.markdown-content :global(li) {
+		margin-bottom: 0.25rem;
+	}
+
+	.markdown-content :global(p) {
+		margin: 0.5rem 0;
+	}
+
+	.markdown-content :global(code) {
+		background: #e8e8e8;
+		padding: 0.15rem 0.35rem;
+		border-radius: 3px;
+		font-size: 0.85em;
+	}
+
+	:global(.dark) .markdown-content :global(code) {
+		background: #333;
 	}
 
 	/* Load More */
