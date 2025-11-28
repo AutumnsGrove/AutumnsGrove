@@ -361,7 +361,7 @@
   });
 
   // Extract available anchors from content (headings and custom anchors)
-  export let availableAnchors = $derived.by(() => {
+  let availableAnchors = $derived.by(() => {
     const anchors = [];
     // Extract headings
     const headingRegex = /^(#{1,6})\s+(.+)$/gm;
@@ -376,6 +376,11 @@
     }
     return anchors;
   });
+
+  // Public function to get available anchors
+  export function getAvailableAnchors() {
+    return availableAnchors;
+  }
 
   // Public function to insert an anchor at cursor position
   export function insertAnchor(name) {

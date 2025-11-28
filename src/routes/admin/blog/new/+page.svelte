@@ -225,7 +225,7 @@
           <aside class="gutter-section">
             <GutterManager
               bind:gutterItems
-              availableAnchors={editorRef?.availableAnchors || []}
+              availableAnchors={editorRef?.getAvailableAnchors?.() || []}
               onInsertAnchor={(name) => editorRef?.insertAnchor(name)}
             />
           </aside>
