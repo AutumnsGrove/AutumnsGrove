@@ -1,6 +1,6 @@
 # TODOs for AutumnsGrove
 
-> **Last Updated:** November 28, 2025 - Added AI timeline enhancements
+> **Last Updated:** November 28, 2025 - Completed in-website markdown editor (all 3 phases)
 
 ---
 
@@ -379,54 +379,145 @@ Commits:     ████████ AutumnsGrove (150)
 
 ## 💡 Future Ideas & Enhancements
 
-### Content Management Modernization
+### ~~Content Management Modernization~~ COMPLETED
 
-#### In-Website Markdown Editor (High Priority Future)
-**Goal:** Move away from GitHub-based editing to admin panel editing
+#### ~~In-Website Markdown Editor~~ COMPLETED (Nov 28, 2025)
+**Status:** Fully implemented with all planned features
 
-**Features:**
-- [ ] Full markdown editor with live preview
-- [ ] Frontmatter editor UI (title, date, tags, description)
-- [ ] Integrated gutter content management:
-  - [ ] Add images from CDN gallery
-  - [ ] Create comment/note sidebars
-  - [ ] Add image galleries
-  - [ ] Position gutter items with visual anchors
-- [ ] Save directly to D1 database (bypass GitHub for new posts)
-- [ ] **Keep GitHub fallback as emergency backup option**
-- [ ] Syntax highlighting for code blocks
-- [ ] Image upload integration with R2/CDN
-- [ ] Auto-save drafts
-- [ ] Preview mode with actual site styling
+**Completed Features:**
+- [x] Full markdown editor with live preview (split-pane, synchronized scroll)
+- [x] Terminal-grove aesthetic (monospace font, dark theme, green accents)
+- [x] Frontmatter editor UI (title, date, tags, description)
+- [x] Integrated gutter content management:
+  - [x] GutterManager component for comments, photos, galleries
+  - [x] CDN image picker for selecting R2 images
+  - [x] Visual anchor insertion from editor (headings, custom anchors)
+  - [x] Position gutter items with anchor selection
+- [x] Save directly to D1 database (bypasses GitHub)
+- [x] **Drag-and-drop image upload to R2** (Phase 3)
+- [x] **Paste image support** (auto-uploads pasted screenshots)
+- [x] **Auto-save drafts to localStorage** (Phase 3)
+- [x] **Full preview mode with actual site styling** (Phase 3)
+- [x] Line numbers with current line highlight
+- [x] Keyboard shortcuts (Cmd+S save, Cmd+B bold, Cmd+I italic)
+- [x] Toolbar with formatting buttons (headings, bold, italic, code, links, lists, quotes)
+- [x] Status bar (line/column, word count, character count)
 
-**Dependencies:**
-- D1 database already set up for posts
-- R2 bucket already configured for images
-- Admin authentication already working
+**Routes:**
+- `/admin/blog/new` - Create new post
+- `/admin/blog/edit/[slug]` - Edit existing posts
 
-**Benefits:**
-- No more manual sidecar JSON files
-- Simpler gutter content workflow
-- Faster publishing (no git commit/push cycle)
-- Better user experience for content creation
+**API Endpoints:**
+- `GET /api/posts` - List all posts
+- `POST /api/posts` - Create new post (with gutter_content)
+- `GET /api/posts/[slug]` - Get single post
+- `PUT /api/posts/[slug]` - Update post (with gutter_content)
+- `DELETE /api/posts/[slug]` - Delete post
+
+**Components:**
+- `src/lib/components/admin/MarkdownEditor.svelte` - Main editor component
+- `src/lib/components/admin/GutterManager.svelte` - Gutter content management
 
 ---
 
-#### "Create a Post" Button
-**Goal:** Quick post creation from `/blog` route page
+#### ~~"Create a Post" Button~~ COMPLETED
+**Status:** Implemented via admin panel
 
-**Features:**
-- [ ] Add/enhance "Create Post" button on `/blog` route (already exists)
-- [ ] Opens in-website markdown editor (once built)
-- [ ] Fills in basic template (frontmatter, date, slug)
-- [ ] **Fallback to GitHub editor** (always available as backup)
-- [ ] Same approach for recipes at `/recipes` route
+**Implementation:**
+- [x] "New Post" button on `/admin/blog` links to `/admin/blog/new`
+- [x] Edit buttons link to `/admin/blog/edit/[slug]`
+- [x] Auto-generates slug from title
+- [x] Auto-fills current date
+- [x] Gutter content management integrated
 
-**Implementation notes:**
-- Button already exists on /blog page
-- Depends on markdown editor being built first
-- GitHub fallback ensures content creation always possible
-- Template should match current UserContent structure
+---
+
+### HIGH PRIORITY: Markdown Editor Enhancements (Nov 28, 2025)
+
+**Status:** Phase 4 COMPLETE - Grove Writer experience fully implemented
+
+**Goal:** Make the writing interface THE reason people visit this site. A cozy, distraction-free, developer-friendly writing experience that feels like writing by lantern in a forest cabin.
+
+#### Quick Polish - COMPLETED
+- [x] Add Escape key to close full preview modal
+- [x] Reading time estimate in status bar ("~5 min read")
+- [x] Typewriter scrolling (cursor line stays at vertical center)
+- [x] Character limit warnings for SEO (description field: 120-160 chars)
+- [x] Fading transitions between modes
+
+#### Core Features - COMPLETED
+- [x] **Slash Commands** (`/heading`, `/code`, `/mermaid`, `/quote`, `/list`, etc.)
+  - Type `/` to open command menu
+  - Fuzzy search through commands
+  - Keyboard navigation (up/down/enter)
+  - Insert content at cursor position
+  - User snippets appear in slash menu
+- [x] **Command Palette** (Cmd+K)
+  - VS Code-style fuzzy command search
+  - Actions: Save, Preview, Zen Mode, Campfire, Insert, Goal, Snippets
+- [x] **Writing Goals**
+  - Set session word count target via command palette
+  - Progress indicator in status bar
+- [x] **Zen Mode** (Cmd+Shift+Enter)
+  - Full-screen, distraction-free
+  - Toolbar fades (30% opacity, hover to reveal)
+  - Status bar minimizes (50% opacity)
+  - Typewriter scrolling auto-enabled
+  - Escape to exit
+
+#### Grove Experience - COMPLETED
+- [x] **Campfire Sessions**
+  - Writing sprint mode with warm ember progress indicator
+  - Session timer in status bar and floating control panel
+  - Words written counter
+  - Glowing ember animation
+  - End session button with summary
+- [x] **Mode Transitions**
+  - Fading animations for toolbar/status bar
+  - Scale-in animation for slash menu
+  - Slide-down animation for command palette
+
+#### AI Assistant (Stubs - Not Deployed Yet)
+- [ ] Sidebar panel for AI suggestions (hidden by default)
+- [ ] Grammar/spelling suggestions
+- [ ] Tone analysis
+- [ ] Readability scoring (Flesch-Kincaid)
+- [ ] "Improve this paragraph" action
+- [ ] **Note:** Build and test locally before any customer-facing deployment
+
+#### Phase 5 Features - COMPLETED
+- [x] **Mermaid Diagram Previews**
+  - Render mermaid code blocks as diagrams in preview
+  - Grove-themed dark color scheme
+  - Support: flowcharts, sequence diagrams, gantt, etc.
+  - Client-side rendering with mermaid.js
+- [x] **Markdown Snippets**
+  - Save reusable content blocks to localStorage
+  - Create/edit/delete snippets via modal (Cmd+K → "Manage Snippets")
+  - Optional trigger shortcuts (type `/trigger` to insert)
+  - Snippets appear in slash command menu with 📝 icon
+  - Snippets modal with list of existing snippets
+
+#### Phase 6 Features - COMPLETED
+- [x] **Ambient Sounds**
+  - Sound panel accessible from status bar (icon shows current sound)
+  - Five ambient soundscapes: Forest, Rain, Campfire, Night, Café
+  - Volume control slider with persistence
+  - Play/stop toggle with visual feedback
+  - Settings saved to localStorage
+  - Graceful fallback if audio files missing
+  - Note: Add your own audio files to `/static/sounds/`
+
+#### Future Enhancements
+- [ ] Version history time machine
+- [ ] Custom themes/color schemes
+- [ ] Collaborative editing (far future)
+
+**Design Principles:**
+- Everything configurable (localStorage settings)
+- Keyboard-first, mouse-optional
+- Forest terminal aesthetic throughout
+- Simple surface, power underneath
 
 ---
 
@@ -514,7 +605,38 @@ npx wrangler pages dev -- npm run dev
 
 When you return to work on this project:
 
-1. **Deploy AI Timeline Updates:**
+1. **Deploy Markdown Editor (ALL PHASES COMPLETE):**
+   ```bash
+   # The POSTS_DB binding was added to wrangler.toml
+   # Posts database already exists: autumnsgrove-posts (510badf3-457a-4892-bf2a-45d4bfd7a7bb)
+
+   # Add gutter_content column to posts table (required for gutter manager)
+   wrangler d1 execute autumnsgrove-posts --command "ALTER TABLE posts ADD COLUMN gutter_content TEXT DEFAULT '[]'"
+
+   # Deploy the main site with new editor routes
+   npm run build && wrangler pages deploy .svelte-kit/cloudflare
+
+   # Or for local testing:
+   npx wrangler pages dev -- npm run dev
+   ```
+
+   **Routes:**
+   - `/admin/blog/new` - Create new post with full markdown editor
+   - `/admin/blog/edit/[slug]` - Edit existing posts
+
+   **API Endpoints:**
+   - `GET /api/posts` - List all posts
+   - `POST /api/posts` - Create new post (with gutter_content)
+   - `GET /api/posts/[slug]` - Get single post
+   - `PUT /api/posts/[slug]` - Update post (with gutter_content)
+   - `DELETE /api/posts/[slug]` - Delete post
+
+   **All Implemented Features:**
+   - Phase 1: Core markdown editor with live preview, terminal-grove styling
+   - Phase 2: GutterManager, CDN image picker, anchor insertion
+   - Phase 3: Drag-drop image upload to R2, auto-save drafts, full preview mode
+
+2. **Deploy AI Timeline Updates:**
    ```bash
    # Apply database migrations
    wrangler d1 execute autumnsgrove-git-stats --file=src/lib/db/schema.sql
@@ -526,7 +648,7 @@ When you return to work on this project:
    wrangler deploy
    ```
 
-2. **Test New Features:**
+3. **Test New Features:**
    - Timeline page with inline gutter comments under headers
    - Admin timeline page with:
      - AI model selector dropdown
@@ -547,4 +669,4 @@ When you return to work on this project:
 
 ---
 
-*Last updated: November 28, 2025 - Removed async backfill UI (Queues require paid plan)*
+*Last updated: November 28, 2025 - Completed in-website markdown editor with all Phase 3 features*

@@ -8,27 +8,6 @@
       day: 'numeric'
     });
   }
-
-  // Generate today's date in YYYY-MM-DD format
-  function getTodayDate() {
-    return new Date().toISOString().split('T')[0];
-  }
-
-  // Create the new post URL with frontmatter template
-  function getNewPostUrl() {
-    const template = `---
-title: Your Post Title
-date: ${getTodayDate()}
-description: A brief description of your post
-tags:
-  - tag1
-  - tag2
----
-
-Your content here...
-`;
-    return `https://github.com/AutumnsGrove/AutumnsGrove/new/main/UserContent/Posts?filename=New-Post.md&value=${encodeURIComponent(template)}`;
-  }
 </script>
 
 <div class="blog-admin">
@@ -37,11 +16,7 @@ Your content here...
       <h1>Blog Posts</h1>
       <p class="subtitle">{data.posts.length} posts</p>
     </div>
-    <a
-      href={getNewPostUrl()}
-      target="_blank"
-      class="btn btn-primary"
-    >
+    <a href="/admin/blog/new" class="btn btn-primary">
       + New Post
     </a>
   </header>
@@ -81,13 +56,7 @@ Your content here...
             </td>
             <td class="actions-cell">
               <a href="/blog/{post.slug}" target="_blank" class="action-link">View</a>
-              <a
-                href="https://github.com/AutumnsGrove/AutumnsGrove/edit/main/UserContent/Posts/{encodeURIComponent(post.slug)}.md"
-                target="_blank"
-                class="action-link"
-              >
-                Edit
-              </a>
+              <a href="/admin/blog/edit/{post.slug}" class="action-link">Edit</a>
             </td>
           </tr>
         {:else}
@@ -104,13 +73,13 @@ Your content here...
   <div class="info-box">
     <h3>How Blog Posts Work</h3>
     <p>
-      Blog posts are markdown files stored in the <code>UserContent/Posts/</code> directory.
-      To add or edit posts, you can:
+      Create and edit posts directly in the built-in markdown editor. Posts are saved to the database
+      and available immediately.
     </p>
     <ul>
-      <li>Use the "Edit" links above to modify files directly on GitHub</li>
-      <li>Clone the repo and edit files locally with your preferred editor</li>
-      <li>Changes will deploy automatically when pushed to main</li>
+      <li>Use <strong>+ New Post</strong> to create a new post with the markdown editor</li>
+      <li>Use <strong>Edit</strong> links to modify existing posts</li>
+      <li>Posts from <code>UserContent/Posts/</code> are also available (synced via GitHub)</li>
     </ul>
   </div>
 </div>
