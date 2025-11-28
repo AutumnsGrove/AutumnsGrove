@@ -164,7 +164,8 @@ export function estimateTokens(text) {
  * Call Anthropic Claude API with prompt caching
  *
  * Uses prompt caching to reduce costs on repeated calls with the same system prompt.
- * Cache TTL is 5 minutes by default, refreshed on each use.
+ * Cache TTL is 5 minutes by default (or 1 hour with ttl: "1h"), refreshed on each use.
+ * Prompt caching is now GA - just use cache_control in the content, no beta header needed.
  */
 async function callAnthropic(apiKey, model, systemPrompt, userPrompt) {
   // Calculate if system prompt is large enough to benefit from caching
@@ -185,8 +186,7 @@ async function callAnthropic(apiKey, model, systemPrompt, userPrompt) {
       'Content-Type': 'application/json',
       'x-api-key': apiKey,
       'anthropic-version': '2023-06-01',
-      // Enable prompt caching beta
-      ...(useCache && { 'anthropic-beta': 'prompt-caching-2024-07-31' }),
+      // Prompt caching is now GA - no beta header needed
     },
     body: JSON.stringify({
       model: model,
