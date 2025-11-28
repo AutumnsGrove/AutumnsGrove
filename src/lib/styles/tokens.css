@@ -1,0 +1,56 @@
+/**
+ * Token Bridge CSS Variables
+ *
+ * This file provides backward compatibility by mapping the original AutumnsGrove
+ * CSS variable names to the new shadcn HSL system. This allows existing components
+ * to continue working during the migration process.
+ *
+ * Usage: Import this file after app.css in +layout.svelte during migration.
+ * Once all components are migrated to shadcn, this file can be removed.
+ */
+
+:root {
+	/* Primary colors - map to shadcn primary */
+	--color-primary: hsl(var(--primary));
+	--color-primary-hover: hsl(121 37% 40%);
+	--color-primary-light: hsl(121 37% 45%);
+	--color-primary-light-hover: hsl(121 37% 52%);
+
+	/* Text colors */
+	--color-text: hsl(var(--foreground));
+	--color-text-muted: hsl(var(--muted-foreground));
+	--color-text-subtle: hsl(0 0% 53%);
+
+	/* Background colors */
+	--color-bg-secondary: hsl(var(--secondary));
+	--color-border: hsl(var(--border));
+
+	/* Dark mode values */
+	--color-text-dark: hsl(var(--foreground));
+	--color-text-muted-dark: hsl(var(--muted-foreground));
+	--color-text-subtle-dark: hsl(0 0% 72%);
+	--color-bg-secondary-dark: hsl(0 0% 10%);
+	--color-bg-tertiary-dark: hsl(0 0% 16%);
+	--color-border-dark: hsl(var(--border));
+
+	/* Danger/Error colors */
+	--color-danger: hsl(var(--destructive));
+	--color-danger-hover: hsl(354 75% 45%);
+
+	/* Component-specific */
+	--mobile-menu-bg: hsl(var(--card));
+	--mobile-menu-border: hsl(var(--border));
+	--tag-bg: hsl(var(--accent));
+	--tag-bg-hover: hsl(270 45% 45%);
+
+	/* Border radius - map to shadcn system */
+	--border-radius-standard: var(--radius);
+	--border-radius-small: calc(var(--radius) - 4px);
+	--border-radius-button: calc(var(--radius) - 2px);
+}
+
+.dark {
+	/* Dark mode tag colors */
+	--tag-bg: hsl(270 38% 55%);
+	--tag-bg-hover: hsl(270 38% 49%);
+}

@@ -13,14 +13,21 @@
     "@sveltejs/adapter-cloudflare": "^7.2.4",
     "@sveltejs/kit": "^2.5.28",
     "@sveltejs/vite-plugin-svelte": "^4.0.0",
+    "@tailwindcss/typography": "^0.5.19",
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
     "svelte": "^5.1.9",
+    "tailwindcss": "^3.4.18",
     "vite": "^5.4.10"
   },
   "dependencies": {
+    "bits-ui": "^2.14.4",
     "chart.js": "^4.5.1",
+    "clsx": "^2.1.1",
     "gray-matter": "^4.0.3",
     "lucide-svelte": "^0.554.0",
     "marked": "^14.1.2",
-    "mermaid": "^11.12.1"
+    "mermaid": "^11.12.1",
+    "tailwind-merge": "^3.4.0"
   }
 }
