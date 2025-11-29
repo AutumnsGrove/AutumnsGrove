@@ -541,6 +541,64 @@ Commits:     ████████ AutumnsGrove (150)
 
 ## 💡 Future Ideas & Enhancements
 
+### AI Writing Assistant for MarkdownEditor (Planned - Not Started)
+
+**Status:** Comprehensive plan created, awaiting implementation
+
+**Goal:** Add ethical AI writing tools to help polish posts WITHOUT generating content
+
+**Core Principle:** AI is a TOOL, never a writer. Users write their own posts.
+
+**Allowed Features (Enhancement Tools):**
+- [ ] Grammar/spelling corrections (like Grammarly)
+- [ ] Readability scoring (Flesch-Kincaid)
+- [ ] Tone analysis ("sounds harsh here")
+- [ ] Word choice suggestions
+- [ ] Structural feedback (paragraph length)
+
+**Forbidden Features (Content Generation):**
+- ❌ "Write a post about X"
+- ❌ "Expand this to 1000 words"
+- ❌ Auto-completion or predictive text
+- ❌ Any full sentence generation
+
+**Implementation Plan:**
+- **Phase 1 (Week 1):** Settings toggle (OFF by default) + grammar check via Cmd+K
+- **Phase 2 (Week 2):** Readability + tone analysis
+- **Phase 3 (Week 3):** Usage dashboard with cost transparency
+- **Phase 4 (Future):** Inline highlights, custom writing rules
+
+**Infrastructure (Already Ready):**
+- ✅ Anthropic API configured in wrangler.toml
+- ✅ D1 `ai_requests` table for usage tracking
+- ✅ Claude Haiku 4.5 integration working (timeline uses it)
+- ✅ Settings system in place
+
+**Estimated Costs:**
+- Light user (10 posts, 3 checks each): ~$0.015/month
+- Heavy user (50 posts, 10 checks each): ~$0.25/month
+- Power user (100+ analyses): ~$0.50-1.00/month
+
+**Design Principles:**
+- All AI features OFF by default (zero friction for non-users)
+- Command palette integration (Cmd+K → "AI: Check Grammar")
+- Terminal-grove aesthetic (sidebar panel, muted green accents)
+- Full transparency (settings explain data sent to Anthropic)
+- User model selection (Haiku for speed, Sonnet for quality)
+
+**Documentation:**
+- Full plan: `~/.claude/plans/ai-writing-assistant.md` (1,468 lines)
+- Includes code examples, UI mockups, cost analysis, ethical safeguards
+
+**Next Steps (When Ready):**
+1. Review plan document
+2. Approve Phase 1 scope
+3. Implement settings toggle + API endpoint
+4. Add AI panel to MarkdownEditor
+5. Deploy behind feature flag
+
+---
+
 ### shadcn-svelte Migration (Nov 2025) ✅ COMPLETED
 **Status:** Migration complete and merged to main
 
