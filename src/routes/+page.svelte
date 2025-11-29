@@ -1,5 +1,5 @@
 <script>
-	import InternalsPostViewer from '$lib/components/InternalsPostViewer.svelte';
+	import InternalsPostViewer from '$lib/components/custom/InternalsPostViewer.svelte';
 
 	let { data } = $props();
 </script>

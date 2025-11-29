@@ -1,8 +1,8 @@
 <script>
 	import { untrack } from 'svelte';
 	import { renderMermaidDiagrams } from '$lib/utils/markdown.js';
-	import ContentWithGutter from '$lib/components/ContentWithGutter.svelte';
-	import IconLegend from '$lib/components/IconLegend.svelte';
+	import ContentWithGutter from '$lib/components/custom/ContentWithGutter.svelte';
+	import IconLegend from '$lib/components/custom/IconLegend.svelte';
 
 	let { data } = $props();
 

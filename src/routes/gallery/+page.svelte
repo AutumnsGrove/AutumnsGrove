@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import ZoomableImage from '$lib/components/ZoomableImage.svelte';
+	import ZoomableImage from '$lib/components/gallery/ZoomableImage.svelte';
 
 	let { data } = $props();
 

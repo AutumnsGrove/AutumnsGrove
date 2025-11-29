@@ -1,4 +1,6 @@
 <script>
+	import '../app.css';
+	import '$lib/styles/tokens.css';
 	import { page } from '$app/stores';
 	import { fade } from 'svelte/transition';
 	import { onMount } from 'svelte';

@@ -1,5 +1,5 @@
 <script>
-  import LogViewer from '$lib/components/LogViewer.svelte';
+  import LogViewer from '$lib/components/custom/LogViewer.svelte';
 
   let activeTab = $state('all');
 

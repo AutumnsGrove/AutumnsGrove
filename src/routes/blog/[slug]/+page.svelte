@@ -1,5 +1,5 @@
 <script>
-	import ContentWithGutter from '$lib/components/ContentWithGutter.svelte';
+	import ContentWithGutter from '$lib/components/custom/ContentWithGutter.svelte';
 
 	let { data } = $props();
 </script>

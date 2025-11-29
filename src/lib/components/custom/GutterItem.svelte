@@ -1,6 +1,6 @@
 <script>
-	import Lightbox from './Lightbox.svelte';
-	import ImageGallery from './ImageGallery.svelte';
+	import Lightbox from '../gallery/Lightbox.svelte';
+	import ImageGallery from '../gallery/ImageGallery.svelte';
 
 	let { item = {} } = $props();
 
