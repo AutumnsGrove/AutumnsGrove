@@ -1,11 +1,12 @@
 <script>
 	import { goto } from '$app/navigation';
+	import { Card, Badge } from '$lib/components/ui';
 
 	let { data } = $props();
 
 	function handleCardClick(event, slug) {
-		// Don't navigate if clicking on a tag link
-		if (event.target.closest('.tag')) {
+		// Don't navigate if clicking on a tag link or badge
+		if (event.target.closest('a')) {
 			return;
 		}
 		goto(`/blog/${slug}`);
@@ -51,16 +52,16 @@
 {:else}
 	<div class="posts-grid">
 		{#each data.posts as post (post.slug)}
-			<div
-				class="post-card"
+			<Card
+				hoverable
 				onclick={(e) => handleCardClick(e, post.slug)}
 				onkeydown={(e) => handleCardKeydown(e, post.slug)}
 				role="button"
 				tabindex="0"
 			>
-				<h2>{post.title}</h2>
+				<h2 class="text-xl font-semibold mb-4 text-green-800 dark:text-green-500 transition-colors">{post.title}</h2>
 				<div class="post-meta">
-					<time datetime={post.date}>
+					<time datetime={post.date} class="text-sm text-gray-600 dark:text-gray-400 transition-colors">
 						{new Date(post.date).toLocaleDateString('en-US', {
 							year: 'numeric',
 							month: 'long',
@@ -70,7 +71,9 @@
 					{#if post.tags.length > 0}
 						<div class="tags">
 							{#each post.tags as tag (tag)}
-								<a href="/blog/search?tag={encodeURIComponent(tag)}" class="tag" aria-label="Filter posts by tag: {tag}">{tag}</a>
+								<a href="/blog/search?tag={encodeURIComponent(tag)}" aria-label="Filter posts by tag: {tag}">
+									<Badge variant="tag">{tag}</Badge>
+								</a>
 							{/each}
 						</div>
 					{/if}
@@ -78,7 +81,7 @@
 				{#if post.description}
 					<p class="description">{post.description}</p>
 				{/if}
-			</div>
+			</Card>
 		{/each}
 	</div>
 {/if}
@@ -166,53 +169,6 @@
 		margin: 0 auto;
 	}
 
-	.post-card {
-		background: white;
-		border-radius: 12px;
-		padding: 2.5rem;
-		border: 1px solid #e0e0e0;
-		cursor: pointer;
-		transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
-	}
-
-	:global(.dark) .post-card {
-		background: #242424;
-		border: 1px solid #333;
-	}
-
-	.post-card:hover {
-		transform: translateY(-4px) scale(1.01);
-		box-shadow: 0 8px 24px rgba(44, 95, 45, 0.12);
-		border-color: #c5e1c6;
-	}
-
-	:global(.dark) .post-card:hover {
-		box-shadow: 0 8px 24px rgba(92, 184, 95, 0.15);
-		border-color: #3d5f3e;
-	}
-
-	.post-card:focus {
-		outline: 2px solid #2c5f2d;
-		outline-offset: 2px;
-	}
-
-	:global(.dark) .post-card:focus {
-		outline-color: #5cb85f;
-	}
-
-	.post-card h2 {
-		margin: 0 0 1rem 0;
-		color: #2c5f2d;
-		font-size: 1.5rem;
-		line-height: 1.4;
-		letter-spacing: -0.01em;
-		transition: color 0.3s ease;
-	}
-
-	:global(.dark) .post-card h2 {
-		color: #5cb85f;
-	}
-
 	.post-meta {
 		display: flex;
 		align-items: center;
@@ -220,18 +176,6 @@
 		margin-bottom: 0.75rem;
 		flex-wrap: wrap;
 	}
-
-	time {
-		color: #888;
-		font-size: 0.9rem;
-		transition: color 0.3s ease;
-	}
-
-	:global(.dark) time {
-		color: var(--color-text-subtle-dark);
-	}
-
-	/* Tags use global styles from +layout.svelte */
 
 	.description {
 		color: #666;
@@ -251,10 +195,6 @@
 
 		.blog-header h1 {
 			font-size: 2rem;
-		}
-
-		.post-card {
-			padding: 1.75rem;
 		}
 	}
 </style>
