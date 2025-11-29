@@ -23,13 +23,13 @@
   });
 </script>
 
-<div class="dashboard">
-  <header class="dashboard-header">
-    <h1>Dashboard</h1>
-    <p class="welcome">Welcome back, {data.siteConfig?.owner?.name || 'Admin'}!</p>
+<div class="max-w-screen-xl">
+  <header class="mb-8">
+    <h1 class="m-0 mb-2 text-3xl text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-colors">Dashboard</h1>
+    <p class="m-0 text-[var(--color-text-muted)] dark:text-[var(--color-text-subtle-dark)] text-lg transition-colors">Welcome back, {data.siteConfig?.owner?.name || 'Admin'}!</p>
   </header>
 
-  <div class="stats-grid">
+  <div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 mb-8">
     <Card title="System Status">
       {#if loading}
         <Skeleton class="h-8 w-24" />
@@ -71,83 +71,46 @@
     </Card>
   </div>
 
-  <section class="quick-actions">
-    <h2>Quick Actions</h2>
-    <div class="action-grid">
+  <section class="mt-8">
+    <h2 class="m-0 mb-4 text-xl text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-colors">Quick Actions</h2>
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
       <a href="/admin/blog" class="action-card">
-        <span class="action-icon">&#x1F4DD;</span>
-        <span class="action-label">Manage Blog Posts</span>
+        <span class="text-3xl">&#x1F4DD;</span>
+        <span class="font-medium text-center">Manage Blog Posts</span>
       </a>
       <a href="/admin/recipes" class="action-card">
-        <span class="action-icon">&#x1F373;</span>
-        <span class="action-label">Manage Recipes</span>
+        <span class="text-3xl">&#x1F373;</span>
+        <span class="font-medium text-center">Manage Recipes</span>
       </a>
       <a href="/admin/images" class="action-card">
-        <span class="action-icon">&#x1F4F7;</span>
-        <span class="action-label">Upload Images</span>
+        <span class="text-3xl">&#x1F4F7;</span>
+        <span class="font-medium text-center">Upload Images</span>
       </a>
       <a href="/admin/analytics" class="action-card">
-        <span class="action-icon">&#x1F4CA;</span>
-        <span class="action-label">View Analytics</span>
+        <span class="text-3xl">&#x1F4CA;</span>
+        <span class="font-medium text-center">View Analytics</span>
       </a>
       <a href="/admin/timeline" class="action-card">
-        <span class="action-icon">&#x1F4C5;</span>
-        <span class="action-label">Timeline</span>
+        <span class="text-3xl">&#x1F4C5;</span>
+        <span class="font-medium text-center">Timeline</span>
       </a>
       <a href="/admin/logs" class="action-card">
-        <span class="action-icon">&#x1F5A5;</span>
-        <span class="action-label">System Console</span>
+        <span class="text-3xl">&#x1F5A5;</span>
+        <span class="font-medium text-center">System Console</span>
       </a>
       <a href="/admin/settings" class="action-card">
-        <span class="action-icon">&#x2699;</span>
-        <span class="action-label">Settings</span>
+        <span class="text-3xl">&#x2699;</span>
+        <span class="font-medium text-center">Settings</span>
       </a>
       <a href="/" class="action-card" target="_blank">
-        <span class="action-icon">&#x1F310;</span>
-        <span class="action-label">View Site</span>
+        <span class="text-3xl">&#x1F310;</span>
+        <span class="font-medium text-center">View Site</span>
       </a>
     </div>
   </section>
 </div>
 
 <style>
-  .dashboard {
-    max-width: 1200px;
-  }
-
-  .dashboard-header {
-    margin-bottom: 2rem;
-  }
-
-  .dashboard-header h1 {
-    margin: 0 0 0.5rem 0;
-    font-size: 2rem;
-    color: var(--color-text);
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .dashboard-header h1 {
-    color: var(--color-text-dark);
-  }
-
-  .welcome {
-    margin: 0;
-    color: var(--color-text-muted);
-    font-size: 1.1rem;
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .welcome {
-    color: var(--color-text-subtle-dark);
-  }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-
   .stat-value {
     margin: 0;
     font-size: 1.25rem;
@@ -160,28 +123,6 @@
 
   .stat-value.error {
     color: #d73a49;
-  }
-
-
-  .quick-actions {
-    margin-top: 2rem;
-  }
-
-  .quick-actions h2 {
-    margin: 0 0 1rem 0;
-    font-size: 1.25rem;
-    color: var(--color-text);
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .quick-actions h2 {
-    color: var(--color-text-dark);
-  }
-
-  .action-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1rem;
   }
 
   .action-card {
@@ -212,14 +153,5 @@
 
   :global(.dark) .action-card:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  }
-
-  .action-icon {
-    font-size: 2rem;
-  }
-
-  .action-label {
-    font-weight: 500;
-    text-align: center;
   }
 </style>

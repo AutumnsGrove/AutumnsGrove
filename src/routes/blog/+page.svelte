@@ -25,12 +25,12 @@
 	<meta name="description" content="Read my latest blog posts and articles." />
 </svelte:head>
 
-<div class="blog-header">
-	<h1>Blog</h1>
-	<p>Thoughts, ideas, and explorations.</p>
+<div class="text-center mt-4 mb-16 max-md:mb-12">
+	<h1 class="blog-header-title">Blog</h1>
+	<p class="blog-header-text">Thoughts, ideas, and explorations.</p>
 	{#if data.user}
-		<div class="admin-actions">
-			<span class="logged-in-indicator" title="Logged in as {data.user.email}">
+		<div class="flex gap-2 items-center mt-4">
+			<span class="flex items-center justify-center p-1 admin-indicator" title="Logged in as {data.user.email}">
 				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 					<polyline points="20 6 9 17 4 12"></polyline>
 				</svg>
@@ -46,11 +46,11 @@
 </div>
 
 {#if data.posts.length === 0}
-	<div class="no-posts">
+	<div class="text-center py-12 text-gray-500">
 		<p>No posts yet. Check back soon!</p>
 	</div>
 {:else}
-	<div class="posts-grid">
+	<div class="grid gap-8 max-w-3xl mx-auto">
 		{#each data.posts as post (post.slug)}
 			<Card
 				hoverable
@@ -60,7 +60,7 @@
 				tabindex="0"
 			>
 				<h2 class="text-xl font-semibold mb-4 text-green-800 dark:text-green-500 transition-colors">{post.title}</h2>
-				<div class="post-meta">
+				<div class="flex items-center gap-4 mb-3 flex-wrap">
 					<time datetime={post.date} class="text-sm text-gray-600 dark:text-gray-400 transition-colors">
 						{new Date(post.date).toLocaleDateString('en-US', {
 							year: 'numeric',
@@ -87,55 +87,32 @@
 {/if}
 
 <style>
-	.blog-header {
-		text-align: center;
-		margin-top: 1rem;
-		margin-bottom: 4rem;
-	}
-
-	.blog-header h1 {
+	.blog-header-title {
 		font-size: 2.5rem;
-		color: #2c5f2d;
+		color: var(--blog-header-title);
 		margin-bottom: 0.75rem;
 		letter-spacing: -0.02em;
 		transition: color 0.3s ease;
 	}
 
-	:global(.dark) .blog-header h1 {
-		color: #5cb85f;
+	@media (max-width: 768px) {
+		.blog-header-title {
+			font-size: 2rem;
+		}
 	}
 
-	.blog-header p {
-		color: #666;
+	.blog-header-text {
+		color: var(--blog-header-text);
 		font-size: 1.1rem;
 		transition: color 0.3s ease;
 	}
 
-	:global(.dark) .blog-header p {
-		color: var(--color-text-muted-dark);
-	}
-
-	.admin-actions {
-		display: flex;
-		gap: 0.5rem;
-		align-items: center;
-		margin-top: 1rem;
-	}
-
-	.logged-in-indicator {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: #28a745;
-		padding: 0.25rem;
-	}
-
-	:global(.dark) .logged-in-indicator {
-		color: #5cb85f;
+	.admin-indicator {
+		color: var(--admin-indicator);
 	}
 
 	.admin-link {
-		color: #666;
+		color: var(--admin-link-text);
 		text-decoration: none;
 		border-radius: 4px;
 		padding: 0.25rem;
@@ -145,56 +122,13 @@
 	}
 
 	.admin-link:hover {
-		background: rgba(0, 0, 0, 0.05);
-	}
-
-	:global(.dark) .admin-link {
-		color: #999;
-	}
-
-	:global(.dark) .admin-link:hover {
-		background: rgba(255, 255, 255, 0.05);
-	}
-
-	.no-posts {
-		text-align: center;
-		padding: 3rem;
-		color: #999;
-	}
-
-	.posts-grid {
-		display: grid;
-		gap: 2rem;
-		max-width: 800px;
-		margin: 0 auto;
-	}
-
-	.post-meta {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		margin-bottom: 0.75rem;
-		flex-wrap: wrap;
+		background: var(--admin-link-hover-bg);
 	}
 
 	.description {
-		color: #666;
+		color: var(--blog-header-text);
 		line-height: 1.6;
 		margin: 0;
 		transition: color 0.3s ease;
-	}
-
-	:global(.dark) .description {
-		color: var(--color-text-muted-dark);
-	}
-
-	@media (max-width: 768px) {
-		.blog-header {
-			margin-bottom: 3rem;
-		}
-
-		.blog-header h1 {
-			font-size: 2rem;
-		}
 	}
 </style>

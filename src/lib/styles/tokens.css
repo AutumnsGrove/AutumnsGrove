@@ -47,10 +47,52 @@
 	--border-radius-standard: var(--radius);
 	--border-radius-small: calc(var(--radius) - 4px);
 	--border-radius-button: calc(var(--radius) - 2px);
+
+	/* Component-specific colors for standardized dark mode */
+	/* Blog header */
+	--blog-header-title: #2c5f2d;
+	--blog-header-text: #666;
+
+	/* Admin actions */
+	--admin-indicator: #28a745;
+	--admin-link-text: #666;
+	--admin-link-hover-bg: rgba(0, 0, 0, 0.05);
+
+	/* Post viewer */
+	--viewer-border: #e0e0e0;
+	--viewer-bg: #fafafa;
+	--viewer-hover-shadow: rgba(44, 95, 45, 0.15);
+	--viewer-date-text: #888;
+	--viewer-content-text: #555;
+	--viewer-footer-border: #e8e8e8;
+	--viewer-tag-bg: #e8f5e9;
+	--viewer-caption-text: #777;
+	--viewer-caption-border: #ddd;
 }
 
 .dark {
 	/* Dark mode tag colors */
 	--tag-bg: hsl(270 38% 55%);
 	--tag-bg-hover: hsl(270 38% 49%);
+
+	/* Dark mode component-specific overrides */
+	/* Blog header */
+	--blog-header-title: #5cb85f;
+	--blog-header-text: var(--color-text-muted-dark);
+
+	/* Admin actions */
+	--admin-indicator: #5cb85f;
+	--admin-link-text: #999;
+	--admin-link-hover-bg: rgba(255, 255, 255, 0.05);
+
+	/* Post viewer */
+	--viewer-border: #3a3a3a;
+	--viewer-bg: #1a1a1a;
+	--viewer-hover-shadow: rgba(92, 184, 95, 0.2);
+	--viewer-date-text: #999;
+	--viewer-content-text: #bbb;
+	--viewer-footer-border: #333;
+	--viewer-tag-bg: #1f3a1f;
+	--viewer-caption-text: #888;
+	--viewer-caption-border: #444;
 }

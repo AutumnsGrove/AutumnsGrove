@@ -4,7 +4,7 @@
 	import type { HTMLButtonAttributes } from "svelte/elements";
 
 	type ButtonVariant = "primary" | "secondary" | "danger" | "ghost" | "link";
-	type ButtonSize = "default" | "sm" | "lg";
+	type ButtonSize = "sm" | "md" | "lg";
 
 	interface Props extends Omit<HTMLButtonAttributes, "class"> {
 		variant?: ButtonVariant;
@@ -16,7 +16,7 @@
 
 	let {
 		variant = "primary",
-		size = "default",
+		size = "md",
 		disabled = false,
 		class: className,
 		children,
@@ -32,12 +32,20 @@
 		link: "link"
 	};
 
+	// Map our size variants to shadcn sizes
+	const sizeMap: Record<ButtonSize, "sm" | "default" | "lg"> = {
+		sm: "sm",
+		md: "default",
+		lg: "lg"
+	};
+
 	const shadcnVariant = $derived(variantMap[variant]);
+	const shadcnSize = $derived(sizeMap[size]);
 </script>
 
 <ShadcnButton
 	variant={shadcnVariant}
-	size={size}
+	size={shadcnSize}
 	disabled={disabled}
 	class={className}
 	{...restProps}
