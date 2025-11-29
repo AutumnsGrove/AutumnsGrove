@@ -67,19 +67,25 @@ export async function load({ params, platform }) {
 		}
 
 		// Fall back to filesystem (UserContent)
-		const post = getPostBySlug(slug);
+		// Note: This uses gray-matter which requires Buffer (Node.js)
+		// In Cloudflare Workers environment, this will fail
+		// So we only try this if we're NOT in a Workers environment
+		if (typeof globalThis.Buffer !== 'undefined') {
+			const post = getPostBySlug(slug);
 
-		if (!post) {
-			throw error(404, 'Post not found');
+			if (post) {
+				// Add default font for filesystem posts
+				return {
+					post: {
+						...post,
+						font: 'default'
+					}
+				};
+			}
 		}
 
-		// Add default font for filesystem posts
-		return {
-			post: {
-				...post,
-				font: 'default'
-			}
-		};
+		// Post not found in D1 or filesystem
+		throw error(404, 'Post not found');
 	} catch (err) {
 		// If it's already a SvelteKit error, rethrow it
 		if (err?.status) {
