@@ -7,78 +7,88 @@ export const prerender = false;
 export async function load({ params, platform }) {
 	const { slug } = params;
 
-	// Try D1 first for posts created via admin panel
-	if (platform?.env?.POSTS_DB) {
-		try {
-			const post = await platform.env.POSTS_DB.prepare(
-				`SELECT slug, title, date, tags, description, html_content, gutter_content, font
-				 FROM posts WHERE slug = ?`
-			).bind(slug).first();
+	try {
+		// Try D1 first for posts created via admin panel
+		if (platform?.env?.POSTS_DB) {
+			try {
+				const post = await platform.env.POSTS_DB.prepare(
+					`SELECT slug, title, date, tags, description, html_content, gutter_content, font
+					 FROM posts WHERE slug = ?`
+				).bind(slug).first();
 
-			if (post) {
-				// Process anchor tags in HTML content (same as filesystem posts)
-				const processedHtml = processAnchorTags(post.html_content || '');
+				if (post) {
+					// Process anchor tags in HTML content (same as filesystem posts)
+					const processedHtml = processAnchorTags(post.html_content || '');
 
-				// Extract headers from HTML for table of contents
-				// Note: For D1 posts, we extract from HTML since we don't store raw markdown
-				const headers = extractHeadersFromHtml(processedHtml);
+					// Extract headers from HTML for table of contents
+					// Note: For D1 posts, we extract from HTML since we don't store raw markdown
+					const headers = extractHeadersFromHtml(processedHtml);
 
-				// Safe JSON parsing for tags
-				let tags = [];
-				if (post.tags) {
-					try {
-						tags = JSON.parse(post.tags);
-					} catch (e) {
-						console.warn('Failed to parse tags:', e);
-						tags = [];
+					// Safe JSON parsing for tags
+					let tags = [];
+					if (post.tags) {
+						try {
+							tags = JSON.parse(post.tags);
+						} catch (e) {
+							console.warn('Failed to parse tags:', e);
+							tags = [];
+						}
 					}
+
+					// Safe JSON parsing for gutter content
+					let gutterContent = [];
+					if (post.gutter_content) {
+						try {
+							gutterContent = JSON.parse(post.gutter_content);
+						} catch (e) {
+							console.warn('Failed to parse gutter_content:', e);
+							gutterContent = [];
+						}
+					}
+
+					return {
+						post: {
+							slug: post.slug,
+							title: post.title,
+							date: post.date,
+							tags,
+							description: post.description || '',
+							content: processedHtml,
+							headers,
+							gutterContent,
+							font: post.font || 'default'
+						}
+					};
 				}
-
-				// Safe JSON parsing for gutter content
-				let gutterContent = [];
-				if (post.gutter_content) {
-					try {
-						gutterContent = JSON.parse(post.gutter_content);
-					} catch (e) {
-						console.warn('Failed to parse gutter_content:', e);
-						gutterContent = [];
-					}
-				}
-
-				return {
-					post: {
-						slug: post.slug,
-						title: post.title,
-						date: post.date,
-						tags,
-						description: post.description || '',
-						content: processedHtml,
-						headers,
-						gutterContent,
-						font: post.font || 'default'
-					}
-				};
+			} catch (err) {
+				console.error('D1 fetch error:', err);
+				// Fall through to filesystem fallback
 			}
-		} catch (err) {
-			console.error('D1 fetch error:', err);
-			// Fall through to filesystem fallback
 		}
-	}
 
-	// Fall back to filesystem (UserContent)
-	const post = getPostBySlug(slug);
+		// Fall back to filesystem (UserContent)
+		const post = getPostBySlug(slug);
 
-	if (!post) {
-		throw error(404, 'Post not found');
-	}
-
-	// Add default font for filesystem posts
-	return {
-		post: {
-			...post,
-			font: 'default'
+		if (!post) {
+			throw error(404, 'Post not found');
 		}
-	};
+
+		// Add default font for filesystem posts
+		return {
+			post: {
+				...post,
+				font: 'default'
+			}
+		};
+	} catch (err) {
+		// If it's already a SvelteKit error, rethrow it
+		if (err?.status) {
+			throw err;
+		}
+		// Log and rethrow as 500 with message for debugging
+		console.error('Blog post load error:', err);
+		throw error(500, `Failed to load post: ${err.message}`);
+	}
 }
 
 /**
