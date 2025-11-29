@@ -461,7 +461,7 @@
 			{/each}
 		{/if}
 
-		<div class="content-body" bind:this={contentBodyElement}>
+		<div class="prose prose-lg dark:prose-invert max-w-none content-body" bind:this={contentBodyElement}>
 			{@html processedContent}
 		</div>
 

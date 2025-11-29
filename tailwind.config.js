@@ -1,9 +1,12 @@
+import typographyConfig from './tailwind.typography.config.js';
+
 /** @type {import('tailwindcss').Config} */
 export default {
 	darkMode: 'class',
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 	theme: {
 		extend: {
+			typography: typographyConfig,
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
