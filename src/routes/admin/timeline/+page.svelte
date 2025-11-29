@@ -3,6 +3,7 @@
   import Button from '$lib/components/ui/Button.svelte';
   import Input from '$lib/components/ui/Input.svelte';
   import Select from '$lib/components/ui/Select.svelte';
+  import { toast } from '$lib/components/ui/toast';
 
   let triggerLoading = $state(false);
   let backfillLoading = $state(false);
@@ -56,6 +57,7 @@
       const data = await res.json();
       latestSummary = data.summaries?.[0] || null;
     } catch (e) {
+      toast.error('Failed to load latest summary');
       console.error('Failed to fetch latest summary:', e);
     }
     loadingLatest = false;
@@ -74,6 +76,7 @@
         }
       }
     } catch (e) {
+      toast.error('Failed to load AI models');
       console.error('Failed to fetch models:', e);
     }
   }
@@ -87,6 +90,7 @@
         usageStats = await res.json();
       }
     } catch (e) {
+      toast.error('Failed to load usage statistics');
       console.error('Failed to fetch usage stats:', e);
     }
     loadingUsage = false;

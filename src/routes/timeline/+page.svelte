@@ -2,6 +2,7 @@
 	import { marked } from 'marked';
 	import { Calendar, GitCommit, Plus, Minus, FolderGit2, ChevronDown, ChevronUp, Cloud, Loader2, MessageCircle, TrendingUp } from 'lucide-svelte';
 	import { ActivityOverview, LOCBar, RepoBreakdown } from '$lib/components/charts';
+	import { toast } from '$lib/components/ui/toast';
 
 	/** @type {{ summaries: any[], pagination: any, error?: string }} */
 	let { data } = $props();
@@ -39,6 +40,7 @@
 				};
 			}
 		} catch (e) {
+			toast.error('Failed to load activity data');
 			console.error('Failed to fetch activity:', e);
 		}
 		loadingActivity = false;
@@ -222,6 +224,7 @@
 			summaries = [...summaries, ...data.summaries];
 			pagination = data.pagination;
 		} catch (error) {
+			toast.error('Failed to load more summaries');
 			console.error('Load more error:', error);
 		} finally {
 			loadingMore = false;

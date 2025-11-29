@@ -1,5 +1,6 @@
 <script>
   import { Card, Button, Skeleton } from "$lib/components/ui";
+  import { toast } from "$lib/components/ui/toast";
 
   let stats = $state(null);
   let loading = $state(true);
@@ -16,6 +17,7 @@
       }
       stats = await res.json();
     } catch (err) {
+      toast.error('Failed to load analytics data');
       console.error('Failed to fetch stats:', err);
       error = err.message;
     }
@@ -40,8 +42,11 @@
   </header>
 
   {#if loading}
-    <div class="loading-state">
-      <p>Loading analytics...</p>
+    <div class="stats-grid">
+      <Skeleton class="h-24 w-full" />
+      <Skeleton class="h-24 w-full" />
+      <Skeleton class="h-24 w-full" />
+      <Skeleton class="h-24 w-full" />
     </div>
   {:else if error}
     <div class="error-state">

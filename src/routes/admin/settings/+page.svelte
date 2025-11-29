@@ -1,5 +1,6 @@
 <script>
-  import { Button } from "$lib/components/ui";
+  import { Button, Skeleton } from "$lib/components/ui";
+  import { toast } from "$lib/components/ui/toast";
 
   let clearingCache = $state(false);
   let cacheMessage = $state('');
@@ -18,6 +19,7 @@
       const res = await fetch('/api/git/health');
       healthStatus = await res.json();
     } catch (error) {
+      toast.error('Failed to check system health');
       console.error('Failed to fetch health:', error);
       healthStatus = { status: 'error', error: error.message };
     }
@@ -57,6 +59,7 @@
       const data = await res.json();
       currentFont = data.font_family || 'alagard';
     } catch (error) {
+      toast.error('Failed to load font settings');
       console.error('Failed to fetch font setting:', error);
       currentFont = 'alagard';
     }
@@ -117,58 +120,51 @@
 
   <section class="settings-section">
     <h2>System Health</h2>
-    <div class="health-grid">
-      <div class="health-item">
-        <span class="health-label">Overall Status</span>
-        {#if loadingHealth}
-          <span class="health-value loading">Checking...</span>
-        {:else}
+    {#if loadingHealth}
+      <div class="health-grid">
+        <Skeleton class="h-12 w-full" />
+        <Skeleton class="h-12 w-full" />
+        <Skeleton class="h-12 w-full" />
+        <Skeleton class="h-12 w-full" />
+      </div>
+    {:else}
+      <div class="health-grid">
+        <div class="health-item">
+          <span class="health-label">Overall Status</span>
           <span class="health-value" class:healthy={healthStatus?.status === 'healthy'} class:error={healthStatus?.status !== 'healthy'}>
             {healthStatus?.status === 'healthy' ? 'Healthy' : 'Issues Detected'}
           </span>
-        {/if}
-      </div>
+        </div>
 
-      <div class="health-item">
-        <span class="health-label">GitHub Token</span>
-        {#if loadingHealth}
-          <span class="health-value loading">...</span>
-        {:else}
+        <div class="health-item">
+          <span class="health-label">GitHub Token</span>
           <span class="health-value" class:healthy={healthStatus?.github_token_configured} class:error={!healthStatus?.github_token_configured}>
             {healthStatus?.github_token_configured ? 'Configured' : 'Missing'}
           </span>
-        {/if}
-      </div>
+        </div>
 
-      <div class="health-item">
-        <span class="health-label">KV Cache</span>
-        {#if loadingHealth}
-          <span class="health-value loading">...</span>
-        {:else}
+        <div class="health-item">
+          <span class="health-label">KV Cache</span>
           <span class="health-value" class:healthy={healthStatus?.kv_configured} class:error={!healthStatus?.kv_configured}>
             {healthStatus?.kv_configured ? 'Connected' : 'Not Configured'}
           </span>
-        {/if}
-      </div>
+        </div>
 
-      <div class="health-item">
-        <span class="health-label">D1 Database</span>
-        {#if loadingHealth}
-          <span class="health-value loading">...</span>
-        {:else}
+        <div class="health-item">
+          <span class="health-label">D1 Database</span>
           <span class="health-value" class:healthy={healthStatus?.d1_configured} class:error={!healthStatus?.d1_configured}>
             {healthStatus?.d1_configured ? 'Connected' : 'Not Configured'}
           </span>
+        </div>
+
+        {#if healthStatus?.timestamp}
+          <div class="health-item full-width">
+            <span class="health-label">Last Check</span>
+            <span class="health-value">{new Date(healthStatus.timestamp).toLocaleString()}</span>
+          </div>
         {/if}
       </div>
-
-      {#if healthStatus?.timestamp}
-        <div class="health-item full-width">
-          <span class="health-label">Last Check</span>
-          <span class="health-value">{new Date(healthStatus.timestamp).toLocaleString()}</span>
-        </div>
-      {/if}
-    </div>
+    {/if}
 
     <Button onclick={fetchHealth} variant="secondary" disabled={loadingHealth}>
       {loadingHealth ? 'Checking...' : 'Refresh Status'}
@@ -182,7 +178,7 @@
     </p>
 
     {#if loadingFont}
-      <p class="loading-text">Loading font settings...</p>
+      <Skeleton class="h-64 w-full" />
     {:else}
       <div class="font-selector">
         <label class="font-option" class:selected={currentFont === 'alagard'}>

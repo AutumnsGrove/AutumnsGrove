@@ -145,7 +145,9 @@
         });
       }
     } catch (err) {
+      toast.error('Failed to load CDN images');
       console.error("Failed to load CDN images:", err);
+      cdnImages = [];
     } finally {
       cdnLoading = false;
     }
