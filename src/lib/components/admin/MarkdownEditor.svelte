@@ -3,6 +3,9 @@
   import mermaid from "mermaid";
   import { onMount, tick } from "svelte";
   import "$lib/styles/content.css";
+  import Dialog from "$lib/components/ui/Dialog.svelte";
+  import Button from "$lib/components/ui/Button.svelte";
+  import Input from "$lib/components/ui/Input.svelte";
 
   // Initialize mermaid with grove-themed dark config
   mermaid.initialize({
@@ -1602,38 +1605,31 @@
 {/if}
 
 <!-- Snippets Modal -->
-{#if snippetsModal.open}
-  <div class="snippets-modal-overlay" onclick={closeSnippetsModal}>
-    <div class="snippets-modal" onclick={(e) => e.stopPropagation()}>
-      <div class="snippets-modal-header">
-        <h3>:: {snippetsModal.editingId ? "edit snippet" : "new snippet"}</h3>
-        <button type="button" class="snippets-modal-close" onclick={closeSnippetsModal}>
-          [x]
-        </button>
+<Dialog bind:open={snippetsModal.open}>
+  <h3 slot="title">:: {snippetsModal.editingId ? "edit snippet" : "new snippet"}</h3>
+
+  <div class="snippets-modal-body">
+    <div class="snippets-form">
+      <div class="snippet-field">
+        <label for="snippet-name">Name</label>
+        <Input
+          id="snippet-name"
+          type="text"
+          bind:value={snippetsModal.name}
+          placeholder="e.g., Blog signature"
+        />
       </div>
 
-      <div class="snippets-modal-body">
-        <div class="snippets-form">
-          <div class="snippet-field">
-            <label for="snippet-name">Name</label>
-            <input
-              id="snippet-name"
-              type="text"
-              bind:value={snippetsModal.name}
-              placeholder="e.g., Blog signature"
-            />
-          </div>
-
-          <div class="snippet-field">
-            <label for="snippet-trigger">Trigger (optional)</label>
-            <input
-              id="snippet-trigger"
-              type="text"
-              bind:value={snippetsModal.trigger}
-              placeholder="e.g., sig"
-            />
-            <span class="field-hint">Type /trigger to quickly insert</span>
-          </div>
+      <div class="snippet-field">
+        <label for="snippet-trigger">Trigger (optional)</label>
+        <Input
+          id="snippet-trigger"
+          type="text"
+          bind:value={snippetsModal.trigger}
+          placeholder="e.g., sig"
+        />
+        <span class="field-hint">Type /trigger to quickly insert</span>
+      </div>
 
           <div class="snippet-field">
             <label for="snippet-content">Content</label>
@@ -1645,55 +1641,50 @@
             ></textarea>
           </div>
 
-          <div class="snippet-actions">
-            {#if snippetsModal.editingId}
-              <button
-                type="button"
-                class="snippet-btn delete"
-                onclick={() => deleteSnippet(snippetsModal.editingId)}
-              >
-                [<span class="key">d</span>elete]
-              </button>
-            {/if}
-            <div class="snippet-actions-right">
-              <button type="button" class="snippet-btn cancel" onclick={closeSnippetsModal}>
-                [<span class="key">c</span>ancel]
-              </button>
-              <button
-                type="button"
-                class="snippet-btn save"
-                onclick={saveSnippet}
-                disabled={!snippetsModal.name.trim() || !snippetsModal.content.trim()}
-              >
-                {#if snippetsModal.editingId}[<span class="key">u</span>pdate]{:else}[<span class="key">s</span>ave]{/if}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {#if snippets.length > 0 && !snippetsModal.editingId}
-          <div class="snippets-list-divider">
-            <span>:: your snippets</span>
-          </div>
-          <div class="snippets-list">
-            {#each snippets as snippet}
-              <button
-                type="button"
-                class="snippet-list-item"
-                onclick={() => openSnippetsModal(snippet.id)}
-              >
-                <span class="snippet-name">{snippet.name}</span>
-                {#if snippet.trigger}
-                  <span class="snippet-trigger">/{snippet.trigger}</span>
-                {/if}
-              </button>
-            {/each}
-          </div>
+      <div class="snippet-actions">
+        {#if snippetsModal.editingId}
+          <Button
+            variant="danger"
+            onclick={() => deleteSnippet(snippetsModal.editingId)}
+          >
+            [<span class="key">d</span>elete]
+          </Button>
         {/if}
+        <div class="snippet-actions-right">
+          <Button variant="outline" onclick={closeSnippetsModal}>
+            [<span class="key">c</span>ancel]
+          </Button>
+          <Button
+            onclick={saveSnippet}
+            disabled={!snippetsModal.name.trim() || !snippetsModal.content.trim()}
+          >
+            {#if snippetsModal.editingId}[<span class="key">u</span>pdate]{:else}[<span class="key">s</span>ave]{/if}
+          </Button>
+        </div>
       </div>
     </div>
+
+    {#if snippets.length > 0 && !snippetsModal.editingId}
+      <div class="snippets-list-divider">
+        <span>:: your snippets</span>
+      </div>
+      <div class="snippets-list">
+        {#each snippets as snippet}
+          <button
+            type="button"
+            class="snippet-list-item"
+            onclick={() => openSnippetsModal(snippet.id)}
+          >
+            <span class="snippet-name">{snippet.name}</span>
+            {#if snippet.trigger}
+              <span class="snippet-trigger">/{snippet.trigger}</span>
+            {/if}
+          </button>
+        {/each}
+      </div>
+    {/if}
   </div>
-{/if}
+</Dialog>
 
 <!-- Ambient Sound Panel -->
 {#if ambientSounds.showPanel}

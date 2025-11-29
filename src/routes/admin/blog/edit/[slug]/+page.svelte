@@ -2,6 +2,10 @@
   import { goto } from "$app/navigation";
   import MarkdownEditor from "$lib/components/admin/MarkdownEditor.svelte";
   import GutterManager from "$lib/components/admin/GutterManager.svelte";
+  import Input from "$lib/components/ui/Input.svelte";
+  import Button from "$lib/components/ui/Button.svelte";
+  import Dialog from "$lib/components/ui/Dialog.svelte";
+  import { toast } from "$lib/components/ui/toast";
 
   let { data } = $props();
 
@@ -21,10 +25,9 @@
 
   // UI state
   let saving = $state(false);
-  let error = $state(null);
-  let success = $state(null);
   let hasUnsavedChanges = $state(false);
   let showGutter = $state(true);
+  let showDeleteDialog = $state(false);
 
   // Track changes
   $effect(() => {
@@ -47,16 +50,14 @@
   async function handleSave() {
     // Validation
     if (!title.trim()) {
-      error = "Title is required";
+      toast.error("Title is required");
       return;
     }
     if (!content.trim()) {
-      error = "Content is required";
+      toast.error("Content is required");
       return;
     }
 
-    error = null;
-    success = null;
     saving = true;
 
     try {
@@ -84,30 +85,21 @@
       // Clear draft on successful save
       editorRef?.clearDraft();
 
-      success = "Post saved successfully!";
+      toast.success("Post saved successfully!");
       hasUnsavedChanges = false;
-
-      // Clear success message after a moment
-      setTimeout(() => {
-        success = null;
-      }, 3000);
     } catch (err) {
-      error = err.message;
+      toast.error(err.message || "Failed to update post");
     } finally {
       saving = false;
     }
   }
 
-  async function handleDelete() {
-    if (
-      !confirm(
-        `Are you sure you want to delete "${title}"? This cannot be undone.`
-      )
-    ) {
-      return;
-    }
+  async function confirmDelete() {
+    showDeleteDialog = true;
+  }
 
-    error = null;
+  async function handleDelete() {
+    showDeleteDialog = false;
     saving = true;
 
     try {
@@ -121,10 +113,11 @@
         throw new Error(result.message || "Failed to delete post");
       }
 
+      toast.success("Post deleted successfully");
       // Redirect to blog admin
       goto("/admin/blog");
     } catch (err) {
-      error = err.message;
+      toast.error(err.message || "Failed to delete post");
     } finally {
       saving = false;
     }
@@ -158,14 +151,14 @@
       </div>
     </div>
     <div class="header-actions">
-      <button
-        class="delete-btn"
-        onclick={handleDelete}
+      <Button
+        variant="danger"
+        onclick={confirmDelete}
         disabled={saving}
         title="Delete this post"
       >
         Delete
-      </button>
+      </Button>
       <a
         href="/blog/{slug}"
         target="_blank"
@@ -173,30 +166,14 @@
       >
         View Live
       </a>
-      <button
-        class="save-btn"
+      <Button
         onclick={handleSave}
         disabled={saving}
       >
         {saving ? "Saving..." : "Save Changes"}
-      </button>
+      </Button>
     </div>
   </header>
-
-  {#if error}
-    <div class="error-banner">
-      <span class="error-icon">!</span>
-      <span>{error}</span>
-      <button class="error-dismiss" onclick={() => (error = null)}>&times;</button>
-    </div>
-  {/if}
-
-  {#if success}
-    <div class="success-banner">
-      <span class="success-icon">✓</span>
-      <span>{success}</span>
-    </div>
-  {/if}
 
   <div class="editor-layout">
     <!-- Metadata Panel -->
@@ -205,12 +182,11 @@
 
       <div class="form-group">
         <label for="title">Title</label>
-        <input
+        <Input
           type="text"
           id="title"
           bind:value={title}
           placeholder="Your Post Title"
-          class="form-input"
         />
       </div>
 
@@ -225,11 +201,10 @@
 
       <div class="form-group">
         <label for="date">Date</label>
-        <input
+        <Input
           type="date"
           id="date"
           bind:value={date}
-          class="form-input"
         />
       </div>
 
@@ -257,12 +232,11 @@
 
       <div class="form-group">
         <label for="tags">Tags</label>
-        <input
+        <Input
           type="text"
           id="tags"
           bind:value={tagsInput}
           placeholder="tag1, tag2, tag3"
-          class="form-input"
         />
         <span class="form-hint">Separate tags with commas</span>
       </div>
@@ -441,37 +415,16 @@
     flex-wrap: wrap;
   }
 
-  .save-btn,
-  .view-btn,
-  .delete-btn {
-    padding: 0.6rem 1.25rem;
-    border-radius: var(--border-radius-button);
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s, opacity 0.2s;
-    text-decoration: none;
-    border: none;
-  }
-
-  .save-btn {
-    background: var(--color-primary);
-    color: white;
-  }
-
-  .save-btn:hover:not(:disabled) {
-    background: var(--color-primary-hover);
-  }
-
-  .save-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
   .view-btn {
     background: var(--color-bg-secondary);
     color: var(--color-text);
     border: 1px solid var(--color-border);
+    padding: 0.6rem 1.25rem;
+    border-radius: var(--border-radius-button);
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.2s;
   }
 
   :global(.dark) .view-btn {
@@ -486,104 +439,6 @@
 
   :global(.dark) .view-btn:hover {
     background: var(--color-border-dark);
-  }
-
-  .delete-btn {
-    background: transparent;
-    color: var(--color-danger);
-    border: 1px solid var(--color-danger);
-  }
-
-  .delete-btn:hover:not(:disabled) {
-    background: var(--color-danger);
-    color: white;
-  }
-
-  .delete-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  /* Error & Success Banners */
-  .error-banner,
-  .success-banner {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    border-radius: var(--border-radius-button);
-    margin-bottom: 1rem;
-    flex-shrink: 0;
-  }
-
-  .error-banner {
-    background: #ffeef0;
-    border: 1px solid #f85149;
-    color: #cf222e;
-  }
-
-  :global(.dark) .error-banner {
-    background: rgba(248, 81, 73, 0.15);
-    border-color: #f85149;
-    color: #ff7b72;
-  }
-
-  .success-banner {
-    background: #dcffe4;
-    border: 1px solid #28a745;
-    color: #22863a;
-  }
-
-  :global(.dark) .success-banner {
-    background: rgba(40, 167, 69, 0.15);
-    border-color: #238636;
-    color: #7ee787;
-  }
-
-  .error-icon,
-  .success-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    font-size: 0.75rem;
-    font-weight: bold;
-  }
-
-  .error-icon {
-    background: #cf222e;
-    color: white;
-  }
-
-  :global(.dark) .error-icon {
-    background: #f85149;
-  }
-
-  .success-icon {
-    background: #28a745;
-    color: white;
-  }
-
-  :global(.dark) .success-icon {
-    background: #238636;
-  }
-
-  .error-dismiss {
-    margin-left: auto;
-    background: none;
-    border: none;
-    color: inherit;
-    font-size: 1.25rem;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-    opacity: 0.7;
-  }
-
-  .error-dismiss:hover {
-    opacity: 1;
   }
 
   /* Editor Layout */
@@ -892,3 +747,13 @@
     }
   }
 </style>
+
+<!-- Delete Confirmation Dialog -->
+<Dialog bind:open={showDeleteDialog}>
+  <h3 slot="title">Delete Post</h3>
+  <p>Are you sure you want to delete "{title}"? This cannot be undone.</p>
+  <div slot="footer" style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+    <Button variant="outline" onclick={() => showDeleteDialog = false}>Cancel</Button>
+    <Button variant="danger" onclick={handleDelete}>Delete</Button>
+  </div>
+</Dialog>
