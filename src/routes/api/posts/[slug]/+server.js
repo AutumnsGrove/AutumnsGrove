@@ -1,6 +1,7 @@
 import { json, error } from "@sveltejs/kit";
 import { marked } from "marked";
 import { getPostBySlug } from "$lib/utils/markdown.js";
+import { validateCSRF } from "$lib/utils/csrf.js";
 
 /**
  * GET /api/posts/[slug] - Get a single post
@@ -80,6 +81,11 @@ export async function PUT({ params, request, platform, locals }) {
   // Auth check
   if (!locals.user) {
     throw error(401, "Unauthorized");
+  }
+
+  // CSRF check
+  if (!validateCSRF(request)) {
+    throw error(403, "Invalid origin");
   }
 
   if (!platform?.env?.POSTS_DB) {
@@ -166,6 +172,11 @@ export async function DELETE({ params, platform, locals }) {
   // Auth check
   if (!locals.user) {
     throw error(401, "Unauthorized");
+  }
+
+  // CSRF check
+  if (!validateCSRF(request)) {
+    throw error(403, "Invalid origin");
   }
 
   if (!platform?.env?.POSTS_DB) {

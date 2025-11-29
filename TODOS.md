@@ -113,6 +113,104 @@
 
 ---
 
+## 🔍 Security & Polish Audit (Nov 29, 2025)
+
+**Status:** Comprehensive audit completed - action items identified
+
+### Critical Security Issues (Immediate Fix Required)
+
+**XSS Vulnerability - Unescaped HTML Rendering:**
+- [ ] Install DOMPurify package (`npm install dompurify @types/dompurify`)
+- [ ] Add HTML sanitization to `ContentWithGutter.svelte:465`
+- [ ] Add HTML sanitization to `InternalsPostViewer.svelte:23`
+- [ ] Configure allowed tags/attributes for markdown rendering
+- [ ] Test with malicious payloads before deploying
+
+**CSRF Protection Missing:**
+- [ ] Create CSRF validation utility (`src/lib/utils/csrf.js`)
+- [ ] Add CSRF checks to `POST /api/images/upload`
+- [ ] Add CSRF checks to `POST /api/posts`
+- [ ] Add CSRF checks to `PUT /api/posts/[slug]`
+- [ ] Add CSRF checks to `DELETE /api/posts/[slug]`
+- [ ] Add CSRF checks to `PUT /api/admin/settings`
+
+**Security Headers:**
+- [ ] Add security headers to `hooks.server.js`:
+  - [ ] X-Frame-Options: DENY
+  - [ ] X-Content-Type-Options: nosniff
+  - [ ] Referrer-Policy: strict-origin-when-cross-origin
+  - [ ] Permissions-Policy
+  - [ ] Content-Security-Policy (production only, needs Mermaid adjustments)
+
+### High Priority Polish (User-Facing)
+
+**Error Handling - Console to Toast Migration:**
+- [ ] `src/routes/admin/analytics/+page.svelte:19` - Stats fetch error
+- [ ] `src/routes/timeline/+page.svelte:42,225` - Activity fetch errors
+- [ ] `src/routes/admin/settings/+page.svelte:21,60` - Font/health check errors
+- [ ] `src/routes/admin/images/+page.svelte:204` - Copy-to-clipboard error
+- [ ] `src/lib/components/admin/GutterManager.svelte:148` - CDN image load error
+- [ ] `src/routes/admin/timeline/+page.svelte:59,77,90` - Three fetch errors
+
+**Loading States:**
+- [ ] Add loading indicator to Analytics page (stats cards)
+- [ ] Add loading indicator to Settings page (health check, font settings)
+- [ ] Add loading indicator to GutterManager (CDN images)
+- [ ] Expand Skeleton component usage across admin panel
+
+**Accessibility:**
+- [ ] Add aria-label to drop zone (`admin/images/+page.svelte:282`)
+- [ ] Add aria-label to MarkdownEditor container
+- [ ] Add aria-expanded to details toggle elements
+- [ ] Add Space key handler to drop zones (currently only Enter works)
+
+### Medium Priority Security
+
+**Input Validation:**
+- [ ] Add strict validation to Timeline API year/month params (`/api/timeline/+server.js:71-76`)
+- [ ] Add length limits to post content fields (`/api/posts/+server.js`)
+- [ ] Fix ReDoS vulnerability in username regex (`src/lib/utils/github.js:16`)
+
+**Session Cookie:**
+- [ ] Replace hostname detection with `ENVIRONMENT` env var check
+- [ ] Update `createSessionCookie()` to use `platform.env.ENVIRONMENT`
+
+**Rate Limiting:**
+- [ ] Consider moving rate limit state from D1 to KV (faster)
+- [ ] Add exponential backoff for repeated auth failures
+- [ ] Increase time window from 1 min to 5 min
+
+### Low Priority
+
+**Information Disclosure:**
+- [ ] Replace detailed error messages with generic ones (keep details in logs)
+- [ ] Example: "Posts database not configured" → "Service temporarily unavailable"
+
+**Dependency Security:**
+- [ ] Create `.github/dependabot.yml` for automated dependency updates
+- [ ] Add `npm audit` script to package.json
+- [ ] Add security testing to CI/CD pipeline
+
+**Security Documentation:**
+- [ ] Create `SECURITY.md` with vulnerability reporting instructions
+- [ ] Document security testing checklist
+
+### Audit Documentation
+
+**Generated Reports:**
+- Security Audit Report: Comprehensive 8.6/10 CVSS findings with remediation steps
+- Polish Opportunities: 15 identified improvements across UX, accessibility, error handling
+- Overall Grade: B+ → A potential with fixes
+
+**Key Findings:**
+- ✅ Excellent authentication implementation (passwordless, JWT, rate limiting)
+- ✅ Good input validation patterns already in place
+- ⚠️ XSS protection needs immediate attention
+- ⚠️ CSRF coverage incomplete on API routes
+- 💎 Many small polish opportunities with high user impact
+
+---
+
 ## 🔲 Remaining Tasks
 
 ### HIGH PRIORITY: Admin Panel Improvements (Nov 26, 2025)

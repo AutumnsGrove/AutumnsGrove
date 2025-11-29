@@ -1,5 +1,6 @@
 <script>
 	import { tick, untrack, onMount } from 'svelte';
+	import DOMPurify from 'dompurify';
 	import TableOfContents from './TableOfContents.svelte';
 	import MobileTOC from './MobileTOC.svelte';
 	import GutterItem from './GutterItem.svelte';
@@ -9,7 +10,8 @@
 		getAnchorLabel,
 		getItemsForAnchor,
 		getOrphanItems,
-		findAnchorElement
+		findAnchorElement,
+		parseAnchor
 	} from '$lib/utils/gutter.js';
 	import '$lib/styles/content.css';
 
@@ -388,6 +390,25 @@
 
 	// Derive content with reference markers injected
 	let processedContent = $derived(injectReferenceMarkers(content, overflowingAnchorKeys));
+
+	// Sanitize HTML content to prevent XSS attacks
+	let sanitizedContent = $derived(
+		DOMPurify.sanitize(processedContent, {
+			ALLOWED_TAGS: [
+				'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+				'p', 'a', 'ul', 'ol', 'li', 'blockquote',
+				'code', 'pre', 'strong', 'em', 'img',
+				'table', 'thead', 'tbody', 'tr', 'th', 'td',
+				'br', 'hr', 'div', 'span', 'sup', 'sub',
+				'del', 'ins'
+			],
+			ALLOWED_ATTR: [
+				'href', 'src', 'alt', 'title', 'class', 'id',
+				'data-anchor', 'data-language', 'data-line-numbers'
+			],
+			ALLOW_DATA_ATTR: true
+		})
+	);
 </script>
 
 <div class="content-layout"
@@ -462,7 +483,7 @@
 		{/if}
 
 		<div class="prose prose-lg dark:prose-invert max-w-none content-body" bind:this={contentBodyElement}>
-			{@html processedContent}
+			{@html sanitizedContent}
 		</div>
 
 		<!-- Overflow gutter items rendered inline -->

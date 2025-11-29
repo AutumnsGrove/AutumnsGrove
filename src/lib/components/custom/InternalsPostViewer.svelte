@@ -1,4 +1,6 @@
 <script>
+	import DOMPurify from 'dompurify';
+
 	let {
 		post = null,
 		slug = '',
@@ -20,7 +22,23 @@
 		// Strip HTML tags and get plain text
 		const tempDiv = typeof document !== 'undefined' ? document.createElement('div') : null;
 		if (tempDiv) {
-			tempDiv.innerHTML = post.content;
+			// Sanitize HTML before setting innerHTML to prevent XSS
+			const sanitizedContent = DOMPurify.sanitize(post.content, {
+				ALLOWED_TAGS: [
+					'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+					'p', 'a', 'ul', 'ol', 'li', 'blockquote',
+					'code', 'pre', 'strong', 'em', 'img',
+					'table', 'thead', 'tbody', 'tr', 'th', 'td',
+					'br', 'hr', 'div', 'span', 'sup', 'sub',
+					'del', 'ins'
+				],
+				ALLOWED_ATTR: [
+					'href', 'src', 'alt', 'title', 'class', 'id',
+					'data-anchor', 'data-language', 'data-line-numbers'
+				],
+				ALLOW_DATA_ATTR: true
+			});
+			tempDiv.innerHTML = sanitizedContent;
 			const text = tempDiv.textContent || tempDiv.innerText || '';
 			// Get first few sentences/lines
 			const lines = text.split(/\n+/).filter(line => line.trim());

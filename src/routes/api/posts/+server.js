@@ -1,5 +1,6 @@
 import { json, error } from "@sveltejs/kit";
 import { marked } from "marked";
+import { validateCSRF } from "$lib/utils/csrf.js";
 
 /**
  * GET /api/posts - List all posts from D1
@@ -40,6 +41,11 @@ export async function POST({ request, platform, locals }) {
   // Auth check
   if (!locals.user) {
     throw error(401, "Unauthorized");
+  }
+
+  // CSRF check
+  if (!validateCSRF(request)) {
+    throw error(403, "Invalid origin");
   }
 
   if (!platform?.env?.POSTS_DB) {
