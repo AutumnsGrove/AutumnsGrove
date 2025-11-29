@@ -1,5 +1,8 @@
 <script>
   import { Calendar, Play, RefreshCw, Clock, CheckCircle, XCircle, Loader2, AlertTriangle, DollarSign, Cpu, TrendingUp, ChevronDown, Edit3, X, Save, List } from 'lucide-svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Input from '$lib/components/ui/Input.svelte';
+  import Select from '$lib/components/ui/Select.svelte';
 
   let triggerLoading = $state(false);
   let backfillLoading = $state(false);
@@ -23,7 +26,7 @@
   let selectedModel = $state('');
   let usageStats = $state(null);
   let loadingUsage = $state(true);
-  let usageDays = $state(30);
+  let usageDays = $state('30');
 
   // Entry browsing and editing
   let entries = $state([]);
@@ -78,7 +81,8 @@
   async function fetchUsageStats() {
     loadingUsage = true;
     try {
-      const res = await fetch(`/api/timeline/usage?days=${usageDays}`);
+      const days = parseInt(usageDays) || 30;
+      const res = await fetch(`/api/timeline/usage?days=${days}`);
       if (res.ok) {
         usageStats = await res.json();
       }
@@ -319,11 +323,15 @@
   <section class="usage-section">
     <div class="usage-header">
       <h2><TrendingUp size={18} /> AI Usage & Costs</h2>
-      <select bind:value={usageDays} onchange={() => fetchUsageStats()}>
-        <option value={7}>Last 7 days</option>
-        <option value={30}>Last 30 days</option>
-        <option value={90}>Last 90 days</option>
-      </select>
+      <Select
+        bind:value={usageDays}
+        options={[
+          { value: '7', label: 'Last 7 days' },
+          { value: '30', label: 'Last 30 days' },
+          { value: '90', label: 'Last 90 days' }
+        ]}
+        onchange={() => fetchUsageStats()}
+      />
     </div>
 
     {#if loadingUsage}
@@ -440,33 +448,27 @@
     <p class="section-desc">Generate an AI summary for a specific date</p>
 
     <div class="input-row">
-      <div class="input-group">
-        <label for="trigger-date">Date</label>
-        <input
-          type="date"
-          id="trigger-date"
-          bind:value={triggerDate}
-          max={new Date().toISOString().split('T')[0]}
-        />
-      </div>
+      <Input
+        type="date"
+        bind:value={triggerDate}
+        label="Date"
+        max={new Date().toISOString().split('T')[0]}
+      />
 
-      <div class="input-group">
-        <label for="model-select">AI Model</label>
-        <select id="model-select" bind:value={selectedModel}>
-          {#each models as model}
-            <option
-              value="{model.provider}:{model.id}"
-              disabled={model.notImplemented}
-            >
-              {model.name} ({model.providerName}){model.notImplemented ? ' - Coming Soon' : ''}
-            </option>
-          {/each}
-        </select>
-      </div>
+      <Select
+        bind:value={selectedModel}
+        label="AI Model"
+        options={models.map(model => ({
+          value: `${model.provider}:${model.id}`,
+          label: `${model.name} (${model.providerName})${model.notImplemented ? ' - Coming Soon' : ''}`,
+          disabled: model.notImplemented
+        }))}
+        placeholder="Select a model"
+      />
     </div>
 
-    <button
-      class="action-btn primary"
+    <Button
+      variant="primary"
       onclick={triggerSummary}
       disabled={triggerLoading}
     >
@@ -477,7 +479,7 @@
         <Play size={16} />
         <span>Generate Summary</span>
       {/if}
-    </button>
+    </Button>
   </section>
 
   <!-- Backfill Summaries -->
@@ -486,30 +488,24 @@
     <p class="section-desc">Generate summaries for a range of past dates (max 30 days)</p>
 
     <div class="input-row">
-      <div class="input-group">
-        <label for="backfill-start">Start Date</label>
-        <input
-          type="date"
-          id="backfill-start"
-          bind:value={backfillStart}
-          max={new Date().toISOString().split('T')[0]}
-        />
-      </div>
+      <Input
+        type="date"
+        bind:value={backfillStart}
+        label="Start Date"
+        max={new Date().toISOString().split('T')[0]}
+      />
 
-      <div class="input-group">
-        <label for="backfill-end">End Date (optional)</label>
-        <input
-          type="date"
-          id="backfill-end"
-          bind:value={backfillEnd}
-          min={backfillStart}
-          max={new Date().toISOString().split('T')[0]}
-        />
-      </div>
+      <Input
+        type="date"
+        bind:value={backfillEnd}
+        label="End Date (optional)"
+        min={backfillStart}
+        max={new Date().toISOString().split('T')[0]}
+      />
     </div>
 
-    <button
-      class="action-btn secondary"
+    <Button
+      variant="secondary"
       onclick={backfillSummaries}
       disabled={backfillLoading || !backfillStart}
     >
@@ -520,7 +516,7 @@
         <RefreshCw size={16} />
         <span>Backfill Summaries</span>
       {/if}
-    </button>
+    </Button>
   </section>
 
   <!-- Result Display -->
@@ -590,32 +586,34 @@
             {#if entry.brief_summary}
               <p class="entry-brief">{entry.brief_summary.slice(0, 100)}{entry.brief_summary.length > 100 ? '...' : ''}</p>
             {/if}
-            <button class="edit-btn" onclick={() => openEditModal(entry)} disabled={entry.is_rest_day}>
+            <Button variant="primary" size="sm" onclick={() => openEditModal(entry)} disabled={entry.is_rest_day}>
               <Edit3 size={14} />
               <span>Edit</span>
-            </button>
+            </Button>
           </div>
         {/each}
       </div>
 
       <div class="pagination">
-        <button
-          class="page-btn"
+        <Button
+          variant="secondary"
+          size="sm"
           onclick={() => entriesPage = Math.max(0, entriesPage - 1)}
           disabled={entriesPage === 0}
         >
           Previous
-        </button>
+        </Button>
         <span class="page-info">
           Page {entriesPage + 1} of {Math.ceil(entriesTotal / entriesLimit)}
         </span>
-        <button
-          class="page-btn"
+        <Button
+          variant="secondary"
+          size="sm"
           onclick={() => entriesPage = entriesPage + 1}
           disabled={(entriesPage + 1) * entriesLimit >= entriesTotal}
         >
           Next
-        </button>
+        </Button>
       </div>
     {:else}
       <div class="no-entries">No timeline entries yet</div>
@@ -715,10 +713,10 @@
       </div>
 
       <div class="modal-footer">
-        <button class="modal-btn cancel" onclick={closeEditModal}>
+        <Button variant="secondary" onclick={closeEditModal}>
           Cancel
-        </button>
-        <button class="modal-btn save" onclick={saveEntry} disabled={saving || gutterJsonError}>
+        </Button>
+        <Button variant="primary" onclick={saveEntry} disabled={saving || gutterJsonError}>
           {#if saving}
             <Loader2 size={16} class="spinner" />
             <span>Saving...</span>
@@ -726,7 +724,7 @@
             <Save size={16} />
             <span>Save Changes</span>
           {/if}
-        </button>
+        </Button>
       </div>
     </div>
   </div>
