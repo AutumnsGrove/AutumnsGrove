@@ -1,4 +1,7 @@
 <script>
+  import Button from "$lib/components/ui/Button.svelte";
+  import Badge from "$lib/components/ui/Badge.svelte";
+
   let { data } = $props();
 
   function formatDate(dateString) {
@@ -16,9 +19,9 @@
       <h1>Blog Posts</h1>
       <p class="subtitle">{data.posts.length} posts</p>
     </div>
-    <a href="/admin/blog/new" class="btn btn-primary">
+    <Button variant="primary" onclick={() => window.location.href = '/admin/blog/new'}>
       + New Post
-    </a>
+    </Button>
   </header>
 
   <div class="posts-table-container">
@@ -47,7 +50,7 @@
               {#if post.tags.length > 0}
                 <div class="tags">
                   {#each post.tags as tag (tag)}
-                    <span class="tag">{tag}</span>
+                    <Badge variant="tag">{tag}</Badge>
                   {/each}
                 </div>
               {:else}
@@ -115,24 +118,6 @@
 
   :global(.dark) .subtitle {
     color: var(--color-text-subtle-dark);
-  }
-
-  .btn {
-    padding: 0.5rem 1rem;
-    border-radius: var(--border-radius-button);
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.9rem;
-  }
-
-  .btn-primary {
-    background: var(--color-primary);
-    color: white;
-    transition: background-color 0.2s ease;
-  }
-
-  .btn-primary:hover {
-    background: var(--color-primary-hover);
   }
 
   .posts-table-container {
@@ -220,21 +205,6 @@
     display: flex;
     flex-wrap: wrap;
     gap: 0.25rem;
-  }
-
-  .tag {
-    background: var(--tag-bg);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-  }
-
-  .tag:hover {
-    background: var(--tag-bg-hover);
-    transform: scale(1.05);
   }
 
   .no-tags {
@@ -347,10 +317,6 @@
       flex-direction: column;
       align-items: stretch;
       gap: 1rem;
-    }
-
-    .btn {
-      text-align: center;
     }
 
     .posts-table th:nth-child(2),

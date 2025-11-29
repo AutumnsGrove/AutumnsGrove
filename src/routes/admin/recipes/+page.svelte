@@ -1,4 +1,7 @@
 <script>
+  import Button from "$lib/components/ui/Button.svelte";
+  import Badge from "$lib/components/ui/Badge.svelte";
+
   let { data } = $props();
 
   function formatDate(dateString) {
@@ -45,13 +48,12 @@ tags:
       <h1>Recipes</h1>
       <p class="subtitle">{data.recipes.length} recipes</p>
     </div>
-    <a
-      href={getNewRecipeUrl()}
-      target="_blank"
-      class="btn btn-primary"
+    <Button
+      variant="primary"
+      onclick={() => window.open(getNewRecipeUrl(), '_blank')}
     >
       + New Recipe
-    </a>
+    </Button>
   </header>
 
   <div class="recipes-table-container">
@@ -80,7 +82,7 @@ tags:
               {#if recipe.tags.length > 0}
                 <div class="tags">
                   {#each recipe.tags as tag (tag)}
-                    <span class="tag">{tag}</span>
+                    <Badge variant="tag">{tag}</Badge>
                   {/each}
                 </div>
               {:else}
@@ -154,24 +156,6 @@ tags:
 
   :global(.dark) .subtitle {
     color: var(--color-text-subtle-dark);
-  }
-
-  .btn {
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.9rem;
-  }
-
-  .btn-primary {
-    background: var(--color-primary);
-    color: white;
-    transition: background-color 0.2s ease;
-  }
-
-  .btn-primary:hover {
-    background: var(--color-primary-hover);
   }
 
   .recipes-table-container {
@@ -259,21 +243,6 @@ tags:
     display: flex;
     flex-wrap: wrap;
     gap: 0.25rem;
-  }
-
-  .tag {
-    background: var(--tag-bg);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-  }
-
-  .tag:hover {
-    background: var(--tag-bg-hover);
-    transform: scale(1.05);
   }
 
   .no-tags {
@@ -386,10 +355,6 @@ tags:
       flex-direction: column;
       align-items: stretch;
       gap: 1rem;
-    }
-
-    .btn {
-      text-align: center;
     }
 
     .recipes-table th:nth-child(2),
