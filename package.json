@@ -7,7 +7,9 @@
     "dev": "vite dev",
     "dev:wrangler": "wrangler pages dev -- vite dev",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "audit": "npm audit --audit-level=moderate",
+    "audit:fix": "npm audit fix"
   },
   "devDependencies": {
     "@lucide/svelte": "^0.482.0",

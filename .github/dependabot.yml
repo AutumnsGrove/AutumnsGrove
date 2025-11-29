@@ -1,0 +1,49 @@
+version: 2
+updates:
+  # Enable version updates for npm dependencies
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    # Limit number of open PRs to avoid spam
+    open-pull-requests-limit: 10
+    # Group updates by dependency type
+    groups:
+      # Group all dev dependencies together
+      development-dependencies:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+      # Group production dependencies together
+      production-dependencies:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+    # Automatically label PRs
+    labels:
+      - "dependencies"
+      - "automated"
+    # Allow both direct and indirect updates
+    allow:
+      - dependency-type: "all"
+    # Ignore specific packages if needed (example)
+    # ignore:
+    #   - dependency-name: "package-to-ignore"
+    #     versions: ["1.x", "2.x"]
+
+  # Enable security updates for GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "automated"
