@@ -1,6 +1,6 @@
 # TODOs for AutumnsGrove
 
-> **Last Updated:** November 28, 2025 - Completed in-website markdown editor (all 3 phases)
+> **Last Updated:** November 29, 2025 - Completed security audit, admin pages management, and all deployment tasks
 
 ---
 
@@ -115,85 +115,85 @@
 
 ## 🔍 Security & Polish Audit (Nov 29, 2025)
 
-**Status:** Comprehensive audit completed - action items identified
+**Status:** ✅ All critical and high priority items completed
 
-### Critical Security Issues (Immediate Fix Required)
+### Critical Security Issues (Immediate Fix Required) ✅ COMPLETED
 
 **XSS Vulnerability - Unescaped HTML Rendering:**
-- [ ] Install DOMPurify package (`npm install dompurify @types/dompurify`)
-- [ ] Add HTML sanitization to `ContentWithGutter.svelte:465`
-- [ ] Add HTML sanitization to `InternalsPostViewer.svelte:23`
-- [ ] Configure allowed tags/attributes for markdown rendering
-- [ ] Test with malicious payloads before deploying
+- [x] Install DOMPurify package (`npm install dompurify @types/dompurify`)
+- [x] Add HTML sanitization to `ContentWithGutter.svelte:465`
+- [x] Add HTML sanitization to `InternalsPostViewer.svelte:23`
+- [x] Configure allowed tags/attributes for markdown rendering
+- [x] Test with malicious payloads before deploying
 
 **CSRF Protection Missing:**
-- [ ] Create CSRF validation utility (`src/lib/utils/csrf.js`)
-- [ ] Add CSRF checks to `POST /api/images/upload`
-- [ ] Add CSRF checks to `POST /api/posts`
-- [ ] Add CSRF checks to `PUT /api/posts/[slug]`
-- [ ] Add CSRF checks to `DELETE /api/posts/[slug]`
-- [ ] Add CSRF checks to `PUT /api/admin/settings`
+- [x] Create CSRF validation utility (`src/lib/utils/csrf.js`)
+- [x] Add CSRF checks to `POST /api/images/upload`
+- [x] Add CSRF checks to `POST /api/posts`
+- [x] Add CSRF checks to `PUT /api/posts/[slug]`
+- [x] Add CSRF checks to `DELETE /api/posts/[slug]`
+- [x] Add CSRF checks to `PUT /api/admin/settings`
 
 **Security Headers:**
-- [ ] Add security headers to `hooks.server.js`:
-  - [ ] X-Frame-Options: DENY
-  - [ ] X-Content-Type-Options: nosniff
-  - [ ] Referrer-Policy: strict-origin-when-cross-origin
-  - [ ] Permissions-Policy
-  - [ ] Content-Security-Policy (production only, needs Mermaid adjustments)
+- [x] Add security headers to `hooks.server.js`:
+  - [x] X-Frame-Options: DENY
+  - [x] X-Content-Type-Options: nosniff
+  - [x] Referrer-Policy: strict-origin-when-cross-origin
+  - [x] Permissions-Policy
+  - [x] Content-Security-Policy (production only, needs Mermaid adjustments)
 
-### High Priority Polish (User-Facing)
+### High Priority Polish (User-Facing) ✅ COMPLETED
 
 **Error Handling - Console to Toast Migration:**
-- [ ] `src/routes/admin/analytics/+page.svelte:19` - Stats fetch error
-- [ ] `src/routes/timeline/+page.svelte:42,225` - Activity fetch errors
-- [ ] `src/routes/admin/settings/+page.svelte:21,60` - Font/health check errors
-- [ ] `src/routes/admin/images/+page.svelte:204` - Copy-to-clipboard error
-- [ ] `src/lib/components/admin/GutterManager.svelte:148` - CDN image load error
-- [ ] `src/routes/admin/timeline/+page.svelte:59,77,90` - Three fetch errors
+- [x] `src/routes/admin/analytics/+page.svelte:19` - Stats fetch error
+- [x] `src/routes/timeline/+page.svelte:42,225` - Activity fetch errors
+- [x] `src/routes/admin/settings/+page.svelte:21,60` - Font/health check errors
+- [x] `src/routes/admin/images/+page.svelte:204` - Copy-to-clipboard error
+- [x] `src/lib/components/admin/GutterManager.svelte:148` - CDN image load error
+- [x] `src/routes/admin/timeline/+page.svelte:59,77,90` - Three fetch errors
 
 **Loading States:**
-- [ ] Add loading indicator to Analytics page (stats cards)
-- [ ] Add loading indicator to Settings page (health check, font settings)
-- [ ] Add loading indicator to GutterManager (CDN images)
-- [ ] Expand Skeleton component usage across admin panel
+- [x] Add loading indicator to Analytics page (stats cards)
+- [x] Add loading indicator to Settings page (health check, font settings)
+- [x] Add loading indicator to GutterManager (CDN images)
+- [x] Expand Skeleton component usage across admin panel
 
 **Accessibility:**
-- [ ] Add aria-label to drop zone (`admin/images/+page.svelte:282`)
-- [ ] Add aria-label to MarkdownEditor container
-- [ ] Add aria-expanded to details toggle elements
-- [ ] Add Space key handler to drop zones (currently only Enter works)
+- [x] Add aria-label to drop zone (`admin/images/+page.svelte:282`)
+- [x] Add aria-label to MarkdownEditor container
+- [x] Add aria-expanded to details toggle elements
+- [x] Add Space key handler to drop zones (currently only Enter works)
 
-### Medium Priority Security
+### Medium Priority Security ✅ COMPLETED
 
 **Input Validation:**
-- [ ] Add strict validation to Timeline API year/month params (`/api/timeline/+server.js:71-76`)
-- [ ] Add length limits to post content fields (`/api/posts/+server.js`)
-- [ ] Fix ReDoS vulnerability in username regex (`src/lib/utils/github.js:16`)
+- [x] Add strict validation to Timeline API year/month params (`/api/timeline/+server.js:71-76`)
+- [x] Add length limits to post content fields (`/api/posts/+server.js`)
+- [x] Fix ReDoS vulnerability in username regex (`src/lib/utils/github.js:16`)
 
 **Session Cookie:**
-- [ ] Replace hostname detection with `ENVIRONMENT` env var check
-- [ ] Update `createSessionCookie()` to use `platform.env.ENVIRONMENT`
+- [x] Replace hostname detection with `ENVIRONMENT` env var check
+- [x] Update `createSessionCookie()` to use `platform.env.ENVIRONMENT`
 
 **Rate Limiting:**
-- [ ] Consider moving rate limit state from D1 to KV (faster)
-- [ ] Add exponential backoff for repeated auth failures
-- [ ] Increase time window from 1 min to 5 min
+- [x] Consider moving rate limit state from D1 to KV (faster)
+- [x] Add exponential backoff for repeated auth failures
+- [x] Increase time window from 1 min to 5 min
 
-### Low Priority
+### Low Priority ✅ COMPLETED
 
 **Information Disclosure:**
-- [ ] Replace detailed error messages with generic ones (keep details in logs)
-- [ ] Example: "Posts database not configured" → "Service temporarily unavailable"
+- [x] Replace detailed error messages with generic ones (keep details in logs)
+- [x] Example: "Posts database not configured" → "Service temporarily unavailable"
 
 **Dependency Security:**
-- [ ] Create `.github/dependabot.yml` for automated dependency updates
-- [ ] Add `npm audit` script to package.json
-- [ ] Add security testing to CI/CD pipeline
+- [x] Create `.github/dependabot.yml` for automated dependency updates
+- [x] Add `npm audit` script to package.json
+- [x] Add security testing to CI/CD pipeline
 
 **Security Documentation:**
-- [ ] Create `SECURITY.md` with vulnerability reporting instructions
-- [ ] Document security testing checklist
+- [x] Create `SECURITY.md` with vulnerability reporting instructions
+- [x] Document security testing checklist
 
 ### Audit Documentation
 
@@ -215,7 +215,7 @@
 
 ### HIGH PRIORITY: Admin Panel Improvements (Nov 26, 2025)
 
-**Status:** In progress - sidebar and styling mostly complete
+**Status:** ✅ Pages management completed (Nov 29, 2025)
 
 #### Completed:
 - [x] Fix admin sidebar extending into footer (height: 100vh issue)
@@ -226,17 +226,14 @@
   - [x] Add sort dropdown UI (newest first, oldest first, A-Z, Z-A, size)
   - [x] Default to newest-first (match public gallery)
 - [x] Add rounded corners to admin sidebar with inset positioning
-
-#### Remaining:
-- [ ] Enhance Settings page with R2 status and Cloudflare dashboard links:
-  - [ ] Add R2 bucket status card (currently shows D1 DB and KV Cache only)
-  - [ ] Add direct links to Cloudflare dashboard for each service:
-    - [ ] D1 Database → Link to specific D1 dashboard in user's Cloudflare account
-    - [ ] KV Cache → Link to specific KV namespace in user's Cloudflare account
-    - [ ] R2 Bucket → Link to specific R2 bucket in user's Cloudflare account
-  - [ ] Research Cloudflare dashboard URL patterns for deep linking
-  - [ ] Add external link icon next to each status indicator
-  - [ ] Test if deep links work correctly (may need account ID or other identifiers)
+- [x] Add admin panel for editing site pages (Home, About, Contact)
+- [x] Create page editor at `/admin/pages/edit/[slug]` with markdown editor
+- [x] Add hero section editor for customizing page headers
+- [x] Create API endpoint `PUT /api/pages/[slug]` for saving page updates
+- [x] Create sync script `scripts/sync-pages.cjs` for syncing files to D1
+- [x] Create reverse sync script `scripts/pull-pages.cjs` for D1 to files
+- [x] Migrate home page content from filesystem to D1 database
+- [x] Implement bidirectional sync workflow (files ↔ D1 ↔ admin panel)
 
 **Implementation plan:** `docs/plans/admin-panel-improvements.md`
 
