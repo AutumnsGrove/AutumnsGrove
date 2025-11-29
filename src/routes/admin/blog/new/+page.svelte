@@ -1,10 +1,9 @@
 <script>
   import { goto } from "$app/navigation";
+  import { onMount } from "svelte";
+  import { browser } from "$app/environment";
   import MarkdownEditor from "$lib/components/admin/MarkdownEditor.svelte";
   import GutterManager from "$lib/components/admin/GutterManager.svelte";
-  import Input from "$lib/components/ui/Input.svelte";
-  import Button from "$lib/components/ui/Button.svelte";
-  import { toast } from "$lib/components/ui/toast";
 
   // Form state
   let title = $state("");
@@ -12,6 +11,7 @@
   let date = $state(new Date().toISOString().split("T")[0]);
   let description = $state("");
   let tagsInput = $state("");
+  let font = $state("default");
   let content = $state("");
   let gutterItems = $state([]);
 
@@ -20,8 +20,27 @@
 
   // UI state
   let saving = $state(false);
+  let error = $state(null);
   let slugManuallyEdited = $state(false);
   let showGutter = $state(false);
+  let detailsCollapsed = $state(false);
+
+  // Load collapsed state from localStorage
+  onMount(() => {
+    if (browser) {
+      const saved = localStorage.getItem("editor-details-collapsed");
+      if (saved !== null) {
+        detailsCollapsed = saved === "true";
+      }
+    }
+  });
+
+  function toggleDetailsCollapsed() {
+    detailsCollapsed = !detailsCollapsed;
+    if (browser) {
+      localStorage.setItem("editor-details-collapsed", String(detailsCollapsed));
+    }
+  }
 
   // Auto-generate slug from title
   $effect(() => {
@@ -50,18 +69,19 @@
   async function handleSave() {
     // Validation
     if (!title.trim()) {
-      toast.error("Title is required");
+      error = "Title is required";
       return;
     }
     if (!slug.trim()) {
-      toast.error("Slug is required");
+      error = "Slug is required";
       return;
     }
     if (!content.trim()) {
-      toast.error("Content is required");
+      error = "Content is required";
       return;
     }
 
+    error = null;
     saving = true;
 
     try {
@@ -76,6 +96,7 @@
           date,
           description: description.trim(),
           tags: parseTags(tagsInput),
+          font,
           markdown_content: content,
           gutter_content: JSON.stringify(gutterItems),
         }),
@@ -90,12 +111,10 @@
       // Clear draft on successful save
       editorRef?.clearDraft();
 
-      toast.success("Post created successfully!");
-
       // Redirect to the edit page or blog admin
       goto(`/admin/blog/edit/${result.slug}`);
     } catch (err) {
-      toast.error(err.message || "Failed to create post");
+      error = err.message;
     } finally {
       saving = false;
     }
@@ -108,91 +127,131 @@
       <a href="/admin/blog" class="back-link">&larr; Back to Posts</a>
       <h1>New Post</h1>
     </div>
-    <Button
+    <button
+      class="save-btn"
       onclick={handleSave}
       disabled={saving}
     >
       {saving ? "Saving..." : "Save Post"}
-    </Button>
+    </button>
   </header>
+
+  {#if error}
+    <div class="error-banner">
+      <span class="error-icon">!</span>
+      <span>{error}</span>
+      <button class="error-dismiss" onclick={() => (error = null)}>&times;</button>
+    </div>
+  {/if}
 
   <div class="editor-layout">
     <!-- Metadata Panel -->
-    <aside class="metadata-panel">
-      <h2 class="panel-title">Post Details</h2>
-
-      <div class="form-group">
-        <label for="title">Title</label>
-        <Input
-          type="text"
-          id="title"
-          bind:value={title}
-          placeholder="Your Post Title"
-        />
+    <aside class="metadata-panel" class:collapsed={detailsCollapsed}>
+      <div class="panel-header">
+        <h2 class="panel-title">{#if detailsCollapsed}Details{:else}Post Details{/if}</h2>
+        <button
+          class="collapse-details-btn"
+          onclick={toggleDetailsCollapsed}
+          title={detailsCollapsed ? "Expand details" : "Collapse details"}
+        >
+          {#if detailsCollapsed}»{:else}«{/if}
+        </button>
       </div>
 
-      <div class="form-group">
-        <label for="slug">Slug</label>
-        <div class="slug-input-wrapper">
-          <span class="slug-prefix">/blog/</span>
-          <Input
-            type="text"
-            id="slug"
-            bind:value={slug}
-            oninput={handleSlugInput}
-            placeholder="your-post-slug"
-            class="slug-input"
-          />
-        </div>
-      </div>
+      {#if !detailsCollapsed}
+        <div class="panel-content">
+          <div class="form-group">
+            <label for="title">Title</label>
+            <input
+              type="text"
+              id="title"
+              bind:value={title}
+              placeholder="Your Post Title"
+              class="form-input"
+            />
+          </div>
 
-      <div class="form-group">
-        <label for="date">Date</label>
-        <Input
-          type="date"
-          id="date"
-          bind:value={date}
-        />
-      </div>
+          <div class="form-group">
+            <label for="slug">Slug</label>
+            <div class="slug-input-wrapper">
+              <span class="slug-prefix">/blog/</span>
+              <input
+                type="text"
+                id="slug"
+                bind:value={slug}
+                oninput={handleSlugInput}
+                placeholder="your-post-slug"
+                class="form-input slug-input"
+              />
+            </div>
+          </div>
 
-      <div class="form-group">
-        <label for="description">
-          Description
-          <span class="char-count" class:warning={description.length > 160} class:good={description.length >= 120 && description.length <= 160}>
-            {description.length}/160
-          </span>
-        </label>
-        <textarea
-          id="description"
-          bind:value={description}
-          placeholder="A brief summary of your post (120-160 chars for SEO)..."
-          rows="3"
-          class="form-input form-textarea"
-          class:char-warning={description.length > 160}
-        ></textarea>
-        {#if description.length > 160}
-          <span class="form-warning">Description exceeds recommended SEO length</span>
-        {:else if description.length > 0 && description.length < 120}
-          <span class="form-hint">Add {120 - description.length} more chars for optimal SEO</span>
-        {/if}
-      </div>
+          <div class="form-group">
+            <label for="date">Date</label>
+            <input
+              type="date"
+              id="date"
+              bind:value={date}
+              class="form-input"
+            />
+          </div>
 
-      <div class="form-group">
-        <label for="tags">Tags</label>
-        <Input
-          type="text"
-          id="tags"
-          bind:value={tagsInput}
-          placeholder="tag1, tag2, tag3"
-        />
-        <span class="form-hint">Separate tags with commas</span>
-      </div>
+          <div class="form-group">
+            <label for="description">
+              Description
+              <span class="char-count" class:warning={description.length > 160} class:good={description.length >= 120 && description.length <= 160}>
+                {description.length}/160
+              </span>
+            </label>
+            <textarea
+              id="description"
+              bind:value={description}
+              placeholder="A brief summary of your post (120-160 chars for SEO)..."
+              rows="3"
+              class="form-input form-textarea"
+              class:char-warning={description.length > 160}
+            ></textarea>
+            {#if description.length > 160}
+              <span class="form-warning">Description exceeds recommended SEO length</span>
+            {:else if description.length > 0 && description.length < 120}
+              <span class="form-hint">Add {120 - description.length} more chars for optimal SEO</span>
+            {/if}
+          </div>
 
-      {#if tagsInput}
-        <div class="tags-preview">
-          {#each parseTags(tagsInput) as tag}
-            <span class="tag-preview">{tag}</span>
-          {/each}
+          <div class="form-group">
+            <label for="tags">Tags</label>
+            <input
+              type="text"
+              id="tags"
+              bind:value={tagsInput}
+              placeholder="tag1, tag2, tag3"
+              class="form-input"
+            />
+            <span class="form-hint">Separate tags with commas</span>
+          </div>
+
+          {#if tagsInput}
+            <div class="tags-preview">
+              {#each parseTags(tagsInput) as tag}
+                <span class="tag-preview">{tag}</span>
+              {/each}
+            </div>
+          {/if}
+
+          <div class="form-group">
+            <label for="font">Font</label>
+            <select id="font" bind:value={font} class="form-input">
+              <option value="default">Default (Site Setting)</option>
+              <option value="alagard">Alagard</option>
+              <option value="cozette">Cozette</option>
+              <option value="atkinson">Atkinson Hyperlegible</option>
+              <option value="opendyslexic">OpenDyslexic</option>
+              <option value="lexend">Lexend</option>
+              <option value="cormorant">Cormorant (Serif)</option>
+              <option value="quicksand">Quicksand</option>
+            </select>
+            <span class="form-hint">Choose a font for this post's content</span>
+          </div>
         </div>
       {/if}
     </aside>
@@ -285,6 +344,79 @@
     color: var(--color-text-dark);
   }
 
+  .save-btn {
+    padding: 0.6rem 1.25rem;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius-button);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s, opacity 0.2s;
+  }
+
+  .save-btn:hover:not(:disabled) {
+    background: var(--color-primary-hover);
+  }
+
+  .save-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* Error Banner */
+  .error-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    background: #ffeef0;
+    border: 1px solid #f85149;
+    border-radius: var(--border-radius-button);
+    color: #cf222e;
+    margin-bottom: 1rem;
+    flex-shrink: 0;
+  }
+
+  :global(.dark) .error-banner {
+    background: rgba(248, 81, 73, 0.15);
+    border-color: #f85149;
+    color: #ff7b72;
+  }
+
+  .error-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    background: #cf222e;
+    color: white;
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: bold;
+  }
+
+  :global(.dark) .error-icon {
+    background: #f85149;
+  }
+
+  .error-dismiss {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: inherit;
+    font-size: 1.25rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    opacity: 0.7;
+  }
+
+  .error-dismiss:hover {
+    opacity: 1;
+  }
 
   /* Editor Layout */
   .editor-layout {
@@ -303,7 +435,13 @@
     border-radius: var(--border-radius-standard);
     padding: 1.25rem;
     overflow-y: auto;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+    transition: width 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  .metadata-panel.collapsed {
+    width: 50px;
+    padding: 0.75rem 0.5rem;
+    overflow: hidden;
   }
 
   :global(.dark) .metadata-panel {
@@ -311,19 +449,76 @@
     border-color: var(--color-border-dark);
   }
 
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 1.25rem;
+    transition: border-color 0.3s ease;
+  }
+
+  .metadata-panel.collapsed .panel-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  :global(.dark) .panel-header {
+    border-color: var(--color-border-dark);
+  }
+
   .panel-title {
-    margin: 0 0 1.25rem 0;
+    margin: 0;
     font-size: 1rem;
     font-weight: 600;
     color: var(--color-text);
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--color-border);
-    transition: color 0.3s ease, border-color 0.3s ease;
+    transition: color 0.3s ease;
+  }
+
+  .metadata-panel.collapsed .panel-title {
+    font-size: 0.7rem;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
   }
 
   :global(.dark) .panel-title {
     color: var(--color-text-dark);
+  }
+
+  .collapse-details-btn {
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    font-family: monospace;
+    transition: all 0.15s ease;
+  }
+
+  :global(.dark) .collapse-details-btn {
     border-color: var(--color-border-dark);
+    color: var(--color-text-muted-dark);
+  }
+
+  .collapse-details-btn:hover {
+    background: var(--color-bg-secondary);
+    color: var(--color-primary);
+  }
+
+  :global(.dark) .collapse-details-btn:hover {
+    background: var(--color-border-dark);
+    color: var(--color-primary-light);
+  }
+
+  .panel-content {
+    /* Animation for content visibility */
   }
 
   .form-group {
@@ -535,8 +730,23 @@
     }
 
     .metadata-panel {
-      width: 100%;
+      width: 100% !important;
       max-height: none;
+    }
+
+    .metadata-panel.collapsed {
+      width: 100% !important;
+      padding: 1rem;
+    }
+
+    .metadata-panel.collapsed .panel-header {
+      flex-direction: row;
+    }
+
+    .metadata-panel.collapsed .panel-title {
+      writing-mode: horizontal-tb;
+      transform: none;
+      font-size: 1rem;
     }
 
     .new-post-page {

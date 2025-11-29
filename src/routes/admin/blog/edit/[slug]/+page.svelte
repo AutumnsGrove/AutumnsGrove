@@ -1,5 +1,7 @@
 <script>
   import { goto } from "$app/navigation";
+  import { onMount } from "svelte";
+  import { browser } from "$app/environment";
   import MarkdownEditor from "$lib/components/admin/MarkdownEditor.svelte";
   import GutterManager from "$lib/components/admin/GutterManager.svelte";
   import Input from "$lib/components/ui/Input.svelte";
@@ -17,6 +19,7 @@
   let tagsInput = $state(
     Array.isArray(data.post.tags) ? data.post.tags.join(", ") : ""
   );
+  let font = $state(data.post.font || "default");
   let content = $state(data.post.markdown_content || "");
   let gutterItems = $state(data.post.gutter_content ? JSON.parse(data.post.gutter_content) : []);
 
@@ -28,6 +31,24 @@
   let hasUnsavedChanges = $state(false);
   let showGutter = $state(true);
   let showDeleteDialog = $state(false);
+  let detailsCollapsed = $state(false);
+
+  // Load collapsed state from localStorage
+  onMount(() => {
+    if (browser) {
+      const saved = localStorage.getItem("editor-details-collapsed");
+      if (saved !== null) {
+        detailsCollapsed = saved === "true";
+      }
+    }
+  });
+
+  function toggleDetailsCollapsed() {
+    detailsCollapsed = !detailsCollapsed;
+    if (browser) {
+      localStorage.setItem("editor-details-collapsed", String(detailsCollapsed));
+    }
+  }
 
   // Track changes
   $effect(() => {
@@ -71,6 +92,7 @@
           date,
           description: description.trim(),
           tags: parseTags(tagsInput),
+          font,
           markdown_content: content,
           gutter_content: JSON.stringify(gutterItems),
         }),
@@ -177,96 +199,127 @@
 
   <div class="editor-layout">
     <!-- Metadata Panel -->
-    <aside class="metadata-panel">
-      <h2 class="panel-title">Post Details</h2>
-
-      <div class="form-group">
-        <label for="title">Title</label>
-        <Input
-          type="text"
-          id="title"
-          bind:value={title}
-          placeholder="Your Post Title"
-        />
+    <aside class="metadata-panel" class:collapsed={detailsCollapsed}>
+      <div class="panel-header">
+        <h2 class="panel-title">{#if detailsCollapsed}Details{:else}Post Details{/if}</h2>
+        <button
+          class="collapse-details-btn"
+          onclick={toggleDetailsCollapsed}
+          title={detailsCollapsed ? "Expand details" : "Collapse details"}
+        >
+          {#if detailsCollapsed}»{:else}«{/if}
+        </button>
       </div>
 
-      <div class="form-group">
-        <label for="slug">Slug</label>
-        <div class="slug-display">
-          <span class="slug-prefix">/blog/</span>
-          <span class="slug-value">{slug}</span>
-        </div>
-        <span class="form-hint">Slug cannot be changed after creation</span>
-      </div>
+      {#if !detailsCollapsed}
+        <div class="panel-content">
+          <div class="form-group">
+            <label for="title">Title</label>
+            <input
+              type="text"
+              id="title"
+              bind:value={title}
+              placeholder="Your Post Title"
+              class="form-input"
+            />
+          </div>
 
-      <div class="form-group">
-        <label for="date">Date</label>
-        <Input
-          type="date"
-          id="date"
-          bind:value={date}
-        />
-      </div>
+          <div class="form-group">
+            <label for="slug">Slug</label>
+            <div class="slug-display">
+              <span class="slug-prefix">/blog/</span>
+              <span class="slug-value">{slug}</span>
+            </div>
+            <span class="form-hint">Slug cannot be changed after creation</span>
+          </div>
 
-      <div class="form-group">
-        <label for="description">
-          Description
-          <span class="char-count" class:warning={description.length > 160} class:good={description.length >= 120 && description.length <= 160}>
-            {description.length}/160
-          </span>
-        </label>
-        <textarea
-          id="description"
-          bind:value={description}
-          placeholder="A brief summary of your post (120-160 chars for SEO)..."
-          rows="3"
-          class="form-input form-textarea"
-          class:char-warning={description.length > 160}
-        ></textarea>
-        {#if description.length > 160}
-          <span class="form-warning">Description exceeds recommended SEO length</span>
-        {:else if description.length > 0 && description.length < 120}
-          <span class="form-hint">Add {120 - description.length} more chars for optimal SEO</span>
-        {/if}
-      </div>
+          <div class="form-group">
+            <label for="date">Date</label>
+            <input
+              type="date"
+              id="date"
+              bind:value={date}
+              class="form-input"
+            />
+          </div>
 
-      <div class="form-group">
-        <label for="tags">Tags</label>
-        <Input
-          type="text"
-          id="tags"
-          bind:value={tagsInput}
-          placeholder="tag1, tag2, tag3"
-        />
-        <span class="form-hint">Separate tags with commas</span>
-      </div>
+          <div class="form-group">
+            <label for="description">
+              Description
+              <span class="char-count" class:warning={description.length > 160} class:good={description.length >= 120 && description.length <= 160}>
+                {description.length}/160
+              </span>
+            </label>
+            <textarea
+              id="description"
+              bind:value={description}
+              placeholder="A brief summary of your post (120-160 chars for SEO)..."
+              rows="3"
+              class="form-input form-textarea"
+              class:char-warning={description.length > 160}
+            ></textarea>
+            {#if description.length > 160}
+              <span class="form-warning">Description exceeds recommended SEO length</span>
+            {:else if description.length > 0 && description.length < 120}
+              <span class="form-hint">Add {120 - description.length} more chars for optimal SEO</span>
+            {/if}
+          </div>
 
-      {#if tagsInput}
-        <div class="tags-preview">
-          {#each parseTags(tagsInput) as tag}
-            <span class="tag-preview">{tag}</span>
-          {/each}
+          <div class="form-group">
+            <label for="tags">Tags</label>
+            <input
+              type="text"
+              id="tags"
+              bind:value={tagsInput}
+              placeholder="tag1, tag2, tag3"
+              class="form-input"
+            />
+            <span class="form-hint">Separate tags with commas</span>
+          </div>
+
+          {#if tagsInput}
+            <div class="tags-preview">
+              {#each parseTags(tagsInput) as tag}
+                <span class="tag-preview">{tag}</span>
+              {/each}
+            </div>
+          {/if}
+
+          <div class="form-group">
+            <label for="font">Font</label>
+            <select id="font" bind:value={font} class="form-input">
+              <option value="default">Default (Site Setting)</option>
+              <option value="alagard">Alagard</option>
+              <option value="cozette">Cozette</option>
+              <option value="atkinson">Atkinson Hyperlegible</option>
+              <option value="opendyslexic">OpenDyslexic</option>
+              <option value="lexend">Lexend</option>
+              <option value="cormorant">Cormorant (Serif)</option>
+              <option value="quicksand">Quicksand</option>
+            </select>
+            <span class="form-hint">Choose a font for this post's content</span>
+          </div>
+
+          <div class="metadata-info">
+            {#if data.post.last_synced}
+              <p class="info-item">
+                <span class="info-label">Last synced:</span>
+                <span class="info-value">
+                  {new Date(data.post.last_synced).toLocaleString()}
+                </span>
+              </p>
+            {/if}
+            {#if data.post.updated_at}
+              <p class="info-item">
+                <span class="info-label">Last updated:</span>
+                <span class="info-value">
+                  {new Date(data.post.updated_at).toLocaleString()}
+                </span>
+              </p>
+            {/if}
+          </div>
         </div>
       {/if}
-
-      <div class="metadata-info">
-        {#if data.post.last_synced}
-          <p class="info-item">
-            <span class="info-label">Last synced:</span>
-            <span class="info-value">
-              {new Date(data.post.last_synced).toLocaleString()}
-            </span>
-          </p>
-        {/if}
-        {#if data.post.updated_at}
-          <p class="info-item">
-            <span class="info-label">Last updated:</span>
-            <span class="info-value">
-              {new Date(data.post.updated_at).toLocaleString()}
-            </span>
-          </p>
-        {/if}
-      </div>
     </aside>
 
     <!-- Editor Panel -->
@@ -458,7 +511,13 @@
     border-radius: var(--border-radius-standard);
     padding: 1.25rem;
     overflow-y: auto;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+    transition: width 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  .metadata-panel.collapsed {
+    width: 50px;
+    padding: 0.75rem 0.5rem;
+    overflow: hidden;
   }
 
   :global(.dark) .metadata-panel {
@@ -466,19 +525,76 @@
     border-color: var(--color-border-dark);
   }
 
+  .panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 1.25rem;
+    transition: border-color 0.3s ease;
+  }
+
+  .metadata-panel.collapsed .panel-header {
+    flex-direction: column;
+    gap: 0.5rem;
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  :global(.dark) .panel-header {
+    border-color: var(--color-border-dark);
+  }
+
   .panel-title {
-    margin: 0 0 1.25rem 0;
+    margin: 0;
     font-size: 1rem;
     font-weight: 600;
     color: var(--color-text);
-    padding-bottom: 0.75rem;
-    border-bottom: 1px solid var(--color-border);
-    transition: color 0.3s ease, border-color 0.3s ease;
+    transition: color 0.3s ease;
+  }
+
+  .metadata-panel.collapsed .panel-title {
+    font-size: 0.7rem;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
   }
 
   :global(.dark) .panel-title {
     color: var(--color-text-dark);
+  }
+
+  .collapse-details-btn {
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.2rem 0.4rem;
+    font-family: monospace;
+    transition: all 0.15s ease;
+  }
+
+  :global(.dark) .collapse-details-btn {
     border-color: var(--color-border-dark);
+    color: var(--color-text-muted-dark);
+  }
+
+  .collapse-details-btn:hover {
+    background: var(--color-bg-secondary);
+    color: var(--color-primary);
+  }
+
+  :global(.dark) .collapse-details-btn:hover {
+    background: var(--color-border-dark);
+    color: var(--color-primary-light);
+  }
+
+  .panel-content {
+    /* Animation for content visibility */
   }
 
   .form-group {
@@ -719,8 +835,23 @@
     }
 
     .metadata-panel {
-      width: 100%;
+      width: 100% !important;
       max-height: none;
+    }
+
+    .metadata-panel.collapsed {
+      width: 100% !important;
+      padding: 1rem;
+    }
+
+    .metadata-panel.collapsed .panel-header {
+      flex-direction: row;
+    }
+
+    .metadata-panel.collapsed .panel-title {
+      writing-mode: horizontal-tb;
+      transform: none;
+      font-size: 1rem;
     }
 
     .edit-post-page {

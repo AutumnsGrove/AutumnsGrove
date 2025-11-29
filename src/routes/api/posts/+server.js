@@ -83,43 +83,25 @@ export async function POST({ request, platform, locals }) {
     const now = new Date().toISOString();
     const tags = JSON.stringify(data.tags || []);
 
-    // Build the insert query - include gutter_content if provided
-    const hasGutterContent = data.gutter_content !== undefined;
+    // Build the insert query with all optional fields
+    const insertQuery = `INSERT INTO posts (slug, title, date, tags, description, markdown_content, html_content, gutter_content, font, file_hash, last_synced, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-    const insertQuery = hasGutterContent
-      ? `INSERT INTO posts (slug, title, date, tags, description, markdown_content, html_content, gutter_content, file_hash, last_synced, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-      : `INSERT INTO posts (slug, title, date, tags, description, markdown_content, html_content, file_hash, last_synced, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
-    const params = hasGutterContent
-      ? [
-          slug,
-          data.title,
-          data.date || now.split("T")[0],
-          tags,
-          data.description || "",
-          data.markdown_content,
-          html_content,
-          data.gutter_content || "[]",
-          file_hash,
-          now,
-          now,
-          now,
-        ]
-      : [
-          slug,
-          data.title,
-          data.date || now.split("T")[0],
-          tags,
-          data.description || "",
-          data.markdown_content,
-          html_content,
-          file_hash,
-          now,
-          now,
-          now,
-        ];
+    const params = [
+      slug,
+      data.title,
+      data.date || now.split("T")[0],
+      tags,
+      data.description || "",
+      data.markdown_content,
+      html_content,
+      data.gutter_content || "[]",
+      data.font || "default",
+      file_hash,
+      now,
+      now,
+      now,
+    ];
 
     await platform.env.POSTS_DB.prepare(insertQuery).bind(...params).run();
 
