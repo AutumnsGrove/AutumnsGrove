@@ -1,6 +1,6 @@
 <script>
 	import { tick, untrack, onMount } from 'svelte';
-	import DOMPurify from 'dompurify';
+	import { browser } from '$app/environment';
 	import TableOfContents from './TableOfContents.svelte';
 	import MobileTOC from './MobileTOC.svelte';
 	import GutterItem from './GutterItem.svelte';
@@ -391,23 +391,35 @@
 	// Derive content with reference markers injected
 	let processedContent = $derived(injectReferenceMarkers(content, overflowingAnchorKeys));
 
-	// Sanitize HTML content to prevent XSS attacks
+	// Sanitize HTML content to prevent XSS attacks (browser-only for SSR compatibility)
+	let DOMPurify = $state(null);
+
+	// Load DOMPurify only in browser
+	onMount(async () => {
+		if (browser) {
+			const module = await import('dompurify');
+			DOMPurify = module.default;
+		}
+	});
+
 	let sanitizedContent = $derived(
-		DOMPurify.sanitize(processedContent, {
-			ALLOWED_TAGS: [
-				'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-				'p', 'a', 'ul', 'ol', 'li', 'blockquote',
-				'code', 'pre', 'strong', 'em', 'img',
-				'table', 'thead', 'tbody', 'tr', 'th', 'td',
-				'br', 'hr', 'div', 'span', 'sup', 'sub',
-				'del', 'ins'
-			],
-			ALLOWED_ATTR: [
-				'href', 'src', 'alt', 'title', 'class', 'id',
-				'data-anchor', 'data-language', 'data-line-numbers'
-			],
-			ALLOW_DATA_ATTR: true
-		})
+		DOMPurify
+			? DOMPurify.sanitize(processedContent, {
+					ALLOWED_TAGS: [
+						'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+						'p', 'a', 'ul', 'ol', 'li', 'blockquote',
+						'code', 'pre', 'strong', 'em', 'img',
+						'table', 'thead', 'tbody', 'tr', 'th', 'td',
+						'br', 'hr', 'div', 'span', 'sup', 'sub',
+						'del', 'ins'
+					],
+					ALLOWED_ATTR: [
+						'href', 'src', 'alt', 'title', 'class', 'id',
+						'data-anchor', 'data-language', 'data-line-numbers'
+					],
+					ALLOW_DATA_ATTR: true
+			  })
+			: processedContent
 	);
 </script>
 

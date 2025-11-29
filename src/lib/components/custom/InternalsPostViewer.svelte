@@ -1,5 +1,6 @@
 <script>
-	import DOMPurify from 'dompurify';
+	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
 
 	let {
 		post = null,
@@ -11,6 +12,15 @@
 
 	let contentRef = $state(null);
 	let isOverflowing = $state(false);
+	let DOMPurify = $state(null);
+
+	// Load DOMPurify only in browser
+	onMount(async () => {
+		if (browser) {
+			const module = await import('dompurify');
+			DOMPurify = module.default;
+		}
+	});
 
 	// Determine the link URL
 	let linkUrl = $derived(href || (post?.slug ? `/blog/${post.slug}` : slug ? `/blog/${slug}` : '#'));
@@ -21,7 +31,7 @@
 
 		// Strip HTML tags and get plain text
 		const tempDiv = typeof document !== 'undefined' ? document.createElement('div') : null;
-		if (tempDiv) {
+		if (tempDiv && DOMPurify) {
 			// Sanitize HTML before setting innerHTML to prevent XSS
 			const sanitizedContent = DOMPurify.sanitize(post.content, {
 				ALLOWED_TAGS: [

@@ -727,61 +727,6 @@
 		color: #5cb85f;
 	}
 
-	/* Hamburger button - hidden on desktop */
-	.hamburger-btn {
-		display: none;
-		background: none;
-		border: none;
-		cursor: pointer;
-		padding: 0.5rem;
-		color: #666;
-		transition: color 0.2s;
-	}
-
-	:global(.dark) .hamburger-btn {
-		color: var(--color-text-muted-dark);
-	}
-
-	.hamburger-btn:hover {
-		color: #2c5f2d;
-	}
-
-	:global(.dark) .hamburger-btn:hover {
-		color: #5cb85f;
-	}
-
-	/* Animated hamburger icon */
-	.hamburger-icon {
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		width: 20px;
-		height: 14px;
-	}
-
-	.hamburger-icon .bar {
-		display: block;
-		width: 100%;
-		height: 2px;
-		background: currentColor;
-		border-radius: 1px;
-		transition: transform 0.3s ease, opacity 0.3s ease;
-		transform-origin: center;
-	}
-
-	.hamburger-btn.open .hamburger-icon .bar:nth-child(1) {
-		transform: translateY(6px) rotate(45deg);
-	}
-
-	.hamburger-btn.open .hamburger-icon .bar:nth-child(2) {
-		opacity: 0;
-		transform: scaleX(0);
-	}
-
-	.hamburger-btn.open .hamburger-icon .bar:nth-child(3) {
-		transform: translateY(-6px) rotate(-45deg);
-	}
-
 	/* Mobile menu overlay */
 	.mobile-menu-overlay {
 		display: none;
@@ -804,13 +749,6 @@
 		/* Hide desktop nav on mobile */
 		.desktop-nav {
 			display: none;
-		}
-
-		/* Show hamburger button on mobile */
-		.hamburger-btn {
-			display: flex;
-			align-items: center;
-			justify-content: center;
 		}
 
 		/* Mobile menu overlay */
