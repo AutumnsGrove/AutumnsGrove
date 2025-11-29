@@ -129,35 +129,23 @@ tags:
   .recipes-admin {
     max-width: 1200px;
   }
-
   .page-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 2rem;
   }
-
   .header-content h1 {
     margin: 0 0 0.25rem 0;
     font-size: 2rem;
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .header-content h1 {
-    color: var(--color-text-dark);
-  }
-
   .subtitle {
     margin: 0;
     color: var(--color-text-muted);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .subtitle {
-    color: var(--color-text-subtle-dark);
-  }
-
   .recipes-table-container {
     background: var(--mobile-menu-bg);
     border-radius: 8px;
@@ -165,17 +153,14 @@ tags:
     overflow: hidden;
     transition: background-color 0.3s ease, box-shadow 0.3s ease;
   }
-
   :global(.dark) .recipes-table-container {
     background: var(--color-bg-tertiary-dark);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
-
   .recipes-table {
     width: 100%;
     border-collapse: collapse;
   }
-
   .recipes-table th,
   .recipes-table td {
     padding: 1rem;
@@ -183,12 +168,6 @@ tags:
     border-bottom: 1px solid var(--color-border);
     transition: border-color 0.3s ease;
   }
-
-  :global(.dark) .recipes-table th,
-  :global(.dark) .recipes-table td {
-    border-bottom-color: var(--color-border-dark);
-  }
-
   .recipes-table th {
     background: var(--color-bg-secondary);
     font-weight: 600;
@@ -196,68 +175,39 @@ tags:
     color: var(--color-text);
     transition: background-color 0.3s ease, color 0.3s ease;
   }
-
-  :global(.dark) .recipes-table th {
-    background: var(--color-border-dark);
-    color: var(--color-text-dark);
-  }
-
   .recipe-title {
     font-weight: 500;
     color: var(--color-primary);
     text-decoration: none;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .recipe-title {
-    color: var(--color-primary-light);
-  }
-
   .recipe-title:hover {
     text-decoration: underline;
   }
-
   .recipe-description {
     margin: 0.25rem 0 0 0;
     font-size: 0.85rem;
     color: var(--color-text-muted);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .recipe-description {
-    color: var(--color-text-subtle-dark);
-  }
-
   .date-cell {
     white-space: nowrap;
     color: var(--color-text-muted);
     font-size: 0.9rem;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .date-cell {
-    color: var(--color-text-subtle-dark);
-  }
-
   .tags {
     display: flex;
     flex-wrap: wrap;
     gap: 0.25rem;
   }
-
   .no-tags {
     color: var(--color-text-subtle);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .no-tags {
-    color: var(--color-text-subtle-dark);
-  }
-
   .actions-cell {
     white-space: nowrap;
   }
-
   .action-link {
     color: var(--color-primary);
     text-decoration: none;
@@ -265,26 +215,15 @@ tags:
     margin-right: 1rem;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .action-link {
-    color: var(--color-primary-light);
-  }
-
   .action-link:hover {
     text-decoration: underline;
   }
-
   .empty-state {
     text-align: center;
     color: var(--color-text-muted);
     padding: 3rem 1rem;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .empty-state {
-    color: var(--color-text-subtle-dark);
-  }
-
   .info-box {
     margin-top: 2rem;
     background: var(--color-bg-secondary);
@@ -293,34 +232,18 @@ tags:
     padding: 1.5rem;
     transition: background-color 0.3s ease, border-color 0.3s ease;
   }
-
-  :global(.dark) .info-box {
-    background: var(--color-bg-tertiary-dark);
-    border-color: var(--color-border-dark);
-  }
-
   .info-box h3 {
     margin: 0 0 0.75rem 0;
     font-size: 1rem;
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .info-box h3 {
-    color: var(--color-text-dark);
-  }
-
   .info-box p {
     margin: 0 0 0.75rem 0;
     color: var(--color-text-muted);
     font-size: 0.9rem;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .info-box p {
-    color: var(--color-text-subtle-dark);
-  }
-
   .info-box ul {
     margin: 0;
     padding-left: 1.25rem;
@@ -328,15 +251,9 @@ tags:
     font-size: 0.9rem;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .info-box ul {
-    color: var(--color-text-subtle-dark);
-  }
-
   .info-box li {
     margin-bottom: 0.25rem;
   }
-
   .info-box code {
     background: var(--color-border);
     padding: 0.125rem 0.25rem;
@@ -344,11 +261,6 @@ tags:
     font-size: 0.85em;
     transition: background-color 0.3s ease;
   }
-
-  :global(.dark) .info-box code {
-    background: var(--color-border-dark);
-  }
-
   /* Mobile styles */
   @media (max-width: 768px) {
     .page-header {
@@ -356,19 +268,16 @@ tags:
       align-items: stretch;
       gap: 1rem;
     }
-
     .recipes-table th:nth-child(2),
     .recipes-table td:nth-child(2),
     .recipes-table th:nth-child(3),
     .recipes-table td:nth-child(3) {
       display: none;
     }
-
     .recipes-table th,
     .recipes-table td {
       padding: 0.75rem 0.5rem;
     }
-
     .action-link {
       margin-right: 0.5rem;
     }

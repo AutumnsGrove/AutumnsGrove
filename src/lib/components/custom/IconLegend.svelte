@@ -51,44 +51,30 @@
 		grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
 		gap: 0.75rem;
 	}
-
 	.legend-item {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
 	}
-
 	.legend-icon {
 		width: 24px;
 		height: 24px;
 		flex-shrink: 0;
 	}
-
 	.legend-text {
 		display: flex;
 		flex-direction: column;
 		gap: 0.1rem;
 	}
-
 	.icon-name {
 		font-weight: 500;
 		font-size: 0.85rem;
 		color: #333;
 	}
-
-	:global(.dark) .icon-name {
-		color: var(--color-text-dark);
-	}
-
 	.icon-meaning {
 		font-size: 0.75rem;
 		color: #666;
 	}
-
-	:global(.dark) .icon-meaning {
-		color: var(--color-text-subtle-dark);
-	}
-
 	@media (max-width: 640px) {
 		.legend-content {
 			grid-template-columns: 1fr;

@@ -103,11 +103,6 @@
     background: var(--color-bg-secondary);
     transition: background-color 0.3s ease;
   }
-
-  :global(.dark) .admin-layout {
-    background: var(--color-bg-secondary-dark);
-  }
-
   /* Mobile header - hidden on desktop */
   .mobile-header {
     display: none;
@@ -125,13 +120,6 @@
     border-bottom: 1px solid var(--color-border);
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
-
-  :global(.dark) .mobile-header {
-    background: var(--color-bg-tertiary-dark);
-    color: var(--color-text-dark);
-    border-bottom-color: var(--color-border-dark);
-  }
-
   .mobile-home-link {
     font-size: 1.25rem;
     font-weight: bold;
@@ -139,23 +127,12 @@
     text-decoration: none;
     transition: color 0.2s;
   }
-
-  :global(.dark) .mobile-home-link {
-    color: var(--color-primary-light);
-  }
-
   .mobile-home-link:hover {
     color: var(--color-primary-hover);
   }
-
-  :global(.dark) .mobile-home-link:hover {
-    color: var(--color-primary-light-hover);
-  }
-
   .mobile-header-spacer {
     width: 36px; /* Match hamburger button width for centering */
   }
-
   .hamburger {
     display: flex;
     flex-direction: column;
@@ -165,7 +142,6 @@
     border: none;
     cursor: pointer;
   }
-
   .hamburger-line {
     width: 20px;
     height: 2px;
@@ -173,11 +149,6 @@
     border-radius: 1px;
     transition: background-color 0.3s ease;
   }
-
-  :global(.dark) .hamburger-line {
-    background: var(--color-text-dark);
-  }
-
   /* Sidebar overlay for mobile */
   .sidebar-overlay {
     display: none;
@@ -188,7 +159,6 @@
     border: none;
     cursor: pointer;
   }
-
   /* Close button in sidebar - hidden on desktop */
   .close-sidebar {
     display: none;
@@ -201,11 +171,6 @@
     line-height: 1;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .close-sidebar {
-    color: var(--color-text-dark);
-  }
-
   .sidebar {
     width: 250px;
     background: var(--mobile-menu-bg);
@@ -224,13 +189,6 @@
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
     overflow-y: auto;
   }
-
-  :global(.dark) .sidebar {
-    background: var(--color-bg-tertiary-dark);
-    color: var(--color-text-dark);
-    border-color: var(--color-border-dark);
-  }
-
   .sidebar-header {
     padding: 1.5rem;
     border-bottom: 1px solid var(--color-border);
@@ -239,24 +197,17 @@
     align-items: center;
     transition: border-color 0.3s ease;
   }
-
-  :global(.dark) .sidebar-header {
-    border-bottom-color: var(--color-border-dark);
-  }
-
   .sidebar-header h2 {
     margin: 0;
     font-size: 1.25rem;
     font-weight: 600;
   }
-
   .sidebar-nav {
     flex: 1;
     padding: 1rem 0;
     overflow-y: auto;
     min-height: 0; /* Allow flex item to shrink */
   }
-
   .nav-item {
     display: flex;
     align-items: center;
@@ -267,51 +218,28 @@
     border-radius: var(--border-radius-button);
     transition: background 0.2s, color 0.2s;
   }
-
-  :global(.dark) .nav-item {
-    color: var(--color-text-muted-dark);
-  }
-
   .nav-item:hover {
     background: var(--color-bg-secondary);
     color: var(--color-primary);
   }
-
-  :global(.dark) .nav-item:hover {
-    background: var(--color-border-dark);
-    color: var(--color-primary-light);
-  }
-
   .nav-icon {
     font-size: 1.1rem;
   }
-
   .sidebar-footer {
     padding: 1rem 1.5rem;
     border-top: 1px solid var(--color-border);
     transition: border-color 0.3s ease;
     flex-shrink: 0; /* Prevent footer from being squeezed */
   }
-
-  :global(.dark) .sidebar-footer {
-    border-top-color: var(--color-border-dark);
-  }
-
   .user-info {
     margin-bottom: 0.75rem;
   }
-
   .email {
     font-size: 0.85rem;
     color: var(--color-text-muted);
     word-break: break-all;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .email {
-    color: var(--color-text-muted-dark);
-  }
-
   .logout-btn {
     display: block;
     text-align: center;
@@ -323,53 +251,35 @@
     font-size: 0.85rem;
     transition: background 0.2s, color 0.2s;
   }
-
-  :global(.dark) .logout-btn {
-    background: var(--color-border-dark);
-    color: var(--color-text-muted-dark);
-  }
-
   .logout-btn:hover {
     background: var(--color-border);
     color: var(--color-text);
   }
-
-  :global(.dark) .logout-btn:hover {
-    background: var(--color-bg-tertiary-dark);
-    color: var(--color-text-dark);
-  }
-
   .content {
     flex: 1;
     margin-left: calc(250px + 0.75rem); /* Sidebar width + left margin */
     padding: 2rem;
     min-height: 100vh;
   }
-
   /* Mobile styles */
   @media (max-width: 768px) {
     .mobile-header {
       display: flex;
     }
-
     .sidebar {
       transform: translateX(-100%);
       transition: transform 0.3s ease;
       z-index: 1002; /* Above sidebar-overlay (1001) on mobile */
     }
-
     .sidebar.open {
       transform: translateX(0);
     }
-
     .sidebar-overlay {
       display: block;
     }
-
     .close-sidebar {
       display: block;
     }
-
     .content {
       margin-left: 0;
       padding: 1rem;

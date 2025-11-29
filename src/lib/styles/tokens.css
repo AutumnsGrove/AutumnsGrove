@@ -68,6 +68,49 @@
 	--viewer-tag-bg: #e8f5e9;
 	--viewer-caption-text: #777;
 	--viewer-caption-border: #ddd;
+
+	/* Light mode backgrounds and text */
+	--light-bg-primary: #ffffff;
+	--light-bg-secondary: #f9f9f9;
+	--light-bg-tertiary: #f5f5f5;
+	--light-bg-hover: rgba(0, 0, 0, 0.05);
+	--light-text-primary: #333;
+	--light-text-secondary: #555;
+	--light-text-tertiary: #777;
+	--light-text-muted: #888;
+	--light-text-light: #999;
+	--light-text-very-light: #aaa;
+	--light-border-primary: #e0e0e0;
+	--light-border-secondary: #e8e8e8;
+	--light-border-light: #ddd;
+
+	/* Accent colors */
+	--accent-success: #28a745;
+	--accent-success-dark: #4cae4c;
+	--accent-success-light: #5cb85f;
+	--accent-warning: #ffc107;
+	--accent-warning-dark: #f0ad4e;
+	--accent-danger: #dc3545;
+	--accent-danger-dark: #d73a49;
+	--accent-info: #17a2b8;
+
+	/* Status colors - light mode */
+	--status-success-bg: #e8f5e9;
+	--status-warning-bg: #fff3cd;
+	--status-danger-bg: #fdecea;
+	--status-info-bg: #f0f7f0;
+
+	/* Card and container backgrounds */
+	--card-border: #e0e0e0;
+
+	/* Specialty/Chart colors */
+	--chart-gray: #777;
+	--chart-gray-dark: #b8b8b8;
+	--chart-gray-light: #666;
+	--chart-purple: #a87ddb;
+	--chart-error-red: #e57373;
+	--chart-success-green: #39d353;
+	--chart-info-blue: #5865f2;
 }
 
 .dark {
@@ -95,4 +138,38 @@
 	--viewer-tag-bg: #1f3a1f;
 	--viewer-caption-text: #888;
 	--viewer-caption-border: #444;
+
+	/* Dark mode backgrounds and text */
+	--light-bg-primary: #1a1a1a;
+	--light-bg-secondary: #252525;
+	--light-bg-tertiary: #2a2a2a;
+	--light-bg-hover: rgba(255, 255, 255, 0.05);
+	--light-text-primary: #f0f0f0;
+	--light-text-secondary: #ccc;
+	--light-text-tertiary: #bbb;
+	--light-text-muted: #999;
+	--light-text-light: #888;
+	--light-text-very-light: #eee;
+	--light-border-primary: #3a3a3a;
+	--light-border-secondary: #333;
+	--light-border-light: #444;
+
+	/* Accent colors in dark mode */
+	--accent-success: #5cb85f;
+	--accent-success-dark: #4cae4c;
+	--accent-success-light: #7cd97f;
+	--accent-warning: #ffc107;
+	--accent-warning-dark: #f0ad4e;
+	--accent-danger: #ff8080;
+	--accent-danger-dark: #dc3545;
+	--accent-info: #17a2b8;
+
+	/* Status colors - dark mode */
+	--status-success-bg: #1f3a1f;
+	--status-warning-bg: #3d3520;
+	--status-danger-bg: #3d2020;
+	--status-info-bg: #1a3a1b;
+
+	/* Card and container backgrounds */
+	--card-border: #333;
 }

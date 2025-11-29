@@ -28,59 +28,46 @@
 <style>
 	.collapsible-section {
 		margin-bottom: 1.5rem;
-		border: 1px solid #e0e0e0;
+		border: 1px solid var(--light-border-primary);
 		border-radius: 8px;
 		overflow: hidden;
 	}
-
 	:global(.dark) .collapsible-section {
-		border-color: #3a3a3a;
+		border-color: var(--light-border-primary);
 	}
-
 	.collapsible-toggle {
 		width: 100%;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		padding: 0.75rem 1rem;
-		background: #f5f5f5;
+		background: var(--light-bg-tertiary);
 		border: none;
 		cursor: pointer;
 		font-size: 0.9rem;
 		font-weight: 500;
-		color: #333;
+		color: var(--light-border-secondary);
 		transition: background-color 0.2s;
 	}
-
-	:global(.dark) .collapsible-toggle {
-		background: var(--color-bg-tertiary-dark);
-		color: var(--color-text-dark);
-	}
-
 	.collapsible-toggle:hover {
-		background: #e8e8e8;
+		background: var(--light-border-secondary);
 	}
-
 	:global(.dark) .collapsible-toggle:hover {
-		background: #333;
+		background: var(--light-border-secondary);
 	}
-
 	.collapsible-title {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
 	}
-
 	.toggle-icon {
 		font-size: 0.75rem;
 		transition: transform 0.2s;
 	}
-
 	.collapsible-content {
 		padding: 1rem;
 		background: #fafafa;
 	}
-
 	:global(.dark) .collapsible-content {
 		background: #1f1f1f;
 	}

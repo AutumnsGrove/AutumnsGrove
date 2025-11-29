@@ -63,32 +63,26 @@
     gap: 1rem;
     height: calc(100vh - 100px); /* Account for header */
   }
-
   .logs-header {
     margin-bottom: 0.5rem;
   }
-
   .logs-header h1 {
     margin: 0 0 0.5rem 0;
     font-size: 2rem;
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
   .logs-header p {
     margin: 0;
     color: var(--color-text-muted);
     font-size: 1rem;
     transition: color 0.3s ease;
   }
-
-
   .log-viewer-container {
     flex: 1;
     min-height: 0;
     overflow: hidden;
   }
-
   .help-section {
     background: var(--mobile-menu-bg);
     border-radius: 8px;
@@ -96,49 +90,24 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease;
   }
-
   .help-content {
     margin-top: 1rem;
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
   .help-content h4 {
     margin: 1rem 0 0.5rem 0;
     color: var(--color-primary);
     transition: color 0.3s ease;
   }
-
   .help-content ul {
     margin: 0.5rem 0;
     padding-left: 1.5rem;
   }
-
   .help-content li {
     margin: 0.3rem 0;
     line-height: 1.5;
   }
-
-  :global(.dark) .logs-header h1 {
-    color: var(--color-text-dark);
-  }
-
-  :global(.dark) .logs-header p {
-    color: var(--color-text-subtle-dark);
-  }
-
-  :global(.dark) .help-section {
-    background: var(--color-bg-tertiary-dark);
-  }
-
-  :global(.dark) .help-content {
-    color: var(--color-text-dark);
-  }
-
-  :global(.dark) .help-content h4 {
-    color: var(--color-primary-light);
-  }
-
   @media (max-width: 768px) {
     .logs-page {
       height: calc(100vh - 80px);

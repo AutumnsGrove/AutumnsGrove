@@ -116,15 +116,12 @@
     font-size: 1.25rem;
     font-weight: 600;
   }
-
   .stat-value.healthy {
-    color: #28a745;
+    color: var(--accent-success);
   }
-
   .stat-value.error {
-    color: #d73a49;
+    color: var(--accent-danger);
   }
-
   .action-card {
     background: var(--mobile-menu-bg);
     padding: 1.5rem;
@@ -139,18 +136,10 @@
     gap: 0.75rem;
     transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
-
-  :global(.dark) .action-card {
-    background: var(--color-bg-tertiary-dark);
-    color: var(--color-text-dark);
-    border-color: var(--color-border-dark);
-  }
-
   .action-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
-
   :global(.dark) .action-card:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
   }

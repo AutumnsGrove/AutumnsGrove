@@ -505,50 +505,50 @@
 	<meta name="description" content="Visualize your GitHub commit activity and statistics" />
 </svelte:head>
 
-<div class="dashboard">
+<div class="max-w-[1000px] mx-auto">
 	<!-- Temporary Warning Notice -->
-	<div class="site-warning">
+	<div class="bg-[#fff3cd] dark:bg-[#3d3200] border border-[#ffc107] text-[#856404] dark:text-[#ffd54f] px-4 py-3 rounded-lg mb-6 text-sm leading-snug">
 		<strong>Note:</strong> This page has known interactivity issues. If buttons or navigation stop working,
 		please refresh the page. When returning to Home, you may need to refresh again.
 	</div>
 
-	<header class="dashboard-header">
-		<h1>Git Dashboard</h1>
-		<p>My GitHub commit activity</p>
+	<header class="text-center mb-8">
+		<h1 class="text-[#2c5f2d] dark:text-[#5cb85f] m-0">Git Dashboard</h1>
+		<p class="text-[#666] dark:text-[var(--color-text-muted-dark)] mt-2 mb-0">My GitHub commit activity</p>
 	</header>
 
 	<!-- Explanation Box for non-developers -->
 	<CollapsibleSection title="What do these metrics mean?">
-		<div class="explanation-content">
-			<div class="explanation-item">
-				<strong>Commits</strong>
-				<p>A commit is like a "save point" in code. Each commit captures a snapshot of changes made to the project. More commits = more active development.</p>
+		<div class="flex flex-col gap-4">
+			<div class="pb-3 border-b border-[#e8e8e8] dark:border-[#333] last:pb-0 last:border-b-0">
+				<strong class="block text-[#2c5f2d] dark:text-[#5cb85f] mb-1 text-sm">Commits</strong>
+				<p class="m-0 text-[0.85rem] text-[#666] dark:text-[var(--color-text-subtle-dark)] leading-snug">A commit is like a "save point" in code. Each commit captures a snapshot of changes made to the project. More commits = more active development.</p>
 			</div>
-			<div class="explanation-item">
-				<strong>Lines Added / Deleted</strong>
-				<p>These show how much code was written (added) or removed (deleted). High numbers indicate significant changes to the codebase.</p>
+			<div class="pb-3 border-b border-[#e8e8e8] dark:border-[#333] last:pb-0 last:border-b-0">
+				<strong class="block text-[#2c5f2d] dark:text-[#5cb85f] mb-1 text-sm">Lines Added / Deleted</strong>
+				<p class="m-0 text-[0.85rem] text-[#666] dark:text-[var(--color-text-subtle-dark)] leading-snug">These show how much code was written (added) or removed (deleted). High numbers indicate significant changes to the codebase.</p>
 			</div>
-			<div class="explanation-item">
-				<strong>Repositories</strong>
-				<p>A repository (repo) is a project folder that contains all code and history. Think of it like a folder for a specific project.</p>
+			<div class="pb-3 border-b border-[#e8e8e8] dark:border-[#333] last:pb-0 last:border-b-0">
+				<strong class="block text-[#2c5f2d] dark:text-[#5cb85f] mb-1 text-sm">Repositories</strong>
+				<p class="m-0 text-[0.85rem] text-[#666] dark:text-[var(--color-text-subtle-dark)] leading-snug">A repository (repo) is a project folder that contains all code and history. Think of it like a folder for a specific project.</p>
 			</div>
-			<div class="explanation-item">
-				<strong>Heatmap</strong>
-				<p>The green grid shows coding activity over time. Darker squares = more commits on that day. It's like a calendar of productivity.</p>
+			<div class="pb-3 border-b border-[#e8e8e8] dark:border-[#333] last:pb-0 last:border-b-0">
+				<strong class="block text-[#2c5f2d] dark:text-[#5cb85f] mb-1 text-sm">Heatmap</strong>
+				<p class="m-0 text-[0.85rem] text-[#666] dark:text-[var(--color-text-subtle-dark)] leading-snug">The green grid shows coding activity over time. Darker squares = more commits on that day. It's like a calendar of productivity.</p>
 			</div>
-			<div class="explanation-item">
-				<strong>Charts</strong>
-				<p>The bar charts show when coding happens most - by hour of day and day of week. Useful for understanding work patterns.</p>
+			<div class="pb-3 border-b border-[#e8e8e8] dark:border-[#333] last:pb-0 last:border-b-0">
+				<strong class="block text-[#2c5f2d] dark:text-[#5cb85f] mb-1 text-sm">Charts</strong>
+				<p class="m-0 text-[0.85rem] text-[#666] dark:text-[var(--color-text-subtle-dark)] leading-snug">The bar charts show when coding happens most - by hour of day and day of week. Useful for understanding work patterns.</p>
 			</div>
 		</div>
 	</CollapsibleSection>
 
 	{#if loading}
-		<div class="loading-indicator">Loading...</div>
+		<div class="text-center p-4 text-[#666] dark:text-[var(--color-text-muted-dark)] italic">Loading...</div>
 	{/if}
 
 	{#if error}
-		<div class="error">{error}</div>
+		<div class="bg-[#fee] dark:bg-[#4a2020] text-[#c00] dark:text-[#ff8080] px-4 py-4 rounded-lg mb-4 text-center">{error}</div>
 	{/if}
 
 	{#if userData && stats}
@@ -752,95 +752,68 @@
 		font-size: 0.9rem;
 		line-height: 1.4;
 	}
-
 	:global(.dark) .site-warning {
 		background: #3d3200;
 		border-color: #ffc107;
 		color: #ffd54f;
 	}
-
 	.dashboard {
 		max-width: 1000px;
 		margin: 0 auto;
 	}
-
 	.dashboard-header {
 		text-align: center;
 		margin-bottom: 2rem;
 	}
-
 	.dashboard-header h1 {
 		color: #2c5f2d;
 		margin: 0;
 	}
-
 	:global(.dark) .dashboard-header h1 {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	.dashboard-header p {
 		color: #666;
 		margin: 0.5rem 0 0;
 	}
-
-	:global(.dark) .dashboard-header p {
-		color: var(--color-text-muted-dark);
-	}
-
 	/* Explanation Content */
 	.explanation-content {
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
 	}
-
 	.explanation-item {
 		padding-bottom: 0.75rem;
-		border-bottom: 1px solid #e8e8e8;
+		border-bottom: 1px solid var(--light-border-secondary);
 	}
-
 	.explanation-item:last-child {
 		padding-bottom: 0;
 		border-bottom: none;
 	}
-
 	:global(.dark) .explanation-item {
-		border-bottom-color: #333;
+		border-bottom-color: var(--light-border-secondary);
 	}
-
 	.explanation-item strong {
 		display: block;
 		color: #2c5f2d;
 		margin-bottom: 0.25rem;
 		font-size: 0.9rem;
 	}
-
 	:global(.dark) .explanation-item strong {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	.explanation-item p {
 		margin: 0;
 		font-size: 0.85rem;
 		color: #666;
 		line-height: 1.4;
 	}
-
-	:global(.dark) .explanation-item p {
-		color: var(--color-text-subtle-dark);
-	}
-
 	.loading-indicator {
 		text-align: center;
 		padding: 1rem;
 		color: #666;
 		font-style: italic;
 	}
-
-	:global(.dark) .loading-indicator {
-		color: var(--color-text-muted-dark);
-	}
-
 	/* Compact User Card */
 	.user-card-compact {
 		display: flex;
@@ -852,12 +825,10 @@
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 		margin-bottom: 1.5rem;
 	}
-
 	:global(.dark) .user-card-compact {
-		background: #2a2a2a;
+		background: var(--light-bg-tertiary);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 	}
-
 	.avatar-button {
 		background: none;
 		border: none;
@@ -866,21 +837,17 @@
 		border-radius: 50%;
 		transition: transform 0.15s ease;
 	}
-
 	.avatar-button:hover {
 		transform: scale(1.05);
 	}
-
 	.avatar-button:active {
 		transform: scale(0.95);
 	}
-
 	.avatar-wrapper {
 		position: relative;
 		width: 48px;
 		height: 48px;
 	}
-
 	.progress-ring {
 		position: absolute;
 		top: 0;
@@ -889,15 +856,13 @@
 		height: 48px;
 		transform: rotate(-90deg);
 	}
-
 	.progress-ring-circle {
 		fill: none;
-		stroke: #5cb85f;
+		stroke: var(--accent-success);
 		stroke-width: 3;
 		stroke-linecap: round;
 		transition: stroke-dashoffset 0.2s ease;
 	}
-
 	.user-avatar {
 		position: absolute;
 		top: 4px;
@@ -907,7 +872,6 @@
 		border-radius: 50%;
 		display: block;
 	}
-
 	.refresh-message {
 		margin-left: auto;
 		font-size: 0.8rem;
@@ -916,12 +880,10 @@
 		background: #e8f5e9;
 		color: #2c5f2d;
 	}
-
 	:global(.dark) .refresh-message {
-		background: #1b3a1b;
-		color: #5cb85f;
+		background: var(--light-bg-secondary);
+		color: var(--accent-success);
 	}
-
 	/* Time Range Selector */
 	.time-range-selector {
 		display: flex;
@@ -933,69 +895,57 @@
 		border-radius: 8px;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 	}
-
 	:global(.dark) .time-range-selector {
-		background: #2a2a2a;
+		background: var(--light-bg-tertiary);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 	}
-
 	.time-range-selector label {
 		font-weight: 500;
 		color: #2c5f2d;
 		font-size: 0.9rem;
 	}
-
 	:global(.dark) .time-range-selector label {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	.time-range-selector select {
 		padding: 0.5rem 0.75rem;
-		border: 1px solid #ddd;
+		border: 1px solid var(--light-border-light);
 		border-radius: 6px;
 		background: white;
-		color: #333;
+		color: var(--light-border-secondary);
 		font-size: 0.9rem;
 		cursor: pointer;
 		transition: border-color 0.2s ease;
 	}
-
 	.time-range-selector select:hover {
-		border-color: #5cb85f;
+		border-color: var(--accent-success);
 	}
-
 	.time-range-selector select:focus {
 		outline: none;
 		border-color: #2c5f2d;
 		box-shadow: 0 0 0 2px rgba(92, 184, 95, 0.2);
 	}
-
 	:global(.dark) .time-range-selector select {
-		background: #333;
-		border-color: #444;
-		color: #eee;
+		background: var(--light-border-secondary);
+		border-color: var(--light-border-light);
+		color: var(--light-text-very-light);
 	}
-
 	:global(.dark) .time-range-selector select:hover {
-		border-color: #5cb85f;
+		border-color: var(--accent-success);
 	}
-
 	:global(.dark) .time-range-selector select:focus {
-		border-color: #5cb85f;
+		border-color: var(--accent-success);
 		box-shadow: 0 0 0 2px rgba(92, 184, 95, 0.3);
 	}
-
 	.selector-divider {
 		width: 1px;
 		height: 24px;
-		background: #ddd;
+		background: var(--light-border-light);
 		margin: 0 0.5rem;
 	}
-
 	:global(.dark) .selector-divider {
-		background: #444;
+		background: var(--light-border-light);
 	}
-
 	.last-refreshed-inline {
 		display: inline-flex;
 		align-items: center;
@@ -1004,50 +954,35 @@
 		color: #666;
 		margin-left: auto;
 	}
-
-	:global(.dark) .last-refreshed-inline {
-		color: var(--color-text-subtle-dark);
-	}
-
 	.user-details {
 		display: flex;
 		flex-direction: column;
 		gap: 0.25rem;
 	}
-
 	.user-name {
 		font-weight: 600;
 		font-size: 1rem;
 		color: #2c5f2d;
 	}
-
 	:global(.dark) .user-name {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	.user-meta {
 		font-size: 0.8rem;
 		color: #666;
 	}
-
-	:global(.dark) .user-meta {
-		color: var(--color-text-muted-dark);
-	}
-
 	.error {
 		background: #fee;
-		color: #c00;
+		color: var(--accent-danger);
 		padding: 1rem;
 		border-radius: 8px;
 		margin-bottom: 1rem;
 		text-align: center;
 	}
-
 	:global(.dark) .error {
-		background: #4a2020;
-		color: #ff8080;
+		background: var(--status-danger-bg);
+		color: var(--accent-danger);
 	}
-
 	.card {
 		background: white;
 		border-radius: 12px;
@@ -1055,12 +990,10 @@
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 		margin-bottom: 1.5rem;
 	}
-
 	:global(.dark) .card {
-		background: #2a2a2a;
+		background: var(--light-bg-tertiary);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 	}
-
 	.card h3 {
 		margin: 0 0 1rem;
 		color: #2c5f2d;
@@ -1068,18 +1001,15 @@
 		align-items: center;
 		gap: 0.5rem;
 	}
-
 	:global(.dark) .card h3 {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	.stats-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 		gap: 1rem;
 		margin-bottom: 1.5rem;
 	}
-
 	.stat-card {
 		background: white;
 		border-radius: 12px;
@@ -1087,97 +1017,75 @@
 		text-align: center;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 	}
-
 	:global(.dark) .stat-card {
-		background: #2a2a2a;
+		background: var(--light-bg-tertiary);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 	}
-
 	.stat-icon {
 		color: #2c5f2d;
 		margin-bottom: 0.5rem;
 	}
-
 	:global(.dark) .stat-icon {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	.stat-icon.additions {
-		color: #28a745;
+		color: var(--accent-success);
 	}
-
 	.stat-icon.deletions {
-		color: #dc3545;
+		color: var(--accent-danger);
 	}
-
 	.stat-value {
 		font-size: 2rem;
 		font-weight: bold;
 		color: #2c5f2d;
 	}
-
 	:global(.dark) .stat-value {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	.stat-value.additions {
-		color: #28a745;
+		color: var(--accent-success);
 	}
-
 	.stat-value.deletions {
-		color: #dc3545;
+		color: var(--accent-danger);
 	}
-
 	.stat-label {
 		color: #666;
 		font-size: 0.9rem;
 		margin-top: 0.5rem;
 	}
-
-	:global(.dark) .stat-label {
-		color: var(--color-text-muted-dark);
-	}
-
 	.charts-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
 		gap: 1.5rem;
 		margin-bottom: 1.5rem;
 	}
-
 	@media (max-width: 900px) {
 		.charts-grid {
 			grid-template-columns: 1fr;
 		}
 	}
-
 	.chart-card {
 		height: 350px;
 	}
-
 	.chart-container {
 		height: 250px;
 	}
-
 	.repo-list {
 		display: flex;
 		flex-direction: column;
 		gap: 0.75rem;
 	}
-
 	.repo-item {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
 		padding: 0.75rem;
-		background: #f5f5f5;
+		background: var(--light-bg-tertiary);
 		border-radius: 8px;
 	}
-
 	:global(.dark) .repo-item {
-		background: #333;
+		background: var(--light-border-secondary);
 	}
-
 	.repo-info {
 		display: flex;
 		flex-direction: column;
@@ -1185,31 +1093,19 @@
 		flex: 1;
 		margin-right: 1rem;
 	}
-
 	.repo-name {
 		font-weight: 500;
 	}
-
 	.repo-description {
 		font-size: 0.8rem;
 		color: #666;
 		line-height: 1.3;
 	}
-
-	:global(.dark) .repo-description {
-		color: var(--color-text-subtle-dark);
-	}
-
 	.repo-commits {
 		color: #666;
 		font-size: 0.9rem;
 		white-space: nowrap;
 	}
-
-	:global(.dark) .repo-commits {
-		color: var(--color-text-muted-dark);
-	}
-
 	/* Scrollable commits container */
 	.commits-list-container {
 		display: flex;
@@ -1219,29 +1115,23 @@
 		overflow-y: auto;
 		padding-right: 0.5rem;
 	}
-
 	.commits-list-container::-webkit-scrollbar {
 		width: 6px;
 	}
-
 	.commits-list-container::-webkit-scrollbar-track {
 		background: #f1f1f1;
 		border-radius: 3px;
 	}
-
 	.commits-list-container::-webkit-scrollbar-thumb {
-		background: #ccc;
+		background: var(--light-text-secondary);
 		border-radius: 3px;
 	}
-
 	:global(.dark) .commits-list-container::-webkit-scrollbar-track {
-		background: #333;
+		background: var(--light-border-secondary);
 	}
-
 	:global(.dark) .commits-list-container::-webkit-scrollbar-thumb {
-		background: #555;
+		background: var(--light-text-secondary);
 	}
-
 	/* Pagination elements */
 	.commits-loading {
 		text-align: center;
@@ -1249,11 +1139,6 @@
 		color: #666;
 		font-style: italic;
 	}
-
-	:global(.dark) .commits-loading {
-		color: var(--color-text-muted-dark);
-	}
-
 	.commits-limit-reached {
 		text-align: center;
 		padding: 1.5rem 1rem;
@@ -1263,29 +1148,22 @@
 		font-weight: 500;
 		border: 1px solid #ffc107;
 	}
-
 	:global(.dark) .commits-limit-reached {
-		background: linear-gradient(135deg, #3d3520 0%, #4a4025 100%);
+		background: linear-gradient(135deg, var(--status-warning-bg) 0%, var(--status-warning-bg) 100%);
 		color: #ffc107;
 		border-color: #ffc107;
 	}
-
 	.commits-end {
 		text-align: center;
 		padding: 1rem;
 		color: #666;
 		font-size: 0.9rem;
 	}
-
-	:global(.dark) .commits-end {
-		color: var(--color-text-subtle-dark);
-	}
-
 	.load-more-btn {
 		width: 100%;
 		padding: 0.875rem 1.5rem;
 		margin-top: 1rem;
-		background: linear-gradient(135deg, #2c5f2d 0%, #234d24 100%);
+		background: linear-gradient(135deg, #2c5f2d 0%, var(--status-success-bg) 100%);
 		color: white;
 		border: none;
 		border-radius: 8px;
@@ -1295,38 +1173,31 @@
 		transition: all 0.2s ease;
 		box-shadow: 0 2px 4px rgba(44, 95, 45, 0.2);
 	}
-
 	.load-more-btn:hover {
-		background: linear-gradient(135deg, #234d24 0%, #1a3a1b 100%);
+		background: linear-gradient(135deg, var(--status-success-bg) 0%, var(--status-info-bg) 100%);
 		box-shadow: 0 4px 8px rgba(44, 95, 45, 0.3);
 		transform: translateY(-1px);
 	}
-
 	.load-more-btn:active {
 		transform: translateY(0);
 		box-shadow: 0 2px 4px rgba(44, 95, 45, 0.2);
 	}
-
 	:global(.dark) .load-more-btn {
-		background: linear-gradient(135deg, #5cb85f 0%, #4a9e4d 100%);
+		background: linear-gradient(135deg, var(--accent-success) 0%, #4a9e4d 100%);
 		box-shadow: 0 2px 4px rgba(92, 184, 95, 0.3);
 	}
-
 	:global(.dark) .load-more-btn:hover {
 		background: linear-gradient(135deg, #4a9e4d 0%, #3d8540 100%);
 		box-shadow: 0 4px 8px rgba(92, 184, 95, 0.4);
 	}
-
 	.commit-item {
 		padding: 1rem;
-		background: #f5f5f5;
+		background: var(--light-bg-tertiary);
 		border-radius: 8px;
 	}
-
 	:global(.dark) .commit-item {
-		background: #333;
+		background: var(--light-border-secondary);
 	}
-
 	.commit-header {
 		display: flex;
 		gap: 0.75rem;
@@ -1335,61 +1206,47 @@
 		margin-bottom: 0.5rem;
 		font-size: 0.85rem;
 	}
-
 	.commit-sha {
 		font-family: monospace;
-		background: #e0e0e0;
+		background: var(--light-border-primary);
 		padding: 0.2rem 0.5rem;
 		border-radius: 4px;
 		font-size: 0.75rem;
 	}
-
 	:global(.dark) .commit-sha {
-		background: #444;
+		background: var(--light-border-light);
 	}
-
 	.commit-repo-name {
 		color: #2c5f2d;
 	}
-
 	:global(.dark) .commit-repo-name {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	.commit-date {
 		color: #666;
 	}
-
-	:global(.dark) .commit-date {
-		color: var(--color-text-muted-dark);
-	}
-
 	.commit-message {
 		margin-bottom: 0.5rem;
 		line-height: 1.4;
 		word-break: break-word;
 		white-space: pre-wrap;
 	}
-
 	.commit-stats {
 		display: flex;
 		gap: 1rem;
 		font-size: 0.85rem;
 		font-family: monospace;
 	}
-
 	/* Footer styles */
 	.dashboard-footer {
 		text-align: center;
 		padding: 1.5rem 0;
 		margin-top: 1rem;
-		border-top: 1px solid #e0e0e0;
+		border-top: 1px solid var(--light-border-primary);
 	}
-
 	:global(.dark) .dashboard-footer {
-		border-top-color: #444;
+		border-top-color: var(--light-border-light);
 	}
-
 	.dashboard-footer a {
 		color: #2c5f2d;
 		text-decoration: none;
@@ -1398,128 +1255,98 @@
 		align-items: center;
 		gap: 0.35rem;
 	}
-
 	.dashboard-footer a:hover {
 		text-decoration: underline;
 	}
-
 	:global(.dark) .dashboard-footer a {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	.dashboard-footer .attribution {
 		font-size: 0.8rem;
-		color: #888;
+		color: var(--light-text-light);
 		margin-top: 0.5rem;
 	}
-
-	:global(.dark) .dashboard-footer .attribution {
-		color: var(--color-text-subtle-dark);
-	}
-
 	.additions {
-		color: #28a745;
+		color: var(--accent-success);
 	}
-
 	.deletions {
-		color: #dc3545;
+		color: var(--accent-danger);
 	}
-
 	@media (max-width: 600px) {
 		.stats-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
-
 		.dashboard {
 			padding: 0 0.5rem;
 		}
-
 		.user-card-compact {
 			flex-wrap: wrap;
 			padding: 0.75rem;
 			gap: 0.75rem;
 		}
-
 		.user-details {
 			flex: 1;
 			min-width: 0;
 		}
-
 		.user-meta {
 			font-size: 0.75rem;
 			word-break: break-word;
 		}
-
 		.refresh-message {
 			width: 100%;
 			text-align: center;
 			margin-left: 0;
 		}
-
 		.time-range-selector {
 			flex-wrap: wrap;
 			gap: 0.5rem;
 			padding: 0.75rem;
 		}
-
 		.time-range-selector label {
 			font-size: 0.8rem;
 		}
-
 		.time-range-selector select {
 			padding: 0.4rem 0.5rem;
 			font-size: 0.85rem;
 			flex: 1;
 			min-width: 80px;
 		}
-
 		.selector-divider {
 			display: none;
 		}
-
 		.chart-card {
 			height: auto;
 			min-height: 280px;
 		}
-
 		.chart-container {
 			height: 200px;
 		}
-
 		.stat-card {
 			padding: 1rem;
 		}
-
 		.stat-value {
 			font-size: 1.5rem;
 		}
-
 		.stat-label {
 			font-size: 0.75rem;
 		}
-
 		.card {
 			padding: 1rem;
 			border-radius: 8px;
 		}
-
 		.commit-header {
 			font-size: 0.75rem;
 		}
-
 		.commit-sha {
 			font-size: 0.7rem;
 		}
-
 		.repo-item {
 			flex-direction: column;
 			gap: 0.5rem;
 		}
-
 		.repo-info {
 			margin-right: 0;
 		}
-
 		.repo-commits {
 			align-self: flex-start;
 		}

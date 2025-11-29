@@ -77,7 +77,6 @@
 		padding: 1rem;
 		font-size: 0.875rem;
 	}
-
 	.toc-title {
 		font-size: 0.875rem;
 		font-weight: 600;
@@ -86,26 +85,18 @@
 		color: #666;
 		margin: 0 0 1rem 0;
 		padding-bottom: 0.5rem;
-		border-bottom: 1px solid #e0e0e0;
+		border-bottom: 1px solid var(--light-border-primary);
 		transition: color 0.3s ease, border-color 0.3s ease;
 	}
-
-	:global(.dark) .toc-title {
-		color: var(--color-text-subtle-dark);
-		border-bottom-color: var(--color-border-dark);
-	}
-
 	.toc-list {
 		list-style: none;
 		margin: 0;
 		padding: 0;
 	}
-
 	.toc-item {
 		margin: 0;
 		padding: 0;
 	}
-
 	.toc-link {
 		display: block;
 		width: 100%;
@@ -120,69 +111,51 @@
 		font-family: inherit;
 		line-height: 1.4;
 	}
-
-	:global(.dark) .toc-link {
-		color: var(--color-text-subtle-dark);
-	}
-
 	.toc-link:hover {
 		color: #2c5f2d;
 	}
-
 	:global(.dark) .toc-link:hover {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	.toc-item.active .toc-link {
 		color: #2c5f2d;
 		font-weight: 600;
 	}
-
 	:global(.dark) .toc-item.active .toc-link {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	/* Indentation based on header level */
 	.level-1 .toc-link {
 		padding-left: 0;
 		font-weight: 600;
 	}
-
 	.level-2 .toc-link {
 		padding-left: 0;
 	}
-
 	.level-3 .toc-link {
 		padding-left: 1rem;
 	}
-
 	.level-4 .toc-link {
 		padding-left: 2rem;
 	}
-
 	.level-5 .toc-link {
 		padding-left: 3rem;
 	}
-
 	.level-6 .toc-link {
 		padding-left: 4rem;
 	}
-
 	/* Scrollbar styling */
 	.toc::-webkit-scrollbar {
 		width: 4px;
 	}
-
 	.toc::-webkit-scrollbar-track {
 		background: transparent;
 	}
-
 	.toc::-webkit-scrollbar-thumb {
-		background: #ccc;
+		background: var(--light-text-secondary);
 		border-radius: 2px;
 	}
-
 	:global(.dark) .toc::-webkit-scrollbar-thumb {
-		background: #444;
+		background: var(--light-border-light);
 	}
 </style>

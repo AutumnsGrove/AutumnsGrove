@@ -211,7 +211,6 @@
 		margin-top: 1rem;
 		margin-bottom: 2rem;
 	}
-
 	.search-header h1 {
 		font-size: 2.5rem;
 		color: #2c5f2d;
@@ -219,126 +218,90 @@
 		letter-spacing: -0.02em;
 		transition: color 0.3s ease;
 	}
-
 	:global(.dark) .search-header h1 {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	.search-header p {
 		color: #666;
 		font-size: 1.1rem;
 		transition: color 0.3s ease;
 	}
-
-	:global(.dark) .search-header p {
-		color: var(--color-text-muted-dark);
-	}
-
 	.search-container {
 		max-width: 800px;
 		margin: 0 auto 2rem;
 	}
-
 	.search-input-wrapper {
 		position: relative;
 		display: flex;
 		align-items: center;
 		margin-bottom: 1.5rem;
 	}
-
 	.search-icon {
 		position: absolute;
 		left: 1rem;
-		color: #888;
+		color: var(--light-text-light);
 		pointer-events: none;
 		transition: color 0.3s ease;
 	}
-
-	:global(.dark) .search-icon {
-		color: var(--color-text-subtle-dark);
-	}
-
 	.search-input {
 		width: 100%;
 		padding: 1rem 3rem;
 		font-size: 1rem;
-		border: 2px solid #e0e0e0;
+		border: 2px solid var(--light-border-primary);
 		border-radius: 12px;
 		background: white;
-		color: #333;
+		color: var(--light-border-secondary);
 		transition: border-color 0.2s ease, background-color 0.3s ease, color 0.3s ease;
 	}
-
 	:global(.dark) .search-input {
-		background: #2a2a2a;
-		border-color: #444;
+		background: var(--light-bg-tertiary);
+		border-color: var(--light-border-light);
 		color: var(--color-text-dark);
 	}
-
 	.search-input:focus {
 		outline: none;
 		border-color: #2c5f2d;
 	}
-
 	:global(.dark) .search-input:focus {
-		border-color: #5cb85f;
+		border-color: var(--accent-success);
 	}
-
 	.search-input::placeholder {
-		color: #999;
+		color: var(--light-text-muted);
 	}
-
 	:global(.dark) .search-input::placeholder {
 		color: #777;
 	}
-
-
 	.tags-filter {
 		display: flex;
 		flex-direction: column;
 		gap: 0.75rem;
 	}
-
 	.filter-label {
 		font-size: 0.9rem;
 		color: #666;
 		font-weight: 500;
 		transition: color 0.3s ease;
 	}
-
-	:global(.dark) .filter-label {
-		color: var(--color-text-muted-dark);
-	}
-
 	.tags-filter .tags {
 		display: flex;
 		gap: 0.5rem;
 		flex-wrap: wrap;
 	}
-
 	.results-info {
 		max-width: 800px;
 		margin: 0 auto 1.5rem;
 	}
-
 	.results-info p {
 		color: #666;
 		font-size: 0.95rem;
 		transition: color 0.3s ease;
 	}
-
-	:global(.dark) .results-info p {
-		color: var(--color-text-muted-dark);
-	}
-
 	.results-info strong {
 		color: #2c5f2d;
 	}
-
 	:global(.dark) .results-info strong {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	.no-results {
 		text-align: center;
 		padding: 3rem;
@@ -348,26 +311,17 @@
 		align-items: center;
 		gap: 1rem;
 	}
-
-	:global(.dark) .no-results {
-		color: var(--color-text-muted-dark);
-	}
-
 	.posts-grid {
 		display: grid;
 		gap: 2rem;
 		max-width: 800px;
 		margin: 0 auto;
 	}
-
-
 	.post-link {
 		text-decoration: none;
 		color: inherit;
 		display: block;
 	}
-
-
 	.post-meta {
 		display: flex;
 		align-items: center;
@@ -375,24 +329,16 @@
 		margin-bottom: 0.75rem;
 		flex-wrap: wrap;
 	}
-
-
 	.description {
 		color: #666;
 		line-height: 1.6;
 		margin: 0;
 		transition: color 0.3s ease;
 	}
-
-	:global(.dark) .description {
-		color: var(--color-text-muted-dark);
-	}
-
 	@media (max-width: 768px) {
 		.search-header {
 			margin-bottom: 1.5rem;
 		}
-
 		.search-header h1 {
 			font-size: 2rem;
 		}

@@ -591,43 +591,26 @@
     max-width: 800px;
     margin: 0 auto;
   }
-
   .page-header {
     margin-bottom: 2rem;
   }
-
   .page-header h1 {
     margin: 0 0 0.25rem 0;
     font-size: 2rem;
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .page-header h1 {
-    color: var(--color-text-dark);
-  }
-
   .subtitle {
     margin: 0;
     color: var(--color-text-muted);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .subtitle {
-    color: var(--color-text-subtle-dark);
-  }
-
   .section-note {
     margin: 0 0 1.5rem 0;
     font-size: 0.9rem;
     color: var(--color-text-muted);
     font-style: italic;
   }
-
-  :global(.dark) .section-note {
-    color: var(--color-text-subtle-dark);
-  }
-
   .credits-section {
     background: var(--mobile-menu-bg);
     border-radius: var(--border-radius-standard);
@@ -636,11 +619,6 @@
     margin-bottom: 1.5rem;
     transition: background-color 0.3s ease;
   }
-
-  :global(.dark) .credits-section {
-    background: var(--color-bg-tertiary-dark);
-  }
-
   .credits-section h2 {
     margin: 0 0 1rem 0;
     font-size: 1.25rem;
@@ -649,12 +627,6 @@
     padding-bottom: 0.5rem;
     transition: color 0.3s ease, border-color 0.3s ease;
   }
-
-  :global(.dark) .credits-section h2 {
-    color: var(--color-text-dark);
-    border-color: var(--color-border-dark);
-  }
-
   /* Credit Item Styles */
   .credit-item {
     margin-bottom: 2rem;
@@ -662,7 +634,6 @@
     border-bottom: 1px solid var(--color-border);
     transition: border-color 0.3s ease;
   }
-
   .credit-item.current-font {
     background: rgba(44, 95, 45, 0.08);
     border-radius: var(--border-radius-small);
@@ -672,16 +643,13 @@
     padding-bottom: 1.5rem;
     margin-bottom: 2rem;
   }
-
   :global(.dark) .credit-item.current-font {
     background: rgba(92, 184, 95, 0.1);
   }
-
   .heart-icon {
     color: #e25555;
     margin-right: 0.25rem;
   }
-
   .current-font-label {
     display: inline-block;
     font-size: 0.75rem;
@@ -694,43 +662,26 @@
     text-transform: uppercase;
     letter-spacing: 0.03em;
   }
-
   :global(.dark) .current-font-label {
     color: var(--color-primary-light);
     background: rgba(92, 184, 95, 0.2);
   }
-
-  :global(.dark) .credit-item {
-    border-color: var(--color-border-dark);
-  }
-
   .credit-item:last-child {
     margin-bottom: 0;
     padding-bottom: 0;
     border-bottom: none;
   }
-
   .credit-item h3 {
     margin: 0 0 0.5rem 0;
     color: var(--color-primary);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .credit-item h3 {
-    color: var(--color-primary-light);
-  }
-
   .credit-description {
     margin: 0 0 1rem 0;
     color: var(--color-text-muted);
     line-height: 1.6;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .credit-description {
-    color: var(--color-text-muted-dark);
-  }
-
   .credit-details {
     display: grid;
     grid-template-columns: auto 1fr;
@@ -738,55 +689,35 @@
     margin: 0;
     font-size: 0.9rem;
   }
-
   .credit-details dt {
     font-weight: 600;
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .credit-details dt {
-    color: var(--color-text-dark);
-  }
-
   .credit-details dd {
     margin: 0;
     color: var(--color-text-muted);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .credit-details dd {
-    color: var(--color-text-muted-dark);
-  }
-
   .credit-details a {
     color: var(--color-primary);
     text-decoration: none;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .credit-details a {
-    color: var(--color-primary-light);
-  }
-
   .credit-details a:hover {
     text-decoration: underline;
   }
-
   @media (max-width: 768px) {
     .credits-page {
       padding: 0 1rem;
     }
-
     .page-header h1 {
       font-size: 1.5rem;
     }
-
     .credit-details {
       grid-template-columns: 1fr;
       gap: 0.25rem;
     }
-
     .credit-details dt {
       margin-top: 0.5rem;
     }

@@ -246,32 +246,26 @@
 		padding: 1rem;
 		min-height: 100%;
 	}
-
 	.gutter-item-wrapper {
 		margin-bottom: 1rem;
 	}
-
 	.anchor-group {
 		position: absolute;
 		left: 1rem;
 		right: 1rem;
 	}
-
 	/* Scrollbar styling */
 	.left-gutter::-webkit-scrollbar {
 		width: 4px;
 	}
-
 	.left-gutter::-webkit-scrollbar-track {
 		background: transparent;
 	}
-
 	.left-gutter::-webkit-scrollbar-thumb {
-		background: #ccc;
+		background: var(--light-text-secondary);
 		border-radius: 2px;
 	}
-
 	:global(.dark) .left-gutter::-webkit-scrollbar-thumb {
-		background: #444;
+		background: var(--light-border-light);
 	}
 </style>
