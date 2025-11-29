@@ -9,12 +9,19 @@ export async function load({ params, platform }) {
 
 	try {
 		// Try D1 first for posts created via admin panel
+		// Debug: Check what bindings are available
+		console.log('Platform env available:', !!platform?.env);
+		console.log('POSTS_DB available:', !!platform?.env?.POSTS_DB);
+
 		if (platform?.env?.POSTS_DB) {
 			try {
+				console.log('Querying D1 for slug:', slug);
 				const post = await platform.env.POSTS_DB.prepare(
 					`SELECT slug, title, date, tags, description, html_content, gutter_content, font
 					 FROM posts WHERE slug = ?`
 				).bind(slug).first();
+
+				console.log('D1 query result:', post ? 'found' : 'not found');
 
 				if (post) {
 					// Process anchor tags in HTML content (same as filesystem posts)
