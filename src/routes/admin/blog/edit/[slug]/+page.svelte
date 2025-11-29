@@ -4,6 +4,10 @@
   import { browser } from "$app/environment";
   import MarkdownEditor from "$lib/components/admin/MarkdownEditor.svelte";
   import GutterManager from "$lib/components/admin/GutterManager.svelte";
+  import Input from "$lib/components/ui/Input.svelte";
+  import Button from "$lib/components/ui/Button.svelte";
+  import Dialog from "$lib/components/ui/Dialog.svelte";
+  import { toast } from "$lib/components/ui/toast";
 
   let { data } = $props();
 
@@ -24,10 +28,9 @@
 
   // UI state
   let saving = $state(false);
-  let error = $state(null);
-  let success = $state(null);
   let hasUnsavedChanges = $state(false);
   let showGutter = $state(true);
+  let showDeleteDialog = $state(false);
   let detailsCollapsed = $state(false);
 
   // Load collapsed state from localStorage
@@ -68,16 +71,14 @@
   async function handleSave() {
     // Validation
     if (!title.trim()) {
-      error = "Title is required";
+      toast.error("Title is required");
       return;
     }
     if (!content.trim()) {
-      error = "Content is required";
+      toast.error("Content is required");
       return;
     }
 
-    error = null;
-    success = null;
     saving = true;
 
     try {
@@ -106,30 +107,21 @@
       // Clear draft on successful save
       editorRef?.clearDraft();
 
-      success = "Post saved successfully!";
+      toast.success("Post saved successfully!");
       hasUnsavedChanges = false;
-
-      // Clear success message after a moment
-      setTimeout(() => {
-        success = null;
-      }, 3000);
     } catch (err) {
-      error = err.message;
+      toast.error(err.message || "Failed to update post");
     } finally {
       saving = false;
     }
   }
 
-  async function handleDelete() {
-    if (
-      !confirm(
-        `Are you sure you want to delete "${title}"? This cannot be undone.`
-      )
-    ) {
-      return;
-    }
+  async function confirmDelete() {
+    showDeleteDialog = true;
+  }
 
-    error = null;
+  async function handleDelete() {
+    showDeleteDialog = false;
     saving = true;
 
     try {
@@ -143,10 +135,11 @@
         throw new Error(result.message || "Failed to delete post");
       }
 
+      toast.success("Post deleted successfully");
       // Redirect to blog admin
       goto("/admin/blog");
     } catch (err) {
-      error = err.message;
+      toast.error(err.message || "Failed to delete post");
     } finally {
       saving = false;
     }
@@ -180,14 +173,14 @@
       </div>
     </div>
     <div class="header-actions">
-      <button
-        class="delete-btn"
-        onclick={handleDelete}
+      <Button
+        variant="danger"
+        onclick={confirmDelete}
         disabled={saving}
         title="Delete this post"
       >
         Delete
-      </button>
+      </Button>
       <a
         href="/blog/{slug}"
         target="_blank"
@@ -195,30 +188,14 @@
       >
         View Live
       </a>
-      <button
-        class="save-btn"
+      <Button
         onclick={handleSave}
         disabled={saving}
       >
         {saving ? "Saving..." : "Save Changes"}
-      </button>
+      </Button>
     </div>
   </header>
-
-  {#if error}
-    <div class="error-banner">
-      <span class="error-icon">!</span>
-      <span>{error}</span>
-      <button class="error-dismiss" onclick={() => (error = null)}>&times;</button>
-    </div>
-  {/if}
-
-  {#if success}
-    <div class="success-banner">
-      <span class="success-icon">✓</span>
-      <span>{success}</span>
-    </div>
-  {/if}
 
   <div class="editor-layout">
     <!-- Metadata Panel -->
@@ -229,6 +206,7 @@
           class="collapse-details-btn"
           onclick={toggleDetailsCollapsed}
           title={detailsCollapsed ? "Expand details" : "Collapse details"}
+          aria-expanded={!detailsCollapsed}
         >
           {#if detailsCollapsed}»{:else}«{/if}
         </button>
@@ -388,7 +366,6 @@
     height: calc(100vh - 8rem);
     min-height: 600px;
   }
-
   .page-header {
     display: flex;
     justify-content: space-between;
@@ -398,50 +375,32 @@
     flex-wrap: wrap;
     gap: 1rem;
   }
-
   .header-content {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
   }
-
   .back-link {
     color: var(--color-text-muted);
     text-decoration: none;
     font-size: 0.9rem;
     transition: color 0.2s;
   }
-
-  :global(.dark) .back-link {
-    color: var(--color-text-subtle-dark);
-  }
-
   .back-link:hover {
     color: var(--color-primary);
   }
-
-  :global(.dark) .back-link:hover {
-    color: var(--color-primary-light);
-  }
-
   .title-row {
     display: flex;
     align-items: center;
     gap: 0.75rem;
     flex-wrap: wrap;
   }
-
   .page-header h1 {
     margin: 0;
     font-size: 1.75rem;
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .page-header h1 {
-    color: var(--color-text-dark);
-  }
-
   .source-badge {
     padding: 0.2rem 0.6rem;
     border-radius: 12px;
@@ -450,27 +409,22 @@
     text-transform: uppercase;
     letter-spacing: 0.03em;
   }
-
   .source-badge.filesystem {
     background: #fff5b1;
-    color: #735c0f;
+    color: var(--status-warning-bg);
   }
-
   :global(.dark) .source-badge.filesystem {
     background: rgba(255, 245, 177, 0.2);
     color: #f0c674;
   }
-
   .source-badge.d1 {
     background: #dcffe4;
-    color: #22863a;
+    color: var(--accent-success-dark);
   }
-
   :global(.dark) .source-badge.d1 {
     background: rgba(40, 167, 69, 0.2);
     color: #7ee787;
   }
-
   .unsaved-badge {
     padding: 0.2rem 0.6rem;
     background: #ffeef0;
@@ -479,163 +433,29 @@
     font-size: 0.7rem;
     font-weight: 500;
   }
-
   :global(.dark) .unsaved-badge {
     background: rgba(248, 81, 73, 0.15);
     color: #ff7b72;
   }
-
   .header-actions {
     display: flex;
     gap: 0.75rem;
     flex-wrap: wrap;
   }
-
-  .save-btn,
-  .view-btn,
-  .delete-btn {
-    padding: 0.6rem 1.25rem;
-    border-radius: var(--border-radius-button);
-    font-size: 0.95rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background-color 0.2s, opacity 0.2s;
-    text-decoration: none;
-    border: none;
-  }
-
-  .save-btn {
-    background: var(--color-primary);
-    color: white;
-  }
-
-  .save-btn:hover:not(:disabled) {
-    background: var(--color-primary-hover);
-  }
-
-  .save-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
   .view-btn {
     background: var(--color-bg-secondary);
     color: var(--color-text);
     border: 1px solid var(--color-border);
+    padding: 0.6rem 1.25rem;
+    border-radius: var(--border-radius-button);
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.2s;
   }
-
-  :global(.dark) .view-btn {
-    background: var(--color-bg-secondary-dark);
-    color: var(--color-text-dark);
-    border-color: var(--color-border-dark);
-  }
-
   .view-btn:hover {
     background: var(--color-border);
   }
-
-  :global(.dark) .view-btn:hover {
-    background: var(--color-border-dark);
-  }
-
-  .delete-btn {
-    background: transparent;
-    color: var(--color-danger);
-    border: 1px solid var(--color-danger);
-  }
-
-  .delete-btn:hover:not(:disabled) {
-    background: var(--color-danger);
-    color: white;
-  }
-
-  .delete-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  /* Error & Success Banners */
-  .error-banner,
-  .success-banner {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.75rem 1rem;
-    border-radius: var(--border-radius-button);
-    margin-bottom: 1rem;
-    flex-shrink: 0;
-  }
-
-  .error-banner {
-    background: #ffeef0;
-    border: 1px solid #f85149;
-    color: #cf222e;
-  }
-
-  :global(.dark) .error-banner {
-    background: rgba(248, 81, 73, 0.15);
-    border-color: #f85149;
-    color: #ff7b72;
-  }
-
-  .success-banner {
-    background: #dcffe4;
-    border: 1px solid #28a745;
-    color: #22863a;
-  }
-
-  :global(.dark) .success-banner {
-    background: rgba(40, 167, 69, 0.15);
-    border-color: #238636;
-    color: #7ee787;
-  }
-
-  .error-icon,
-  .success-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    font-size: 0.75rem;
-    font-weight: bold;
-  }
-
-  .error-icon {
-    background: #cf222e;
-    color: white;
-  }
-
-  :global(.dark) .error-icon {
-    background: #f85149;
-  }
-
-  .success-icon {
-    background: #28a745;
-    color: white;
-  }
-
-  :global(.dark) .success-icon {
-    background: #238636;
-  }
-
-  .error-dismiss {
-    margin-left: auto;
-    background: none;
-    border: none;
-    color: inherit;
-    font-size: 1.25rem;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-    opacity: 0.7;
-  }
-
-  .error-dismiss:hover {
-    opacity: 1;
-  }
-
   /* Editor Layout */
   .editor-layout {
     display: flex;
@@ -643,7 +463,6 @@
     flex: 1;
     min-height: 0;
   }
-
   /* Metadata Panel */
   .metadata-panel {
     width: 280px;
@@ -655,18 +474,11 @@
     overflow-y: auto;
     transition: width 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
   }
-
   .metadata-panel.collapsed {
     width: 50px;
     padding: 0.75rem 0.5rem;
     overflow: hidden;
   }
-
-  :global(.dark) .metadata-panel {
-    background: var(--color-bg-tertiary-dark);
-    border-color: var(--color-border-dark);
-  }
-
   .panel-header {
     display: flex;
     justify-content: space-between;
@@ -676,7 +488,6 @@
     margin-bottom: 1.25rem;
     transition: border-color 0.3s ease;
   }
-
   .metadata-panel.collapsed .panel-header {
     flex-direction: column;
     gap: 0.5rem;
@@ -684,11 +495,6 @@
     margin-bottom: 0;
     padding-bottom: 0;
   }
-
-  :global(.dark) .panel-header {
-    border-color: var(--color-border-dark);
-  }
-
   .panel-title {
     margin: 0;
     font-size: 1rem;
@@ -696,18 +502,12 @@
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
   .metadata-panel.collapsed .panel-title {
     font-size: 0.7rem;
     writing-mode: vertical-rl;
     text-orientation: mixed;
     transform: rotate(180deg);
   }
-
-  :global(.dark) .panel-title {
-    color: var(--color-text-dark);
-  }
-
   .collapse-details-btn {
     background: transparent;
     border: 1px solid var(--color-border);
@@ -719,30 +519,16 @@
     font-family: monospace;
     transition: all 0.15s ease;
   }
-
-  :global(.dark) .collapse-details-btn {
-    border-color: var(--color-border-dark);
-    color: var(--color-text-muted-dark);
-  }
-
   .collapse-details-btn:hover {
     background: var(--color-bg-secondary);
     color: var(--color-primary);
   }
-
-  :global(.dark) .collapse-details-btn:hover {
-    background: var(--color-border-dark);
-    color: var(--color-primary-light);
-  }
-
   .panel-content {
     /* Animation for content visibility */
   }
-
   .form-group {
     margin-bottom: 1.25rem;
   }
-
   .form-group label {
     display: block;
     margin-bottom: 0.4rem;
@@ -751,11 +537,6 @@
     color: var(--color-text-muted);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .form-group label {
-    color: var(--color-text-muted-dark);
-  }
-
   .form-input {
     width: 100%;
     padding: 0.5rem 0.75rem;
@@ -766,28 +547,15 @@
     color: var(--color-text);
     transition: border-color 0.2s, background-color 0.3s, color 0.3s;
   }
-
-  :global(.dark) .form-input {
-    background: var(--color-bg-secondary-dark);
-    border-color: var(--color-border-dark);
-    color: var(--color-text-dark);
-  }
-
   .form-input:focus {
     outline: none;
     border-color: var(--color-primary);
   }
-
-  :global(.dark) .form-input:focus {
-    border-color: var(--color-primary-light);
-  }
-
   .form-textarea {
     resize: vertical;
     min-height: 80px;
     font-family: inherit;
   }
-
   .slug-display {
     display: flex;
     align-items: center;
@@ -797,33 +565,17 @@
     border-radius: var(--border-radius-small);
     transition: background-color 0.3s, border-color 0.3s;
   }
-
-  :global(.dark) .slug-display {
-    background: var(--color-bg-secondary-dark);
-    border-color: var(--color-border-dark);
-  }
-
   .slug-prefix {
     color: var(--color-text-subtle);
     font-size: 0.85rem;
     transition: color 0.3s;
   }
-
-  :global(.dark) .slug-prefix {
-    color: var(--color-text-subtle-dark);
-  }
-
   .slug-value {
     color: var(--color-text);
     font-family: monospace;
     font-size: 0.85rem;
     transition: color 0.3s;
   }
-
-  :global(.dark) .slug-value {
-    color: var(--color-text-dark);
-  }
-
   .form-hint {
     display: block;
     margin-top: 0.35rem;
@@ -831,11 +583,6 @@
     color: var(--color-text-subtle);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .form-hint {
-    color: var(--color-text-subtle-dark);
-  }
-
   .form-warning {
     display: block;
     margin-top: 0.35rem;
@@ -843,33 +590,27 @@
     color: #e07030;
     transition: color 0.3s ease;
   }
-
   .char-count {
     font-size: 0.75rem;
     font-weight: normal;
     color: var(--color-text-subtle);
     margin-left: 0.5rem;
   }
-
   .char-count.good {
-    color: #5cb85f;
+    color: var(--accent-success);
   }
-
   .char-count.warning {
     color: #e07030;
   }
-
   .form-input.char-warning {
     border-color: #e07030;
   }
-
   .tags-preview {
     display: flex;
     flex-wrap: wrap;
     gap: 0.35rem;
     margin-top: -0.5rem;
   }
-
   .tag-preview {
     padding: 0.2rem 0.6rem;
     background: var(--tag-bg);
@@ -878,18 +619,12 @@
     font-size: 0.75rem;
     font-weight: 500;
   }
-
   .metadata-info {
     margin-top: 1.5rem;
     padding-top: 1rem;
     border-top: 1px solid var(--color-border);
     transition: border-color 0.3s;
   }
-
-  :global(.dark) .metadata-info {
-    border-color: var(--color-border-dark);
-  }
-
   .info-item {
     margin: 0.5rem 0;
     font-size: 0.8rem;
@@ -897,27 +632,16 @@
     flex-direction: column;
     gap: 0.15rem;
   }
-
   .info-label {
     color: var(--color-text-subtle);
     transition: color 0.3s;
   }
-
-  :global(.dark) .info-label {
-    color: var(--color-text-subtle-dark);
-  }
-
   .info-value {
     color: var(--color-text-muted);
     font-family: monospace;
     font-size: 0.75rem;
     transition: color 0.3s;
   }
-
-  :global(.dark) .info-value {
-    color: var(--color-text-muted-dark);
-  }
-
   /* Editor Main */
   .editor-main {
     flex: 1;
@@ -925,32 +649,28 @@
     display: flex;
     flex-direction: column;
   }
-
   .editor-with-gutter {
     display: flex;
     gap: 1rem;
     flex: 1;
     min-height: 0;
   }
-
   .editor-section {
     flex: 1;
     min-width: 0;
     display: flex;
     flex-direction: column;
   }
-
   .gutter-section {
     width: 300px;
     flex-shrink: 0;
     overflow-y: auto;
   }
-
   .toggle-gutter-btn {
     margin-top: 0.5rem;
     padding: 0.4rem 0.75rem;
     background: #252526;
-    border: 1px solid #3a3a3a;
+    border: 1px solid var(--light-border-primary);
     border-radius: 4px;
     color: #8bc48b;
     font-size: 0.8rem;
@@ -958,65 +678,63 @@
     transition: all 0.15s ease;
     align-self: flex-end;
   }
-
   .toggle-gutter-btn:hover {
-    background: #3a3a3a;
+    background: var(--light-border-primary);
     color: #a8dca8;
   }
-
   /* Responsive */
   @media (max-width: 1200px) {
     .gutter-section {
       width: 250px;
     }
   }
-
   @media (max-width: 900px) {
     .editor-layout {
       flex-direction: column;
     }
-
     .metadata-panel {
       width: 100% !important;
       max-height: none;
     }
-
     .metadata-panel.collapsed {
       width: 100% !important;
       padding: 1rem;
     }
-
     .metadata-panel.collapsed .panel-header {
       flex-direction: row;
     }
-
     .metadata-panel.collapsed .panel-title {
       writing-mode: horizontal-tb;
       transform: none;
       font-size: 1rem;
     }
-
     .edit-post-page {
       height: auto;
       min-height: auto;
     }
-
     .editor-main {
       min-height: 500px;
     }
-
     .editor-with-gutter {
       flex-direction: column;
     }
-
     .gutter-section {
       width: 100%;
       max-height: 300px;
     }
-
     .header-actions {
       width: 100%;
       justify-content: flex-end;
     }
   }
 </style>
+
+<!-- Delete Confirmation Dialog -->
+<Dialog bind:open={showDeleteDialog}>
+  <h3 slot="title">Delete Post</h3>
+  <p>Are you sure you want to delete "{title}"? This cannot be undone.</p>
+  <div slot="footer" style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+    <Button variant="outline" onclick={() => showDeleteDialog = false}>Cancel</Button>
+    <Button variant="danger" onclick={handleDelete}>Delete</Button>
+  </div>
+</Dialog>

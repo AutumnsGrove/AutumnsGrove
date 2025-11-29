@@ -1,6 +1,7 @@
 import { json, error } from "@sveltejs/kit";
 import { marked } from "marked";
 import { getPostBySlug } from "$lib/utils/markdown.js";
+import { validateCSRF } from "$lib/utils/csrf.js";
 
 /**
  * GET /api/posts/[slug] - Get a single post
@@ -82,6 +83,11 @@ export async function PUT({ params, request, platform, locals }) {
     throw error(401, "Unauthorized");
   }
 
+  // CSRF check
+  if (!validateCSRF(request)) {
+    throw error(403, "Invalid origin");
+  }
+
   if (!platform?.env?.POSTS_DB) {
     throw error(500, "Posts database not configured");
   }
@@ -98,6 +104,24 @@ export async function PUT({ params, request, platform, locals }) {
     // Validate required fields
     if (!data.title || !data.markdown_content) {
       throw error(400, "Missing required fields: title, markdown_content");
+    }
+
+    // Validation constants
+    const MAX_TITLE_LENGTH = 200;
+    const MAX_DESCRIPTION_LENGTH = 500;
+    const MAX_MARKDOWN_LENGTH = 1024 * 1024;  // 1MB
+
+    // Validate lengths
+    if (data.title.length > MAX_TITLE_LENGTH) {
+      throw error(400, `Title too long (max ${MAX_TITLE_LENGTH} characters)`);
+    }
+
+    if (data.description && data.description.length > MAX_DESCRIPTION_LENGTH) {
+      throw error(400, `Description too long (max ${MAX_DESCRIPTION_LENGTH} characters)`);
+    }
+
+    if (data.markdown_content.length > MAX_MARKDOWN_LENGTH) {
+      throw error(400, 'Content too large (max 1MB)');
     }
 
     // Check if post exists
@@ -166,6 +190,11 @@ export async function DELETE({ params, platform, locals }) {
   // Auth check
   if (!locals.user) {
     throw error(401, "Unauthorized");
+  }
+
+  // CSRF check
+  if (!validateCSRF(request)) {
+    throw error(403, "Invalid origin");
   }
 
   if (!platform?.env?.POSTS_DB) {

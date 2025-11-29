@@ -1,5 +1,10 @@
 <script>
   import { marked } from "marked";
+  import Dialog from "$lib/components/ui/Dialog.svelte";
+  import Input from "$lib/components/ui/Input.svelte";
+  import Button from "$lib/components/ui/Button.svelte";
+  import Select from "$lib/components/ui/Select.svelte";
+  import { toast } from "$lib/components/ui/toast";
 
   // Props
   let {
@@ -86,9 +91,8 @@
   }
 
   function deleteItem(index) {
-    if (confirm("Delete this gutter item?")) {
-      gutterItems = gutterItems.filter((_, i) => i !== index);
-    }
+    gutterItems = gutterItems.filter((_, i) => i !== index);
+    toast.success("Gutter item deleted");
   }
 
   function moveItem(index, direction) {
@@ -141,7 +145,9 @@
         });
       }
     } catch (err) {
+      toast.error('Failed to load CDN images');
       console.error("Failed to load CDN images:", err);
+      cdnImages = [];
     } finally {
       cdnLoading = false;
     }
@@ -264,63 +270,54 @@
 </div>
 
 <!-- Add/Edit Modal -->
-{#if showAddModal}
-  <div class="modal-overlay" onclick={closeModal} role="presentation">
-    <div
-      class="modal-content"
-      onclick={(e) => e.stopPropagation()}
-      role="dialog"
-      aria-modal="true"
-    >
-      <h3>{editingIndex !== null ? "Edit" : "Add"} Gutter Item</h3>
+<Dialog bind:open={showAddModal}>
+  <h3 slot="title">{editingIndex !== null ? "Edit" : "Add"} Gutter Item</h3>
 
-      <div class="form-group">
-        <label for="item-type">Type</label>
-        <select id="item-type" bind:value={itemType} class="form-input">
-          <option value="comment">Comment (Markdown)</option>
-          <option value="photo">Photo</option>
-          <option value="gallery">Image Gallery</option>
-        </select>
-      </div>
+  <div class="form-group">
+    <label for="item-type">Type</label>
+    <Select id="item-type" bind:value={itemType}>
+      <option value="comment">Comment (Markdown)</option>
+      <option value="photo">Photo</option>
+      <option value="gallery">Image Gallery</option>
+    </Select>
+  </div>
 
-      <div class="form-group">
-        <label for="item-anchor">Anchor</label>
-        <div class="anchor-input-row">
-          <input
-            type="text"
-            id="item-anchor"
-            bind:value={itemAnchor}
-            placeholder="## Heading or anchor:name"
-            class="form-input"
-          />
-          <button
-            type="button"
-            class="insert-anchor-btn"
-            onclick={handleInsertAnchor}
-            title="Insert new anchor in editor"
-          >
-            + Anchor
-          </button>
-        </div>
-        <span class="form-hint">
-          Use <code>## Heading</code>, <code>paragraph:N</code>, or <code>anchor:name</code>
-        </span>
-      </div>
+  <div class="form-group">
+    <label for="item-anchor">Anchor</label>
+    <div class="anchor-input-row">
+      <Input
+        type="text"
+        id="item-anchor"
+        bind:value={itemAnchor}
+        placeholder="## Heading or anchor:name"
+      />
+      <Button
+        variant="outline"
+        onclick={handleInsertAnchor}
+        title="Insert new anchor in editor"
+      >
+        + Anchor
+      </Button>
+    </div>
+    <span class="form-hint">
+      Use <code>## Heading</code>, <code>paragraph:N</code>, or <code>anchor:name</code>
+    </span>
+  </div>
 
-      {#if availableAnchors.length > 0}
-        <div class="available-anchors">
-          <span class="anchors-label">Available:</span>
-          {#each availableAnchors as anchor}
-            <button
-              type="button"
-              class="anchor-chip"
-              onclick={() => (itemAnchor = anchor)}
-            >
-              {anchor}
-            </button>
-          {/each}
-        </div>
-      {/if}
+  {#if availableAnchors.length > 0}
+    <div class="available-anchors">
+      <span class="anchors-label">Available:</span>
+      {#each availableAnchors as anchor}
+        <button
+          type="button"
+          class="anchor-chip"
+          onclick={() => (itemAnchor = anchor)}
+        >
+          {anchor}
+        </button>
+      {/each}
+    </div>
+  {/if}
 
       {#if itemType === "comment"}
         <div class="form-group">
@@ -335,114 +332,101 @@
         </div>
       {/if}
 
-      {#if itemType === "photo"}
-        <div class="form-group">
-          <label for="item-url">Image URL</label>
-          <div class="url-input-row">
-            <input
-              type="text"
-              id="item-url"
-              bind:value={itemUrl}
-              placeholder="https://cdn.autumnsgrove.com/..."
-              class="form-input"
-            />
-            <button
-              type="button"
-              class="browse-btn"
-              onclick={() => openImagePicker((url) => (itemUrl = url))}
-            >
-              Browse CDN
-            </button>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="item-caption">Caption (optional)</label>
-          <input
-            type="text"
-            id="item-caption"
-            bind:value={itemCaption}
-            placeholder="Photo caption"
-            class="form-input"
-          />
-        </div>
-
-        {#if itemUrl}
-          <div class="image-preview">
-            <img src={itemUrl} alt="Preview" />
-          </div>
-        {/if}
-      {/if}
-
-      {#if itemType === "gallery"}
-        <div class="form-group">
-          <label>Gallery Images</label>
-          <div class="gallery-list">
-            {#each galleryImages as image, i (i)}
-              <div class="gallery-image-item">
-                <img src={image.url} alt={image.alt || "Gallery image"} class="gallery-thumb" />
-                <div class="gallery-image-fields">
-                  <input
-                    type="text"
-                    value={image.alt}
-                    oninput={(e) => updateGalleryImage(i, "alt", e.target.value)}
-                    placeholder="Alt text"
-                    class="form-input small"
-                  />
-                  <input
-                    type="text"
-                    value={image.caption}
-                    oninput={(e) => updateGalleryImage(i, "caption", e.target.value)}
-                    placeholder="Caption"
-                    class="form-input small"
-                  />
-                </div>
-                <button
-                  type="button"
-                  class="remove-btn"
-                  onclick={() => removeGalleryImage(i)}
-                >×</button>
-              </div>
-            {/each}
-          </div>
-          <button type="button" class="add-image-btn" onclick={addGalleryImage}>
-            + Add Image
-          </button>
-        </div>
-      {/if}
-
-      <div class="modal-actions">
-        <button class="cancel-btn" onclick={closeModal}>Cancel</button>
-        <button class="save-btn" onclick={saveItem}>
-          {editingIndex !== null ? "Update" : "Add"} Item
-        </button>
+  {#if itemType === "photo"}
+    <div class="form-group">
+      <label for="item-url">Image URL</label>
+      <div class="url-input-row">
+        <Input
+          type="text"
+          id="item-url"
+          bind:value={itemUrl}
+          placeholder="https://cdn.autumnsgrove.com/..."
+        />
+        <Button
+          variant="outline"
+          onclick={() => openImagePicker((url) => (itemUrl = url))}
+        >
+          Browse CDN
+        </Button>
       </div>
     </div>
+
+    <div class="form-group">
+      <label for="item-caption">Caption (optional)</label>
+      <Input
+        type="text"
+        id="item-caption"
+        bind:value={itemCaption}
+        placeholder="Photo caption"
+      />
+    </div>
+
+    {#if itemUrl}
+      <div class="image-preview">
+        <img src={itemUrl} alt="Preview" />
+      </div>
+    {/if}
+  {/if}
+
+  {#if itemType === "gallery"}
+    <div class="form-group">
+      <label>Gallery Images</label>
+      <div class="gallery-list">
+        {#each galleryImages as image, i (i)}
+          <div class="gallery-image-item">
+            <img src={image.url} alt={image.alt || "Gallery image"} class="gallery-thumb" />
+            <div class="gallery-image-fields">
+              <Input
+                type="text"
+                value={image.alt}
+                oninput={(e) => updateGalleryImage(i, "alt", e.target.value)}
+                placeholder="Alt text"
+                class="small"
+              />
+              <Input
+                type="text"
+                value={image.caption}
+                oninput={(e) => updateGalleryImage(i, "caption", e.target.value)}
+                placeholder="Caption"
+                class="small"
+              />
+            </div>
+            <button
+              type="button"
+              class="remove-btn"
+              onclick={() => removeGalleryImage(i)}
+            >×</button>
+          </div>
+        {/each}
+      </div>
+      <button type="button" class="add-image-btn" onclick={addGalleryImage}>
+        + Add Image
+      </button>
+    </div>
+  {/if}
+
+  <div slot="footer" style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+    <Button variant="outline" onclick={closeModal}>Cancel</Button>
+    <Button onclick={saveItem}>
+      {editingIndex !== null ? "Update" : "Add"} Item
+    </Button>
   </div>
-{/if}
+</Dialog>
 
 <!-- Image Picker Modal -->
-{#if showImagePicker}
-  <div class="modal-overlay" onclick={closeImagePicker} role="presentation">
-    <div
-      class="modal-content image-picker-modal"
-      onclick={(e) => e.stopPropagation()}
-      role="dialog"
-      aria-modal="true"
-    >
-      <h3>Select Image from CDN</h3>
+<Dialog bind:open={showImagePicker}>
+  <h3 slot="title">Select Image from CDN</h3>
 
-      <div class="picker-controls">
-        <input
-          type="text"
-          bind:value={cdnFilter}
-          placeholder="Filter by folder (e.g., blog/)"
-          class="form-input"
-        />
-        <button class="filter-btn" onclick={loadCdnImages}>
-          {cdnLoading ? "Loading..." : "Filter"}
-        </button>
-      </div>
+  <div class="picker-controls">
+    <Input
+      type="text"
+      bind:value={cdnFilter}
+      placeholder="Filter by folder (e.g., blog/)"
+    />
+    <Button onclick={loadCdnImages} disabled={cdnLoading}>
+      {cdnLoading ? "Loading..." : "Filter"}
+    </Button>
+  </div>
 
       <div class="image-grid">
         {#if cdnLoading}
@@ -462,12 +446,10 @@
         {/if}
       </div>
 
-      <div class="modal-actions">
-        <button class="cancel-btn" onclick={closeImagePicker}>Cancel</button>
-      </div>
-    </div>
+  <div slot="footer" style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+    <Button variant="outline" onclick={closeImagePicker}>Cancel</Button>
   </div>
-{/if}
+</Dialog>
 
 <style>
   .gutter-manager {

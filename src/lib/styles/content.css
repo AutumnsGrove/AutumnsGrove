@@ -249,22 +249,8 @@
 }
 
 /* ==========================================================================
-   Content Body - Typography
+   Content Body - Scroll Offset for Headers
    ========================================================================== */
-
-.content-body {
-	line-height: 1.8;
-	color: #333;
-	transition: color 0.3s ease;
-}
-
-.dark .content-body {
-	color: #e0e0e0;
-}
-
-/* --------------------------------------------------------------------------
-   Headings
-   -------------------------------------------------------------------------- */
 
 /* Scroll offset to account for sticky header */
 .content-body h2,
@@ -275,78 +261,9 @@
 	scroll-margin-top: 5rem;
 }
 
-.content-body h2 {
-	color: #2c5f2d;
-	margin-top: 2.5rem;
-	margin-bottom: 1rem;
-	font-size: 1.75rem;
-	transition: color 0.3s ease;
-}
-
-.dark .content-body h2 {
-	color: #5cb85f;
-}
-
-.content-body h3 {
-	color: #2c5f2d;
-	margin-top: 2rem;
-	margin-bottom: 0.75rem;
-	font-size: 1.4rem;
-	transition: color 0.3s ease;
-}
-
-.dark .content-body h3 {
-	color: #5cb85f;
-}
-
-/* --------------------------------------------------------------------------
-   Paragraphs
-   -------------------------------------------------------------------------- */
-
-.content-body p {
-	margin-bottom: 1.5rem;
-}
-
-/* --------------------------------------------------------------------------
-   Links
-   -------------------------------------------------------------------------- */
-
-.content-body a {
-	color: #2c5f2d;
-	text-decoration: underline;
-	transition: color 0.3s ease;
-}
-
-.dark .content-body a {
-	color: #5cb85f;
-}
-
-.content-body a:hover {
-	color: #4a9d4f;
-}
-
-.dark .content-body a:hover {
-	color: #7cd97f;
-}
-
-/* --------------------------------------------------------------------------
-   Code
-   -------------------------------------------------------------------------- */
-
-/* Inline code */
-.content-body code {
-	background: #f5f5f5;
-	padding: 0.2rem 0.4rem;
-	border-radius: 3px;
-	font-family: 'Courier New', monospace;
-	font-size: 0.9em;
-	transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.dark .content-body code {
-	background: #2a2a2a;
-	color: #e0e0e0;
-}
+/* ==========================================================================
+   Code Block Extensions (beyond what prose provides)
+   ========================================================================== */
 
 /* GitHub-style code block wrapper */
 .content-body .code-block-wrapper {
@@ -586,63 +503,12 @@
 	background: #4a4a4a;
 }
 
-/* --------------------------------------------------------------------------
-   Lists
-   -------------------------------------------------------------------------- */
-
-.content-body ul,
-.content-body ol {
-	margin-bottom: 1.5rem;
-	padding-left: 2rem;
-}
-
-.content-body li {
-	margin-bottom: 0.5rem;
-}
-
-/* --------------------------------------------------------------------------
-   Blockquotes
-   -------------------------------------------------------------------------- */
-
-.content-body blockquote {
-	border-left: 4px solid #2c5f2d;
-	padding-left: 1rem;
-	margin: 1.5rem 0;
-	color: #666;
-	font-style: italic;
-	transition: border-color 0.3s ease, color 0.3s ease;
-}
-
-.dark .content-body blockquote {
-	border-left: 4px solid #5cb85f;
-	color: #d0d0d0;
-}
-
-/* --------------------------------------------------------------------------
-   Images
-   -------------------------------------------------------------------------- */
-
-.content-body img {
-	max-width: 100%;
-	height: auto;
-	border-radius: 8px;
-	margin: 1.5rem 0;
-}
-
 /* ==========================================================================
-   Responsive Typography
+   Responsive Typography Adjustments
    ========================================================================== */
 
 @media (max-width: 768px) {
 	.content-header h1 {
 		font-size: 2rem;
-	}
-
-	.content-body h2 {
-		font-size: 1.5rem;
-	}
-
-	.content-body h3 {
-		font-size: 1.25rem;
 	}
 }

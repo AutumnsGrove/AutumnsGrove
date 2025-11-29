@@ -113,6 +113,104 @@
 
 ---
 
+## 🔍 Security & Polish Audit (Nov 29, 2025)
+
+**Status:** Comprehensive audit completed - action items identified
+
+### Critical Security Issues (Immediate Fix Required)
+
+**XSS Vulnerability - Unescaped HTML Rendering:**
+- [ ] Install DOMPurify package (`npm install dompurify @types/dompurify`)
+- [ ] Add HTML sanitization to `ContentWithGutter.svelte:465`
+- [ ] Add HTML sanitization to `InternalsPostViewer.svelte:23`
+- [ ] Configure allowed tags/attributes for markdown rendering
+- [ ] Test with malicious payloads before deploying
+
+**CSRF Protection Missing:**
+- [ ] Create CSRF validation utility (`src/lib/utils/csrf.js`)
+- [ ] Add CSRF checks to `POST /api/images/upload`
+- [ ] Add CSRF checks to `POST /api/posts`
+- [ ] Add CSRF checks to `PUT /api/posts/[slug]`
+- [ ] Add CSRF checks to `DELETE /api/posts/[slug]`
+- [ ] Add CSRF checks to `PUT /api/admin/settings`
+
+**Security Headers:**
+- [ ] Add security headers to `hooks.server.js`:
+  - [ ] X-Frame-Options: DENY
+  - [ ] X-Content-Type-Options: nosniff
+  - [ ] Referrer-Policy: strict-origin-when-cross-origin
+  - [ ] Permissions-Policy
+  - [ ] Content-Security-Policy (production only, needs Mermaid adjustments)
+
+### High Priority Polish (User-Facing)
+
+**Error Handling - Console to Toast Migration:**
+- [ ] `src/routes/admin/analytics/+page.svelte:19` - Stats fetch error
+- [ ] `src/routes/timeline/+page.svelte:42,225` - Activity fetch errors
+- [ ] `src/routes/admin/settings/+page.svelte:21,60` - Font/health check errors
+- [ ] `src/routes/admin/images/+page.svelte:204` - Copy-to-clipboard error
+- [ ] `src/lib/components/admin/GutterManager.svelte:148` - CDN image load error
+- [ ] `src/routes/admin/timeline/+page.svelte:59,77,90` - Three fetch errors
+
+**Loading States:**
+- [ ] Add loading indicator to Analytics page (stats cards)
+- [ ] Add loading indicator to Settings page (health check, font settings)
+- [ ] Add loading indicator to GutterManager (CDN images)
+- [ ] Expand Skeleton component usage across admin panel
+
+**Accessibility:**
+- [ ] Add aria-label to drop zone (`admin/images/+page.svelte:282`)
+- [ ] Add aria-label to MarkdownEditor container
+- [ ] Add aria-expanded to details toggle elements
+- [ ] Add Space key handler to drop zones (currently only Enter works)
+
+### Medium Priority Security
+
+**Input Validation:**
+- [ ] Add strict validation to Timeline API year/month params (`/api/timeline/+server.js:71-76`)
+- [ ] Add length limits to post content fields (`/api/posts/+server.js`)
+- [ ] Fix ReDoS vulnerability in username regex (`src/lib/utils/github.js:16`)
+
+**Session Cookie:**
+- [ ] Replace hostname detection with `ENVIRONMENT` env var check
+- [ ] Update `createSessionCookie()` to use `platform.env.ENVIRONMENT`
+
+**Rate Limiting:**
+- [ ] Consider moving rate limit state from D1 to KV (faster)
+- [ ] Add exponential backoff for repeated auth failures
+- [ ] Increase time window from 1 min to 5 min
+
+### Low Priority
+
+**Information Disclosure:**
+- [ ] Replace detailed error messages with generic ones (keep details in logs)
+- [ ] Example: "Posts database not configured" → "Service temporarily unavailable"
+
+**Dependency Security:**
+- [ ] Create `.github/dependabot.yml` for automated dependency updates
+- [ ] Add `npm audit` script to package.json
+- [ ] Add security testing to CI/CD pipeline
+
+**Security Documentation:**
+- [ ] Create `SECURITY.md` with vulnerability reporting instructions
+- [ ] Document security testing checklist
+
+### Audit Documentation
+
+**Generated Reports:**
+- Security Audit Report: Comprehensive 8.6/10 CVSS findings with remediation steps
+- Polish Opportunities: 15 identified improvements across UX, accessibility, error handling
+- Overall Grade: B+ → A potential with fixes
+
+**Key Findings:**
+- ✅ Excellent authentication implementation (passwordless, JWT, rate limiting)
+- ✅ Good input validation patterns already in place
+- ⚠️ XSS protection needs immediate attention
+- ⚠️ CSRF coverage incomplete on API routes
+- 💎 Many small polish opportunities with high user impact
+
+---
+
 ## 🔲 Remaining Tasks
 
 ### HIGH PRIORITY: Admin Panel Improvements (Nov 26, 2025)
@@ -521,6 +619,257 @@ Commits:     ████████ AutumnsGrove (150)
 
 ---
 
+### HIGH PRIORITY: Live Document Modes (Multi-Mode Editing Experience)
+
+**Status:** Planned - The Next Evolution of the Editor
+
+**Goal:** Transform the markdown editor into a fluid, multi-mode writing experience that adapts to different workflows. Think Notion meets Obsidian meets your terminal-grove aesthetic.
+
+**The Three Modes (All Working Together):**
+
+#### Mode 1: Live Preview Toggle (GitHub-Style)
+**Keyboard:** `Cmd+Shift+P` (Preview)
+
+Simple toggle between editing and reading:
+```
+Split View → Press Cmd+Shift+P → Full Preview
+┌───────┬───────┐              ┌──────────────────┐
+│ Edit  │ View  │     →        │   Preview        │
+└───────┴───────┘              │  (reading mode)  │
+                               │  [Edit] button   │
+                               └──────────────────┘
+```
+
+**Implementation:**
+- [ ] Add `viewMode` state: 'split' | 'edit-only' | 'preview-only'
+- [ ] Hide editor pane when in preview-only mode
+- [ ] Expand preview to full-width (max 800px for reading)
+- [ ] Add floating "Edit Mode" button in bottom-right
+- [ ] Add to command palette (Cmd+K → "Toggle Live Preview")
+- [ ] Keyboard shortcut: Cmd+Shift+P
+
+**UX Benefits:**
+- Quick switch to distraction-free reading
+- Check formatting without split-view clutter
+- Perfect for final review before publishing
+- Smooth transition (no jarring mode change)
+
+---
+
+#### Mode 2: Notion-Style Block Editing (Live Document)
+**Keyboard:** `Cmd+Shift+L` (Live Document)
+
+Click-to-edit blocks that auto-render:
+```
+┌─────────────────────────────────┐
+│  # Welcome to AutumnsGrove      │  (click to edit)
+│                                 │
+│  This is a paragraph of text.   │  (click to edit)
+│  You can click anywhere to      │
+│  start editing that block.      │
+│                                 │
+│  [Type / for commands]          │
+└─────────────────────────────────┘
+```
+
+**Implementation:**
+- [ ] Parse markdown into "blocks" (heading, paragraph, code, list, etc.)
+- [ ] Render each block with `contenteditable` wrapper
+- [ ] Click block → shows markdown source in mini-editor
+- [ ] Type → updates block in real-time
+- [ ] Blur → re-renders markdown to HTML
+- [ ] Support slash commands (`/heading`, `/code`, etc.)
+- [ ] Toolbar appears near active block
+
+**Technical Approach:**
+```svelte
+<script>
+  let blocks = $derived(parseMarkdownToBlocks(markdown));
+  let editingBlockId = $state(null);
+
+  function handleBlockClick(blockId) {
+    editingBlockId = blockId;
+    // Show inline editor for this block
+  }
+
+  function handleBlockBlur(blockId, newContent) {
+    // Update markdown, re-render block
+    editingBlockId = null;
+  }
+</script>
+
+{#each blocks as block}
+  {#if editingBlockId === block.id}
+    <textarea bind:value={block.raw} onblur={() => handleBlockBlur(block)} />
+  {:else}
+    <div onclick={() => handleBlockClick(block.id)}>
+      {@html block.rendered}
+    </div>
+  {/if}
+{/each}
+```
+
+**UX Benefits:**
+- Wysiwyg feel with markdown simplicity
+- No mental context switch (edit in-place)
+- Perfect for quick fixes ("just change this word")
+- Feels modern and fluid
+
+---
+
+#### Mode 3: Enhanced Zen Mode with Live Preview
+**Keyboard:** `P` (while in Zen Mode)
+
+Add preview toggle to existing Zen Mode:
+```
+Zen Mode (Cmd+Shift+Enter)
+┌────────────────────────────────┐
+│  Fullscreen Editor             │
+│  (typewriter, faded toolbar)   │
+│                                │
+│  Press P → Toggle Preview      │
+└────────────────────────────────┘
+         ↓ Press P
+┌────────────────────────────────┐
+│  Fullscreen Preview            │
+│  (rendered, reading mode)      │
+│                                │
+│  Press P → Back to Editor      │
+│  Press Esc → Exit Zen          │
+└────────────────────────────────┘
+```
+
+**Implementation:**
+- [ ] Detect `P` keypress while `zenMode === true`
+- [ ] Toggle `zenPreviewMode` state
+- [ ] Swap editor/preview pane visibility
+- [ ] Maintain fullscreen, typewriter, toolbar fade
+- [ ] Add subtle indicator "Preview Mode (P to edit)"
+- [ ] Preserve Zen aesthetic (dark, minimal)
+
+**Code Snippet:**
+```svelte
+function handleZenKeydown(e) {
+  if (zenMode && e.key === 'p' && !e.metaKey && !e.ctrlKey) {
+    e.preventDefault();
+    zenPreviewMode = !zenPreviewMode;
+  }
+
+  if (e.key === 'Escape') {
+    zenMode = false;
+    zenPreviewMode = false;
+  }
+}
+```
+
+**UX Benefits:**
+- Stay in flow state (no mode exit needed)
+- Quick preview check without leaving Zen
+- Perfect for campfire sessions (write, preview, repeat)
+- Maintains focus and calm
+
+---
+
+### Implementation Plan: All Three Modes
+
+**Phase 1: Foundation (Simple Toggle) - 1-2 hours**
+- [ ] Add `viewMode` state management
+- [ ] Implement Mode 1 (Live Preview Toggle)
+- [ ] Add keyboard shortcut (Cmd+Shift+P)
+- [ ] Style full-width preview mode
+- [ ] Add floating "Edit Mode" button
+- [ ] Test with existing editor features
+
+**Phase 2: Enhanced Zen - 30 minutes**
+- [ ] Implement Mode 3 (Zen Preview Toggle)
+- [ ] Add `P` key handler to Zen Mode
+- [ ] Add mode indicator UI
+- [ ] Test Zen + Preview flow
+
+**Phase 3: Live Document (Advanced) - 3-4 hours**
+- [ ] Build markdown block parser
+- [ ] Implement click-to-edit blocks
+- [ ] Add inline mini-editor component
+- [ ] Handle block updates and re-rendering
+- [ ] Integrate slash commands with blocks
+- [ ] Test with complex markdown (lists, code, tables)
+- [ ] Polish transitions and animations
+
+**Phase 4: Polish & Integration - 1 hour**
+- [ ] Update command palette with all modes
+- [ ] Add keyboard shortcuts help panel
+- [ ] Document mode switching in status bar
+- [ ] Add smooth transitions between modes
+- [ ] Test all mode combinations
+- [ ] Update CLAUDE.md with new features
+
+**Total Estimated Time:** 6-8 hours spread across multiple sessions
+
+---
+
+### Design Mockups
+
+**Mode Switcher UI (Status Bar)**
+```
+┌─────────────────────────────────────────────┐
+│ View: [Split] [Preview] [Live Doc] [Zen]   │
+│ Ln 42, Col 18  •  1,247 words  •  ~6 min   │
+└─────────────────────────────────────────────┘
+```
+
+**Keyboard Shortcuts Summary**
+```
+Mode Switching:
+  Cmd+Shift+P    → Toggle Preview
+  Cmd+Shift+L    → Live Document Mode
+  Cmd+Shift+Enter → Zen Mode
+  P (in Zen)     → Toggle Preview in Zen
+  Esc            → Exit current mode
+```
+
+**Visual Transitions**
+- Fade between modes (200ms ease-in-out)
+- Floating button scale-in animation
+- Toolbar slide/fade for Zen
+- Block highlight on hover (Live Doc)
+
+---
+
+### Why This Rocks
+
+**For Quick Edits:**
+- Live Document mode → click, fix, done
+
+**For Deep Writing:**
+- Zen mode → immersive focus
+- P key → quick preview check
+- Back to writing, stay in flow
+
+**For Final Review:**
+- Preview toggle → reading mode
+- Full-width prose, zero distractions
+- "Edit" button when you spot issues
+
+**For Different Moods:**
+- Split view (default, balanced)
+- Preview-only (reader mode)
+- Live doc (modern, Notion-like)
+- Zen (writer mode, campfire vibes)
+
+---
+
+### Inspiration & References
+
+**Notion:** Click-to-edit blocks, slash commands
+**Obsidian:** Live preview mode, reading view
+**iA Writer:** Focus mode, reading mode toggle
+**Typora:** True WYSIWYG markdown editing
+**Your Grove Writer:** Terminal aesthetic, Zen mode, campfire sessions
+
+The goal: **Best of all worlds**, in your unique forest terminal aesthetic.
+
+---
+
 ### Content Migration Strategy
 
 #### UserContent Legacy Support (v1.0 Plan)
@@ -541,9 +890,110 @@ Commits:     ████████ AutumnsGrove (150)
 
 ## 💡 Future Ideas & Enhancements
 
-### UI & Styling
-- **[shadcn-svelte](https://github.com/huntabyte/shadcn-svelte)**: Pre-built accessible components
-- **Tailwind CSS**: Utility-first CSS framework (if needed for custom styling)
+### AI Writing Assistant for MarkdownEditor (Planned - Not Started)
+
+**Status:** Comprehensive plan created, awaiting implementation
+
+**Goal:** Add ethical AI writing tools to help polish posts WITHOUT generating content
+
+**Core Principle:** AI is a TOOL, never a writer. Users write their own posts.
+
+**Allowed Features (Enhancement Tools):**
+- [ ] Grammar/spelling corrections (like Grammarly)
+- [ ] Readability scoring (Flesch-Kincaid)
+- [ ] Tone analysis ("sounds harsh here")
+- [ ] Word choice suggestions
+- [ ] Structural feedback (paragraph length)
+
+**Forbidden Features (Content Generation):**
+- ❌ "Write a post about X"
+- ❌ "Expand this to 1000 words"
+- ❌ Auto-completion or predictive text
+- ❌ Any full sentence generation
+
+**Implementation Plan:**
+- **Phase 1 (Week 1):** Settings toggle (OFF by default) + grammar check via Cmd+K
+- **Phase 2 (Week 2):** Readability + tone analysis
+- **Phase 3 (Week 3):** Usage dashboard with cost transparency
+- **Phase 4 (Future):** Inline highlights, custom writing rules
+
+**Infrastructure (Already Ready):**
+- ✅ Anthropic API configured in wrangler.toml
+- ✅ D1 `ai_requests` table for usage tracking
+- ✅ Claude Haiku 4.5 integration working (timeline uses it)
+- ✅ Settings system in place
+
+**Estimated Costs:**
+- Light user (10 posts, 3 checks each): ~$0.015/month
+- Heavy user (50 posts, 10 checks each): ~$0.25/month
+- Power user (100+ analyses): ~$0.50-1.00/month
+
+**Design Principles:**
+- All AI features OFF by default (zero friction for non-users)
+- Command palette integration (Cmd+K → "AI: Check Grammar")
+- Terminal-grove aesthetic (sidebar panel, muted green accents)
+- Full transparency (settings explain data sent to Anthropic)
+- User model selection (Haiku for speed, Sonnet for quality)
+
+**Documentation:**
+- Full plan: `~/.claude/plans/ai-writing-assistant.md` (1,468 lines)
+- Includes code examples, UI mockups, cost analysis, ethical safeguards
+
+**Next Steps (When Ready):**
+1. Review plan document
+2. Approve Phase 1 scope
+3. Implement settings toggle + API endpoint
+4. Add AI panel to MarkdownEditor
+5. Deploy behind feature flag
+
+---
+
+### shadcn-svelte Migration (Nov 2025) ✅ COMPLETED
+**Status:** Migration complete and merged to main
+
+**What was accomplished:**
+- [x] Foundation: Tailwind CSS + shadcn-svelte primitives installed
+- [x] Component wrappers: 12 wrapper components created (533 lines total)
+- [x] Admin routes: All admin pages migrated to wrappers (~10 pages)
+- [x] Public routes: Blog, recipes, core pages migrated to wrappers (~13 pages)
+- [x] Typography: Tailwind Typography integrated with custom config
+- [x] Cleanup: Deprecated CSS removed, bundle verified
+- [x] Documentation: Complete migration docs and quick reference guide
+
+**Results:**
+- Consistent UI system with 12 reusable wrapper components
+- Reduced CSS by ~900+ lines across project
+- Improved maintainability (UI changes in one place)
+- Preserved sacred components (MarkdownEditor, GitHubHeatmap, Timeline, Gallery)
+- Maintained terminal-grove aesthetic
+
+**Documentation:**
+- See `docs/shadcn-migration-complete.md` for full migration details
+- See `docs/shadcn-component-quick-reference.md` for component cheat sheet
+
+**Wrapper Components:**
+1. Button (default, ghost, link variants)
+2. Card (with title, hoverable, clickable support)
+3. Badge (tag, default variants)
+4. Input (text, email, password, textarea, etc.)
+5. Select (dropdown with optional groups)
+6. Tabs (tabbed interface)
+7. Dialog (modal dialogs)
+8. Accordion (collapsible sections)
+9. Sheet (side panels/drawers)
+10. Toast (notifications)
+11. Skeleton (loading placeholders)
+12. Table (data tables)
+
+**Import usage:**
+```svelte
+import { Button, Card, Badge, Input } from "$lib/components/ui";
+```
+
+### UI & Styling (Future)
+- **Custom themes**: Allow users to customize color scheme (beyond dark/light)
+- **More wrapper variants**: Add size variants (sm, md, lg) for components
+- **Component library expansion**: Add Alert, Popover, Dropdown wrappers
 
 ### Image Optimization
 - **[@sveltejs/enhanced-img](https://svelte.dev/docs/kit/images#sveltejs-enhanced-img)**: Built-in SvelteKit image optimization

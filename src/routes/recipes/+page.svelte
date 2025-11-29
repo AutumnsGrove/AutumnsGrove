@@ -1,4 +1,6 @@
 <script>
+	import { Card, Badge } from '$lib/components/ui';
+
 	let { data } = $props();
 </script>
 
@@ -19,11 +21,11 @@
 {:else}
 	<div class="recipes-grid">
 		{#each data.recipes as recipe (recipe.slug)}
-			<article class="recipe-card">
+			<Card hoverable>
 				<a href="/recipes/{recipe.slug}" class="recipe-link">
-					<h2>{recipe.title}</h2>
+					<h2 class="text-xl font-semibold mb-4 text-green-800 dark:text-green-500 transition-colors">{recipe.title}</h2>
 					<div class="recipe-meta">
-						<time datetime={recipe.date}>
+						<time datetime={recipe.date} class="text-sm text-gray-600 dark:text-gray-400 transition-colors">
 							{new Date(recipe.date).toLocaleDateString('en-US', {
 								year: 'numeric',
 								month: 'long',
@@ -33,7 +35,7 @@
 						{#if recipe.tags.length > 0}
 							<div class="tags">
 								{#each recipe.tags as tag (tag)}
-									<span class="tag">{tag}</span>
+									<Badge variant="tag">{tag}</Badge>
 								{/each}
 							</div>
 						{/if}
@@ -42,7 +44,7 @@
 						<p class="description">{recipe.description}</p>
 					{/if}
 				</a>
-			</article>
+			</Card>
 		{/each}
 	</div>
 {/if}
@@ -52,80 +54,36 @@
 		text-align: center;
 		margin-bottom: 3rem;
 	}
-
 	.recipes-header h1 {
 		font-size: 2.5rem;
 		color: #2c5f2d;
 		margin-bottom: 0.5rem;
 		transition: color 0.3s ease;
 	}
-
 	:global(.dark) .recipes-header h1 {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	.recipes-header p {
 		color: #666;
 		font-size: 1.1rem;
 		transition: color 0.3s ease;
 	}
-
-	:global(.dark) .recipes-header p {
-		color: var(--color-text-muted-dark);
-	}
-
 	.no-recipes {
 		text-align: center;
 		padding: 3rem;
-		color: #999;
+		color: var(--light-text-muted);
 	}
-
 	.recipes-grid {
 		display: grid;
 		gap: 2rem;
 		max-width: 800px;
 		margin: 0 auto;
 	}
-
-	.recipe-card {
-		background: white;
-		border-radius: 8px;
-		padding: 2rem;
-		border: 1px solid #e0e0e0;
-		transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease, border-color 0.3s ease;
-	}
-
-	:global(.dark) .recipe-card {
-		background: #242424;
-		border: 1px solid #333;
-	}
-
-	.recipe-card:hover {
-		transform: translateY(-4px);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-	}
-
-	:global(.dark) .recipe-card:hover {
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-	}
-
 	.recipe-link {
 		text-decoration: none;
 		color: inherit;
 		display: block;
 	}
-
-	.recipe-card h2 {
-		margin: 0 0 1rem 0;
-		color: #2c5f2d;
-		font-size: 1.5rem;
-		transition: color 0.3s ease;
-	}
-
-	:global(.dark) .recipe-card h2 {
-		color: #5cb85f;
-	}
-
 	.recipe-meta {
 		display: flex;
 		align-items: center;
@@ -133,37 +91,15 @@
 		margin-bottom: 0.75rem;
 		flex-wrap: wrap;
 	}
-
-	time {
-		color: #888;
-		font-size: 0.9rem;
-		transition: color 0.3s ease;
-	}
-
-	:global(.dark) time {
-		color: var(--color-text-subtle-dark);
-	}
-
-	/* Tags use global styles from +layout.svelte */
-
 	.description {
 		color: #666;
 		line-height: 1.6;
 		margin: 0;
 		transition: color 0.3s ease;
 	}
-
-	:global(.dark) .description {
-		color: var(--color-text-muted-dark);
-	}
-
 	@media (max-width: 768px) {
 		.recipes-header h1 {
 			font-size: 2rem;
-		}
-
-		.recipe-card {
-			padding: 1.5rem;
 		}
 	}
 </style>

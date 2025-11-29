@@ -82,7 +82,6 @@
     flex-direction: column;
     gap: 0.35rem;
   }
-
   .breakdown-bar {
     display: flex;
     height: 6px;
@@ -90,35 +89,28 @@
     border-radius: 3px;
     overflow: hidden;
   }
-
   :global(.dark) .breakdown-bar {
-    background: #333;
+    background: var(--light-border-secondary);
   }
-
   .breakdown-segment {
     height: 100%;
     min-width: 2px;
     transition: width 0.3s ease;
   }
-
   .breakdown-segment:first-child {
     border-radius: 3px 0 0 3px;
   }
-
   .breakdown-segment:last-child {
     border-radius: 0 3px 3px 0;
   }
-
   .breakdown-segment:only-child {
     border-radius: 3px;
   }
-
   .breakdown-legend {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
   }
-
   .legend-item {
     display: flex;
     align-items: center;
@@ -126,18 +118,15 @@
     font-size: 0.65rem;
     color: #666;
   }
-
   :global(.dark) .legend-item {
-    color: #999;
+    color: var(--light-text-muted);
   }
-
   .legend-dot {
     width: 6px;
     height: 6px;
     border-radius: 50%;
     flex-shrink: 0;
   }
-
   .legend-name {
     white-space: nowrap;
     overflow: hidden;

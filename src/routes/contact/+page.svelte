@@ -21,71 +21,42 @@
 		margin: 0 auto;
 		padding: 2rem 1rem;
 	}
-
 	h1 {
 		font-size: 2.5rem;
 		margin-bottom: 2rem;
 		color: var(--color-primary);
 		transition: color 0.3s ease;
 	}
-
-	:global(.dark) h1 {
-		color: var(--color-primary-light);
-	}
-
 	.content {
 		line-height: 1.8;
 		color: var(--color-text);
 		transition: color 0.3s ease;
 	}
-
-	:global(.dark) .content {
-		color: var(--color-text-dark);
-	}
-
 	.content :global(h2) {
 		font-size: 1.75rem;
 		margin-top: 2rem;
 		margin-bottom: 1rem;
 		color: var(--color-primary);
 	}
-
-	:global(.dark) .content :global(h2) {
-		color: var(--color-primary-light);
-	}
-
 	.content :global(h3) {
 		font-size: 1.25rem;
 		margin-top: 1.5rem;
 		margin-bottom: 0.75rem;
 		color: var(--color-text);
 	}
-
-	:global(.dark) .content :global(h3) {
-		color: var(--color-text-dark);
-	}
-
 	.content :global(p) {
 		margin-bottom: 1rem;
 	}
-
 	.content :global(ul) {
 		margin-bottom: 1rem;
 		padding-left: 1.5rem;
 	}
-
 	.content :global(li) {
 		margin-bottom: 0.5rem;
 	}
-
 	.content :global(strong) {
 		color: var(--color-primary);
 	}
-
-	:global(.dark) .content :global(strong) {
-		color: var(--color-primary-light);
-	}
-
 	@media (max-width: 768px) {
 		h1 {
 			font-size: 2rem;

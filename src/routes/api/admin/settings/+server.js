@@ -1,4 +1,5 @@
 import { json, error } from "@sveltejs/kit";
+import { validateCSRF } from "$lib/utils/csrf.js";
 
 export const prerender = false;
 
@@ -10,6 +11,11 @@ export async function PUT({ request, platform, locals }) {
   // Authentication check
   if (!locals.user) {
     throw error(401, "Unauthorized");
+  }
+
+  // CSRF check
+  if (!validateCSRF(request)) {
+    throw error(403, "Invalid origin");
   }
 
   const db = platform?.env?.GIT_STATS_DB;

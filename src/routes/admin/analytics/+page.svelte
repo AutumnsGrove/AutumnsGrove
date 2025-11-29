@@ -1,4 +1,7 @@
 <script>
+  import { Card, Button, Skeleton } from "$lib/components/ui";
+  import { toast } from "$lib/components/ui/toast";
+
   let stats = $state(null);
   let loading = $state(true);
   let error = $state('');
@@ -14,6 +17,7 @@
       }
       stats = await res.json();
     } catch (err) {
+      toast.error('Failed to load analytics data');
       console.error('Failed to fetch stats:', err);
       error = err.message;
     }
@@ -38,36 +42,35 @@
   </header>
 
   {#if loading}
-    <div class="loading-state">
-      <p>Loading analytics...</p>
+    <div class="stats-grid">
+      <Skeleton class="h-24 w-full" />
+      <Skeleton class="h-24 w-full" />
+      <Skeleton class="h-24 w-full" />
+      <Skeleton class="h-24 w-full" />
     </div>
   {:else if error}
     <div class="error-state">
       <h3>Failed to load analytics</h3>
       <p>{error}</p>
-      <button onclick={fetchStats} class="btn btn-secondary">Retry</button>
+      <Button onclick={fetchStats} variant="secondary">Retry</Button>
     </div>
   {:else if stats}
     <div class="stats-grid">
-      <div class="stat-card large">
-        <h3>Total Commits (30 days)</h3>
+      <Card title="Total Commits (30 days)" class="large">
         <p class="stat-value">{stats.totalCommits || 0}</p>
-      </div>
+      </Card>
 
-      <div class="stat-card">
-        <h3>Public Repos</h3>
+      <Card title="Public Repos">
         <p class="stat-value">{stats.publicRepos || 0}</p>
-      </div>
+      </Card>
 
-      <div class="stat-card">
-        <h3>Followers</h3>
+      <Card title="Followers">
         <p class="stat-value">{stats.followers || 0}</p>
-      </div>
+      </Card>
 
-      <div class="stat-card">
-        <h3>Following</h3>
+      <Card title="Following">
         <p class="stat-value">{stats.following || 0}</p>
-      </div>
+      </Card>
     </div>
 
     {#if stats.topRepos && stats.topRepos.length > 0}
@@ -137,66 +140,23 @@
   .analytics {
     max-width: 1000px;
   }
-
   .page-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
     margin-bottom: 2rem;
   }
-
   .header-content h1 {
     margin: 0 0 0.25rem 0;
     font-size: 2rem;
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .header-content h1 {
-    color: var(--color-text-dark);
-  }
-
   .subtitle {
     margin: 0;
     color: var(--color-text-muted);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .subtitle {
-    color: var(--color-text-subtle-dark);
-  }
-
-  .btn {
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.9rem;
-    border: none;
-    cursor: pointer;
-  }
-
-  .btn-secondary {
-    background: var(--color-bg-secondary);
-    color: var(--color-text);
-    border: 1px solid var(--color-border);
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-  }
-
-  :global(.dark) .btn-secondary {
-    background: var(--color-bg-secondary-dark);
-    color: var(--color-text-dark);
-    border-color: var(--color-border-dark);
-  }
-
-  .btn-secondary:hover {
-    background: var(--color-border);
-  }
-
-  :global(.dark) .btn-secondary:hover {
-    background: var(--color-border-dark);
-  }
-
   .loading-state,
   .error-state {
     background: var(--mobile-menu-bg);
@@ -206,68 +166,29 @@
     text-align: center;
     transition: background-color 0.3s ease;
   }
-
-  :global(.dark) .loading-state,
-  :global(.dark) .error-state {
-    background: var(--color-bg-tertiary-dark);
-  }
-
   .error-state h3 {
     margin: 0 0 0.5rem 0;
     color: #d73a49;
   }
-
   .error-state p {
     margin: 0 0 1rem 0;
     color: var(--color-text-muted);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .error-state p {
-    color: var(--color-text-subtle-dark);
-  }
-
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 1rem;
     margin-bottom: 2rem;
   }
-
-  .stat-card {
-    background: var(--mobile-menu-bg);
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease;
-  }
-
-  :global(.dark) .stat-card {
-    background: var(--color-bg-tertiary-dark);
-  }
-
-  .stat-card.large {
+  .stats-grid :global(.large) {
     grid-column: 1 / -1;
   }
-
   @media (min-width: 600px) {
-    .stat-card.large {
+    .stats-grid :global(.large) {
       grid-column: span 1;
     }
   }
-
-  .stat-card h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 0.85rem;
-    color: var(--color-text-muted);
-    font-weight: 500;
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .stat-card h3 {
-    color: var(--color-text-subtle-dark);
-  }
-
   .stat-value {
     margin: 0;
     font-size: 2rem;
@@ -275,11 +196,6 @@
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .stat-value {
-    color: var(--color-text-dark);
-  }
-
   .section {
     background: var(--mobile-menu-bg);
     border-radius: 8px;
@@ -288,64 +204,36 @@
     margin-bottom: 1.5rem;
     transition: background-color 0.3s ease;
   }
-
-  :global(.dark) .section {
-    background: var(--color-bg-tertiary-dark);
-  }
-
   .section h2 {
     margin: 0 0 1rem 0;
     font-size: 1.1rem;
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .section h2 {
-    color: var(--color-text-dark);
-  }
-
   .section.info {
     background: var(--color-bg-secondary);
     box-shadow: none;
     border: 1px solid var(--color-border);
     transition: background-color 0.3s ease, border-color 0.3s ease;
   }
-
-  :global(.dark) .section.info {
-    background: var(--color-bg-secondary-dark);
-    border-color: var(--color-border-dark);
-  }
-
   .section.info p {
     margin: 0 0 0.75rem 0;
     color: var(--color-text-muted);
     font-size: 0.9rem;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .section.info p {
-    color: var(--color-text-subtle-dark);
-  }
-
   .section.info p:last-child {
     margin-bottom: 0;
   }
-
   .section.info a {
     color: var(--color-primary);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .section.info a {
-    color: var(--color-primary-light);
-  }
-
   .repos-list {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
   }
-
   .repo-item {
     display: flex;
     justify-content: space-between;
@@ -354,109 +242,64 @@
     border-bottom: 1px solid var(--color-border);
     transition: border-color 0.3s ease;
   }
-
-  :global(.dark) .repo-item {
-    border-bottom-color: var(--color-border-dark);
-  }
-
   .repo-item:last-child {
     border-bottom: none;
     padding-bottom: 0;
   }
-
   .repo-name {
     font-weight: 500;
     color: var(--color-primary);
     text-decoration: none;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .repo-name {
-    color: var(--color-primary-light);
-  }
-
   .repo-name:hover {
     text-decoration: underline;
   }
-
   .repo-description {
     margin: 0.25rem 0 0 0;
     font-size: 0.85rem;
     color: var(--color-text-muted);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .repo-description {
-    color: var(--color-text-subtle-dark);
-  }
-
   .repo-stats {
     display: flex;
     gap: 1rem;
   }
-
   .repo-stat {
     font-size: 0.85rem;
     color: var(--color-text-muted);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .repo-stat {
-    color: var(--color-text-subtle-dark);
-  }
-
   .commits-list {
     display: flex;
     flex-direction: column;
   }
-
   .commit-item {
     padding: 0.75rem 0;
     border-bottom: 1px solid var(--color-border);
     transition: border-color 0.3s ease;
   }
-
-  :global(.dark) .commit-item {
-    border-bottom-color: var(--color-border-dark);
-  }
-
   .commit-item:last-child {
     border-bottom: none;
     padding-bottom: 0;
   }
-
   .commit-message {
     margin: 0 0 0.25rem 0;
     font-size: 0.9rem;
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .commit-message {
-    color: var(--color-text-dark);
-  }
-
   .commit-meta {
     margin: 0;
     font-size: 0.8rem;
     color: var(--color-text-muted);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .commit-meta {
-    color: var(--color-text-subtle-dark);
-  }
-
   .commit-meta a {
     color: var(--color-primary);
     text-decoration: none;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .commit-meta a {
-    color: var(--color-primary-light);
-  }
-
   .commit-meta a:hover {
     text-decoration: underline;
   }

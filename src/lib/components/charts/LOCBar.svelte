@@ -66,61 +66,49 @@
     flex-direction: column;
     gap: 0.25rem;
   }
-
   .loc-labels {
     display: flex;
     justify-content: space-between;
     font-size: 0.7rem;
     font-weight: 500;
   }
-
   .label-add {
-    color: #28a745;
+    color: var(--accent-success);
   }
-
   .label-del {
-    color: #dc3545;
+    color: var(--accent-danger);
   }
-
   :global(.dark) .label-add {
-    color: #5cb85f;
+    color: var(--accent-success);
   }
-
   :global(.dark) .label-del {
     color: #e57373;
   }
-
   .bar-container {
     display: flex;
     background: #e9ecef;
     border-radius: 4px;
     overflow: hidden;
   }
-
   :global(.dark) .bar-container {
-    background: #333;
+    background: var(--light-border-secondary);
   }
-
   .bar-segment {
     height: 100%;
     transition: width 0.3s ease;
   }
-
   .bar-add {
-    background: linear-gradient(90deg, #28a745 0%, #34d058 100%);
+    background: linear-gradient(90deg, var(--accent-success) 0%, #34d058 100%);
   }
-
   .bar-del {
-    background: linear-gradient(90deg, #dc3545 0%, #e57373 100%);
+    background: linear-gradient(90deg, var(--accent-danger) 0%, #e57373 100%);
   }
-
   /* Compact style */
   .loc-bar-compact {
     display: flex;
     align-items: center;
     gap: 0.25rem;
   }
-
   .loc-bar-compact .bar-track {
     flex: 1;
     height: 4px;
@@ -129,11 +117,9 @@
     display: flex;
     overflow: hidden;
   }
-
   :global(.dark) .loc-bar-compact .bar-track {
-    background: #333;
+    background: var(--light-border-secondary);
   }
-
   .loc-bar-compact .bar-add,
   .loc-bar-compact .bar-del {
     height: 100%;

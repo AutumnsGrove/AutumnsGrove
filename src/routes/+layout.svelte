@@ -1,8 +1,12 @@
 <script>
+	import '../app.css';
+	import '$lib/styles/tokens.css';
 	import { page } from '$app/stores';
 	import { fade } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import Button from '$lib/components/ui/Button.svelte';
+	import Input from '$lib/components/ui/Input.svelte';
 
 	let { children, data } = $props();
 
@@ -226,8 +230,8 @@
 				<div class="search-wrapper">
 					{#if searchExpanded}
 						<form class="search-form" onsubmit={handleSearchSubmit}>
-							<input
-								bind:this={searchInputRef}
+							<Input
+								bind:ref={searchInputRef}
 								type="text"
 								placeholder="Search posts..."
 								bind:value={searchQuery}
@@ -238,10 +242,12 @@
 							/>
 						</form>
 					{/if}
-					<button
-						class="search-btn"
+					<Button
+						variant="ghost"
+						size="icon"
 						onclick={toggleSearch}
 						aria-label={searchExpanded ? 'Close search' : 'Open search'}
+						class="search-btn"
 					>
 						{#if searchExpanded}
 							<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -254,15 +260,16 @@
 								<path d="m21 21-4.3-4.3"></path>
 							</svg>
 						{/if}
-					</button>
+					</Button>
 				</div>
 			</div>
 
 			<!-- Mobile Hamburger Button -->
-			<button
-				bind:this={hamburgerBtnRef}
-				class="hamburger-btn"
-				class:open={mobileMenuOpen}
+			<Button
+				bind:ref={hamburgerBtnRef}
+				variant="ghost"
+				size="icon"
+				class={`hamburger-btn ${mobileMenuOpen ? 'open' : ''}`}
 				onclick={toggleMobileMenu}
 				aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
 				aria-expanded={mobileMenuOpen}
@@ -273,7 +280,7 @@
 				<span class="bar"></span>
 				<span class="bar"></span>
 			</span>
-			</button>
+			</Button>
 		</nav>
 
 		<!-- Mobile Menu Overlay -->
@@ -291,19 +298,19 @@
 			aria-label="Mobile navigation"
 		>
 			<form class="mobile-search-form" onsubmit={handleSearchSubmit}>
-				<input
+				<Input
 					type="text"
 					placeholder="Search posts..."
 					bind:value={searchQuery}
 					class="mobile-search-input"
 					required
 				/>
-				<button type="submit" class="mobile-search-btn" aria-label="Search">
+				<Button type="submit" variant="default" size="icon" class="mobile-search-btn" aria-label="Search">
 					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 						<circle cx="11" cy="11" r="8"></circle>
 						<path d="m21 21-4.3-4.3"></path>
 					</svg>
-				</button>
+				</Button>
 			</form>
 			<a href="/" class:active={$page.url.pathname === '/'} onclick={closeMobileMenu}>Home</a>
 			<a href="/blog" class:active={$page.url.pathname.startsWith('/blog')} onclick={closeMobileMenu}>Blog</a>
@@ -338,7 +345,7 @@
 					</svg>
 				</a>
 			{/if}
-			<button class="theme-toggle" onclick={toggleTheme} aria-label="Toggle dark mode">
+			<Button variant="ghost" size="icon" class="theme-toggle" onclick={toggleTheme} aria-label="Toggle dark mode">
 				{#if darkMode}
 					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 						<circle cx="12" cy="12" r="5"></circle>
@@ -356,7 +363,7 @@
 						<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
 					</svg>
 				{/if}
-			</button>
+			</Button>
 		</div>
 	</footer>
 </div>
@@ -370,7 +377,6 @@
 		font-style: normal;
 		font-display: swap;
 	}
-
 	@font-face {
 		font-family: 'Cozette';
 		src: url('/fonts/CozetteVector.ttf') format('truetype');
@@ -378,7 +384,6 @@
 		font-style: normal;
 		font-display: swap;
 	}
-
 	@font-face {
 		font-family: 'Atkinson Hyperlegible';
 		src: url('/fonts/AtkinsonHyperlegible-Regular.ttf') format('truetype');
@@ -386,7 +391,6 @@
 		font-style: normal;
 		font-display: swap;
 	}
-
 	@font-face {
 		font-family: 'OpenDyslexic';
 		src: url('/fonts/OpenDyslexic-Regular.otf') format('opentype');
@@ -394,7 +398,6 @@
 		font-style: normal;
 		font-display: swap;
 	}
-
 	@font-face {
 		font-family: 'Lexend';
 		src: url('/fonts/Lexend-Regular.ttf') format('truetype');
@@ -402,7 +405,6 @@
 		font-style: normal;
 		font-display: swap;
 	}
-
 	@font-face {
 		font-family: 'Cormorant';
 		src: url('/fonts/Cormorant-Regular.ttf') format('truetype');
@@ -410,7 +412,6 @@
 		font-style: normal;
 		font-display: swap;
 	}
-
 	@font-face {
 		font-family: 'Quicksand';
 		src: url('/fonts/Quicksand-Regular.ttf') format('truetype');
@@ -418,72 +419,60 @@
 		font-style: normal;
 		font-display: swap;
 	}
-
 	/* CSS Custom Properties for theming */
 	:global(:root) {
 		/* Font family - dynamically set via JavaScript from database settings */
 		--font-family-main: 'Alagard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-
 		/* Primary colors */
 		--color-primary: #2c5f2d;
 		--color-primary-hover: #4a9d4f;
-		--color-primary-light: #5cb85f;
-		--color-primary-light-hover: #7cd97f;
-
+		--color-primary-light: var(--accent-success);
+		--color-primary-light-hover: var(--accent-success-light);
 		/* Text colors */
-		--color-text: #333;
+		--color-text: var(--light-border-secondary);
 		--color-text-muted: #666;
-		--color-text-subtle: #888;
-
+		--color-text-subtle: var(--light-text-light);
 		/* Background colors */
-		--color-bg-secondary: #f5f5f5;
-		--color-border: #e0e0e0;
-
+		--color-bg-secondary: var(--light-bg-tertiary);
+		--color-border: var(--light-border-primary);
 		/* Dark mode color values */
-		--color-text-dark: #f0f0f0;
+		--color-text-dark: var(--light-text-primary);
 		--color-text-muted-dark: #d0d0d0;
 		--color-text-subtle-dark: #b8b8b8;
-		--color-bg-secondary-dark: #1a1a1a;
-		--color-bg-tertiary-dark: #2a2a2a;
-		--color-border-dark: #333;
-
+		--color-bg-secondary-dark: var(--light-bg-primary);
+		--color-bg-tertiary-dark: var(--light-bg-tertiary);
+		--color-border-dark: var(--light-border-secondary);
 		/* Danger/Error colors */
-		--color-danger: #d73a49;
+		--color-danger: var(--accent-danger);
 		--color-danger-hover: #cb2431;
-
 		/* Component-specific */
 		--mobile-menu-bg: white;
-		--mobile-menu-border: #e0e0e0;
+		--mobile-menu-border: var(--light-border-primary);
 		--tag-bg: #7c4dab;
 		--tag-bg-hover: #6a3d9a;
-
 		/* Border radius standardization */
 		--border-radius-standard: 8px;
 		--border-radius-small: 4px;
 		--border-radius-button: 6px;
 	}
-
-	:global(.dark) {
+	:global(.dark)  {
 		--mobile-menu-bg: #242424;
-		--mobile-menu-border: #333;
+		--mobile-menu-border: var(--light-border-secondary);
 		--tag-bg: #6a3d9a;
 		--tag-bg-hover: #7c4dab;
 	}
-
 	:global(body) {
 		margin: 0;
 		font-family: var(--font-family-main);
 		line-height: 1.6;
-		color: #333;
+		color: var(--light-border-secondary);
 		background: #fafafa;
 		transition: background-color 0.3s ease, color 0.3s ease;
 	}
-
 	:global(.dark body) {
 		color: var(--color-text-dark);
-		background: #1a1a1a;
+		background: var(--light-bg-primary);
 	}
-
 	/* Global tag styles - shared across all pages */
 	:global(.tag) {
 		background: var(--tag-bg);
@@ -498,48 +487,40 @@
 		display: inline-block;
 		transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
 	}
-
 	:global(.tag:hover) {
 		background: var(--tag-bg-hover);
 		transform: scale(1.05);
 		color: white;
 	}
-
 	:global(.tag:visited) {
 		color: white;
 	}
-
 	:global(.tags) {
 		display: flex;
 		gap: 0.5rem;
 		flex-wrap: wrap;
 	}
-
 	:global(*) {
 		box-sizing: border-box;
 	}
-
 	.layout {
 		min-height: 100vh;
 		display: flex;
 		flex-direction: column;
 	}
-
 	header {
 		background: white;
-		border-bottom: 1px solid #e0e0e0;
+		border-bottom: 1px solid var(--light-border-primary);
 		padding: 1rem 2rem;
 		position: sticky;
 		top: 0;
 		z-index: 100;
 		transition: background-color 0.3s ease, border-color 0.3s ease;
 	}
-
 	:global(.dark) header {
 		background: #242424;
-		border-bottom: 1px solid #333;
+		border-bottom: 1px solid var(--light-border-secondary);
 	}
-
 	nav {
 		max-width: 1200px;
 		margin: 0 auto;
@@ -550,7 +531,6 @@
 		position: relative;
 		z-index: 101;
 	}
-
 	.logo {
 		font-size: 1.5rem;
 		font-weight: bold;
@@ -558,24 +538,19 @@
 		text-decoration: none;
 		transition: color 0.2s;
 	}
-
 	:global(.dark) .logo {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	.logo:hover {
 		color: #4a9d4f;
 	}
-
 	:global(.dark) .logo:hover {
-		color: #7cd97f;
+		color: var(--accent-success-light);
 	}
-
 	.nav-links {
 		display: flex;
 		gap: 2rem;
 	}
-
 	.nav-links a {
 		text-decoration: none;
 		color: #666;
@@ -583,7 +558,6 @@
 		transition: color 0.2s ease;
 		position: relative;
 	}
-
 	.nav-links a::after {
 		content: '';
 		position: absolute;
@@ -596,149 +570,40 @@
 		transform-origin: left;
 		transition: transform 0.25s ease;
 	}
-
-	:global(.dark) .nav-links a {
-		color: var(--color-text-muted-dark);
-	}
-
 	:global(.dark) .nav-links a::after {
-		background: #5cb85f;
+		background: var(--accent-success);
 	}
-
 	.nav-links a:hover {
 		color: #2c5f2d;
 	}
-
 	.nav-links a:hover::after {
 		transform: scaleX(1);
 	}
-
 	:global(.dark) .nav-links a:hover {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	.nav-links a.active {
 		color: #2c5f2d;
 	}
-
 	.nav-links a.active::after {
 		transform: scaleX(1);
 	}
-
 	:global(.dark) .nav-links a.active {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	/* Search styles */
 	.search-wrapper {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
 	}
-
 	.search-form {
 		display: flex;
 		align-items: center;
 	}
-
-	.nav-search-input {
-		padding: 0.4rem 0.75rem;
-		font-size: 0.9rem;
-		border: 1px solid #e0e0e0;
-		border-radius: 6px;
-		background: white;
-		color: #333;
-		width: 160px;
-		transition: border-color 0.2s ease, background-color 0.3s ease, color 0.3s ease, width 0.3s ease;
-	}
-
-	:global(.dark) .nav-search-input {
-		background: #1a1a1a;
-		border-color: #444;
-		color: var(--color-text-dark);
-	}
-
-	.nav-search-input:focus {
-		outline: none;
-		border-color: #2c5f2d;
-		width: 200px;
-	}
-
-	:global(.dark) .nav-search-input:focus {
-		border-color: #5cb85f;
-	}
-
-	.nav-search-input::placeholder {
-		color: #999;
-	}
-
-	:global(.dark) .nav-search-input::placeholder {
-		color: #777;
-	}
-
-	.search-btn {
-		background: none;
-		border: none;
-		cursor: pointer;
-		padding: 0.5rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: #666;
-		transition: color 0.2s, transform 0.2s;
-		border-radius: 4px;
-	}
-
-	:global(.dark) .search-btn {
-		color: var(--color-text-muted-dark);
-	}
-
-	.search-btn:hover {
-		color: #2c5f2d;
-		transform: scale(1.1);
-	}
-
-	:global(.dark) .search-btn:hover {
-		color: #5cb85f;
-	}
-
-	.theme-toggle {
-		background: none;
-		border: none;
-		cursor: pointer;
-		padding: 0.5rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: #666;
-		transition: color 0.2s, transform 0.2s;
-		border-radius: 4px;
-	}
-
-	:global(.dark) .theme-toggle {
-		color: var(--color-text-muted-dark);
-	}
-
-	.theme-toggle:hover {
-		color: #2c5f2d;
-		transform: scale(1.1);
-	}
-
-	:global(.dark) .theme-toggle:hover {
-		color: #5cb85f;
-	}
-
-	main {
-		flex: 1;
-		max-width: 1200px;
-		width: 100%;
-		margin: 0 auto;
-		padding: 2rem;
-	}
-
 	footer {
 		background: white;
-		border-top: 1px solid #e0e0e0;
+		border-top: 1px solid var(--light-border-primary);
 		padding: 2rem;
 		display: flex;
 		justify-content: center;
@@ -750,34 +615,28 @@
 		z-index: 1003;
 		transition: background-color 0.3s ease, border-color 0.3s ease;
 	}
-
 	:global(.dark) footer {
 		background: #242424;
 		border-top: 1px solid var(--color-border-dark);
 		color: var(--color-text-muted-dark);
 	}
-
 	/* Footer margin on admin pages to avoid sidebar overlap */
 	footer.admin-page-footer {
 		margin-left: calc(250px + 0.75rem); /* Sidebar width + left margin */
 	}
-
 	@media (max-width: 768px) {
 		footer.admin-page-footer {
 			margin-left: 0;
 		}
 	}
-
 	footer p {
 		margin: 0;
 	}
-
 	.footer-actions {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
 	}
-
 	.admin-link {
 		display: flex;
 		align-items: center;
@@ -788,118 +647,42 @@
 		border-radius: 4px;
 		transition: color 0.2s, transform 0.2s;
 	}
-
-	:global(.dark) .admin-link {
-		color: var(--color-text-muted-dark);
-	}
-
 	.admin-link:hover {
 		color: #2c5f2d;
 		transform: scale(1.1);
 	}
-
 	:global(.dark) .admin-link:hover {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	.logged-in-indicator {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #28a745;
+		color: var(--accent-success);
 		padding: 0.25rem;
 	}
-
 	:global(.dark) .logged-in-indicator {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
-	/* Hamburger button - hidden on desktop */
-	.hamburger-btn {
-		display: none;
-		background: none;
-		border: none;
-		cursor: pointer;
-		padding: 0.5rem;
-		color: #666;
-		transition: color 0.2s;
-	}
-
-	:global(.dark) .hamburger-btn {
-		color: var(--color-text-muted-dark);
-	}
-
-	.hamburger-btn:hover {
-		color: #2c5f2d;
-	}
-
-	:global(.dark) .hamburger-btn:hover {
-		color: #5cb85f;
-	}
-
-	/* Animated hamburger icon */
-	.hamburger-icon {
-		display: flex;
-		flex-direction: column;
-		justify-content: space-between;
-		width: 20px;
-		height: 14px;
-	}
-
-	.hamburger-icon .bar {
-		display: block;
-		width: 100%;
-		height: 2px;
-		background: currentColor;
-		border-radius: 1px;
-		transition: transform 0.3s ease, opacity 0.3s ease;
-		transform-origin: center;
-	}
-
-	.hamburger-btn.open .hamburger-icon .bar:nth-child(1) {
-		transform: translateY(6px) rotate(45deg);
-	}
-
-	.hamburger-btn.open .hamburger-icon .bar:nth-child(2) {
-		opacity: 0;
-		transform: scaleX(0);
-	}
-
-	.hamburger-btn.open .hamburger-icon .bar:nth-child(3) {
-		transform: translateY(-6px) rotate(-45deg);
-	}
-
 	/* Mobile menu overlay */
 	.mobile-menu-overlay {
 		display: none;
 	}
-
 	/* Mobile menu - hidden on desktop */
 	.mobile-menu {
 		display: none;
 	}
-
 	@media (max-width: 768px) {
 		header {
 			padding: 1rem;
 		}
-
 		main {
 			padding: 1rem;
 		}
-
 		/* Hide desktop nav on mobile */
 		.desktop-nav {
 			display: none;
 		}
-
-		/* Show hamburger button on mobile */
-		.hamburger-btn {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-		}
-
 		/* Mobile menu overlay */
 		.mobile-menu-overlay {
 			display: block;
@@ -911,7 +694,6 @@
 			background: rgba(0, 0, 0, 0.5);
 			z-index: 99;
 		}
-
 		/* Mobile menu */
 		.mobile-menu {
 			display: flex;
@@ -929,13 +711,11 @@
 			transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
 			z-index: 100;
 		}
-
 		.mobile-menu.open {
 			max-height: 400px;
 			opacity: 1;
 			padding: 0.5rem 0;
 		}
-
 		/* Mobile search styles */
 		.mobile-search-form {
 			display: flex;
@@ -945,41 +725,34 @@
 			border-bottom: 1px solid var(--mobile-menu-border);
 			margin-bottom: 0.5rem;
 		}
-
 		.mobile-search-input {
 			flex: 1;
 			padding: 0.6rem 0.75rem;
 			font-size: 0.9rem;
-			border: 1px solid #e0e0e0;
+			border: 1px solid var(--light-border-primary);
 			border-radius: 6px;
 			background: white;
-			color: #333;
+			color: var(--light-border-secondary);
 			transition: border-color 0.2s ease, background-color 0.3s ease, color 0.3s ease;
 		}
-
 		:global(.dark) .mobile-search-input {
-			background: #1a1a1a;
-			border-color: #444;
+			background: var(--light-bg-primary);
+			border-color: var(--light-border-light);
 			color: var(--color-text-dark);
 		}
-
 		.mobile-search-input:focus {
 			outline: none;
 			border-color: #2c5f2d;
 		}
-
 		:global(.dark) .mobile-search-input:focus {
-			border-color: #5cb85f;
+			border-color: var(--accent-success);
 		}
-
 		.mobile-search-input::placeholder {
-			color: #999;
+			color: var(--light-text-muted);
 		}
-
 		:global(.dark) .mobile-search-input::placeholder {
 			color: #777;
 		}
-
 		.mobile-search-btn {
 			background: #2c5f2d;
 			border: none;
@@ -992,19 +765,15 @@
 			border-radius: 6px;
 			transition: background-color 0.2s;
 		}
-
 		:global(.dark) .mobile-search-btn {
-			background: #5cb85f;
+			background: var(--accent-success);
 		}
-
 		.mobile-search-btn:hover {
 			background: #4a9d4f;
 		}
-
 		:global(.dark) .mobile-search-btn:hover {
-			background: #7cd97f;
+			background: var(--accent-success-light);
 		}
-
 		.mobile-menu a {
 			text-decoration: none;
 			color: #666;
@@ -1013,31 +782,22 @@
 			transition: background-color 0.2s, color 0.2s;
 			position: relative;
 		}
-
-		:global(.dark) .mobile-menu a {
-			color: var(--color-text-muted-dark);
-		}
-
 		.mobile-menu a:hover {
-			background: #f5f5f5;
+			background: var(--light-bg-tertiary);
 			color: #2c5f2d;
 		}
-
 		:global(.dark) .mobile-menu a:hover {
-			background: #333;
-			color: #5cb85f;
+			background: var(--light-border-secondary);
+			color: var(--accent-success);
 		}
-
 		.mobile-menu a.active {
 			color: #2c5f2d;
 			background: #f0f9f0;
 		}
-
 		:global(.dark) .mobile-menu a.active {
-			color: #5cb85f;
+			color: var(--accent-success);
 			background: #2a3a2a;
 		}
-
 		/* Active indicator bar for mobile */
 		.mobile-menu a.active::before {
 			content: '';
@@ -1048,9 +808,8 @@
 			width: 3px;
 			background: #2c5f2d;
 		}
-
 		:global(.dark) .mobile-menu a.active::before {
-			background: #5cb85f;
+			background: var(--accent-success);
 		}
 	}
 </style>

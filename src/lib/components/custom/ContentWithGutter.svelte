@@ -1,5 +1,6 @@
 <script>
 	import { tick, untrack, onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import TableOfContents from './TableOfContents.svelte';
 	import MobileTOC from './MobileTOC.svelte';
 	import GutterItem from './GutterItem.svelte';
@@ -9,7 +10,8 @@
 		getAnchorLabel,
 		getItemsForAnchor,
 		getOrphanItems,
-		findAnchorElement
+		findAnchorElement,
+		parseAnchor
 	} from '$lib/utils/gutter.js';
 	import '$lib/styles/content.css';
 
@@ -388,6 +390,37 @@
 
 	// Derive content with reference markers injected
 	let processedContent = $derived(injectReferenceMarkers(content, overflowingAnchorKeys));
+
+	// Sanitize HTML content to prevent XSS attacks (browser-only for SSR compatibility)
+	let DOMPurify = $state(null);
+
+	// Load DOMPurify only in browser
+	onMount(async () => {
+		if (browser) {
+			const module = await import('dompurify');
+			DOMPurify = module.default;
+		}
+	});
+
+	let sanitizedContent = $derived(
+		DOMPurify
+			? DOMPurify.sanitize(processedContent, {
+					ALLOWED_TAGS: [
+						'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+						'p', 'a', 'ul', 'ol', 'li', 'blockquote',
+						'code', 'pre', 'strong', 'em', 'img',
+						'table', 'thead', 'tbody', 'tr', 'th', 'td',
+						'br', 'hr', 'div', 'span', 'sup', 'sub',
+						'del', 'ins'
+					],
+					ALLOWED_ATTR: [
+						'href', 'src', 'alt', 'title', 'class', 'id',
+						'data-anchor', 'data-language', 'data-line-numbers'
+					],
+					ALLOW_DATA_ATTR: true
+			  })
+			: processedContent
+	);
 </script>
 
 <div class="content-layout"
@@ -461,8 +494,8 @@
 			{/each}
 		{/if}
 
-		<div class="content-body" bind:this={contentBodyElement}>
-			{@html processedContent}
+		<div class="prose prose-lg dark:prose-invert max-w-none content-body" bind:this={contentBodyElement}>
+			{@html sanitizedContent}
 		</div>
 
 		<!-- Overflow gutter items rendered inline -->
@@ -501,79 +534,64 @@
 		padding: 1rem;
 		min-height: 100%;
 	}
-
 	.gutter-item-wrapper {
 		margin-bottom: 1rem;
 	}
-
 	.anchor-group {
 		position: absolute;
 		left: 1rem;
 		right: 1rem;
 	}
-
 	/* Scrollbar styling */
 	.left-gutter::-webkit-scrollbar {
 		width: 4px;
 	}
-
 	.left-gutter::-webkit-scrollbar-track {
 		background: transparent;
 	}
-
 	.left-gutter::-webkit-scrollbar-thumb {
-		background: #ccc;
+		background: var(--light-text-secondary);
 		border-radius: 2px;
 	}
-
 	:global(.dark) .left-gutter::-webkit-scrollbar-thumb {
-		background: #444;
+		background: var(--light-border-light);
 	}
-
 	/* Overflow gutter section */
 	.overflow-gutter-section {
 		margin-top: 3rem;
 		padding-top: 2rem;
 	}
-
 	.overflow-divider {
 		height: 1px;
-		background: linear-gradient(to right, transparent, #e0e0e0, transparent);
+		background: linear-gradient(to right, transparent, var(--light-border-primary), transparent);
 		margin-bottom: 2rem;
 	}
-
 	:global(.dark) .overflow-divider {
-		background: linear-gradient(to right, transparent, #3a3a3a, transparent);
+		background: linear-gradient(to right, transparent, var(--light-border-primary), transparent);
 	}
-
 	.overflow-group {
 		margin-bottom: 2rem;
 	}
-
 	.overflow-anchor-label {
 		font-size: 0.85rem;
-		color: #888;
+		color: var(--light-text-light);
 		margin: 0 0 0.75rem 0;
 		font-weight: 500;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
-
 	:global(.dark) .overflow-anchor-label {
 		color: #666;
 	}
-
 	/* Reference number in overflow label */
 	.overflow-ref-num {
 		color: #2c5f2d;
 		font-weight: 600;
 		margin-right: 0.5rem;
 	}
-
 	:global(.dark) .overflow-ref-num {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	/* Reference markers in content (global because they're in @html) */
 	:global(.gutter-ref-marker) {
 		font-size: 0.75em;
@@ -581,7 +599,6 @@
 		line-height: 0;
 		margin-left: 0.1em;
 	}
-
 	:global(.gutter-ref-marker a) {
 		color: #2c5f2d;
 		text-decoration: none;
@@ -591,27 +608,22 @@
 		border-radius: 3px;
 		transition: background-color 0.2s ease, color 0.2s ease;
 	}
-
 	:global(.dark .gutter-ref-marker a) {
-		color: #5cb85f;
+		color: var(--accent-success);
 		background: rgba(92, 184, 95, 0.15);
 	}
-
 	:global(.gutter-ref-marker a:hover) {
 		background: rgba(44, 95, 45, 0.2);
 		color: #4a9d4f;
 	}
-
 	:global(.dark .gutter-ref-marker a:hover) {
 		background: rgba(92, 184, 95, 0.25);
-		color: #7cd97f;
+		color: var(--accent-success-light);
 	}
-
 	/* Smooth scroll target highlighting */
 	.overflow-group:target {
 		animation: highlight-flash 1.5s ease-out;
 	}
-
 	@keyframes highlight-flash {
 		0% {
 			background-color: rgba(44, 95, 45, 0.2);
@@ -620,11 +632,9 @@
 			background-color: transparent;
 		}
 	}
-
 	:global(.dark) .overflow-group:target {
 		animation: highlight-flash-dark 1.5s ease-out;
 	}
-
 	@keyframes highlight-flash-dark {
 		0% {
 			background-color: rgba(92, 184, 95, 0.2);

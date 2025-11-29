@@ -11,9 +11,34 @@ export const MAX_LIMIT = 50;
 export const MIN_LIMIT = 1;
 export const DEFAULT_TIMEOUT = 60000; // 60 seconds in ms
 
-// Username validation regex
-// Valid: alphanumeric and hyphens, cannot start/end with hyphen, max 39 chars
-const USERNAME_PATTERN = /^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}$/;
+/**
+ * Validate GitHub username format
+ * @param {string} username
+ * @returns {boolean}
+ */
+export function isValidUsername(username) {
+  if (!username || typeof username !== 'string') {
+    return false;
+  }
+
+  if (username.length < 1 || username.length > 39) {
+    return false;
+  }
+
+  if (!/^[a-zA-Z0-9-]+$/.test(username)) {
+    return false;
+  }
+
+  if (username.startsWith('-') || username.endsWith('-')) {
+    return false;
+  }
+
+  if (username.includes('--')) {
+    return false;
+  }
+
+  return true;
+}
 
 /**
  * Validate GitHub username format
@@ -22,7 +47,7 @@ const USERNAME_PATTERN = /^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}$/;
  * @throws {Error} if invalid
  */
 export function validateUsername(username) {
-  if (!username || !USERNAME_PATTERN.test(username)) {
+  if (!isValidUsername(username)) {
     throw new Error(
       "Invalid username format. GitHub usernames must be alphanumeric with hyphens, 1-39 characters.",
     );

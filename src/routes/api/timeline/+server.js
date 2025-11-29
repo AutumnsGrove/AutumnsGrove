@@ -28,6 +28,23 @@ export async function GET({ url, platform }) {
   const year = url.searchParams.get('year');
   const month = url.searchParams.get('month');
 
+  // Validate year
+  if (year && !/^\d{4}$/.test(year)) {
+    throw error(400, 'Invalid year format');
+  }
+
+  if (year) {
+    const yearNum = parseInt(year, 10);
+    if (yearNum < 1970 || yearNum > 2100) {
+      throw error(400, 'Year out of range');
+    }
+  }
+
+  // Validate month
+  if (month && !/^(0?[1-9]|1[0-2])$/.test(month)) {
+    throw error(400, 'Invalid month format');
+  }
+
   // Build cache key
   const cacheKey = `timeline:${limit}:${offset}:${year || ''}:${month || ''}`;
 
@@ -67,7 +84,8 @@ export async function GET({ url, platform }) {
     if (year) {
       if (month) {
         // Filter by year and month
-        const monthPadded = month.padStart(2, '0');
+        const monthNum = parseInt(month, 10);
+        const monthPadded = monthNum.toString().padStart(2, '0');
         query += ` WHERE summary_date LIKE ?`;
         params.push(`${year}-${monthPadded}-%`);
       } else {
@@ -87,7 +105,8 @@ export async function GET({ url, platform }) {
     const countParams = [];
     if (year) {
       if (month) {
-        const monthPadded = month.padStart(2, '0');
+        const monthNum = parseInt(month, 10);
+        const monthPadded = monthNum.toString().padStart(2, '0');
         countQuery += ` WHERE summary_date LIKE ?`;
         countParams.push(`${year}-${monthPadded}-%`);
       } else {

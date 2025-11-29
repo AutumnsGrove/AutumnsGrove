@@ -135,44 +135,33 @@
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 		margin-bottom: 1.5rem;
 	}
-
 	:global(.dark) .heatmap-container {
-		background: #2a2a2a;
+		background: var(--light-bg-tertiary);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 	}
-
 	.heatmap-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		margin-bottom: 1rem;
 	}
-
 	.heatmap-header h3 {
 		margin: 0;
 		color: #2c5f2d;
 	}
-
 	:global(.dark) .heatmap-header h3 {
-		color: #5cb85f;
+		color: var(--accent-success);
 	}
-
 	.total-commits {
 		font-size: 0.85rem;
 		color: #666;
 	}
-
-	:global(.dark) .total-commits {
-		color: var(--color-text-muted-dark);
-	}
-
 	.heatmap-wrapper {
 		display: flex;
 		gap: 0.5rem;
 		overflow-x: auto;
 		padding-bottom: 0.5rem;
 	}
-
 	.day-labels {
 		display: flex;
 		flex-direction: column;
@@ -181,78 +170,58 @@
 		color: #666;
 		padding-top: 2px;
 	}
-
-	:global(.dark) .day-labels {
-		color: var(--color-text-muted-dark);
-	}
-
 	.day-labels span {
 		height: 12px;
 		line-height: 12px;
 	}
-
 	.heatmap-grid {
 		display: flex;
 		gap: 3px;
 	}
-
 	.week {
 		display: flex;
 		flex-direction: column;
 		gap: 3px;
 	}
-
 	.day {
 		width: 12px;
 		height: 12px;
 		border-radius: 2px;
 		cursor: pointer;
 	}
-
 	.day:hover {
 		outline: 1px solid #666;
 	}
-
 	.level-0 {
 		background: #ebedf0;
 	}
-
 	.level-1 {
 		background: #9be9a8;
 	}
-
 	.level-2 {
 		background: #40c463;
 	}
-
 	.level-3 {
 		background: #30a14e;
 	}
-
 	.level-4 {
 		background: #216e39;
 	}
-
 	:global(.dark) .level-0 {
 		background: #161b22;
 	}
-
 	:global(.dark) .level-1 {
 		background: #0e4429;
 	}
-
 	:global(.dark) .level-2 {
 		background: #006d32;
 	}
-
 	:global(.dark) .level-3 {
 		background: #26a641;
 	}
-
 	:global(.dark) .level-4 {
 		background: #39d353;
 	}
-
 	.heatmap-legend {
 		display: flex;
 		align-items: center;
@@ -262,11 +231,6 @@
 		font-size: 0.75rem;
 		color: #666;
 	}
-
-	:global(.dark) .heatmap-legend {
-		color: var(--color-text-muted-dark);
-	}
-
 	.legend-boxes {
 		display: flex;
 		gap: 3px;

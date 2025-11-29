@@ -1,5 +1,9 @@
 <script>
   import { onMount } from 'svelte';
+  import Button from "$lib/components/ui/Button.svelte";
+  import Dialog from "$lib/components/ui/Dialog.svelte";
+  import Select from "$lib/components/ui/Select.svelte";
+  import { toast } from "$lib/components/ui/toast";
 
   let folder = $state('blog');
   let customFolder = $state('');
@@ -23,13 +27,6 @@
   let deleteModalOpen = $state(false);
   let imageToDelete = $state(null);
   let deleting = $state(false);
-
-  // Toast notification state
-  let toasts = $state([]);
-  let toastId = 0;
-
-  // Modal element reference for focus management
-  let modalElement = $state(null);
 
   const folderOptions = [
     { value: 'blog', label: 'Blog Posts' },
@@ -136,7 +133,7 @@
     const imageFiles = files.filter(f => f.type.startsWith('image/'));
 
     if (imageFiles.length === 0) {
-      showToast('Please select image files only', 'error');
+      toast.error('Please select image files only');
       return;
     }
 
@@ -204,6 +201,7 @@
         }
       }, 2000);
     } catch (err) {
+      toast.error('Failed to copy to clipboard');
       console.error('Failed to copy:', err);
     }
   }
@@ -212,56 +210,15 @@
     uploads = uploads.filter(u => u.status === 'uploading');
   }
 
-  // Toast notification functions
-  function showToast(message, type = 'info') {
-    const id = ++toastId;
-    toasts = [...toasts, { id, message, type }];
-    setTimeout(() => {
-      toasts = toasts.filter(t => t.id !== id);
-    }, 5000);
-  }
-
-  function dismissToast(id) {
-    toasts = toasts.filter(t => t.id !== id);
-  }
-
   // Delete confirmation functions
   function confirmDelete(image) {
     imageToDelete = image;
     deleteModalOpen = true;
-    // Focus the modal after it opens
-    setTimeout(() => {
-      if (modalElement) {
-        modalElement.focus();
-      }
-    }, 0);
   }
 
   function cancelDelete() {
     deleteModalOpen = false;
     imageToDelete = null;
-  }
-
-  function handleModalKeydown(e) {
-    if (e.key === 'Escape') {
-      cancelDelete();
-    }
-    // Focus trap: keep focus within modal
-    if (e.key === 'Tab' && modalElement) {
-      const focusableElements = modalElement.querySelectorAll(
-        'button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      );
-      const firstElement = focusableElements[0];
-      const lastElement = focusableElements[focusableElements.length - 1];
-
-      if (e.shiftKey && document.activeElement === firstElement) {
-        e.preventDefault();
-        lastElement.focus();
-      } else if (!e.shiftKey && document.activeElement === lastElement) {
-        e.preventDefault();
-        firstElement.focus();
-      }
-    }
   }
 
   async function executeDelete() {
@@ -286,9 +243,9 @@
 
       // Remove from gallery after successful deletion
       galleryImages = galleryImages.filter(img => img.key !== imageToDelete.key);
-      showToast('Image deleted successfully', 'success');
+      toast.success('Image deleted successfully');
     } catch (err) {
-      showToast('Failed to delete image: ' + err.message, 'error');
+      toast.error('Failed to delete image: ' + err.message);
     } finally {
       deleting = false;
       deleteModalOpen = false;
@@ -328,11 +285,17 @@
     class:dragging={isDragging}
     role="button"
     tabindex="0"
+    aria-label="Drag and drop zone for image uploads"
     ondragover={handleDragOver}
     ondragleave={handleDragLeave}
     ondrop={handleDrop}
     onclick={() => document.getElementById('file-input').click()}
-    onkeydown={(e) => e.key === 'Enter' && document.getElementById('file-input').click()}
+    onkeydown={(e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        document.getElementById('file-input').click();
+      }
+    }}
   >
     <input
       type="file"
@@ -361,7 +324,7 @@
     <div class="uploads-section">
       <div class="uploads-header">
         <h2>Uploads</h2>
-        <button class="clear-btn" onclick={clearCompleted}>Clear completed</button>
+        <Button variant="secondary" size="sm" onclick={clearCompleted}>Clear completed</Button>
       </div>
 
       <div class="uploads-list">
@@ -384,15 +347,15 @@
                   <code>{upload.url}</code>
                 </div>
                 <div class="copy-buttons">
-                  <button class="copy-btn" onclick={() => copyToClipboard(upload.url, 'url', upload.id)}>
+                  <Button variant="primary" size="sm" onclick={() => copyToClipboard(upload.url, 'url', upload.id)}>
                     {copiedItem === `${upload.id}-url` ? 'Copied!' : 'Copy URL'}
-                  </button>
-                  <button class="copy-btn" onclick={() => copyToClipboard(upload.markdown, 'markdown', upload.id)}>
+                  </Button>
+                  <Button variant="primary" size="sm" onclick={() => copyToClipboard(upload.markdown, 'markdown', upload.id)}>
                     {copiedItem === `${upload.id}-markdown` ? 'Copied!' : 'Copy Markdown'}
-                  </button>
-                  <button class="copy-btn" onclick={() => copyToClipboard(upload.svelte, 'svelte', upload.id)}>
+                  </Button>
+                  <Button variant="primary" size="sm" onclick={() => copyToClipboard(upload.svelte, 'svelte', upload.id)}>
                     {copiedItem === `${upload.id}-svelte` ? 'Copied!' : 'Copy Svelte'}
-                  </button>
+                  </Button>
                 </div>
               </div>
             {/if}
@@ -431,9 +394,9 @@
             bind:value={galleryFilter}
             onkeydown={(e) => e.key === 'Enter' && filterGallery()}
           />
-          <button class="filter-btn" onclick={filterGallery}>Filter</button>
+          <Button variant="secondary" size="sm" onclick={filterGallery}>Filter</Button>
         </div>
-        <button class="refresh-btn" onclick={() => loadGallery()}>Refresh</button>
+        <Button variant="secondary" size="sm" onclick={() => loadGallery()}>Refresh</Button>
       </div>
     </div>
 
@@ -457,15 +420,15 @@
               <span class="gallery-item-size">{formatFileSize(image.size)}</span>
             </div>
             <div class="gallery-item-actions">
-              <button class="copy-btn small" onclick={() => copyToClipboard(image.url, 'url', image.key)}>
+              <Button variant="primary" size="sm" onclick={() => copyToClipboard(image.url, 'url', image.key)}>
                 {copiedItem === `${image.key}-url` ? '✓' : 'URL'}
-              </button>
-              <button class="copy-btn small" onclick={() => copyToClipboard(`![](${image.url})`, 'markdown', image.key)}>
+              </Button>
+              <Button variant="primary" size="sm" onclick={() => copyToClipboard(`![](${image.url})`, 'markdown', image.key)}>
                 {copiedItem === `${image.key}-markdown` ? '✓' : 'MD'}
-              </button>
-              <button class="delete-btn small" onclick={() => confirmDelete(image)} aria-label="Delete image" title="Delete image">
+              </Button>
+              <Button variant="danger" size="sm" onclick={() => confirmDelete(image)} aria-label="Delete image" title="Delete image">
                 X
-              </button>
+              </Button>
             </div>
           </div>
         {/each}
@@ -473,13 +436,13 @@
 
       {#if galleryHasMore}
         <div class="gallery-load-more">
-          <button
-            class="load-more-btn"
+          <Button
+            variant="primary"
             onclick={() => loadGallery(true)}
             disabled={galleryLoading}
           >
             {galleryLoading ? 'Loading...' : 'Load More'}
-          </button>
+          </Button>
         </div>
       {/if}
     {/if}
@@ -487,87 +450,45 @@
 </div>
 
 <!-- Delete Confirmation Modal -->
-{#if deleteModalOpen}
-  <div
-    class="modal-overlay"
-    onclick={cancelDelete}
-    onkeydown={handleModalKeydown}
-    role="presentation"
-  >
-    <div
-      class="modal-content"
-      bind:this={modalElement}
-      onclick={(e) => e.stopPropagation()}
-      onkeydown={handleModalKeydown}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-title"
-      tabindex="-1"
-    >
-      <h3 id="modal-title">Delete Image?</h3>
-      {#if imageToDelete}
-        <p class="modal-filename">{getFileName(imageToDelete.key)}</p>
-        <div class="modal-preview">
-          <img src={imageToDelete.url} alt="Preview" />
-        </div>
-      {/if}
-      <p class="modal-warning">This action cannot be undone.</p>
-      <div class="modal-actions">
-        <button class="modal-btn cancel" onclick={cancelDelete} disabled={deleting}>
-          Cancel
-        </button>
-        <button class="modal-btn delete" onclick={executeDelete} disabled={deleting}>
-          {deleting ? 'Deleting...' : 'Delete'}
-        </button>
-      </div>
+<Dialog bind:open={deleteModalOpen} title="Delete Image?">
+  {#if imageToDelete}
+    <p class="modal-filename">{getFileName(imageToDelete.key)}</p>
+    <div class="modal-preview">
+      <img src={imageToDelete.url} alt="Preview" />
     </div>
-  </div>
-{/if}
+  {/if}
+  <p class="modal-warning">This action cannot be undone.</p>
 
-<!-- Toast Notifications -->
-{#if toasts.length > 0}
-  <div class="toast-container" role="status" aria-live="polite">
-    {#each toasts as toast (toast.id)}
-      <div class="toast toast-{toast.type}">
-        <span class="toast-message">{toast.message}</span>
-        <button class="toast-dismiss" onclick={() => dismissToast(toast.id)} aria-label="Dismiss notification">
-          &times;
-        </button>
-      </div>
-    {/each}
-  </div>
-{/if}
+  {#snippet footer()}
+    <div class="modal-actions">
+      <Button variant="secondary" onclick={cancelDelete} disabled={deleting}>
+        Cancel
+      </Button>
+      <Button variant="danger" onclick={executeDelete} disabled={deleting}>
+        {deleting ? 'Deleting...' : 'Delete'}
+      </Button>
+    </div>
+  {/snippet}
+</Dialog>
 
 <style>
   .images-page {
     max-width: 800px;
   }
-
   .page-header {
     margin-bottom: 2rem;
   }
-
   .page-header h1 {
     margin: 0 0 0.5rem 0;
     font-size: 2rem;
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .page-header h1 {
-    color: var(--color-text-dark);
-  }
-
   .subtitle {
     margin: 0;
     color: var(--color-text-muted);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .subtitle {
-    color: var(--color-text-subtle-dark);
-  }
-
   .upload-config {
     display: flex;
     gap: 1rem;
@@ -575,23 +496,16 @@
     align-items: center;
     flex-wrap: wrap;
   }
-
   .folder-select {
     display: flex;
     align-items: center;
     gap: 0.5rem;
   }
-
   .folder-select span {
     font-weight: 500;
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .folder-select span {
-    color: var(--color-text-dark);
-  }
-
   .folder-select select {
     padding: 0.5rem;
     border: 1px solid var(--color-border);
@@ -601,13 +515,6 @@
     color: var(--color-text);
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
-
-  :global(.dark) .folder-select select {
-    background: var(--color-bg-tertiary-dark);
-    color: var(--color-text-dark);
-    border-color: var(--color-border-dark);
-  }
-
   .custom-folder {
     flex: 1;
     min-width: 200px;
@@ -619,13 +526,6 @@
     color: var(--color-text);
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
-
-  :global(.dark) .custom-folder {
-    background: var(--color-bg-tertiary-dark);
-    color: var(--color-text-dark);
-    border-color: var(--color-border-dark);
-  }
-
   .drop-zone {
     border: 2px dashed var(--color-border);
     border-radius: var(--border-radius-standard);
@@ -635,42 +535,26 @@
     transition: all 0.2s;
     background: var(--mobile-menu-bg);
   }
-
-  :global(.dark) .drop-zone {
-    background: var(--color-bg-tertiary-dark);
-    border-color: var(--color-border-dark);
-  }
-
   .drop-zone:hover {
     border-color: var(--color-primary);
     background: var(--color-bg-secondary);
     transition: background-color 0.3s ease, border-color 0.3s ease;
   }
-
-  :global(.dark) .drop-zone:hover {
-    background: var(--color-bg-secondary-dark);
-    border-color: var(--color-primary-light);
-  }
-
   .drop-zone.dragging {
-    border-color: #28a745;
+    border-color: var(--accent-success);
     background: #f0fff4;
   }
-
   :global(.dark) .drop-zone.dragging {
     background: rgba(40, 167, 69, 0.1);
   }
-
   .drop-content {
     pointer-events: none;
   }
-
   .drop-icon {
     font-size: 3rem;
     display: block;
     margin-bottom: 1rem;
   }
-
   .drop-text {
     font-size: 1.25rem;
     font-weight: 500;
@@ -678,85 +562,37 @@
     margin: 0 0 0.5rem 0;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .drop-text {
-    color: var(--color-text-dark);
-  }
-
   .drop-hint {
     color: var(--color-text-muted);
     margin: 0 0 0.5rem 0;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .drop-hint {
-    color: var(--color-text-subtle-dark);
-  }
-
   .drop-formats {
     font-size: 0.85rem;
     color: var(--color-text-subtle);
     margin: 0;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .drop-formats {
-    color: var(--color-text-subtle-dark);
-  }
-
   .uploads-section {
     margin-top: 2rem;
   }
-
   .uploads-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 1rem;
   }
-
   .uploads-header h2 {
     margin: 0;
     font-size: 1.25rem;
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .uploads-header h2 {
-    color: var(--color-text-dark);
-  }
-
-  .clear-btn {
-    padding: 0.4rem 0.8rem;
-    background: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
-    border-radius: var(--border-radius-small);
-    font-size: 0.85rem;
-    cursor: pointer;
-    color: var(--color-text-muted);
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-  }
-
-  :global(.dark) .clear-btn {
-    background: var(--color-bg-secondary-dark);
-    color: var(--color-text-subtle-dark);
-    border-color: var(--color-border-dark);
-  }
-
-  .clear-btn:hover {
-    background: #e1e4e8;
-  }
-
-  :global(.dark) .clear-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-
   .uploads-list {
     display: flex;
     flex-direction: column;
     gap: 1rem;
   }
-
   .upload-item {
     background: var(--mobile-menu-bg);
     border: 1px solid var(--color-border);
@@ -764,64 +600,45 @@
     padding: 1rem;
     transition: background-color 0.3s ease, border-color 0.3s ease;
   }
-
-  :global(.dark) .upload-item {
-    background: var(--color-bg-tertiary-dark);
-    border-color: var(--color-border-dark);
-  }
-
   .upload-item.success {
-    border-color: #28a745;
+    border-color: var(--accent-success);
   }
-
   .upload-item.error {
-    border-color: #d73a49;
+    border-color: var(--accent-danger);
   }
-
   .upload-info {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 0.75rem;
   }
-
   .upload-name {
     font-weight: 500;
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .upload-name {
-    color: var(--color-text-dark);
-  }
-
   .upload-status {
     font-size: 0.85rem;
     padding: 0.25rem 0.5rem;
     border-radius: var(--border-radius-small);
   }
-
   .upload-status.uploading {
     background: #fff5b1;
-    color: #735c0f;
+    color: var(--status-warning-bg);
   }
-
   .upload-status.success {
     background: #dcffe4;
-    color: #22863a;
+    color: var(--accent-success-dark);
   }
-
   .upload-status.error {
     background: #ffeef0;
-    color: #d73a49;
+    color: var(--accent-danger);
   }
-
   .upload-actions {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
   }
-
   .url-display {
     background: var(--color-bg-secondary);
     padding: 0.5rem;
@@ -829,56 +646,17 @@
     overflow-x: auto;
     transition: background-color 0.3s ease;
   }
-
-  :global(.dark) .url-display {
-    background: var(--color-bg-secondary-dark);
-  }
-
   .url-display code {
     font-size: 0.8rem;
     color: var(--color-text);
     word-break: break-all;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .url-display code {
-    color: var(--color-text-dark);
-  }
-
   .copy-buttons {
     display: flex;
     gap: 0.5rem;
     flex-wrap: wrap;
   }
-
-  .copy-btn {
-    padding: 0.4rem 0.8rem;
-    background: var(--color-primary);
-    color: white;
-    border: none;
-    border-radius: var(--border-radius-small);
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-
-  :global(.dark) .copy-btn {
-    background: var(--color-primary-light);
-  }
-
-  .copy-btn:hover {
-    background: #0256cc;
-  }
-
-  :global(.dark) .copy-btn:hover {
-    background: #0366d6;
-  }
-
-  .copy-btn.small {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-  }
-
   /* Gallery Section */
   .gallery-section {
     margin-top: 2rem;
@@ -888,11 +666,6 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s ease;
   }
-
-  :global(.dark) .gallery-section {
-    background: var(--color-bg-tertiary-dark);
-  }
-
   .gallery-header {
     display: flex;
     justify-content: space-between;
@@ -901,18 +674,12 @@
     flex-wrap: wrap;
     gap: 1rem;
   }
-
   .gallery-title h2 {
     margin: 0;
     font-size: 1.25rem;
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .gallery-title h2 {
-    color: var(--color-text-dark);
-  }
-
   .gallery-subtitle {
     margin: 0.25rem 0 0 0;
     font-size: 0.85rem;
@@ -920,34 +687,22 @@
     font-style: italic;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .gallery-subtitle {
-    color: var(--color-text-subtle-dark);
-  }
-
   .gallery-controls {
     display: flex;
     gap: 1rem;
     flex-wrap: wrap;
     align-items: flex-end;
   }
-
   .control-group {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
   }
-
   .control-group label {
     font-size: 0.875rem;
     color: var(--color-text-muted);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .control-group label {
-    color: var(--color-text-muted-dark);
-  }
-
   .control-group select {
     padding: 0.4rem 0.8rem;
     border: 1px solid var(--color-border);
@@ -958,13 +713,6 @@
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
-
-  :global(.dark) .control-group select {
-    background: var(--color-bg-tertiary-dark);
-    color: var(--color-text-dark);
-    border-color: var(--color-border-dark);
-  }
-
   .gallery-filter {
     padding: 0.4rem 0.8rem;
     border: 1px solid var(--color-border);
@@ -975,50 +723,13 @@
     color: var(--color-text);
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
-
-  :global(.dark) .gallery-filter {
-    background: var(--color-bg-tertiary-dark);
-    color: var(--color-text-dark);
-    border-color: var(--color-border-dark);
-  }
-
-  .filter-btn,
-  .refresh-btn {
-    padding: 0.4rem 0.8rem;
-    background: var(--color-bg-secondary);
-    border: 1px solid var(--color-border);
-    border-radius: var(--border-radius-small);
-    font-size: 0.85rem;
-    cursor: pointer;
-    color: var(--color-text);
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-  }
-
-  :global(.dark) .filter-btn,
-  :global(.dark) .refresh-btn {
-    background: var(--color-bg-secondary-dark);
-    color: var(--color-text-dark);
-    border-color: var(--color-border-dark);
-  }
-
-  .filter-btn:hover,
-  .refresh-btn:hover {
-    background: #e1e4e8;
-  }
-
-  :global(.dark) .filter-btn:hover,
-  :global(.dark) .refresh-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
-  }
-
   .gallery-error {
     background: #ffeef0;
-    color: #d73a49;
+    color: var(--accent-danger);
     padding: 1rem;
     border-radius: var(--border-radius-small);
     margin-bottom: 1rem;
   }
-
   .gallery-loading,
   .gallery-empty {
     text-align: center;
@@ -1026,18 +737,11 @@
     padding: 2rem;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .gallery-loading,
-  :global(.dark) .gallery-empty {
-    color: var(--color-text-subtle-dark);
-  }
-
   .gallery-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 1rem;
   }
-
   .gallery-item {
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-button);
@@ -1045,12 +749,6 @@
     background: var(--color-bg-secondary);
     transition: background-color 0.3s ease, border-color 0.3s ease;
   }
-
-  :global(.dark) .gallery-item {
-    background: var(--color-bg-secondary-dark);
-    border-color: var(--color-border-dark);
-  }
-
   .gallery-image-container {
     aspect-ratio: 1;
     display: flex;
@@ -1060,27 +758,16 @@
     overflow: hidden;
     transition: background-color 0.3s ease;
   }
-
-  :global(.dark) .gallery-image-container {
-    background: var(--color-bg-tertiary-dark);
-  }
-
   .gallery-image-container img {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
   }
-
   .gallery-item-info {
     padding: 0.5rem;
     border-top: 1px solid var(--color-border);
     transition: border-color 0.3s ease;
   }
-
-  :global(.dark) .gallery-item-info {
-    border-color: var(--color-border-dark);
-  }
-
   .gallery-item-name {
     display: block;
     font-size: 0.75rem;
@@ -1090,151 +777,40 @@
     text-overflow: ellipsis;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .gallery-item-name {
-    color: var(--color-text-dark);
-  }
-
   .gallery-item-size {
     font-size: 0.7rem;
     color: var(--color-text-muted);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .gallery-item-size {
-    color: var(--color-text-subtle-dark);
-  }
-
   .gallery-item-actions {
     display: flex;
     gap: 0.25rem;
     padding: 0.5rem;
     padding-top: 0;
   }
-
   .gallery-load-more {
     text-align: center;
     margin-top: 1.5rem;
   }
-
-  .load-more-btn {
-    padding: 0.5rem 1.5rem;
-    background: var(--color-primary);
-    color: white;
-    border: none;
-    border-radius: var(--border-radius-small);
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-
-  :global(.dark) .load-more-btn {
-    background: var(--color-primary-light);
-  }
-
-  .load-more-btn:hover:not(:disabled) {
-    background: #0256cc;
-  }
-
-  :global(.dark) .load-more-btn:hover:not(:disabled) {
-    background: #0366d6;
-  }
-
-  .load-more-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
   /* Mobile styles for gallery */
   @media (max-width: 768px) {
     .gallery-header {
       flex-direction: column;
       align-items: stretch;
     }
-
     .gallery-controls {
       flex-direction: column;
     }
-
     .gallery-filter {
       min-width: 0;
       width: 100%;
     }
-
     .gallery-grid {
       grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
       gap: 0.5rem;
     }
   }
-
-  /* Delete Button */
-  .delete-btn {
-    padding: 0.4rem 0.8rem;
-    background: var(--color-danger, #d73a49);
-    color: white;
-    border: none;
-    border-radius: var(--border-radius-small);
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
-  }
-
-  .delete-btn:hover {
-    background: var(--color-danger-hover, #cb2431);
-  }
-
-  .delete-btn.small {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.75rem;
-    font-weight: bold;
-  }
-
-  /* Modal Overlay */
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    padding: 1rem;
-  }
-
-  :global(.dark) .modal-overlay {
-    background: rgba(0, 0, 0, 0.7);
-  }
-
-  /* Modal Content */
-  .modal-content {
-    background: var(--mobile-menu-bg);
-    border-radius: var(--border-radius-standard);
-    padding: 1.5rem;
-    max-width: 400px;
-    width: 100%;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-    transition: background-color 0.3s ease;
-  }
-
-  :global(.dark) .modal-content {
-    background: var(--color-bg-tertiary-dark);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  }
-
-  .modal-content h3 {
-    margin: 0 0 1rem 0;
-    font-size: 1.25rem;
-    color: var(--color-text);
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .modal-content h3 {
-    color: var(--color-text-dark);
-  }
-
+  /* Modal styles for preview */
   .modal-filename {
     font-family: monospace;
     font-size: 0.9rem;
@@ -1243,11 +819,6 @@
     margin: 0 0 1rem 0;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .modal-filename {
-    color: var(--color-text-subtle-dark);
-  }
-
   .modal-preview {
     display: flex;
     justify-content: center;
@@ -1260,175 +831,20 @@
     overflow: hidden;
     transition: background-color 0.3s ease;
   }
-
-  :global(.dark) .modal-preview {
-    background: var(--color-bg-secondary-dark);
-  }
-
   .modal-preview img {
     max-width: 100%;
     max-height: 130px;
     object-fit: contain;
   }
-
   .modal-warning {
     font-size: 0.85rem;
-    color: var(--color-danger, #d73a49);
+    color: var(--color-danger, var(--accent-danger));
     margin: 0 0 1.5rem 0;
     font-weight: 500;
   }
-
   .modal-actions {
     display: flex;
     gap: 0.75rem;
     justify-content: flex-end;
-  }
-
-  .modal-btn {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: var(--border-radius-small);
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: background-color 0.2s ease, opacity 0.2s ease;
-  }
-
-  .modal-btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  .modal-btn.cancel {
-    background: var(--color-bg-secondary);
-    color: var(--color-text);
-    border: 1px solid var(--color-border);
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-  }
-
-  :global(.dark) .modal-btn.cancel {
-    background: var(--color-bg-secondary-dark);
-    color: var(--color-text-dark);
-    border-color: var(--color-border-dark);
-  }
-
-  .modal-btn.cancel:hover:not(:disabled) {
-    background: #e1e4e8;
-  }
-
-  :global(.dark) .modal-btn.cancel:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.1);
-  }
-
-  .modal-btn.delete {
-    background: var(--color-danger, #d73a49);
-    color: white;
-  }
-
-  .modal-btn.delete:hover:not(:disabled) {
-    background: var(--color-danger-hover, #cb2431);
-  }
-
-  /* Toast Notifications */
-  .toast-container {
-    position: fixed;
-    bottom: 1rem;
-    right: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    z-index: 1001;
-    max-width: 350px;
-  }
-
-  .toast {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0.75rem 1rem;
-    border-radius: var(--border-radius-small);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    animation: slideIn 0.3s ease;
-  }
-
-  @keyframes slideIn {
-    from {
-      transform: translateX(100%);
-      opacity: 0;
-    }
-    to {
-      transform: translateX(0);
-      opacity: 1;
-    }
-  }
-
-  .toast-success {
-    background: #dcffe4;
-    color: #22863a;
-    border: 1px solid #22863a;
-  }
-
-  :global(.dark) .toast-success {
-    background: rgba(40, 167, 69, 0.2);
-    color: #7ee787;
-    border-color: #238636;
-  }
-
-  .toast-error {
-    background: #ffeef0;
-    color: #d73a49;
-    border: 1px solid #d73a49;
-  }
-
-  :global(.dark) .toast-error {
-    background: rgba(248, 81, 73, 0.2);
-    color: #f85149;
-    border-color: #f85149;
-  }
-
-  .toast-info {
-    background: #e6f3ff;
-    color: #0366d6;
-    border: 1px solid #0366d6;
-  }
-
-  :global(.dark) .toast-info {
-    background: rgba(56, 139, 253, 0.2);
-    color: #58a6ff;
-    border-color: #388bfd;
-  }
-
-  .toast-message {
-    flex: 1;
-    font-size: 0.9rem;
-  }
-
-  .toast-dismiss {
-    background: none;
-    border: none;
-    font-size: 1.25rem;
-    cursor: pointer;
-    padding: 0;
-    margin-left: 0.5rem;
-    opacity: 0.7;
-    color: inherit;
-    line-height: 1;
-  }
-
-  .toast-dismiss:hover {
-    opacity: 1;
-  }
-
-  /* Mobile styles for modal and toast */
-  @media (max-width: 768px) {
-    .modal-content {
-      max-width: none;
-      margin: 0 1rem;
-    }
-
-    .toast-container {
-      left: 1rem;
-      right: 1rem;
-      max-width: none;
-    }
   }
 </style>

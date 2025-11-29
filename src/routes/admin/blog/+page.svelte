@@ -1,4 +1,7 @@
 <script>
+  import Button from "$lib/components/ui/Button.svelte";
+  import Badge from "$lib/components/ui/Badge.svelte";
+
   let { data } = $props();
 
   function formatDate(dateString) {
@@ -10,58 +13,58 @@
   }
 </script>
 
-<div class="blog-admin">
-  <header class="page-header">
-    <div class="header-content">
-      <h1>Blog Posts</h1>
-      <p class="subtitle">{data.posts.length} posts</p>
+<div class="max-w-screen-xl">
+  <header class="flex justify-between items-start mb-8 max-md:flex-col max-md:items-stretch max-md:gap-4">
+    <div>
+      <h1 class="m-0 mb-1 text-3xl text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-colors">Blog Posts</h1>
+      <p class="m-0 text-[var(--color-text-muted)] dark:text-[var(--color-text-subtle-dark)] transition-colors">{data.posts.length} posts</p>
     </div>
-    <a href="/admin/blog/new" class="btn btn-primary">
+    <Button variant="primary" onclick={() => window.location.href = '/admin/blog/new'}>
       + New Post
-    </a>
+    </Button>
   </header>
 
-  <div class="posts-table-container">
-    <table class="posts-table">
+  <div class="bg-[var(--mobile-menu-bg)] dark:bg-[var(--color-bg-tertiary-dark)] rounded-[var(--border-radius-standard)] shadow-md dark:shadow-[0_2px_8px_rgba(0,0,0,0.3)] overflow-hidden transition-[background-color,box-shadow]">
+    <table class="w-full border-collapse">
       <thead>
         <tr>
-          <th>Title</th>
-          <th>Date</th>
-          <th>Tags</th>
-          <th>Actions</th>
+          <th class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-dark)] bg-[var(--color-bg-secondary)] dark:bg-[var(--color-border-dark)] font-semibold text-xs text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-[background-color,color,border-color] max-md:px-2 max-md:py-3">Title</th>
+          <th class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-dark)] bg-[var(--color-bg-secondary)] dark:bg-[var(--color-border-dark)] font-semibold text-xs text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-[background-color,color,border-color] max-md:hidden">Date</th>
+          <th class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-dark)] bg-[var(--color-bg-secondary)] dark:bg-[var(--color-border-dark)] font-semibold text-xs text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-[background-color,color,border-color] max-md:hidden">Tags</th>
+          <th class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-dark)] bg-[var(--color-bg-secondary)] dark:bg-[var(--color-border-dark)] font-semibold text-xs text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-[background-color,color,border-color] max-md:px-2 max-md:py-3">Actions</th>
         </tr>
       </thead>
       <tbody>
         {#each data.posts as post (post.slug)}
           <tr>
-            <td>
-              <a href="/blog/{post.slug}" target="_blank" class="post-title">
+            <td class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-dark)] transition-[border-color] max-md:px-2 max-md:py-3">
+              <a href="/blog/{post.slug}" target="_blank" class="font-medium text-[var(--color-primary)] dark:text-[var(--color-primary-light)] no-underline hover:underline transition-colors">
                 {post.title}
               </a>
               {#if post.description}
-                <p class="post-description">{post.description}</p>
+                <p class="mt-1 mb-0 text-xs text-[var(--color-text-muted)] dark:text-[var(--color-text-subtle-dark)] transition-colors">{post.description}</p>
               {/if}
             </td>
-            <td class="date-cell">{formatDate(post.date)}</td>
-            <td class="tags-cell">
+            <td class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-dark)] whitespace-nowrap text-[var(--color-text-muted)] dark:text-[var(--color-text-subtle-dark)] text-sm transition-[border-color,color] max-md:hidden">{formatDate(post.date)}</td>
+            <td class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-dark)] transition-[border-color] max-md:hidden">
               {#if post.tags.length > 0}
-                <div class="tags">
+                <div class="flex flex-wrap gap-1">
                   {#each post.tags as tag (tag)}
-                    <span class="tag">{tag}</span>
+                    <Badge variant="tag">{tag}</Badge>
                   {/each}
                 </div>
               {:else}
-                <span class="no-tags">-</span>
+                <span class="text-[var(--color-text-subtle)] dark:text-[var(--color-text-subtle-dark)] transition-colors">-</span>
               {/if}
             </td>
-            <td class="actions-cell">
-              <a href="/blog/{post.slug}" target="_blank" class="action-link">View</a>
-              <a href="/admin/blog/edit/{post.slug}" class="action-link">Edit</a>
+            <td class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-dark)] whitespace-nowrap transition-[border-color] max-md:px-2 max-md:py-3">
+              <a href="/blog/{post.slug}" target="_blank" class="text-[var(--color-primary)] dark:text-[var(--color-primary-light)] no-underline text-sm mr-4 hover:underline transition-colors max-md:mr-2">View</a>
+              <a href="/admin/blog/edit/{post.slug}" class="text-[var(--color-primary)] dark:text-[var(--color-primary-light)] no-underline text-sm mr-4 hover:underline transition-colors max-md:mr-2">Edit</a>
             </td>
           </tr>
         {:else}
           <tr>
-            <td colspan="4" class="empty-state">
+            <td colspan="4" class="text-center text-[var(--color-text-muted)] dark:text-[var(--color-text-subtle-dark)] py-12 px-4 transition-colors">
               No blog posts yet. Create your first post!
             </td>
           </tr>
@@ -85,198 +88,6 @@
 </div>
 
 <style>
-  .blog-admin {
-    max-width: 1200px;
-  }
-
-  .page-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 2rem;
-  }
-
-  .header-content h1 {
-    margin: 0 0 0.25rem 0;
-    font-size: 2rem;
-    color: var(--color-text);
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .header-content h1 {
-    color: var(--color-text-dark);
-  }
-
-  .subtitle {
-    margin: 0;
-    color: var(--color-text-muted);
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .subtitle {
-    color: var(--color-text-subtle-dark);
-  }
-
-  .btn {
-    padding: 0.5rem 1rem;
-    border-radius: var(--border-radius-button);
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.9rem;
-  }
-
-  .btn-primary {
-    background: var(--color-primary);
-    color: white;
-    transition: background-color 0.2s ease;
-  }
-
-  .btn-primary:hover {
-    background: var(--color-primary-hover);
-  }
-
-  .posts-table-container {
-    background: var(--mobile-menu-bg);
-    border-radius: var(--border-radius-standard);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    overflow: hidden;
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-  }
-
-  :global(.dark) .posts-table-container {
-    background: var(--color-bg-tertiary-dark);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  }
-
-  .posts-table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  .posts-table th,
-  .posts-table td {
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 1px solid var(--color-border);
-    transition: border-color 0.3s ease;
-  }
-
-  :global(.dark) .posts-table th,
-  :global(.dark) .posts-table td {
-    border-bottom-color: var(--color-border-dark);
-  }
-
-  .posts-table th {
-    background: var(--color-bg-secondary);
-    font-weight: 600;
-    font-size: 0.85rem;
-    color: var(--color-text);
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
-
-  :global(.dark) .posts-table th {
-    background: var(--color-border-dark);
-    color: var(--color-text-dark);
-  }
-
-  .post-title {
-    font-weight: 500;
-    color: var(--color-primary);
-    text-decoration: none;
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .post-title {
-    color: var(--color-primary-light);
-  }
-
-  .post-title:hover {
-    text-decoration: underline;
-  }
-
-  .post-description {
-    margin: 0.25rem 0 0 0;
-    font-size: 0.85rem;
-    color: var(--color-text-muted);
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .post-description {
-    color: var(--color-text-subtle-dark);
-  }
-
-  .date-cell {
-    white-space: nowrap;
-    color: var(--color-text-muted);
-    font-size: 0.9rem;
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .date-cell {
-    color: var(--color-text-subtle-dark);
-  }
-
-  .tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
-  }
-
-  .tag {
-    background: var(--tag-bg);
-    color: white;
-    padding: 0.25rem 0.75rem;
-    border-radius: 20px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    transition: background-color 0.2s ease, transform 0.2s ease;
-  }
-
-  .tag:hover {
-    background: var(--tag-bg-hover);
-    transform: scale(1.05);
-  }
-
-  .no-tags {
-    color: var(--color-text-subtle);
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .no-tags {
-    color: var(--color-text-subtle-dark);
-  }
-
-  .actions-cell {
-    white-space: nowrap;
-  }
-
-  .action-link {
-    color: var(--color-primary);
-    text-decoration: none;
-    font-size: 0.9rem;
-    margin-right: 1rem;
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .action-link {
-    color: var(--color-primary-light);
-  }
-
-  .action-link:hover {
-    text-decoration: underline;
-  }
-
-  .empty-state {
-    text-align: center;
-    color: var(--color-text-muted);
-    padding: 3rem 1rem;
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .empty-state {
-    color: var(--color-text-subtle-dark);
-  }
-
   .info-box {
     margin-top: 2rem;
     background: var(--color-bg-secondary);
@@ -286,20 +97,11 @@
     transition: background-color 0.3s ease, border-color 0.3s ease;
   }
 
-  :global(.dark) .info-box {
-    background: var(--color-bg-tertiary-dark);
-    border-color: var(--color-border-dark);
-  }
-
   .info-box h3 {
     margin: 0 0 0.75rem 0;
     font-size: 1rem;
     color: var(--color-text);
     transition: color 0.3s ease;
-  }
-
-  :global(.dark) .info-box h3 {
-    color: var(--color-text-dark);
   }
 
   .info-box p {
@@ -309,20 +111,12 @@
     transition: color 0.3s ease;
   }
 
-  :global(.dark) .info-box p {
-    color: var(--color-text-subtle-dark);
-  }
-
   .info-box ul {
     margin: 0;
     padding-left: 1.25rem;
     color: var(--color-text-muted);
     font-size: 0.9rem;
     transition: color 0.3s ease;
-  }
-
-  :global(.dark) .info-box ul {
-    color: var(--color-text-subtle-dark);
   }
 
   .info-box li {
@@ -335,38 +129,5 @@
     border-radius: var(--border-radius-small);
     font-size: 0.85em;
     transition: background-color 0.3s ease;
-  }
-
-  :global(.dark) .info-box code {
-    background: var(--color-border-dark);
-  }
-
-  /* Mobile styles */
-  @media (max-width: 768px) {
-    .page-header {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 1rem;
-    }
-
-    .btn {
-      text-align: center;
-    }
-
-    .posts-table th:nth-child(2),
-    .posts-table td:nth-child(2),
-    .posts-table th:nth-child(3),
-    .posts-table td:nth-child(3) {
-      display: none;
-    }
-
-    .posts-table th,
-    .posts-table td {
-      padding: 0.75rem 0.5rem;
-    }
-
-    .action-link {
-      margin-right: 0.5rem;
-    }
   }
 </style>

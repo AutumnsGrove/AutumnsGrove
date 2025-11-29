@@ -1,4 +1,7 @@
 <script>
+  import { Button, Skeleton } from "$lib/components/ui";
+  import { toast } from "$lib/components/ui/toast";
+
   let clearingCache = $state(false);
   let cacheMessage = $state('');
   let healthStatus = $state(null);
@@ -16,6 +19,7 @@
       const res = await fetch('/api/git/health');
       healthStatus = await res.json();
     } catch (error) {
+      toast.error('Failed to check system health');
       console.error('Failed to fetch health:', error);
       healthStatus = { status: 'error', error: error.message };
     }
@@ -55,6 +59,7 @@
       const data = await res.json();
       currentFont = data.font_family || 'alagard';
     } catch (error) {
+      toast.error('Failed to load font settings');
       console.error('Failed to fetch font setting:', error);
       currentFont = 'alagard';
     }
@@ -115,62 +120,55 @@
 
   <section class="settings-section">
     <h2>System Health</h2>
-    <div class="health-grid">
-      <div class="health-item">
-        <span class="health-label">Overall Status</span>
-        {#if loadingHealth}
-          <span class="health-value loading">Checking...</span>
-        {:else}
+    {#if loadingHealth}
+      <div class="health-grid">
+        <Skeleton class="h-12 w-full" />
+        <Skeleton class="h-12 w-full" />
+        <Skeleton class="h-12 w-full" />
+        <Skeleton class="h-12 w-full" />
+      </div>
+    {:else}
+      <div class="health-grid">
+        <div class="health-item">
+          <span class="health-label">Overall Status</span>
           <span class="health-value" class:healthy={healthStatus?.status === 'healthy'} class:error={healthStatus?.status !== 'healthy'}>
             {healthStatus?.status === 'healthy' ? 'Healthy' : 'Issues Detected'}
           </span>
-        {/if}
-      </div>
+        </div>
 
-      <div class="health-item">
-        <span class="health-label">GitHub Token</span>
-        {#if loadingHealth}
-          <span class="health-value loading">...</span>
-        {:else}
+        <div class="health-item">
+          <span class="health-label">GitHub Token</span>
           <span class="health-value" class:healthy={healthStatus?.github_token_configured} class:error={!healthStatus?.github_token_configured}>
             {healthStatus?.github_token_configured ? 'Configured' : 'Missing'}
           </span>
-        {/if}
-      </div>
+        </div>
 
-      <div class="health-item">
-        <span class="health-label">KV Cache</span>
-        {#if loadingHealth}
-          <span class="health-value loading">...</span>
-        {:else}
+        <div class="health-item">
+          <span class="health-label">KV Cache</span>
           <span class="health-value" class:healthy={healthStatus?.kv_configured} class:error={!healthStatus?.kv_configured}>
             {healthStatus?.kv_configured ? 'Connected' : 'Not Configured'}
           </span>
-        {/if}
-      </div>
+        </div>
 
-      <div class="health-item">
-        <span class="health-label">D1 Database</span>
-        {#if loadingHealth}
-          <span class="health-value loading">...</span>
-        {:else}
+        <div class="health-item">
+          <span class="health-label">D1 Database</span>
           <span class="health-value" class:healthy={healthStatus?.d1_configured} class:error={!healthStatus?.d1_configured}>
             {healthStatus?.d1_configured ? 'Connected' : 'Not Configured'}
           </span>
+        </div>
+
+        {#if healthStatus?.timestamp}
+          <div class="health-item full-width">
+            <span class="health-label">Last Check</span>
+            <span class="health-value">{new Date(healthStatus.timestamp).toLocaleString()}</span>
+          </div>
         {/if}
       </div>
+    {/if}
 
-      {#if healthStatus?.timestamp}
-        <div class="health-item full-width">
-          <span class="health-label">Last Check</span>
-          <span class="health-value">{new Date(healthStatus.timestamp).toLocaleString()}</span>
-        </div>
-      {/if}
-    </div>
-
-    <button onclick={fetchHealth} class="btn btn-secondary" disabled={loadingHealth}>
+    <Button onclick={fetchHealth} variant="secondary" disabled={loadingHealth}>
       {loadingHealth ? 'Checking...' : 'Refresh Status'}
-    </button>
+    </Button>
   </section>
 
   <section class="settings-section">
@@ -180,7 +178,7 @@
     </p>
 
     {#if loadingFont}
-      <p class="loading-text">Loading font settings...</p>
+      <Skeleton class="h-64 w-full" />
     {:else}
       <div class="font-selector">
         <label class="font-option" class:selected={currentFont === 'alagard'}>
@@ -282,9 +280,9 @@
       {/if}
 
       <div class="button-row">
-        <button onclick={saveFont} class="btn btn-primary" disabled={savingFont}>
+        <Button onclick={saveFont} variant="primary" disabled={savingFont}>
           {savingFont ? 'Saving...' : 'Save Font Setting'}
-        </button>
+        </Button>
       </div>
 
       <p class="note">
@@ -306,9 +304,9 @@
       </div>
     {/if}
 
-    <button onclick={clearCache} class="btn btn-danger" disabled={clearingCache}>
+    <Button onclick={clearCache} variant="danger" disabled={clearingCache}>
       {clearingCache ? 'Clearing...' : 'Clear All Cache'}
-    </button>
+    </Button>
 
     <p class="note">
       Note: The cache clear endpoint needs to be implemented at <code>/api/admin/cache/clear</code>
@@ -349,32 +347,20 @@
   .settings {
     max-width: 800px;
   }
-
   .page-header {
     margin-bottom: 2rem;
   }
-
   .page-header h1 {
     margin: 0 0 0.25rem 0;
     font-size: 2rem;
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .page-header h1 {
-    color: var(--color-text-dark);
-  }
-
   .subtitle {
     margin: 0;
     color: var(--color-text-muted);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .subtitle {
-    color: var(--color-text-subtle-dark);
-  }
-
   .settings-section {
     background: var(--mobile-menu-bg);
     border-radius: var(--border-radius-standard);
@@ -383,154 +369,70 @@
     margin-bottom: 1.5rem;
     transition: background-color 0.3s ease;
   }
-
-  :global(.dark) .settings-section {
-    background: var(--color-bg-tertiary-dark);
-  }
-
   .settings-section h2 {
     margin: 0 0 1rem 0;
     font-size: 1.25rem;
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .settings-section h2 {
-    color: var(--color-text-dark);
-  }
-
   .section-description {
     margin: 0 0 1rem 0;
     color: var(--color-text-muted);
     font-size: 0.9rem;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .section-description {
-    color: var(--color-text-subtle-dark);
-  }
-
   .health-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
     margin-bottom: 1rem;
   }
-
   .health-item {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
   }
-
   .health-item.full-width {
     grid-column: 1 / -1;
   }
-
   .health-label {
     font-size: 0.85rem;
     color: var(--color-text-muted);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .health-label {
-    color: var(--color-text-subtle-dark);
-  }
-
   .health-value {
     font-weight: 600;
   }
-
   .health-value.healthy {
-    color: #28a745;
+    color: var(--accent-success);
   }
-
   .health-value.error {
-    color: #d73a49;
+    color: var(--accent-danger);
   }
-
   .health-value.loading {
     color: var(--color-text-subtle);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .health-value.loading {
-    color: var(--color-text-subtle-dark);
-  }
-
-  .btn {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: var(--border-radius-button);
-    font-weight: 500;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
-  }
-
-  .btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  .btn-secondary {
-    background: var(--color-bg-secondary);
-    color: var(--color-text);
-    border: 1px solid var(--color-border);
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-  }
-
-  .btn-secondary:hover:not(:disabled) {
-    background: var(--color-border);
-  }
-
-  :global(.dark) .btn-secondary {
-    background: var(--color-bg-secondary-dark);
-    color: var(--color-text-dark);
-    border-color: var(--color-border-dark);
-  }
-
-  :global(.dark) .btn-secondary:hover:not(:disabled) {
-    background: var(--color-border-dark);
-  }
-
-  .btn-danger {
-    background: #d73a49;
-    color: white;
-  }
-
-  .btn-danger:hover:not(:disabled) {
-    background: #cb2431;
-  }
-
   .message {
     padding: 0.75rem 1rem;
     border-radius: var(--border-radius-button);
     margin-bottom: 1rem;
     font-size: 0.9rem;
   }
-
   .message.success {
     background: #dcffe4;
-    color: #22863a;
+    color: var(--accent-success-dark);
   }
-
   .message.error {
     background: #ffeef0;
-    color: #d73a49;
+    color: var(--accent-danger);
   }
-
   .note {
     margin: 1rem 0 0 0;
     font-size: 0.8rem;
     color: var(--color-text-subtle);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .note {
-    color: var(--color-text-subtle-dark);
-  }
-
   .note code {
     background: var(--color-bg-secondary);
     padding: 0.125rem 0.25rem;
@@ -538,16 +440,10 @@
     font-size: 0.85em;
     transition: background-color 0.3s ease;
   }
-
-  :global(.dark) .note code {
-    background: var(--color-bg-secondary-dark);
-  }
-
   .env-info {
     display: grid;
     gap: 0.75rem;
   }
-
   .env-item {
     display: flex;
     justify-content: space-between;
@@ -555,65 +451,40 @@
     border-bottom: 1px solid var(--color-border);
     transition: border-color 0.3s ease;
   }
-
-  :global(.dark) .env-item {
-    border-color: var(--color-border-dark);
-  }
-
   .env-item:last-child {
     border-bottom: none;
   }
-
   .env-label {
     color: var(--color-text-muted);
     font-size: 0.9rem;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .env-label {
-    color: var(--color-text-subtle-dark);
-  }
-
   .env-value {
     font-weight: 500;
     font-size: 0.9rem;
   }
-
   .links-list {
     margin: 0;
     padding: 0;
     list-style: none;
   }
-
   .links-list li {
     padding: 0.5rem 0;
     border-bottom: 1px solid var(--color-border);
     transition: border-color 0.3s ease;
   }
-
-  :global(.dark) .links-list li {
-    border-color: var(--color-border-dark);
-  }
-
   .links-list li:last-child {
     border-bottom: none;
   }
-
   .links-list a {
     color: var(--color-primary);
     text-decoration: none;
     font-size: 0.9rem;
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .links-list a {
-    color: var(--color-primary-light);
-  }
-
   .links-list a:hover {
     text-decoration: underline;
   }
-
   /* Font selector styles */
   .font-selector {
     display: flex;
@@ -621,7 +492,6 @@
     gap: 0.75rem;
     margin-bottom: 1rem;
   }
-
   .font-option {
     display: flex;
     align-items: center;
@@ -632,91 +502,45 @@
     cursor: pointer;
     transition: border-color 0.2s, background-color 0.2s;
   }
-
-  :global(.dark) .font-option {
-    border-color: var(--color-border-dark);
-  }
-
   .font-option:hover {
     border-color: var(--color-primary);
   }
-
-  :global(.dark) .font-option:hover {
-    border-color: var(--color-primary-light);
-  }
-
   .font-option.selected {
     border-color: var(--color-primary);
     background: rgba(44, 95, 45, 0.05);
   }
-
   :global(.dark) .font-option.selected {
     border-color: var(--color-primary-light);
     background: rgba(92, 184, 95, 0.1);
   }
-
   .font-option input[type="radio"] {
     width: 18px;
     height: 18px;
     accent-color: var(--color-primary);
   }
-
   .font-info {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
   }
-
   .font-name {
     font-size: 1.1rem;
     font-weight: 600;
     color: var(--color-text);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .font-name {
-    color: var(--color-text-dark);
-  }
-
   .font-description {
     font-size: 0.85rem;
     color: var(--color-text-muted);
     transition: color 0.3s ease;
   }
-
-  :global(.dark) .font-description {
-    color: var(--color-text-subtle-dark);
-  }
-
-  .btn-primary {
-    background: var(--color-primary);
-    color: white;
-  }
-
-  .btn-primary:hover:not(:disabled) {
-    background: var(--color-primary-hover);
-  }
-
-  :global(.dark) .btn-primary {
-    background: var(--color-primary-light);
-  }
-
-  :global(.dark) .btn-primary:hover:not(:disabled) {
-    background: var(--color-primary-light-hover);
-  }
-
   .button-row {
     display: flex;
     gap: 0.75rem;
     margin-bottom: 1rem;
   }
-
   .loading-text {
     color: var(--color-text-muted);
     font-style: italic;
-  }
-
-  :global(.dark) .loading-text {
-    color: var(--color-text-subtle-dark);
   }
 </style>

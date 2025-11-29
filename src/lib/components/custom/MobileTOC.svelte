@@ -131,14 +131,12 @@
 		right: 1rem;
 		z-index: 1000;
 	}
-
 	/* Show only on mobile (tablet and desktop have sidebar TOC) */
 	@media (max-width: 768px) {
 		.mobile-toc-wrapper {
 			display: block;
 		}
 	}
-
 	.toc-button {
 		width: 44px;
 		height: 44px;
@@ -153,15 +151,12 @@
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 		transition: background-color 0.2s ease, transform 0.2s ease;
 	}
-
 	.toc-button:hover {
 		background: #6a3d9a;
 	}
-
 	.toc-button:active {
 		transform: scale(0.95);
 	}
-
 	.toc-menu {
 		position: absolute;
 		bottom: 52px;
@@ -175,12 +170,10 @@
 		padding: 1rem;
 		animation: slideIn 0.2s ease;
 	}
-
 	:global(.dark) .toc-menu {
-		background: #2a2a2a;
+		background: var(--light-bg-tertiary);
 		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 	}
-
 	@keyframes slideIn {
 		from {
 			opacity: 0;
@@ -191,7 +184,6 @@
 			transform: translateY(0);
 		}
 	}
-
 	.toc-title {
 		font-size: 0.875rem;
 		font-weight: 600;
@@ -200,25 +192,21 @@
 		color: #666;
 		margin: 0 0 1rem 0;
 		padding-bottom: 0.5rem;
-		border-bottom: 1px solid #e0e0e0;
+		border-bottom: 1px solid var(--light-border-primary);
 	}
-
 	:global(.dark) .toc-title {
 		color: var(--color-text-subtle-dark);
-		border-bottom-color: #444;
+		border-bottom-color: var(--light-border-light);
 	}
-
 	.toc-list {
 		list-style: none;
 		margin: 0;
 		padding: 0;
 	}
-
 	.toc-item {
 		margin: 0;
 		padding: 0;
 	}
-
 	.toc-link {
 		display: block;
 		width: 100%;
@@ -233,69 +221,51 @@
 		font-family: inherit;
 		line-height: 1.4;
 	}
-
-	:global(.dark) .toc-link {
-		color: var(--color-text-subtle-dark);
-	}
-
 	.toc-link:hover {
 		color: #7c4dab;
 	}
-
 	:global(.dark) .toc-link:hover {
 		color: #a87ddb;
 	}
-
 	.toc-item.active .toc-link {
 		color: #7c4dab;
 		font-weight: 600;
 	}
-
 	:global(.dark) .toc-item.active .toc-link {
 		color: #a87ddb;
 	}
-
 	/* Indentation based on header level */
 	.level-1 .toc-link {
 		padding-left: 0;
 		font-weight: 600;
 	}
-
 	.level-2 .toc-link {
 		padding-left: 0;
 	}
-
 	.level-3 .toc-link {
 		padding-left: 1rem;
 	}
-
 	.level-4 .toc-link {
 		padding-left: 2rem;
 	}
-
 	.level-5 .toc-link {
 		padding-left: 3rem;
 	}
-
 	.level-6 .toc-link {
 		padding-left: 4rem;
 	}
-
 	/* Scrollbar styling */
 	.toc-menu::-webkit-scrollbar {
 		width: 4px;
 	}
-
 	.toc-menu::-webkit-scrollbar-track {
 		background: transparent;
 	}
-
 	.toc-menu::-webkit-scrollbar-thumb {
-		background: #ccc;
+		background: var(--light-text-secondary);
 		border-radius: 2px;
 	}
-
 	:global(.dark) .toc-menu::-webkit-scrollbar-thumb {
-		background: #555;
+		background: var(--light-text-secondary);
 	}
 </style>

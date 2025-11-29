@@ -1,4 +1,7 @@
 <script>
+	import { browser } from '$app/environment';
+	import { onMount } from 'svelte';
+
 	let {
 		post = null,
 		slug = '',
@@ -9,6 +12,15 @@
 
 	let contentRef = $state(null);
 	let isOverflowing = $state(false);
+	let DOMPurify = $state(null);
+
+	// Load DOMPurify only in browser
+	onMount(async () => {
+		if (browser) {
+			const module = await import('dompurify');
+			DOMPurify = module.default;
+		}
+	});
 
 	// Determine the link URL
 	let linkUrl = $derived(href || (post?.slug ? `/blog/${post.slug}` : slug ? `/blog/${slug}` : '#'));
@@ -19,8 +31,24 @@
 
 		// Strip HTML tags and get plain text
 		const tempDiv = typeof document !== 'undefined' ? document.createElement('div') : null;
-		if (tempDiv) {
-			tempDiv.innerHTML = post.content;
+		if (tempDiv && DOMPurify) {
+			// Sanitize HTML before setting innerHTML to prevent XSS
+			const sanitizedContent = DOMPurify.sanitize(post.content, {
+				ALLOWED_TAGS: [
+					'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+					'p', 'a', 'ul', 'ol', 'li', 'blockquote',
+					'code', 'pre', 'strong', 'em', 'img',
+					'table', 'thead', 'tbody', 'tr', 'th', 'td',
+					'br', 'hr', 'div', 'span', 'sup', 'sub',
+					'del', 'ins'
+				],
+				ALLOWED_ATTR: [
+					'href', 'src', 'alt', 'title', 'class', 'id',
+					'data-anchor', 'data-language', 'data-line-numbers'
+				],
+				ALLOW_DATA_ATTR: true
+			});
+			tempDiv.innerHTML = sanitizedContent;
 			const text = tempDiv.textContent || tempDiv.innerText || '';
 			// Get first few sentences/lines
 			const lines = text.split(/\n+/).filter(line => line.trim());
@@ -97,38 +125,24 @@
 	.internals-post-viewer {
 		position: relative;
 		display: block;
-		border: 1px solid #e0e0e0;
+		border: 1px solid var(--viewer-border);
 		border-radius: 12px;
 		padding: 1.25rem;
-		background: #fafafa;
+		background: var(--viewer-bg);
 		text-decoration: none;
 		transition: all 0.2s ease;
 		overflow: hidden;
 	}
 
-	:global(.dark) .internals-post-viewer {
-		border-color: #3a3a3a;
-		background: #1a1a1a;
-	}
-
 	.internals-post-viewer:hover {
 		border-color: var(--color-primary);
-		box-shadow: 0 4px 12px rgba(44, 95, 45, 0.15);
+		box-shadow: 0 4px 12px var(--viewer-hover-shadow);
 		transform: translateY(-2px);
-	}
-
-	:global(.dark) .internals-post-viewer:hover {
-		border-color: var(--color-primary-light);
-		box-shadow: 0 4px 12px rgba(92, 184, 95, 0.2);
 	}
 
 	.internals-post-viewer:focus {
 		outline: 2px solid var(--color-primary);
 		outline-offset: 2px;
-	}
-
-	:global(.dark) .internals-post-viewer:focus {
-		outline-color: var(--color-primary-light);
 	}
 
 	.viewer-header {
@@ -148,27 +162,15 @@
 		transition: color 0.2s ease;
 	}
 
-	:global(.dark) .viewer-title {
-		color: var(--color-primary-light);
-	}
-
 	.internals-post-viewer:hover .viewer-title {
 		color: var(--color-primary-hover);
-	}
-
-	:global(.dark) .internals-post-viewer:hover .viewer-title {
-		color: var(--color-primary-light-hover);
 	}
 
 	.viewer-date {
 		flex-shrink: 0;
 		font-size: 0.8rem;
-		color: #888;
+		color: var(--viewer-date-text);
 		white-space: nowrap;
-	}
-
-	:global(.dark) .viewer-date {
-		color: #999;
 	}
 
 	.viewer-content {
@@ -176,13 +178,9 @@
 		max-height: 5.5rem;
 		overflow: hidden;
 		line-height: 1.6;
-		color: #555;
+		color: var(--viewer-content-text);
 		font-size: 0.95rem;
 		transition: max-height 0.3s ease;
-	}
-
-	:global(.dark) .viewer-content {
-		color: #bbb;
 	}
 
 	.viewer-content.expanded {
@@ -206,12 +204,8 @@
 		left: 0;
 		right: 0;
 		height: 2rem;
-		background: linear-gradient(transparent, #fafafa);
+		background: linear-gradient(transparent, var(--viewer-bg));
 		pointer-events: none;
-	}
-
-	:global(.dark) .viewer-fade {
-		background: linear-gradient(transparent, #1a1a1a);
 	}
 
 	.viewer-footer {
@@ -220,11 +214,7 @@
 		align-items: center;
 		margin-top: 1rem;
 		padding-top: 0.75rem;
-		border-top: 1px solid #e8e8e8;
-	}
-
-	:global(.dark) .viewer-footer {
-		border-top-color: #333;
+		border-top: 1px solid var(--viewer-footer-border);
 	}
 
 	.read-more {
@@ -235,10 +225,6 @@
 		font-weight: 500;
 		color: var(--color-primary);
 		transition: color 0.2s ease;
-	}
-
-	:global(.dark) .read-more {
-		color: var(--color-primary-light);
 	}
 
 	.arrow-icon {
@@ -258,30 +244,20 @@
 	.tag {
 		padding: 0.2rem 0.5rem;
 		font-size: 0.7rem;
-		background: #e8f5e9;
+		background: var(--viewer-tag-bg);
 		color: var(--color-primary);
 		border-radius: 4px;
 		text-transform: lowercase;
-	}
-
-	:global(.dark) .tag {
-		background: #1f3a1f;
-		color: var(--color-primary-light);
 	}
 
 	.viewer-caption {
 		margin-top: 1.25rem;
 		padding-top: 0.75rem;
 		font-size: 0.8rem;
-		color: #777;
+		color: var(--viewer-caption-text);
 		font-style: italic;
 		text-align: center;
-		border-top: 1px dashed #ddd;
-	}
-
-	:global(.dark) .viewer-caption {
-		color: #888;
-		border-top-color: #444;
+		border-top: 1px dashed var(--viewer-caption-border);
 	}
 
 	@media (max-width: 480px) {

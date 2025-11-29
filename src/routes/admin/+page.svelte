@@ -1,4 +1,6 @@
 <script>
+  import { Card, Skeleton } from "$lib/components/ui";
+
   let { data } = $props();
 
   let healthStatus = $state(null);
@@ -21,206 +23,105 @@
   });
 </script>
 
-<div class="dashboard">
-  <header class="dashboard-header">
-    <h1>Dashboard</h1>
-    <p class="welcome">Welcome back, {data.siteConfig?.owner?.name || 'Admin'}!</p>
+<div class="max-w-screen-xl">
+  <header class="mb-8">
+    <h1 class="m-0 mb-2 text-3xl text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-colors">Dashboard</h1>
+    <p class="m-0 text-[var(--color-text-muted)] dark:text-[var(--color-text-subtle-dark)] text-lg transition-colors">Welcome back, {data.siteConfig?.owner?.name || 'Admin'}!</p>
   </header>
 
-  <div class="stats-grid">
-    <div class="stat-card">
-      <h3>System Status</h3>
+  <div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 mb-8">
+    <Card title="System Status">
       {#if loading}
-        <p class="stat-value loading">Loading...</p>
+        <Skeleton class="h-8 w-24" />
       {:else if healthStatus?.status === 'healthy'}
         <p class="stat-value healthy">Healthy</p>
       {:else}
         <p class="stat-value error">Error</p>
       {/if}
-    </div>
+    </Card>
 
-    <div class="stat-card">
-      <h3>GitHub Token</h3>
+    <Card title="GitHub Token">
       {#if loading}
-        <p class="stat-value loading">...</p>
+        <Skeleton class="h-8 w-24" />
       {:else}
         <p class="stat-value" class:healthy={healthStatus?.github_token_configured} class:error={!healthStatus?.github_token_configured}>
           {healthStatus?.github_token_configured ? 'Configured' : 'Missing'}
         </p>
       {/if}
-    </div>
+    </Card>
 
-    <div class="stat-card">
-      <h3>KV Cache</h3>
+    <Card title="KV Cache">
       {#if loading}
-        <p class="stat-value loading">...</p>
+        <Skeleton class="h-8 w-24" />
       {:else}
         <p class="stat-value" class:healthy={healthStatus?.kv_configured} class:error={!healthStatus?.kv_configured}>
           {healthStatus?.kv_configured ? 'Connected' : 'Missing'}
         </p>
       {/if}
-    </div>
+    </Card>
 
-    <div class="stat-card">
-      <h3>D1 Database</h3>
+    <Card title="D1 Database">
       {#if loading}
-        <p class="stat-value loading">...</p>
+        <Skeleton class="h-8 w-24" />
       {:else}
         <p class="stat-value" class:healthy={healthStatus?.d1_configured} class:error={!healthStatus?.d1_configured}>
           {healthStatus?.d1_configured ? 'Connected' : 'Missing'}
         </p>
       {/if}
-    </div>
+    </Card>
   </div>
 
-  <section class="quick-actions">
-    <h2>Quick Actions</h2>
-    <div class="action-grid">
+  <section class="mt-8">
+    <h2 class="m-0 mb-4 text-xl text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-colors">Quick Actions</h2>
+    <div class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
       <a href="/admin/blog" class="action-card">
-        <span class="action-icon">&#x1F4DD;</span>
-        <span class="action-label">Manage Blog Posts</span>
+        <span class="text-3xl">&#x1F4DD;</span>
+        <span class="font-medium text-center">Manage Blog Posts</span>
       </a>
       <a href="/admin/recipes" class="action-card">
-        <span class="action-icon">&#x1F373;</span>
-        <span class="action-label">Manage Recipes</span>
+        <span class="text-3xl">&#x1F373;</span>
+        <span class="font-medium text-center">Manage Recipes</span>
       </a>
       <a href="/admin/images" class="action-card">
-        <span class="action-icon">&#x1F4F7;</span>
-        <span class="action-label">Upload Images</span>
+        <span class="text-3xl">&#x1F4F7;</span>
+        <span class="font-medium text-center">Upload Images</span>
       </a>
       <a href="/admin/analytics" class="action-card">
-        <span class="action-icon">&#x1F4CA;</span>
-        <span class="action-label">View Analytics</span>
+        <span class="text-3xl">&#x1F4CA;</span>
+        <span class="font-medium text-center">View Analytics</span>
       </a>
       <a href="/admin/timeline" class="action-card">
-        <span class="action-icon">&#x1F4C5;</span>
-        <span class="action-label">Timeline</span>
+        <span class="text-3xl">&#x1F4C5;</span>
+        <span class="font-medium text-center">Timeline</span>
       </a>
       <a href="/admin/logs" class="action-card">
-        <span class="action-icon">&#x1F5A5;</span>
-        <span class="action-label">System Console</span>
+        <span class="text-3xl">&#x1F5A5;</span>
+        <span class="font-medium text-center">System Console</span>
       </a>
       <a href="/admin/settings" class="action-card">
-        <span class="action-icon">&#x2699;</span>
-        <span class="action-label">Settings</span>
+        <span class="text-3xl">&#x2699;</span>
+        <span class="font-medium text-center">Settings</span>
       </a>
       <a href="/" class="action-card" target="_blank">
-        <span class="action-icon">&#x1F310;</span>
-        <span class="action-label">View Site</span>
+        <span class="text-3xl">&#x1F310;</span>
+        <span class="font-medium text-center">View Site</span>
       </a>
     </div>
   </section>
 </div>
 
 <style>
-  .dashboard {
-    max-width: 1200px;
-  }
-
-  .dashboard-header {
-    margin-bottom: 2rem;
-  }
-
-  .dashboard-header h1 {
-    margin: 0 0 0.5rem 0;
-    font-size: 2rem;
-    color: var(--color-text);
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .dashboard-header h1 {
-    color: var(--color-text-dark);
-  }
-
-  .welcome {
-    margin: 0;
-    color: var(--color-text-muted);
-    font-size: 1.1rem;
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .welcome {
-    color: var(--color-text-subtle-dark);
-  }
-
-  .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-
-  .stat-card {
-    background: var(--mobile-menu-bg);
-    padding: 1.5rem;
-    border-radius: var(--border-radius-standard);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid var(--color-border);
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-  }
-
-  :global(.dark) .stat-card {
-    background: var(--color-bg-tertiary-dark);
-    border-color: var(--color-border-dark);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  }
-
-  .stat-card h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 0.9rem;
-    color: var(--color-text-muted);
-    font-weight: 500;
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .stat-card h3 {
-    color: var(--color-text-subtle-dark);
-  }
-
   .stat-value {
     margin: 0;
     font-size: 1.25rem;
     font-weight: 600;
   }
-
   .stat-value.healthy {
-    color: #28a745;
+    color: var(--accent-success);
   }
-
   .stat-value.error {
-    color: #d73a49;
+    color: var(--accent-danger);
   }
-
-  .stat-value.loading {
-    color: var(--color-text-muted);
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .stat-value.loading {
-    color: var(--color-text-subtle-dark);
-  }
-
-  .quick-actions {
-    margin-top: 2rem;
-  }
-
-  .quick-actions h2 {
-    margin: 0 0 1rem 0;
-    font-size: 1.25rem;
-    color: var(--color-text);
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .quick-actions h2 {
-    color: var(--color-text-dark);
-  }
-
-  .action-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 1rem;
-  }
-
   .action-card {
     background: var(--mobile-menu-bg);
     padding: 1.5rem;
@@ -235,28 +136,11 @@
     gap: 0.75rem;
     transition: transform 0.2s, box-shadow 0.2s, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
-
-  :global(.dark) .action-card {
-    background: var(--color-bg-tertiary-dark);
-    color: var(--color-text-dark);
-    border-color: var(--color-border-dark);
-  }
-
   .action-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
-
   :global(.dark) .action-card:hover {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-  }
-
-  .action-icon {
-    font-size: 2rem;
-  }
-
-  .action-label {
-    font-weight: 500;
-    text-align: center;
   }
 </style>

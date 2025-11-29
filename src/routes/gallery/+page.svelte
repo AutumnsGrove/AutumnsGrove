@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import ZoomableImage from '$lib/components/ZoomableImage.svelte';
+	import ZoomableImage from '$lib/components/gallery/ZoomableImage.svelte';
 
 	let { data } = $props();
 
@@ -197,44 +197,36 @@
 		margin-left: calc(-50vw + 50%);
 		padding: 0 1rem;
 	}
-
 	.gallery-header {
 		text-align: center;
 		padding: 2rem 1rem;
 		max-width: 1200px;
 		margin: 0 auto;
 	}
-
 	.gallery-header h1 {
 		font-size: 2.5rem;
 		margin: 0 0 0.5rem 0;
-		color: #333;
+		color: var(--light-border-secondary);
 	}
-
 	:global(.dark) .gallery-header h1 {
-		color: #f0f0f0;
+		color: var(--light-text-primary);
 	}
-
 	.image-count {
 		color: #666;
 		margin: 0;
 		font-size: 1rem;
 	}
-
 	:global(.dark) .image-count {
 		color: #b8b8b8;
 	}
-
 	.empty-state {
 		text-align: center;
 		padding: 4rem 2rem;
 		color: #666;
 	}
-
 	:global(.dark) .empty-state {
 		color: #b8b8b8;
 	}
-
 	/* Mood Board Grid - Desktop */
 	.mood-board {
 		display: grid;
@@ -245,57 +237,47 @@
 		max-width: 1800px;
 		margin: 0 auto;
 	}
-
 	.mood-item {
 		position: relative;
 		overflow: hidden;
 		cursor: pointer;
-		background: #f0f0f0;
+		background: var(--light-text-primary);
 		border: none;
 		padding: 0;
 		border-radius: 4px;
 		transition: transform 0.2s ease, box-shadow 0.2s ease;
 	}
-
 	:global(.dark) .mood-item {
-		background: #2a2a2a;
+		background: var(--light-bg-tertiary);
 	}
-
 	.mood-item:hover {
 		transform: scale(1.02);
 		box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 		z-index: 1;
 	}
-
 	:global(.dark) .mood-item:hover {
 		box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
 	}
-
 	.mood-item img {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
 		transition: transform 0.3s ease;
 	}
-
 	.mood-item:hover img {
 		transform: scale(1.05);
 	}
-
 	/* Special sizes for mood board variety */
 	.mood-item.wide {
 		grid-column: span 2;
 	}
-
 	.mood-item.tall {
 		grid-row: span 2;
 	}
-
 	.mood-item.large {
 		grid-column: span 2;
 		grid-row: span 2;
 	}
-
 	/* Tablet view - 3 columns */
 	@media (max-width: 1024px) {
 		.mood-board {
@@ -303,58 +285,47 @@
 			grid-auto-rows: 180px;
 			gap: 6px;
 		}
-
 		.gallery-header h1 {
 			font-size: 2rem;
 		}
-
 		/* Adjust large items for smaller grid */
 		.mood-item.large {
 			grid-column: span 2;
 			grid-row: span 2;
 		}
 	}
-
 	/* Mobile view - 2 columns */
 	@media (max-width: 640px) {
 		.gallery-page {
 			padding: 0 0.5rem;
 		}
-
 		.gallery-header {
 			padding: 1.5rem 1rem;
 		}
-
 		.gallery-header h1 {
 			font-size: 1.75rem;
 		}
-
 		.mood-board {
 			grid-template-columns: repeat(2, 1fr);
 			grid-auto-rows: 150px;
 			gap: 4px;
 			padding: 0 0.5rem 1.5rem;
 		}
-
 		.mood-item {
 			border-radius: 2px;
 		}
-
 		/* On mobile, limit special sizes */
 		.mood-item.wide {
 			grid-column: span 2;
 		}
-
 		.mood-item.tall {
 			grid-row: span 2;
 		}
-
 		.mood-item.large {
 			grid-column: span 2;
 			grid-row: span 1;
 		}
 	}
-
 	/* Load sentinel / infinite scroll */
 	.load-sentinel {
 		display: flex;
@@ -364,31 +335,26 @@
 		padding: 2rem;
 		color: #666;
 	}
-
 	:global(.dark) .load-sentinel {
 		color: #b8b8b8;
 	}
-
 	.loading-spinner {
 		width: 20px;
 		height: 20px;
-		border: 2px solid #e0e0e0;
+		border: 2px solid var(--light-border-primary);
 		border-top-color: #2c5f2d;
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
-
 	:global(.dark) .loading-spinner {
-		border-color: #444;
-		border-top-color: #5cb85f;
+		border-color: var(--light-border-light);
+		border-top-color: var(--accent-success);
 	}
-
 	@keyframes spin {
 		to {
 			transform: rotate(360deg);
 		}
 	}
-
 	/* Lightbox Styles */
 	.gallery-lightbox {
 		position: fixed;
@@ -403,7 +369,6 @@
 		z-index: 9999;
 		cursor: pointer;
 	}
-
 	.lightbox-close {
 		position: absolute;
 		top: 1rem;
@@ -421,16 +386,13 @@
 		transition: background 0.2s;
 		z-index: 10001;
 	}
-
 	.lightbox-close:hover {
 		background: rgba(255, 255, 255, 0.2);
 	}
-
 	.lightbox-close svg {
 		width: 24px;
 		height: 24px;
 	}
-
 	.lightbox-nav {
 		position: absolute;
 		top: 50%;
@@ -448,25 +410,20 @@
 		transition: background 0.2s, transform 0.2s;
 		z-index: 10001;
 	}
-
 	.lightbox-nav:hover {
 		background: rgba(255, 255, 255, 0.2);
 		transform: translateY(-50%) scale(1.1);
 	}
-
 	.lightbox-nav.prev {
 		left: 1rem;
 	}
-
 	.lightbox-nav.next {
 		right: 1rem;
 	}
-
 	.lightbox-nav svg {
 		width: 28px;
 		height: 28px;
 	}
-
 	.lightbox-content {
 		max-width: 90vw;
 		max-height: 85vh;
@@ -474,14 +431,12 @@
 		align-items: center;
 		justify-content: center;
 	}
-
 	:global(.lightbox-content .lightbox-image) {
 		max-width: 90vw;
 		max-height: 85vh;
 		object-fit: contain;
 		border-radius: 4px;
 	}
-
 	.lightbox-counter {
 		position: absolute;
 		bottom: 1.5rem;
@@ -493,7 +448,6 @@
 		padding: 0.5rem 1rem;
 		border-radius: 20px;
 	}
-
 	/* Mobile lightbox adjustments */
 	@media (max-width: 640px) {
 		.lightbox-close {
@@ -502,30 +456,24 @@
 			width: 40px;
 			height: 40px;
 		}
-
 		.lightbox-close svg {
 			width: 20px;
 			height: 20px;
 		}
-
 		.lightbox-nav {
 			width: 44px;
 			height: 44px;
 		}
-
 		.lightbox-nav.prev {
 			left: 0.5rem;
 		}
-
 		.lightbox-nav.next {
 			right: 0.5rem;
 		}
-
 		.lightbox-nav svg {
 			width: 24px;
 			height: 24px;
 		}
-
 		.lightbox-counter {
 			bottom: 1rem;
 			font-size: 0.85rem;
