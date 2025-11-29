@@ -1,5 +1,6 @@
 <script>
 	import InternalsPostViewer from '$lib/components/custom/InternalsPostViewer.svelte';
+	import Button from '$lib/components/ui/Button.svelte';
 
 	let { data } = $props();
 </script>
@@ -14,7 +15,7 @@
 		<h1>{data.hero.title}</h1>
 		<p class="subtitle">{data.hero.subtitle}</p>
 		{#if data.hero.cta}
-			<a href={data.hero.cta.link} class="cta-button">{data.hero.cta.text}</a>
+			<Button href={data.hero.cta.link} variant="default" size="lg" class="cta-button">{data.hero.cta.text}</Button>
 		{/if}
 	</div>
 {/if}
@@ -109,31 +110,7 @@
 	}
 
 	.cta-button {
-		display: inline-block;
-		padding: 0.75rem 2rem;
-		background: var(--color-primary);
-		color: white;
-		text-decoration: none;
-		border-radius: 20px;
-		font-weight: 600;
-		transition: background 0.2s, transform 0.2s;
-	}
-
-	:global(.dark) .cta-button {
-		background: var(--color-primary-light);
-		color: var(--color-bg-secondary-dark);
-	}
-
-	.cta-button:hover {
-		background: var(--color-primary-hover);
-		transform: translateY(-2px) scale(1.05);
-		filter: brightness(1.1);
-		box-shadow: 0 4px 12px rgba(44, 95, 45, 0.3);
-	}
-
-	:global(.dark) .cta-button:hover {
-		background: var(--color-primary-light-hover);
-		box-shadow: 0 4px 12px rgba(92, 184, 95, 0.4);
+		margin-top: 0.5rem;
 	}
 
 	.intro {

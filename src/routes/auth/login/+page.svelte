@@ -1,5 +1,7 @@
 <script>
   import { untrack } from 'svelte';
+  import Button from '$lib/components/ui/Button.svelte';
+  import Input from '$lib/components/ui/Input.svelte';
 
   let email = $state('');
   let code = $state('');
@@ -122,7 +124,7 @@
 
     {#if step === 'email'}
       <form onsubmit={handleSendCode}>
-        <input
+        <Input
           type="email"
           bind:value={email}
           placeholder="you@example.com"
@@ -131,17 +133,17 @@
           autocomplete="email"
           autocorrect="on"
         />
-        <button type="submit" class="login-btn" disabled={loading}>
+        <Button type="submit" variant="default" size="lg" class="login-btn" disabled={loading}>
           {#if loading}
             Sending...
           {:else}
             Send Login Code
           {/if}
-        </button>
+        </Button>
       </form>
     {:else}
       <form onsubmit={handleVerifyCode}>
-        <input
+        <Input
           type="text"
           bind:value={code}
           placeholder="123456"
@@ -151,16 +153,16 @@
           inputmode="numeric"
           maxlength="6"
         />
-        <button type="submit" class="login-btn" disabled={loading}>
+        <Button type="submit" variant="default" size="lg" class="login-btn" disabled={loading}>
           {#if loading}
             Verifying...
           {:else}
             Verify Code
           {/if}
-        </button>
-        <button type="button" class="back-btn" onclick={handleBack} disabled={loading}>
+        </Button>
+        <Button type="button" variant="ghost" class="back-btn" onclick={handleBack} disabled={loading}>
           Use a different email
-        </button>
+        </Button>
       </form>
     {/if}
 

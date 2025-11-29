@@ -5,6 +5,8 @@
 	import { fade } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import Button from '$lib/components/ui/Button.svelte';
+	import Input from '$lib/components/ui/Input.svelte';
 
 	let { children, data } = $props();
 
@@ -228,8 +230,8 @@
 				<div class="search-wrapper">
 					{#if searchExpanded}
 						<form class="search-form" onsubmit={handleSearchSubmit}>
-							<input
-								bind:this={searchInputRef}
+							<Input
+								bind:ref={searchInputRef}
 								type="text"
 								placeholder="Search posts..."
 								bind:value={searchQuery}
@@ -240,10 +242,12 @@
 							/>
 						</form>
 					{/if}
-					<button
-						class="search-btn"
+					<Button
+						variant="ghost"
+						size="icon"
 						onclick={toggleSearch}
 						aria-label={searchExpanded ? 'Close search' : 'Open search'}
+						class="search-btn"
 					>
 						{#if searchExpanded}
 							<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -256,15 +260,16 @@
 								<path d="m21 21-4.3-4.3"></path>
 							</svg>
 						{/if}
-					</button>
+					</Button>
 				</div>
 			</div>
 
 			<!-- Mobile Hamburger Button -->
-			<button
-				bind:this={hamburgerBtnRef}
-				class="hamburger-btn"
-				class:open={mobileMenuOpen}
+			<Button
+				bind:ref={hamburgerBtnRef}
+				variant="ghost"
+				size="icon"
+				class={`hamburger-btn ${mobileMenuOpen ? 'open' : ''}`}
 				onclick={toggleMobileMenu}
 				aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
 				aria-expanded={mobileMenuOpen}
@@ -275,7 +280,7 @@
 				<span class="bar"></span>
 				<span class="bar"></span>
 			</span>
-			</button>
+			</Button>
 		</nav>
 
 		<!-- Mobile Menu Overlay -->
@@ -293,19 +298,19 @@
 			aria-label="Mobile navigation"
 		>
 			<form class="mobile-search-form" onsubmit={handleSearchSubmit}>
-				<input
+				<Input
 					type="text"
 					placeholder="Search posts..."
 					bind:value={searchQuery}
 					class="mobile-search-input"
 					required
 				/>
-				<button type="submit" class="mobile-search-btn" aria-label="Search">
+				<Button type="submit" variant="default" size="icon" class="mobile-search-btn" aria-label="Search">
 					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 						<circle cx="11" cy="11" r="8"></circle>
 						<path d="m21 21-4.3-4.3"></path>
 					</svg>
-				</button>
+				</Button>
 			</form>
 			<a href="/" class:active={$page.url.pathname === '/'} onclick={closeMobileMenu}>Home</a>
 			<a href="/blog" class:active={$page.url.pathname.startsWith('/blog')} onclick={closeMobileMenu}>Blog</a>
@@ -340,7 +345,7 @@
 					</svg>
 				</a>
 			{/if}
-			<button class="theme-toggle" onclick={toggleTheme} aria-label="Toggle dark mode">
+			<Button variant="ghost" size="icon" class="theme-toggle" onclick={toggleTheme} aria-label="Toggle dark mode">
 				{#if darkMode}
 					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
 						<circle cx="12" cy="12" r="5"></circle>
@@ -358,7 +363,7 @@
 						<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
 					</svg>
 				{/if}
-			</button>
+			</Button>
 		</div>
 	</footer>
 </div>
