@@ -621,7 +621,7 @@ Commits:     ████████ AutumnsGrove (150)
 
 ### HIGH PRIORITY: Live Document Modes (Multi-Mode Editing Experience)
 
-**Status:** Planned - The Next Evolution of the Editor ✨
+**Status:** Planned - The Next Evolution of the Editor
 
 **Goal:** Transform the markdown editor into a fluid, multi-mode writing experience that adapts to different workflows. Think Notion meets Obsidian meets your terminal-grove aesthetic.
 
@@ -634,9 +634,9 @@ Simple toggle between editing and reading:
 ```
 Split View → Press Cmd+Shift+P → Full Preview
 ┌───────┬───────┐              ┌──────────────────┐
-│ Edit  │ View  │     →        │   📖 Preview     │
+│ Edit  │ View  │     →        │   Preview        │
 └───────┴───────┘              │  (reading mode)  │
-                               │  [✏️ Edit] button │
+                               │  [Edit] button   │
                                └──────────────────┘
 ```
 
@@ -662,13 +662,13 @@ Split View → Press Cmd+Shift+P → Full Preview
 Click-to-edit blocks that auto-render:
 ```
 ┌─────────────────────────────────┐
-│  # Welcome to AutumnsGrove      │ ← Rendered heading (click to edit)
+│  # Welcome to AutumnsGrove      │  (click to edit)
 │                                 │
-│  This is a paragraph of text.   │ ← Rendered text (click to edit)
+│  This is a paragraph of text.   │  (click to edit)
 │  You can click anywhere to      │
 │  start editing that block.      │
 │                                 │
-│  [Type / for commands]          │ ← Slash command hint
+│  [Type / for commands]          │
 └─────────────────────────────────┘
 ```
 
@@ -724,14 +724,14 @@ Add preview toggle to existing Zen Mode:
 ```
 Zen Mode (Cmd+Shift+Enter)
 ┌────────────────────────────────┐
-│  🌲 Fullscreen Editor          │
+│  Fullscreen Editor             │
 │  (typewriter, faded toolbar)   │
 │                                │
 │  Press P → Toggle Preview      │
 └────────────────────────────────┘
          ↓ Press P
 ┌────────────────────────────────┐
-│  🌲 Fullscreen Preview         │
+│  Fullscreen Preview            │
 │  (rendered, reading mode)      │
 │                                │
 │  Press P → Back to Editor      │
