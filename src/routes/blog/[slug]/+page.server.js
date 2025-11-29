@@ -1,5 +1,6 @@
 import { getPostBySlug, processAnchorTags } from '$lib/utils/markdown.js';
 import { error } from '@sveltejs/kit';
+import { marked } from 'marked';
 
 // Disable prerendering - D1 posts are fetched dynamically at runtime
 export const prerender = false;
@@ -40,6 +41,16 @@ export async function load({ params, platform }) {
 					if (post.gutter_content) {
 						try {
 							gutterContent = JSON.parse(post.gutter_content);
+							// Process gutter items: convert markdown to HTML for comment/markdown items
+							gutterContent = gutterContent.map(item => {
+								if ((item.type === 'comment' || item.type === 'markdown') && item.content) {
+									return {
+										...item,
+										content: marked.parse(item.content)
+									};
+								}
+								return item;
+							});
 						} catch (e) {
 							console.warn('Failed to parse gutter_content:', e);
 							gutterContent = [];
