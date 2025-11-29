@@ -6,7 +6,80 @@ import { marked } from "marked";
 export const prerender = false;
 
 export async function load({ platform }) {
-  const page = getHomePage();
+  let page = null;
+
+  // Try D1 first for the home page
+  if (platform?.env?.POSTS_DB) {
+    try {
+      const pageData = await platform.env.POSTS_DB.prepare(
+        `SELECT slug, title, description, markdown_content, html_content, hero, gutter_content, font
+         FROM pages
+         WHERE slug = ?`
+      ).bind('home').first();
+
+      if (pageData) {
+        // Parse hero JSON
+        let hero = null;
+        if (pageData.hero) {
+          try {
+            hero = JSON.parse(pageData.hero);
+          } catch (e) {
+            console.warn('Failed to parse hero for home page:', e);
+            hero = null;
+          }
+        }
+
+        // Generate HTML from markdown if not stored
+        let htmlContent = pageData.html_content;
+        if (!htmlContent && pageData.markdown_content) {
+          htmlContent = marked.parse(pageData.markdown_content);
+        }
+
+        // Extract headers from HTML for table of contents
+        const headers = extractHeadersFromHtml(htmlContent || '');
+
+        // Safe JSON parsing for gutter content
+        let gutterContent = [];
+        if (pageData.gutter_content) {
+          try {
+            gutterContent = JSON.parse(pageData.gutter_content);
+            // Process gutter items: convert markdown to HTML for comment/markdown items
+            gutterContent = gutterContent.map(item => {
+              if ((item.type === 'comment' || item.type === 'markdown') && item.content) {
+                return {
+                  ...item,
+                  content: marked.parse(item.content)
+                };
+              }
+              return item;
+            });
+          } catch (e) {
+            console.warn('Failed to parse gutter_content for home page:', e);
+            gutterContent = [];
+          }
+        }
+
+        page = {
+          slug: pageData.slug,
+          title: pageData.title,
+          description: pageData.description || '',
+          hero,
+          content: htmlContent,
+          headers,
+          gutterContent,
+          font: pageData.font || 'default'
+        };
+      }
+    } catch (err) {
+      console.error('D1 fetch error for home page:', err);
+      // Fall through to filesystem fallback
+    }
+  }
+
+  // If no D1 page, fall back to filesystem (for local dev or if D1 is empty)
+  if (!page) {
+    page = getHomePage();
+  }
 
   if (!page) {
     throw error(404, "Home page not found");
