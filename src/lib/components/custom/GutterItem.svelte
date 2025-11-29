@@ -35,9 +35,10 @@
 			{@html item.content}
 		</div>
 	{:else if item.type === 'photo' || item.type === 'image'}
+		{@const imageSrc = item.src || item.url || item.file}
 		<figure class="gutter-photo">
-			<button class="image-button" onclick={() => openLightbox(item.src, item.caption || 'Gutter image', item.caption || '')}>
-				<img src={item.src} alt={item.caption || 'Gutter image'} />
+			<button class="image-button" onclick={() => openLightbox(imageSrc, item.caption || 'Gutter image', item.caption || '')}>
+				<img src={imageSrc} alt={item.caption || 'Gutter image'} />
 			</button>
 			{#if item.caption}
 				<figcaption>{item.caption}</figcaption>

@@ -125,18 +125,18 @@
 
 	/* Admin actions */
 	--admin-indicator: #5cb85f;
-	--admin-link-text: #999;
+	--admin-link-text: #a8a8a8;
 	--admin-link-hover-bg: rgba(255, 255, 255, 0.05);
 
 	/* Post viewer */
 	--viewer-border: #3a3a3a;
 	--viewer-bg: #1a1a1a;
 	--viewer-hover-shadow: rgba(92, 184, 95, 0.2);
-	--viewer-date-text: #999;
-	--viewer-content-text: #bbb;
+	--viewer-date-text: #a8a8a8;
+	--viewer-content-text: #c8c8c8;
 	--viewer-footer-border: #333;
 	--viewer-tag-bg: #1f3a1f;
-	--viewer-caption-text: #888;
+	--viewer-caption-text: #a0a0a0;
 	--viewer-caption-border: #444;
 
 	/* Dark mode backgrounds and text */
@@ -144,12 +144,12 @@
 	--light-bg-secondary: #252525;
 	--light-bg-tertiary: #2a2a2a;
 	--light-bg-hover: rgba(255, 255, 255, 0.05);
-	--light-text-primary: #f0f0f0;
-	--light-text-secondary: #ccc;
-	--light-text-tertiary: #bbb;
-	--light-text-muted: #999;
-	--light-text-light: #888;
-	--light-text-very-light: #eee;
+	--light-text-primary: #f5f5f5;
+	--light-text-secondary: #d4d4d4;
+	--light-text-tertiary: #c0c0c0;
+	--light-text-muted: #a8a8a8;
+	--light-text-light: #909090;
+	--light-text-very-light: #eeeeee;
 	--light-border-primary: #3a3a3a;
 	--light-border-secondary: #333;
 	--light-border-light: #444;

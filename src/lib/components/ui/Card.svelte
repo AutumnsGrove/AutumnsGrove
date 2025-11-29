@@ -50,6 +50,7 @@
 		header?: Snippet;
 		footer?: Snippet;
 		children?: Snippet;
+		[key: string]: any; // Allow any additional props to be forwarded
 	}
 
 	let {
@@ -59,7 +60,8 @@
 		class: className,
 		header,
 		footer,
-		children
+		children,
+		...restProps
 	}: Props = $props();
 
 	const cardClass = $derived(
@@ -70,7 +72,7 @@
 	);
 </script>
 
-<ShadcnCard class={cardClass}>
+<ShadcnCard class={cardClass} {...restProps}>
 	{#if header || title || description}
 		<CardHeader>
 			{#if header}
