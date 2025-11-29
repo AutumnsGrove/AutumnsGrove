@@ -619,6 +619,257 @@ Commits:     ████████ AutumnsGrove (150)
 
 ---
 
+### HIGH PRIORITY: Live Document Modes (Multi-Mode Editing Experience)
+
+**Status:** Planned - The Next Evolution of the Editor ✨
+
+**Goal:** Transform the markdown editor into a fluid, multi-mode writing experience that adapts to different workflows. Think Notion meets Obsidian meets your terminal-grove aesthetic.
+
+**The Three Modes (All Working Together):**
+
+#### Mode 1: Live Preview Toggle (GitHub-Style)
+**Keyboard:** `Cmd+Shift+P` (Preview)
+
+Simple toggle between editing and reading:
+```
+Split View → Press Cmd+Shift+P → Full Preview
+┌───────┬───────┐              ┌──────────────────┐
+│ Edit  │ View  │     →        │   📖 Preview     │
+└───────┴───────┘              │  (reading mode)  │
+                               │  [✏️ Edit] button │
+                               └──────────────────┘
+```
+
+**Implementation:**
+- [ ] Add `viewMode` state: 'split' | 'edit-only' | 'preview-only'
+- [ ] Hide editor pane when in preview-only mode
+- [ ] Expand preview to full-width (max 800px for reading)
+- [ ] Add floating "Edit Mode" button in bottom-right
+- [ ] Add to command palette (Cmd+K → "Toggle Live Preview")
+- [ ] Keyboard shortcut: Cmd+Shift+P
+
+**UX Benefits:**
+- Quick switch to distraction-free reading
+- Check formatting without split-view clutter
+- Perfect for final review before publishing
+- Smooth transition (no jarring mode change)
+
+---
+
+#### Mode 2: Notion-Style Block Editing (Live Document)
+**Keyboard:** `Cmd+Shift+L` (Live Document)
+
+Click-to-edit blocks that auto-render:
+```
+┌─────────────────────────────────┐
+│  # Welcome to AutumnsGrove      │ ← Rendered heading (click to edit)
+│                                 │
+│  This is a paragraph of text.   │ ← Rendered text (click to edit)
+│  You can click anywhere to      │
+│  start editing that block.      │
+│                                 │
+│  [Type / for commands]          │ ← Slash command hint
+└─────────────────────────────────┘
+```
+
+**Implementation:**
+- [ ] Parse markdown into "blocks" (heading, paragraph, code, list, etc.)
+- [ ] Render each block with `contenteditable` wrapper
+- [ ] Click block → shows markdown source in mini-editor
+- [ ] Type → updates block in real-time
+- [ ] Blur → re-renders markdown to HTML
+- [ ] Support slash commands (`/heading`, `/code`, etc.)
+- [ ] Toolbar appears near active block
+
+**Technical Approach:**
+```svelte
+<script>
+  let blocks = $derived(parseMarkdownToBlocks(markdown));
+  let editingBlockId = $state(null);
+
+  function handleBlockClick(blockId) {
+    editingBlockId = blockId;
+    // Show inline editor for this block
+  }
+
+  function handleBlockBlur(blockId, newContent) {
+    // Update markdown, re-render block
+    editingBlockId = null;
+  }
+</script>
+
+{#each blocks as block}
+  {#if editingBlockId === block.id}
+    <textarea bind:value={block.raw} onblur={() => handleBlockBlur(block)} />
+  {:else}
+    <div onclick={() => handleBlockClick(block.id)}>
+      {@html block.rendered}
+    </div>
+  {/if}
+{/each}
+```
+
+**UX Benefits:**
+- Wysiwyg feel with markdown simplicity
+- No mental context switch (edit in-place)
+- Perfect for quick fixes ("just change this word")
+- Feels modern and fluid
+
+---
+
+#### Mode 3: Enhanced Zen Mode with Live Preview
+**Keyboard:** `P` (while in Zen Mode)
+
+Add preview toggle to existing Zen Mode:
+```
+Zen Mode (Cmd+Shift+Enter)
+┌────────────────────────────────┐
+│  🌲 Fullscreen Editor          │
+│  (typewriter, faded toolbar)   │
+│                                │
+│  Press P → Toggle Preview      │
+└────────────────────────────────┘
+         ↓ Press P
+┌────────────────────────────────┐
+│  🌲 Fullscreen Preview         │
+│  (rendered, reading mode)      │
+│                                │
+│  Press P → Back to Editor      │
+│  Press Esc → Exit Zen          │
+└────────────────────────────────┘
+```
+
+**Implementation:**
+- [ ] Detect `P` keypress while `zenMode === true`
+- [ ] Toggle `zenPreviewMode` state
+- [ ] Swap editor/preview pane visibility
+- [ ] Maintain fullscreen, typewriter, toolbar fade
+- [ ] Add subtle indicator "Preview Mode (P to edit)"
+- [ ] Preserve Zen aesthetic (dark, minimal)
+
+**Code Snippet:**
+```svelte
+function handleZenKeydown(e) {
+  if (zenMode && e.key === 'p' && !e.metaKey && !e.ctrlKey) {
+    e.preventDefault();
+    zenPreviewMode = !zenPreviewMode;
+  }
+
+  if (e.key === 'Escape') {
+    zenMode = false;
+    zenPreviewMode = false;
+  }
+}
+```
+
+**UX Benefits:**
+- Stay in flow state (no mode exit needed)
+- Quick preview check without leaving Zen
+- Perfect for campfire sessions (write, preview, repeat)
+- Maintains focus and calm
+
+---
+
+### Implementation Plan: All Three Modes
+
+**Phase 1: Foundation (Simple Toggle) - 1-2 hours**
+- [ ] Add `viewMode` state management
+- [ ] Implement Mode 1 (Live Preview Toggle)
+- [ ] Add keyboard shortcut (Cmd+Shift+P)
+- [ ] Style full-width preview mode
+- [ ] Add floating "Edit Mode" button
+- [ ] Test with existing editor features
+
+**Phase 2: Enhanced Zen - 30 minutes**
+- [ ] Implement Mode 3 (Zen Preview Toggle)
+- [ ] Add `P` key handler to Zen Mode
+- [ ] Add mode indicator UI
+- [ ] Test Zen + Preview flow
+
+**Phase 3: Live Document (Advanced) - 3-4 hours**
+- [ ] Build markdown block parser
+- [ ] Implement click-to-edit blocks
+- [ ] Add inline mini-editor component
+- [ ] Handle block updates and re-rendering
+- [ ] Integrate slash commands with blocks
+- [ ] Test with complex markdown (lists, code, tables)
+- [ ] Polish transitions and animations
+
+**Phase 4: Polish & Integration - 1 hour**
+- [ ] Update command palette with all modes
+- [ ] Add keyboard shortcuts help panel
+- [ ] Document mode switching in status bar
+- [ ] Add smooth transitions between modes
+- [ ] Test all mode combinations
+- [ ] Update CLAUDE.md with new features
+
+**Total Estimated Time:** 6-8 hours spread across multiple sessions
+
+---
+
+### Design Mockups
+
+**Mode Switcher UI (Status Bar)**
+```
+┌─────────────────────────────────────────────┐
+│ View: [Split] [Preview] [Live Doc] [Zen]   │
+│ Ln 42, Col 18  •  1,247 words  •  ~6 min   │
+└─────────────────────────────────────────────┘
+```
+
+**Keyboard Shortcuts Summary**
+```
+Mode Switching:
+  Cmd+Shift+P    → Toggle Preview
+  Cmd+Shift+L    → Live Document Mode
+  Cmd+Shift+Enter → Zen Mode
+  P (in Zen)     → Toggle Preview in Zen
+  Esc            → Exit current mode
+```
+
+**Visual Transitions**
+- Fade between modes (200ms ease-in-out)
+- Floating button scale-in animation
+- Toolbar slide/fade for Zen
+- Block highlight on hover (Live Doc)
+
+---
+
+### Why This Rocks
+
+**For Quick Edits:**
+- Live Document mode → click, fix, done
+
+**For Deep Writing:**
+- Zen mode → immersive focus
+- P key → quick preview check
+- Back to writing, stay in flow
+
+**For Final Review:**
+- Preview toggle → reading mode
+- Full-width prose, zero distractions
+- "Edit" button when you spot issues
+
+**For Different Moods:**
+- Split view (default, balanced)
+- Preview-only (reader mode)
+- Live doc (modern, Notion-like)
+- Zen (writer mode, campfire vibes)
+
+---
+
+### Inspiration & References
+
+**Notion:** Click-to-edit blocks, slash commands
+**Obsidian:** Live preview mode, reading view
+**iA Writer:** Focus mode, reading mode toggle
+**Typora:** True WYSIWYG markdown editing
+**Your Grove Writer:** Terminal aesthetic, Zen mode, campfire sessions
+
+The goal: **Best of all worlds**, in your unique forest terminal aesthetic.
+
+---
+
 ### Content Migration Strategy
 
 #### UserContent Legacy Support (v1.0 Plan)
