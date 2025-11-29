@@ -206,6 +206,7 @@
           class="collapse-details-btn"
           onclick={toggleDetailsCollapsed}
           title={detailsCollapsed ? "Expand details" : "Collapse details"}
+          aria-expanded={!detailsCollapsed}
         >
           {#if detailsCollapsed}»{:else}«{/if}
         </button>

@@ -1260,6 +1260,7 @@
   class:dragging={isDragging}
   class:zen-mode={isZenMode}
   class:campfire-mode={campfireSession.active}
+  aria-label="Markdown editor with live preview"
   ondragenter={handleDragEnter}
   ondragover={handleDragOver}
   ondragleave={handleDragLeave}

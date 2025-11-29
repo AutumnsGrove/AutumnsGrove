@@ -60,6 +60,29 @@ export async function POST({ request, platform, locals }) {
       throw error(400, "Missing required fields: title, slug, markdown_content");
     }
 
+    // Validation constants
+    const MAX_TITLE_LENGTH = 200;
+    const MAX_DESCRIPTION_LENGTH = 500;
+    const MAX_MARKDOWN_LENGTH = 1024 * 1024;  // 1MB
+    const MAX_SLUG_LENGTH = 100;
+
+    // Validate lengths
+    if (data.title.length > MAX_TITLE_LENGTH) {
+      throw error(400, `Title too long (max ${MAX_TITLE_LENGTH} characters)`);
+    }
+
+    if (data.description && data.description.length > MAX_DESCRIPTION_LENGTH) {
+      throw error(400, `Description too long (max ${MAX_DESCRIPTION_LENGTH} characters)`);
+    }
+
+    if (data.markdown_content.length > MAX_MARKDOWN_LENGTH) {
+      throw error(400, 'Content too large (max 1MB)');
+    }
+
+    if (data.slug.length > MAX_SLUG_LENGTH) {
+      throw error(400, `Slug too long (max ${MAX_SLUG_LENGTH} characters)`);
+    }
+
     // Sanitize slug
     const slug = data.slug
       .toLowerCase()

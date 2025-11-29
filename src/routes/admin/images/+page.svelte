@@ -285,11 +285,17 @@
     class:dragging={isDragging}
     role="button"
     tabindex="0"
+    aria-label="Drag and drop zone for image uploads"
     ondragover={handleDragOver}
     ondragleave={handleDragLeave}
     ondrop={handleDrop}
     onclick={() => document.getElementById('file-input').click()}
-    onkeydown={(e) => e.key === 'Enter' && document.getElementById('file-input').click()}
+    onkeydown={(e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        document.getElementById('file-input').click();
+      }
+    }}
   >
     <input
       type="file"
