@@ -1,4 +1,6 @@
 <script>
+  import { Button } from "$lib/components/ui";
+
   let clearingCache = $state(false);
   let cacheMessage = $state('');
   let healthStatus = $state(null);
@@ -168,9 +170,9 @@
       {/if}
     </div>
 
-    <button onclick={fetchHealth} class="btn btn-secondary" disabled={loadingHealth}>
+    <Button onclick={fetchHealth} variant="secondary" disabled={loadingHealth}>
       {loadingHealth ? 'Checking...' : 'Refresh Status'}
-    </button>
+    </Button>
   </section>
 
   <section class="settings-section">
@@ -282,9 +284,9 @@
       {/if}
 
       <div class="button-row">
-        <button onclick={saveFont} class="btn btn-primary" disabled={savingFont}>
+        <Button onclick={saveFont} variant="primary" disabled={savingFont}>
           {savingFont ? 'Saving...' : 'Save Font Setting'}
-        </button>
+        </Button>
       </div>
 
       <p class="note">
@@ -306,9 +308,9 @@
       </div>
     {/if}
 
-    <button onclick={clearCache} class="btn btn-danger" disabled={clearingCache}>
+    <Button onclick={clearCache} variant="danger" disabled={clearingCache}>
       {clearingCache ? 'Clearing...' : 'Clear All Cache'}
-    </button>
+    </Button>
 
     <p class="note">
       Note: The cache clear endpoint needs to be implemented at <code>/api/admin/cache/clear</code>
@@ -458,50 +460,6 @@
     color: var(--color-text-subtle-dark);
   }
 
-  .btn {
-    padding: 0.5rem 1rem;
-    border: none;
-    border-radius: var(--border-radius-button);
-    font-weight: 500;
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
-  }
-
-  .btn:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  .btn-secondary {
-    background: var(--color-bg-secondary);
-    color: var(--color-text);
-    border: 1px solid var(--color-border);
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-  }
-
-  .btn-secondary:hover:not(:disabled) {
-    background: var(--color-border);
-  }
-
-  :global(.dark) .btn-secondary {
-    background: var(--color-bg-secondary-dark);
-    color: var(--color-text-dark);
-    border-color: var(--color-border-dark);
-  }
-
-  :global(.dark) .btn-secondary:hover:not(:disabled) {
-    background: var(--color-border-dark);
-  }
-
-  .btn-danger {
-    background: #d73a49;
-    color: white;
-  }
-
-  .btn-danger:hover:not(:disabled) {
-    background: #cb2431;
-  }
 
   .message {
     padding: 0.75rem 1rem;
@@ -688,22 +646,6 @@
     color: var(--color-text-subtle-dark);
   }
 
-  .btn-primary {
-    background: var(--color-primary);
-    color: white;
-  }
-
-  .btn-primary:hover:not(:disabled) {
-    background: var(--color-primary-hover);
-  }
-
-  :global(.dark) .btn-primary {
-    background: var(--color-primary-light);
-  }
-
-  :global(.dark) .btn-primary:hover:not(:disabled) {
-    background: var(--color-primary-light-hover);
-  }
 
   .button-row {
     display: flex;

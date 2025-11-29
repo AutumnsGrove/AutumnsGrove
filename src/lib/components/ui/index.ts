@@ -77,11 +77,10 @@ export {
 export {
 	Root as SelectRoot,
 	Trigger as SelectTrigger,
-	Value as SelectValue,
 	Content as SelectContent,
 	Item as SelectItem,
 	Group as SelectGroup,
-	Label as SelectLabel,
+	GroupHeading as SelectLabel,
 	Separator as SelectSeparator,
 	ScrollUpButton as SelectScrollUpButton,
 	ScrollDownButton as SelectScrollDownButton

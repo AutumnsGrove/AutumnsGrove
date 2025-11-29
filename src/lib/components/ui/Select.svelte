@@ -3,8 +3,7 @@
 		Select as ShadcnSelect,
 		SelectContent,
 		SelectItem,
-		SelectTrigger,
-		SelectValue
+		SelectTrigger
 	} from "$lib/components/ui/select";
 	import type { Snippet } from "svelte";
 
@@ -29,11 +28,15 @@
 		disabled = false,
 		class: className
 	}: Props = $props();
+
+	const selectedLabel = $derived(
+		value ? options.find(opt => opt.value === value)?.label ?? placeholder : placeholder
+	);
 </script>
 
 <ShadcnSelect bind:value {disabled}>
 	<SelectTrigger class={className}>
-		<SelectValue {placeholder} />
+		{selectedLabel}
 	</SelectTrigger>
 	<SelectContent>
 		{#each options as option (option.value)}

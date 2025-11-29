@@ -1,4 +1,6 @@
 <script>
+  import { Card, Button, Skeleton } from "$lib/components/ui";
+
   let stats = $state(null);
   let loading = $state(true);
   let error = $state('');
@@ -45,29 +47,25 @@
     <div class="error-state">
       <h3>Failed to load analytics</h3>
       <p>{error}</p>
-      <button onclick={fetchStats} class="btn btn-secondary">Retry</button>
+      <Button onclick={fetchStats} variant="secondary">Retry</Button>
     </div>
   {:else if stats}
     <div class="stats-grid">
-      <div class="stat-card large">
-        <h3>Total Commits (30 days)</h3>
+      <Card title="Total Commits (30 days)" class="large">
         <p class="stat-value">{stats.totalCommits || 0}</p>
-      </div>
+      </Card>
 
-      <div class="stat-card">
-        <h3>Public Repos</h3>
+      <Card title="Public Repos">
         <p class="stat-value">{stats.publicRepos || 0}</p>
-      </div>
+      </Card>
 
-      <div class="stat-card">
-        <h3>Followers</h3>
+      <Card title="Followers">
         <p class="stat-value">{stats.followers || 0}</p>
-      </div>
+      </Card>
 
-      <div class="stat-card">
-        <h3>Following</h3>
+      <Card title="Following">
         <p class="stat-value">{stats.following || 0}</p>
-      </div>
+      </Card>
     </div>
 
     {#if stats.topRepos && stats.topRepos.length > 0}
@@ -166,36 +164,6 @@
     color: var(--color-text-subtle-dark);
   }
 
-  .btn {
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 0.9rem;
-    border: none;
-    cursor: pointer;
-  }
-
-  .btn-secondary {
-    background: var(--color-bg-secondary);
-    color: var(--color-text);
-    border: 1px solid var(--color-border);
-    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-  }
-
-  :global(.dark) .btn-secondary {
-    background: var(--color-bg-secondary-dark);
-    color: var(--color-text-dark);
-    border-color: var(--color-border-dark);
-  }
-
-  .btn-secondary:hover {
-    background: var(--color-border);
-  }
-
-  :global(.dark) .btn-secondary:hover {
-    background: var(--color-border-dark);
-  }
 
   .loading-state,
   .error-state {
@@ -234,38 +202,14 @@
     margin-bottom: 2rem;
   }
 
-  .stat-card {
-    background: var(--mobile-menu-bg);
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease;
-  }
-
-  :global(.dark) .stat-card {
-    background: var(--color-bg-tertiary-dark);
-  }
-
-  .stat-card.large {
+  .stats-grid :global(.large) {
     grid-column: 1 / -1;
   }
 
   @media (min-width: 600px) {
-    .stat-card.large {
+    .stats-grid :global(.large) {
       grid-column: span 1;
     }
-  }
-
-  .stat-card h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 0.85rem;
-    color: var(--color-text-muted);
-    font-weight: 500;
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .stat-card h3 {
-    color: var(--color-text-subtle-dark);
   }
 
   .stat-value {

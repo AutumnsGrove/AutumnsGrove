@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Input as ShadcnInput } from "$lib/components/ui/input";
 	import type { HTMLInputAttributes } from "svelte/elements";
-	import { cn } from "$lib/utils.js";
+	import { cn } from "$lib/utils";
 
 	interface Props extends Omit<HTMLInputAttributes, "class"> {
 		label?: string;

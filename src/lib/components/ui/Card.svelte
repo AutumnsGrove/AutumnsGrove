@@ -8,7 +8,7 @@
 		CardFooter
 	} from "$lib/components/ui/card";
 	import type { Snippet } from "svelte";
-	import { cn } from "$lib/utils.js";
+	import { cn } from "$lib/utils";
 
 	interface Props {
 		title?: string;

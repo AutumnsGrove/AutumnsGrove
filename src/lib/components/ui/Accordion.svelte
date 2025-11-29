@@ -33,7 +33,7 @@
 	const accordionType = $derived(type === "single" ? "single" : "multiple");
 </script>
 
-<ShadcnAccordion {type: accordionType} {collapsible} class={className}>
+<ShadcnAccordion type={accordionType} {collapsible} class={className}>
 	{#each items as item (item.value)}
 		<AccordionItem value={item.value} disabled={item.disabled ?? false}>
 			<AccordionTrigger>{item.title}</AccordionTrigger>

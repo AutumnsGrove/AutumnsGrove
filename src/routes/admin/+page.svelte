@@ -1,4 +1,6 @@
 <script>
+  import { Card, Skeleton } from "$lib/components/ui";
+
   let { data } = $props();
 
   let healthStatus = $state(null);
@@ -28,49 +30,45 @@
   </header>
 
   <div class="stats-grid">
-    <div class="stat-card">
-      <h3>System Status</h3>
+    <Card title="System Status">
       {#if loading}
-        <p class="stat-value loading">Loading...</p>
+        <Skeleton class="h-8 w-24" />
       {:else if healthStatus?.status === 'healthy'}
         <p class="stat-value healthy">Healthy</p>
       {:else}
         <p class="stat-value error">Error</p>
       {/if}
-    </div>
+    </Card>
 
-    <div class="stat-card">
-      <h3>GitHub Token</h3>
+    <Card title="GitHub Token">
       {#if loading}
-        <p class="stat-value loading">...</p>
+        <Skeleton class="h-8 w-24" />
       {:else}
         <p class="stat-value" class:healthy={healthStatus?.github_token_configured} class:error={!healthStatus?.github_token_configured}>
           {healthStatus?.github_token_configured ? 'Configured' : 'Missing'}
         </p>
       {/if}
-    </div>
+    </Card>
 
-    <div class="stat-card">
-      <h3>KV Cache</h3>
+    <Card title="KV Cache">
       {#if loading}
-        <p class="stat-value loading">...</p>
+        <Skeleton class="h-8 w-24" />
       {:else}
         <p class="stat-value" class:healthy={healthStatus?.kv_configured} class:error={!healthStatus?.kv_configured}>
           {healthStatus?.kv_configured ? 'Connected' : 'Missing'}
         </p>
       {/if}
-    </div>
+    </Card>
 
-    <div class="stat-card">
-      <h3>D1 Database</h3>
+    <Card title="D1 Database">
       {#if loading}
-        <p class="stat-value loading">...</p>
+        <Skeleton class="h-8 w-24" />
       {:else}
         <p class="stat-value" class:healthy={healthStatus?.d1_configured} class:error={!healthStatus?.d1_configured}>
           {healthStatus?.d1_configured ? 'Connected' : 'Missing'}
         </p>
       {/if}
-    </div>
+    </Card>
   </div>
 
   <section class="quick-actions">
@@ -150,33 +148,6 @@
     margin-bottom: 2rem;
   }
 
-  .stat-card {
-    background: var(--mobile-menu-bg);
-    padding: 1.5rem;
-    border-radius: var(--border-radius-standard);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid var(--color-border);
-    transition: background-color 0.3s ease, border-color 0.3s ease;
-  }
-
-  :global(.dark) .stat-card {
-    background: var(--color-bg-tertiary-dark);
-    border-color: var(--color-border-dark);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  }
-
-  .stat-card h3 {
-    margin: 0 0 0.5rem 0;
-    font-size: 0.9rem;
-    color: var(--color-text-muted);
-    font-weight: 500;
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .stat-card h3 {
-    color: var(--color-text-subtle-dark);
-  }
-
   .stat-value {
     margin: 0;
     font-size: 1.25rem;
@@ -191,14 +162,6 @@
     color: #d73a49;
   }
 
-  .stat-value.loading {
-    color: var(--color-text-muted);
-    transition: color 0.3s ease;
-  }
-
-  :global(.dark) .stat-value.loading {
-    color: var(--color-text-subtle-dark);
-  }
 
   .quick-actions {
     margin-top: 2rem;
