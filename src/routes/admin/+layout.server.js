@@ -1,5 +1,4 @@
 import { redirect } from "@sveltejs/kit";
-import { getSiteConfig } from "$lib/utils/markdown.js";
 
 // Disable prerendering for all admin routes
 // Admin pages require authentication and should be server-rendered at request time
@@ -13,10 +12,7 @@ export async function load({ locals, url }) {
     );
   }
 
-  const siteConfig = getSiteConfig();
-
   return {
     user: locals.user,
-    siteConfig,
   };
 }

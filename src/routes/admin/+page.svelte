@@ -26,7 +26,7 @@
 <div class="max-w-screen-xl">
   <header class="mb-8">
     <h1 class="m-0 mb-2 text-3xl text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-colors">Dashboard</h1>
-    <p class="m-0 text-[var(--color-text-muted)] dark:text-[var(--color-text-subtle-dark)] text-lg transition-colors">Welcome back, {data.siteConfig?.owner?.name || 'Admin'}!</p>
+    <p class="m-0 text-[var(--color-text-muted)] dark:text-[var(--color-text-subtle-dark)] text-lg transition-colors">Welcome back, Autumn!</p>
   </header>
 
   <div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 mb-8">
