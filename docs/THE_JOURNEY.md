@@ -124,6 +124,111 @@ The money comes from providing value, not exploitation.
 
 ---
 
+## The Economics: How Far Can One Person Scale?
+
+**The Question**: What does it cost to run this at 10, 100, 1000, 10K, 100K, 1M, or even 10M users?
+
+### Cost Breakdown by User Count
+
+| Users | Monthly Cost | Revenue (conservative) | Profit | Profit Margin |
+|-------|--------------|------------------------|--------|---------------|
+| 10 | $0 | $50 | $50 | 100% |
+| 100 | $0 | $500 | $500 | 100% |
+| 1,000 | $0 | $5,000 | $5,000 | 100% |
+| 10,000 | $0 | $50,000 | $50,000 | 100% |
+| 100,000 | ~$6 | $500,000 | $499,994 | 99.999% |
+| 1,000,000 | ~$78 | $5,000,000 | $4,999,922 | 99.998% |
+| 10,000,000 | ~$771 | $50,000,000 | $49,999,229 | 99.998% |
+
+*Revenue assumes $5/month average per user (mix of free subdomains, premium, custom domains)*
+
+### What This Means
+
+**At 2,000 users** (target from business model):
+- Monthly cost: ~$5
+- Monthly revenue: ~$13,745 (actual projection)
+- **Annual profit: ~$164,880**
+- Current job pays: $1,100/month ($13,200/year)
+- **This is 12.5x current income**
+
+**At 10,000 users**:
+- Still $0/month in costs (free tier covers this!)
+- Revenue: ~$50,000/month
+- **Annual profit: ~$600,000**
+
+**At 1,000,000 users**:
+- Cost: $78/month
+- Revenue: ~$5M/month
+- **Annual profit: ~$60M**
+- Server costs are 0.0016% of revenue
+
+### Why This Works
+
+1. **Cloudflare's generous free tier**: 0-10K users costs literally $0
+2. **No bandwidth charges**: Unlike competitors, egress is free forever
+3. **Linear scaling**: Costs grow predictably with usage
+4. **CPU-only billing**: Workers charge for compute time, not I/O wait
+5. **Static assets are free**: Pages serves prerendered content at zero cost
+
+### The AI Automation Strategy
+
+Instead of hiring a team, automate with AI agents:
+
+**Support Agent** (~$50/month in API costs):
+- Handle 90% of customer inquiries
+- Escalate complex issues
+- 24/7 availability
+
+**Development Agent** (~$100/month):
+- Background feature implementation
+- Bug fixes
+- Code reviews
+
+**Domain Search Agent** (~$10/month):
+- Already built and tested
+- Runs autonomously
+- Finds domains for customers
+
+**Total AI Overhead**: ~$160/month
+**Break-even**: ~32 users ($5/month × 32 = $160)
+
+This means:
+- 10,000 users = $50K/month revenue - $160 overhead = $49,840 profit
+- One person running everything
+- No employee overhead
+- No office costs
+- Pure profit margin
+
+### Infrastructure Costs by Component
+
+**Cloudflare Pages**: $0 (static assets are always free)
+**Workers/Functions**: $5/month base (covers 10M requests)
+**D1 Database**: Included in Workers Paid ($5)
+**R2 Storage**: ~$0.015/GB-month (images, media)
+**KV Namespace**: Included in Workers Paid (1GB storage, 10M reads)
+
+**Cost Driver at Scale**: KV write operations ($5/million)
+**Solution**: Move session data to D1 ($1/million writes instead)
+
+### The Reality Check
+
+At 1M users paying $5/month average:
+- **Monthly revenue**: $5,000,000
+- **Monthly costs**: $78
+- **Profit margin**: 99.998%
+
+Even if actual costs are 10x higher due to support, marketing, etc.:
+- **Monthly costs**: $780
+- **Profit margin**: 99.984%
+
+This is the power of:
+- Platform leverage (Cloudflare)
+- AI tooling (one person does everything)
+- Portable architecture (markdown files, can migrate anytime)
+- Zero marginal cost (serving one more user costs ~nothing)
+
+---
+
 *Written November 2025, documenting a 2-week journey from unemployment depression to SaaS founder.*
 
 *All because I wanted a blog.*
