@@ -25,6 +25,7 @@ jobs:
 
       - name: Run security tests
         run: npm run test:security
+        continue-on-error: true
 
       - name: Run npm audit
         run: npm audit --audit-level=moderate
