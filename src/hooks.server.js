@@ -7,9 +7,6 @@ export async function handle({ event, resolve }) {
   // Initialize user as null
   event.locals.user = null;
 
-  // Generate cryptographic nonce for CSP
-  event.locals.cspNonce = crypto.randomBytes(16).toString('base64');
-
   // Parse session cookie
   const cookieHeader = event.request.headers.get("cookie");
   const sessionToken = parseSessionCookie(cookieHeader);
@@ -49,12 +46,7 @@ export async function handle({ event, resolve }) {
     }
   }
 
-  const response = await resolve(event, {
-    transformPageChunk: ({ html }) => {
-      // Replace nonce placeholder with actual nonce
-      return html.replace(/%sveltekit\.nonce%/g, event.locals.cspNonce);
-    }
-  });
+  const response = await resolve(event);
 
   // Set CSRF token cookie if it was just generated
   if (!cookieHeader || !cookieHeader.includes('csrf_token=')) {
@@ -79,12 +71,13 @@ export async function handle({ event, resolve }) {
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
   response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
 
-  // Content-Security-Policy with nonce-based inline script/style protection
+  // Content-Security-Policy
   // Note: 'unsafe-eval' is required for Mermaid diagram rendering
+  // Note: 'unsafe-inline' is used for the theme script in app.html (required for prerendering)
   const csp = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${event.locals.cspNonce}' 'unsafe-eval' https://cdn.jsdelivr.net`,
-    `style-src 'self' 'nonce-${event.locals.cspNonce}'`,
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
+    "style-src 'self' 'unsafe-inline'",
     "img-src 'self' https://cdn.autumnsgrove.com data:",
     "font-src 'self'",
     "connect-src 'self' https://api.github.com https://autumnsgrove-sync-posts.m7jv4v7npb.workers.dev https://autumnsgrove-daily-summary.m7jv4v7npb.workers.dev",
