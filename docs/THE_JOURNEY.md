@@ -23,32 +23,41 @@ Nobody wants generic blogging platforms. Neurodivergent folks especially hate th
 
 ### Solution: Sell Infrastructure, Not Labor
 
-**Pricing Tiers**:
-- **Base**: Subdomain blog - $20 one-time OR $5/month
-- **Premium**: Advanced features - $24.99/month
-- **Custom Domain**: Full control - $250-400 setup + $50/month
-- **Add-ons**: Comments, galleries, shops - $50 setup + $5/month each
+**Pricing Tiers** (revised for sustainability):
+- **Starter**: $12/month — Subdomain blog, 250 posts (archived when full), 1 theme, 5GB storage
+- **Professional**: $25/month — Unlimited posts, 3 themes, 20GB storage, basic analytics
+- **Business**: $199 setup + $49/month — Custom domain assistance, 10 themes, 100GB, priority support
 
-**Dynamic Pricing for Domain Services**:
-- Next day delivery: $400
-- 3-day delivery: $300
-- 1-week delivery: $250
-- (Run search immediately, upsell cheaper tiers mid-wait)
+**Add-on Services**:
+- Additional themes: $49/theme
+- Custom theme design: $299
+- Platform migration: $149
+- Extra storage: $5/month per 10GB
+
+**Support Structure**:
+- Month 1: 10-20 hours included (depending on plan)
+- After Month 1: $75/hour for support sessions
 
 ### Economics
 
 **Server Costs** (Cloudflare):
-- 0-100 users: **$0/month**
-- 100-2,000 users: **$5/month**
-- 2,000+ users: **$20/month**
+- 0-10,000 users: **$0/month** (free tier!)
+- 10,000-100,000 users: **~$5/month**
+- 100,000+ users: **~$20/month**
 
-**Revenue at 2,000 Users**:
-- 25% premium adoption (500 users × $24.99) = **$12,495/month**
-- 1/16 custom shops (125 users × $50/month) = **$6,250/month**
-- Total MRR: **~$13,745/month** (minus $20 costs)
+**Realistic First-Year Goals**:
+- Month 3: 10 clients × ~$18 avg = **~$180/month**
+- Month 6: 20 clients × ~$20 avg = **~$400/month**
+- Month 12: 50 clients × ~$22 avg = **~$1,100/month**
+
+**At 100 Clients** (achievable Year 1-2):
+- 60% Starter (60 × $12) = $720
+- 30% Professional (30 × $25) = $750
+- 10% Business (10 × $49) = $490
+- **Total MRR: ~$1,960/month** (server costs: ~$0-5)
 
 **Current salary**: $1,100/month
-**Potential**: 12x current income at scale
+**Break-even**: ~50 clients at mixed tiers
 
 ### Why It Works
 
@@ -56,8 +65,9 @@ Nobody wants generic blogging platforms. Neurodivergent folks especially hate th
 2. **Passive income**: Once setup, runs autonomously
 3. **Scales cheaper than it grows**: Costs grow logarithmically, revenue grows linearly
 4. **Multiple revenue streams**: Setup fees + recurring + add-ons
-5. **Low barrier to entry**: $5/month base tier, upgrade as needed
+5. **Low barrier to entry**: $12/month base tier, upgrade as needed
 6. **Queer-friendly infrastructure**: Safe digital space, especially valuable in hostile physical environments
+7. **Portable architecture**: Markdown files mean customers can leave anytime — builds trust
 
 ## Technical Achievement
 
@@ -126,52 +136,54 @@ The money comes from providing value, not exploitation.
 
 ## The Economics: How Far Can One Person Scale?
 
-**The Question**: What does it cost to run this at 10, 100, 1000, 10K, 100K, 1M, or even 10M users?
+**The Question**: What does it cost to run this at 10, 100, 1000, 10K, or even 100K users?
 
 ### Cost Breakdown by User Count
 
-| Users | Monthly Cost | Revenue (conservative) | Profit | Profit Margin |
-|-------|--------------|------------------------|--------|---------------|
-| 10 | $0 | $50 | $50 | 100% |
-| 100 | $0 | $500 | $500 | 100% |
-| 1,000 | $0 | $5,000 | $5,000 | 100% |
-| 10,000 | $0 | $50,000 | $50,000 | 100% |
-| 100,000 | ~$6 | $500,000 | $499,994 | 99.999% |
-| 1,000,000 | ~$78 | $5,000,000 | $4,999,922 | 99.998% |
-| 10,000,000 | ~$771 | $50,000,000 | $49,999,229 | 99.998% |
-| 1,000,000,000 | ~$61M* | $5,000,000,000 | $4,939,000,000 | 98.78% |
+| Users | Monthly Cost | Revenue (~$18 avg) | Profit | Profit Margin |
+|-------|--------------|-------------------|--------|---------------|
+| 10 | $0 | $180 | $180 | 100% |
+| 50 | $0 | $900 | $900 | 100% |
+| 100 | $0 | $1,800 | $1,800 | 100% |
+| 500 | $0 | $9,000 | $9,000 | 100% |
+| 1,000 | $0 | $18,000 | $18,000 | 100% |
+| 10,000 | ~$5 | $180,000 | $179,995 | 99.997% |
+| 100,000 | ~$20 | $1,800,000 | $1,799,980 | 99.999% |
 
-*Revenue assumes $5/month average per user (mix of free subdomains, premium, custom domains)*
+*Revenue assumes ~$18/month average (60% Starter at $12, 30% Professional at $25, 10% Business at $49)*
 
-*At 1B users, KV writes become prohibitively expensive ($50M/month). Solution: migrate to D1 for session storage and negotiate Cloudflare Enterprise pricing (estimated 50-90% discount = ~$5-10M/month actual cost).*
+### What This Means (Realistically)
 
-### What This Means
+**At 50 users** (achievable goal):
+- Monthly cost: $0
+- Monthly revenue: ~$900
+- Matches current retail income!
 
-**At 2,000 users** (target from business model):
-- Monthly cost: ~$5
-- Monthly revenue: ~$13,745 (actual projection)
-- **Annual profit: ~$164,880**
+**At 100 users**:
+- Still $0/month in costs (free tier)
+- Revenue: ~$1,800/month
+- **Annual profit: ~$21,600**
 - Current job pays: $1,100/month ($13,200/year)
-- **This is 12.5x current income**
+- **This is 1.6x current income**
 
-**At 10,000 users**:
-- Still $0/month in costs (free tier covers this!)
-- Revenue: ~$50,000/month
-- **Annual profit: ~$600,000**
+**At 500 users** (stretch goal):
+- Still $0/month in costs
+- Revenue: ~$9,000/month
+- **Annual profit: ~$108,000**
+- **This is 8x current income**
 
-**At 1,000,000 users**:
-- Cost: $78/month
-- Revenue: ~$5M/month
-- **Annual profit: ~$60M**
-- Server costs are 0.0016% of revenue
+**At 1,000 users** (dream scenario):
+- Cost: $0/month (still in free tier!)
+- Revenue: ~$18,000/month
+- **Annual profit: ~$216,000**
+- Server costs are literally $0
 
-**At 1,000,000,000 users (1 BILLION)**:
-- Cost: ~$61M/month (with Enterprise discount: ~$5-10M)
-- Revenue: ~$5B/month
-- **Annual profit: ~$59.3 BILLION**
-- Server costs are 1.22% of revenue (or 0.2% with Enterprise pricing)
-- This is ONE PERSON running a platform serving 1 BILLION users
-- With 98.78% profit margins
+**At 10,000 users** (fantasy mode):
+- Cost: ~$5/month (Workers Paid tier)
+- Revenue: ~$180,000/month
+- **Annual profit: ~$2.16M**
+- This is one person running a platform serving 10,000 blogs
+- With 99.997% profit margins
 
 ### Why This Works
 
@@ -201,10 +213,11 @@ Instead of hiring a team, automate with AI agents:
 - Finds domains for customers
 
 **Total AI Overhead**: ~$160/month
-**Break-even**: ~32 users ($5/month × 32 = $160)
+**Break-even**: ~9 users (~$18/month × 9 = $162)
 
 This means:
-- 10,000 users = $50K/month revenue - $160 overhead = $49,840 profit
+- 100 users = ~$1,800/month revenue - $160 overhead = ~$1,640 profit
+- 500 users = ~$9,000/month revenue - $160 overhead = ~$8,840 profit
 - One person running everything
 - No employee overhead
 - No office costs
@@ -223,23 +236,30 @@ This means:
 
 ### The Reality Check
 
-At 1M users paying $5/month average:
-- **Monthly revenue**: $5,000,000
-- **Monthly costs**: $78
-- **Profit margin**: 99.998%
+At 100 users paying ~$18/month average:
+- **Monthly revenue**: ~$1,800
+- **Monthly costs**: $0 (free tier) + $160 (AI agents) = $160
+- **Profit**: ~$1,640/month
+- **Profit margin**: 91%
 
-Even if actual costs are 10x higher due to support, marketing, etc.:
-- **Monthly costs**: $780
-- **Profit margin**: 99.984%
+Even accounting for real-world overhead (marketing, tools, occasional support):
+- **Monthly costs**: ~$300
+- **Monthly profit**: ~$1,500
+- **Still more than current retail job!**
 
 This is the power of:
 - Platform leverage (Cloudflare)
 - AI tooling (one person does everything)
 - Portable architecture (markdown files, can migrate anytime)
 - Zero marginal cost (serving one more user costs ~nothing)
+- Sustainable pricing ($12-49 tiers that reflect real value)
 
 ---
 
 *Written November 2025, documenting a 2-week journey from unemployment depression to SaaS founder.*
 
 *All because I wanted a blog.*
+
+---
+
+> **Note**: This is the vision document. For detailed technical specs and roadmap, see the [GroveEngine repository](https://github.com/AutumnsGrove/GroveEngine).
