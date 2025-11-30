@@ -15,25 +15,16 @@ export function sanitizeHTML(html) {
 		return '';
 	}
 
-	return DOMPurify.sanitize(html, {
-		ALLOWED_TAGS: [
-			'a', 'abbr', 'b', 'blockquote', 'br', 'code', 'dd', 'del', 'div', 'dl', 'dt',
-			'em', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'hr', 'i', 'img', 'ins', 'kbd',
-			'li', 'mark', 'ol', 'p', 'pre', 'q', 's', 'samp', 'small', 'span', 'strong',
-			'sub', 'sup', 'table', 'tbody', 'td', 'tfoot', 'th', 'thead', 'tr', 'u', 'ul',
-			'var'
-		],
-		ALLOWED_ATTR: [
-			'href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel',
-			'width', 'height', 'align'
-		],
-		FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'link', 'style', 'form', 'input', 'button'],
-		FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur', 'onchange', 'onsubmit', 'style'],
+	const config = {
+		FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'link', 'style', 'form', 'input', 'button', 'base', 'meta'],
+		FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur', 'onchange', 'onsubmit', 'onmouseenter', 'onmouseleave'],
 		ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto|tel):)/i,
 		ALLOW_DATA_ATTR: false,
 		KEEP_CONTENT: true,
 		SAFE_FOR_TEMPLATES: true
-	});
+	};
+
+	return DOMPurify.sanitize(html, config);
 }
 
 /**

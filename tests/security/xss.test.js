@@ -14,12 +14,7 @@ import { sanitizeHTML, sanitizeSVG, sanitizeURL } from '../../src/lib/utils/sani
 
 describe('XSS Protection', () => {
   describe('HTML Sanitization', () => {
-    // Mock sanitizeHTML function - should be implemented by Agent 1
-    const sanitizeHTML = (html) => {
-      // Placeholder - will be replaced with actual implementation
-      // For now, return input to demonstrate failing tests
-      return html;
-    };
+    // sanitizeHTML is imported from sanitize.js at the top of file
 
     it('should remove script tags', () => {
       const malicious = '<p>Hello</p><script>alert("XSS")</script>';
@@ -182,11 +177,7 @@ describe('XSS Protection', () => {
   });
 
   describe('SVG Sanitization', () => {
-    // Mock sanitizeSVG function - should be implemented by Agent 1
-    const sanitizeSVG = (svg) => {
-      // Placeholder - will be replaced with actual implementation
-      return svg;
-    };
+    // sanitizeSVG is imported from sanitize.js at the top of file
 
     it('should remove script tags from SVG', () => {
       const malicious = '<svg><script>alert(1)</script></svg>';
@@ -229,11 +220,8 @@ describe('XSS Protection', () => {
   });
 
   describe('Mermaid Diagram Sanitization', () => {
-    // Mock function for Mermaid sanitization
-    const sanitizeMermaid = (diagram) => {
-      // Should strip HTML/scripts from node labels
-      return diagram;
-    };
+    // Use sanitizeHTML for Mermaid diagram labels
+    const sanitizeMermaid = sanitizeHTML;
 
     it('should remove script tags from Mermaid node labels', () => {
       const malicious = 'graph TD\n    A[<script>alert("XSS")</script>]\n    B[Normal]';
