@@ -5,22 +5,23 @@ export async function load({ locals, platform }) {
   // Only fetch from database at runtime (not during prerendering)
   // The Cloudflare adapter throws when accessing platform.env during prerendering
   try {
-    const db = platform?.env?.GIT_STATS_DB;
-    if (db) {
+    // Check if platform and env exist (they won't during prerendering or if bindings aren't configured)
+    if (platform?.env?.GIT_STATS_DB) {
+      const db = platform.env.GIT_STATS_DB;
       const result = await db
         .prepare("SELECT setting_key, setting_value FROM site_settings")
         .all();
 
-      for (const row of result.results) {
-        siteSettings[row.setting_key] = row.setting_value;
+      if (result?.results) {
+        for (const row of result.results) {
+          siteSettings[row.setting_key] = row.setting_value;
+        }
       }
     }
   } catch (error) {
-    // During prerendering, platform.env access throws - this is expected
-    // Also catch any database errors at runtime
-    if (!error.message?.includes("prerenderable")) {
-      console.error("Failed to load site settings:", error);
-    }
+    // During prerendering or if DB bindings aren't configured, gracefully fall back to defaults
+    // This prevents 500 errors when D1 bindings aren't set up in Cloudflare Pages dashboard
+    console.error("Failed to load site settings (using defaults):", error.message);
   }
 
   return {

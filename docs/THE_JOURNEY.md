@@ -139,8 +139,11 @@ The money comes from providing value, not exploitation.
 | 100,000 | ~$6 | $500,000 | $499,994 | 99.999% |
 | 1,000,000 | ~$78 | $5,000,000 | $4,999,922 | 99.998% |
 | 10,000,000 | ~$771 | $50,000,000 | $49,999,229 | 99.998% |
+| 1,000,000,000 | ~$61M* | $5,000,000,000 | $4,939,000,000 | 98.78% |
 
 *Revenue assumes $5/month average per user (mix of free subdomains, premium, custom domains)*
+
+*At 1B users, KV writes become prohibitively expensive ($50M/month). Solution: migrate to D1 for session storage and negotiate Cloudflare Enterprise pricing (estimated 50-90% discount = ~$5-10M/month actual cost).*
 
 ### What This Means
 
@@ -161,6 +164,14 @@ The money comes from providing value, not exploitation.
 - Revenue: ~$5M/month
 - **Annual profit: ~$60M**
 - Server costs are 0.0016% of revenue
+
+**At 1,000,000,000 users (1 BILLION)**:
+- Cost: ~$61M/month (with Enterprise discount: ~$5-10M)
+- Revenue: ~$5B/month
+- **Annual profit: ~$59.3 BILLION**
+- Server costs are 1.22% of revenue (or 0.2% with Enterprise pricing)
+- This is ONE PERSON running a platform serving 1 BILLION users
+- With 98.78% profit margins
 
 ### Why This Works
 
