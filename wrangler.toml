@@ -38,9 +38,10 @@ GITHUB_API_URL = "https://api.github.com/graphql"
 CACHE_TTL_SECONDS = "3600"
 AI_CACHE_TTL_SECONDS = "21600"
 
-# Cron triggers for scheduled sync
-[triggers]
-crons = ["0 */6 * * *"]
+# Cron triggers - NOT supported in Cloudflare Pages mode
+# Pages uses scheduled functions instead (see functions/_middleware.ts for setup)
+# [triggers]
+# crons = ["0 */6 * * *"]
 
 # Secrets (set via: npx wrangler secret put SECRET_NAME)
 # GITHUB_TOKEN - GitHub token with 'repo' scope
