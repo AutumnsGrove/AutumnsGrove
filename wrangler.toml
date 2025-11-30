@@ -1,10 +1,14 @@
 name = "autumnsgrove"
-main = "src/worker.js"
+# Removed: main = "src/worker.js" (causes Workers mode instead of Pages mode)
 compatibility_date = "2025-01-01"
 
-[assets]
-binding = "ASSETS"
-directory = ".svelte-kit/cloudflare"
+# Tell the adapter to build for Cloudflare Pages Functions
+pages_build_output_dir = ".svelte-kit/cloudflare"
+
+# Assets binding removed - handled automatically by Cloudflare Pages
+# [assets]
+# binding = "ASSETS"
+# directory = ".svelte-kit/cloudflare"
 
 # KV Namespace for API caching
 [[kv_namespaces]]
