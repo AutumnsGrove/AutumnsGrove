@@ -2,6 +2,8 @@ import { json, error } from "@sveltejs/kit";
 import { marked } from "marked";
 import { getPostBySlug } from "$lib/utils/markdown.js";
 import { validateCSRF } from "$lib/utils/csrf.js";
+import { sanitizeObject } from "$lib/utils/validation.js";
+import { sanitizeMarkdown } from "$lib/utils/sanitize.js";
 
 /**
  * GET /api/posts/[slug] - Get a single post
@@ -99,7 +101,7 @@ export async function PUT({ params, request, platform, locals }) {
   }
 
   try {
-    const data = await request.json();
+    const data = sanitizeObject(await request.json());
 
     // Validate required fields
     if (!data.title || !data.markdown_content) {
@@ -135,8 +137,8 @@ export async function PUT({ params, request, platform, locals }) {
       throw error(404, "Post not found");
     }
 
-    // Generate HTML from markdown
-    const html_content = marked.parse(data.markdown_content);
+    // Generate HTML from markdown and sanitize to prevent XSS
+    const html_content = sanitizeMarkdown(marked.parse(data.markdown_content));
 
     // Generate a simple hash of the content
     const encoder = new TextEncoder();
@@ -186,7 +188,7 @@ export async function PUT({ params, request, platform, locals }) {
 /**
  * DELETE /api/posts/[slug] - Delete a post from D1
  */
-export async function DELETE({ params, platform, locals }) {
+export async function DELETE({ request, params, platform, locals }) {
   // Auth check
   if (!locals.user) {
     throw error(401, "Unauthorized");

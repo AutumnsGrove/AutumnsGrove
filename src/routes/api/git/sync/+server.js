@@ -4,6 +4,7 @@ import {
   getHeaders,
   GITHUB_API_BASE,
 } from "$lib/utils/github.js";
+import { sanitizeObject } from "$lib/utils/validation.js";
 
 export const prerender = false;
 
@@ -28,7 +29,7 @@ export async function POST({ request, platform }) {
     // Get username from request or use default
     let body;
     try {
-      body = await request.json();
+      body = sanitizeObject(await request.json());
     } catch {
       body = {};
     }

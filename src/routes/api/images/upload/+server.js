@@ -1,5 +1,6 @@
 import { json, error } from "@sveltejs/kit";
 import { validateCSRF } from "$lib/utils/csrf.js";
+import { validateFileSignature } from "$lib/utils/validation.js";
 
 export async function POST({ request, platform, locals }) {
   // Authentication check
@@ -26,18 +27,19 @@ export async function POST({ request, platform, locals }) {
       throw error(400, "No file provided");
     }
 
-    // Validate file type
+    // Validate file type (SVG removed for security - can contain embedded JavaScript)
     const allowedTypes = [
       "image/jpeg",
       "image/png",
       "image/gif",
       "image/webp",
-      "image/svg+xml",
     ];
+
+    // 2. Check MIME type first
     if (!allowedTypes.includes(file.type)) {
       throw error(
         400,
-        `Invalid file type: ${file.type}. Allowed: jpg, png, gif, webp, svg`,
+        `Invalid file type: ${file.type}. Allowed: jpg, png, gif, webp`,
       );
     }
 
@@ -45,6 +47,34 @@ export async function POST({ request, platform, locals }) {
     const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
       throw error(400, "File too large. Maximum size is 10MB");
+    }
+
+    // Read file once for both validation and upload
+    const arrayBuffer = await file.arrayBuffer();
+
+    // 1. Check magic bytes to prevent MIME type spoofing (use arrayBuffer we just read)
+    const buffer = new Uint8Array(arrayBuffer);
+    const isValidSignature = await (async () => {
+      const FILE_SIGNATURES = {
+        'image/jpeg': [
+          [0xFF, 0xD8, 0xFF, 0xE0], // JPEG/JFIF
+          [0xFF, 0xD8, 0xFF, 0xE1], // JPEG/Exif
+          [0xFF, 0xD8, 0xFF, 0xE8]  // JPEG/SPIFF
+        ],
+        'image/png': [[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]],
+        'image/gif': [
+          [0x47, 0x49, 0x46, 0x38, 0x37, 0x61], // GIF87a
+          [0x47, 0x49, 0x46, 0x38, 0x39, 0x61]  // GIF89a
+        ],
+        'image/webp': [[0x52, 0x49, 0x46, 0x46]] // RIFF (WebP container)
+      };
+      const signatures = FILE_SIGNATURES[file.type];
+      if (!signatures) return false;
+      return signatures.some(sig => sig.every((byte, i) => buffer[i] === byte));
+    })();
+
+    if (!isValidSignature) {
+      throw error(400, "Invalid file signature - file may be corrupted or spoofed");
     }
 
     // Sanitize filename
@@ -63,11 +93,11 @@ export async function POST({ request, platform, locals }) {
     // Build the R2 key
     const key = `${sanitizedFolder}/${sanitizedName}`;
 
-    // Upload to R2
-    const arrayBuffer = await file.arrayBuffer();
+    // Upload to R2 with cache headers
     await platform.env.IMAGES.put(key, arrayBuffer, {
       httpMetadata: {
         contentType: file.type,
+        cacheControl: 'public, max-age=31536000, immutable', // 1 year cache for immutable images
       },
     });
 
@@ -83,6 +113,10 @@ export async function POST({ request, platform, locals }) {
       type: file.type,
       markdown: `![Alt text](${cdnUrl})`,
       svelte: `<img src="${cdnUrl}" alt="Description" />`,
+    }, {
+      headers: {
+        'Cache-Control': 'public, max-age=31536000',
+      }
     });
   } catch (err) {
     if (err.status) throw err;

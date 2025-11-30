@@ -1,6 +1,7 @@
 import { getHomePage, getLatestPost, processAnchorTags } from "$lib/utils/markdown.js";
 import { error } from "@sveltejs/kit";
 import { marked } from "marked";
+import { sanitizeMarkdown } from "$lib/utils/sanitize.js";
 
 // Disable prerendering - latest post is fetched from D1 at runtime
 export const prerender = false;
@@ -32,7 +33,7 @@ export async function load({ platform }) {
         // Generate HTML from markdown if not stored
         let htmlContent = pageData.html_content;
         if (!htmlContent && pageData.markdown_content) {
-          htmlContent = marked.parse(pageData.markdown_content);
+          htmlContent = sanitizeMarkdown(marked.parse(pageData.markdown_content));
         }
 
         // Extract headers from HTML for table of contents
@@ -48,7 +49,7 @@ export async function load({ platform }) {
               if ((item.type === 'comment' || item.type === 'markdown') && item.content) {
                 return {
                   ...item,
-                  content: marked.parse(item.content)
+                  content: sanitizeMarkdown(marked.parse(item.content))
                 };
               }
               return item;
@@ -125,7 +126,7 @@ export async function load({ platform }) {
               if ((item.type === 'comment' || item.type === 'markdown') && item.content) {
                 return {
                   ...item,
-                  content: marked.parse(item.content)
+                  content: sanitizeMarkdown(marked.parse(item.content))
                 };
               }
               return item;

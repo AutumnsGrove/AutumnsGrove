@@ -8,6 +8,7 @@
 import { json, error } from '@sveltejs/kit';
 import { verifySession, isAllowedAdmin } from '$lib/auth/session.js';
 import { safeJsonParse } from '$lib/utils/json.js';
+import { sanitizeObject } from '$lib/utils/validation.js';
 
 // Validation constants
 const MAX_BRIEF_SUMMARY_LENGTH = 500;
@@ -111,7 +112,7 @@ export async function PUT({ params, request, platform, cookies }) {
   // Parse request body
   let body;
   try {
-    body = await request.json();
+    body = sanitizeObject(await request.json());
   } catch (e) {
     throw error(400, 'Invalid JSON body');
   }

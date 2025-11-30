@@ -1,6 +1,8 @@
 import { json, error } from '@sveltejs/kit';
 import { marked } from 'marked';
 import { validateCSRF } from '$lib/utils/csrf.js';
+import { sanitizeObject } from '$lib/utils/validation.js';
+import { sanitizeMarkdown } from '$lib/utils/sanitize.js';
 
 /**
  * PUT /api/pages/[slug] - Update an existing page in D1
@@ -27,7 +29,7 @@ export async function PUT({ params, request, platform, locals }) {
 	}
 
 	try {
-		const data = await request.json();
+		const data = sanitizeObject(await request.json());
 
 		// Validate required fields
 		if (!data.title || !data.markdown_content) {
@@ -61,8 +63,8 @@ export async function PUT({ params, request, platform, locals }) {
 			throw error(404, 'Page not found');
 		}
 
-		// Generate HTML from markdown
-		const html_content = marked.parse(data.markdown_content);
+		// Generate HTML from markdown and sanitize to prevent XSS
+		const html_content = sanitizeMarkdown(marked.parse(data.markdown_content));
 
 		const now = new Date().toISOString();
 

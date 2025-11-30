@@ -1,12 +1,13 @@
 import { marked } from "marked";
 import matter from "gray-matter";
 import mermaid from "mermaid";
+import { sanitizeSVG } from './sanitize.js';
 
 // Configure Mermaid
 mermaid.initialize({
   startOnLoad: false,
   theme: "default",
-  securityLevel: "loose",
+  securityLevel: "strict",
 });
 
 // Configure marked renderer for GitHub-style code blocks
@@ -936,7 +937,8 @@ export async function renderMermaidDiagrams() {
     try {
       const diagramCode = decodeURIComponent(container.dataset.diagram);
       const { svg } = await mermaid.render(container.id, diagramCode);
-      container.innerHTML = svg;
+      // Sanitize SVG output before injecting into DOM to prevent XSS
+      container.innerHTML = sanitizeSVG(svg);
     } catch (error) {
       console.error("Error rendering Mermaid diagram:", error);
       container.innerHTML = '<p class="error">Error rendering diagram</p>';

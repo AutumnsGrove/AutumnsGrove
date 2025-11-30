@@ -1,5 +1,6 @@
 import { json, error } from "@sveltejs/kit";
 import { validateCSRF } from "$lib/utils/csrf.js";
+import { sanitizeObject } from "$lib/utils/validation.js";
 
 export const prerender = false;
 
@@ -24,7 +25,7 @@ export async function PUT({ request, platform, locals }) {
   }
 
   try {
-    const body = await request.json();
+    const body = sanitizeObject(await request.json());
     const { setting_key, setting_value } = body;
 
     // Validate required fields

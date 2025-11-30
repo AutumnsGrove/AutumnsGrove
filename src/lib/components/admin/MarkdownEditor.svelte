@@ -2,6 +2,7 @@
   import { marked } from "marked";
   import mermaid from "mermaid";
   import { onMount, tick } from "svelte";
+  import { sanitizeMarkdown } from "$lib/utils/sanitize.js";
   import "$lib/styles/content.css";
   import Dialog from "$lib/components/ui/Dialog.svelte";
   import Button from "$lib/components/ui/Button.svelte";
@@ -318,7 +319,7 @@
 
   marked.use({ renderer });
 
-  let previewHtml = $derived(content ? marked.parse(content) : "");
+  let previewHtml = $derived(content ? sanitizeMarkdown(marked.parse(content)) : "");
 
   // Render mermaid diagrams after preview updates
   async function renderMermaidDiagrams() {

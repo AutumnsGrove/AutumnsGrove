@@ -9,7 +9,13 @@
     "build": "vite build",
     "preview": "vite preview",
     "audit": "npm audit --audit-level=moderate",
-    "audit:fix": "npm audit fix"
+    "audit:fix": "npm audit fix",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run",
+    "test:security": "vitest run tests/security",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest watch"
   },
   "devDependencies": {
     "@lucide/svelte": "^0.482.0",
@@ -17,13 +23,19 @@
     "@sveltejs/kit": "^2.5.28",
     "@sveltejs/vite-plugin-svelte": "^4.0.0",
     "@tailwindcss/typography": "^0.5.19",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/svelte": "^5.2.9",
+    "@vitest/ui": "^4.0.14",
     "autoprefixer": "^10.4.22",
     "bits-ui": "^1.8.0",
+    "happy-dom": "^20.0.11",
+    "jsdom": "^27.2.0",
     "postcss": "^8.5.6",
     "svelte": "^5.1.9",
     "tailwind-variants": "^0.2.1",
     "tailwindcss": "^3.4.18",
-    "vite": "^5.4.10"
+    "vite": "^5.4.10",
+    "vitest": "^4.0.14"
   },
   "dependencies": {
     "@types/dompurify": "^3.0.5",
@@ -31,6 +43,7 @@
     "clsx": "^2.1.1",
     "dompurify": "^3.3.0",
     "gray-matter": "^4.0.3",
+    "isomorphic-dompurify": "^2.33.0",
     "lucide-svelte": "^0.554.0",
     "marked": "^14.1.2",
     "mermaid": "^11.12.1",

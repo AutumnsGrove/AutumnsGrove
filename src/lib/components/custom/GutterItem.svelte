@@ -1,6 +1,7 @@
 <script>
 	import Lightbox from '../gallery/Lightbox.svelte';
 	import ImageGallery from '../gallery/ImageGallery.svelte';
+	import { sanitizeHTML } from '$lib/utils/sanitize.js';
 
 	let { item = {} } = $props();
 
@@ -32,7 +33,7 @@
 	{#if item.type === 'comment' || item.type === 'markdown'}
 		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 		<div class="gutter-comment" onclick={handleContentClick}>
-			{@html item.content}
+			{@html sanitizeHTML(item.content)}
 		</div>
 	{:else if item.type === 'photo' || item.type === 'image'}
 		{@const imageSrc = item.src || item.url || item.file}

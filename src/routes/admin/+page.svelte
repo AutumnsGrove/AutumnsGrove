@@ -1,5 +1,6 @@
 <script>
   import { Card, Skeleton } from "$lib/components/ui";
+  import { api } from "$lib/utils/api.js";
 
   let { data } = $props();
 
@@ -9,8 +10,7 @@
   async function fetchHealth() {
     loading = true;
     try {
-      const res = await fetch('/api/git/health');
-      healthStatus = await res.json();
+      healthStatus = await api.get('/api/git/health');
     } catch (error) {
       console.error('Failed to fetch health:', error);
       healthStatus = { status: 'error', error: error.message };

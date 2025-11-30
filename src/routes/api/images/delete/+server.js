@@ -1,4 +1,5 @@
 import { json, error } from "@sveltejs/kit";
+import { sanitizeObject } from "$lib/utils/validation.js";
 
 /**
  * DELETE endpoint for removing images from CDN (R2)
@@ -37,7 +38,7 @@ export async function DELETE({ request, platform, locals }) {
   }
 
   try {
-    const body = await request.json();
+    const body = sanitizeObject(await request.json());
     const { key } = body;
 
     if (!key || typeof key !== "string") {

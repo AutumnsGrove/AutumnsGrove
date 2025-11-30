@@ -1,5 +1,6 @@
 <script>
 	import { marked } from 'marked';
+	import { sanitizeMarkdown } from '$lib/utils/sanitize.js';
 	import { Calendar, GitCommit, Plus, Minus, FolderGit2, ChevronDown, ChevronUp, Cloud, Loader2, MessageCircle, TrendingUp } from 'lucide-svelte';
 	import { ActivityOverview, LOCBar, RepoBreakdown } from '$lib/components/charts';
 	import { toast } from '$lib/components/ui/toast';
@@ -146,8 +147,8 @@
 			}
 		);
 
-		// Parse to HTML first
-		let html = marked.parse(withRepoLinks);
+		// Parse to HTML first and sanitize to prevent XSS
+		let html = sanitizeMarkdown(marked.parse(withRepoLinks));
 
 		// Inject gutter comments after their corresponding h3 headers
 		for (const [headerName, items] of Object.entries(gutterByHeader)) {

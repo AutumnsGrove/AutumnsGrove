@@ -1,6 +1,7 @@
 <script>
   import { Button, Skeleton } from "$lib/components/ui";
   import { toast } from "$lib/components/ui/toast";
+  import { api } from "$lib/utils/api.js";
 
   let clearingCache = $state(false);
   let cacheMessage = $state('');
@@ -16,8 +17,7 @@
   async function fetchHealth() {
     loadingHealth = true;
     try {
-      const res = await fetch('/api/git/health');
-      healthStatus = await res.json();
+      healthStatus = await api.get('/api/git/health');
     } catch (error) {
       toast.error('Failed to check system health');
       console.error('Failed to fetch health:', error);
@@ -35,15 +35,8 @@
     cacheMessage = '';
 
     try {
-      // This would need a corresponding API endpoint
-      const res = await fetch('/api/admin/cache/clear', { method: 'POST' });
-      const data = await res.json();
-
-      if (res.ok) {
-        cacheMessage = 'Cache cleared successfully!';
-      } else {
-        cacheMessage = data.error || 'Failed to clear cache';
-      }
+      await api.post('/api/admin/cache/clear', {});
+      cacheMessage = 'Cache cleared successfully!';
     } catch (error) {
       cacheMessage = 'Error: ' + error.message;
     }
@@ -55,8 +48,7 @@
   async function fetchCurrentFont() {
     loadingFont = true;
     try {
-      const res = await fetch('/api/settings');
-      const data = await res.json();
+      const data = await api.get('/api/settings');
       currentFont = data.font_family || 'alagard';
     } catch (error) {
       toast.error('Failed to load font settings');
@@ -72,33 +64,23 @@
     fontMessage = '';
 
     try {
-      const res = await fetch('/api/admin/settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          setting_key: 'font_family',
-          setting_value: currentFont
-        })
+      await api.put('/api/admin/settings', {
+        setting_key: 'font_family',
+        setting_value: currentFont
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        fontMessage = 'Font setting saved! Refresh to see changes site-wide.';
-        // Apply immediately for preview
-        const fontMap = {
-          alagard: "'Alagard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          cozette: "'Cozette', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          atkinson: "'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          opendyslexic: "'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          lexend: "'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          cormorant: "'Cormorant', Georgia, 'Times New Roman', serif",
-          quicksand: "'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
-        };
-        document.documentElement.style.setProperty('--font-family-main', fontMap[currentFont]);
-      } else {
-        fontMessage = data.error || 'Failed to save font setting';
-      }
+      fontMessage = 'Font setting saved! Refresh to see changes site-wide.';
+      // Apply immediately for preview
+      const fontMap = {
+        alagard: "'Alagard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        cozette: "'Cozette', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        atkinson: "'Atkinson Hyperlegible', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        opendyslexic: "'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        lexend: "'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        cormorant: "'Cormorant', Georgia, 'Times New Roman', serif",
+        quicksand: "'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+      };
+      document.documentElement.style.setProperty('--font-family-main', fontMap[currentFont]);
     } catch (error) {
       fontMessage = 'Error: ' + error.message;
     }

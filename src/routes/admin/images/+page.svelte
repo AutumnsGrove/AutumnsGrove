@@ -4,6 +4,7 @@
   import Dialog from "$lib/components/ui/Dialog.svelte";
   import Select from "$lib/components/ui/Select.svelte";
   import { toast } from "$lib/components/ui/toast";
+  import { api, apiRequest } from "$lib/utils/api.js";
 
   let folder = $state('blog');
   let customFolder = $state('');
@@ -51,12 +52,7 @@
       params.set('limit', '30');
       params.set('sortBy', gallerySortBy);
 
-      const response = await fetch(`/api/images/list?${params}`);
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to load images');
-      }
+      const data = await api.get(`/api/images/list?${params}`);
 
       // Filter to only include actual image files
       const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp', '.ico', '.avif'];
@@ -158,16 +154,10 @@
         formData.append('file', file);
         formData.append('folder', getTargetFolder());
 
-        const response = await fetch('/api/images/upload', {
+        const result = await apiRequest('/api/images/upload', {
           method: 'POST',
           body: formData,
         });
-
-        const result = await response.json();
-
-        if (!response.ok) {
-          throw new Error(result.message || 'Upload failed');
-        }
 
         uploads = uploads.map(u =>
           u.id === uploadItem.id
@@ -227,19 +217,9 @@
     deleting = true;
 
     try {
-      const response = await fetch('/api/images/delete', {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      await api.delete('/api/images/delete', {
         body: JSON.stringify({ key: imageToDelete.key }),
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to delete image');
-      }
 
       // Remove from gallery after successful deletion
       galleryImages = galleryImages.filter(img => img.key !== imageToDelete.key);
