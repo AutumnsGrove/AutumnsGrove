@@ -1,6 +1,6 @@
 # TODOs for AutumnsGrove
 
-> **Last Updated:** November 29, 2025 - Completed security audit, admin pages management, and all deployment tasks
+> **Last Updated:** December 1, 2025 - RSS feed, Recipes D1 integration, comprehensive scoping docs for future features
 
 ---
 
@@ -315,110 +315,73 @@ Sync backfill works fine and is sufficient for current needs. Future options:
 
 ---
 
-### PLANNING: Long-Horizon Context System (Nov 28, 2025)
+### READY: Long-Horizon Context System
 
-**Status:** Design phase - implementation deferred until basic features stable
+**Status:** Comprehensive specification complete - Ready for implementation
 
-**Goal:** Provide AI with historical context to recognize and comment on multi-day tasks
+**Full Specification:** `docs/plans/long-horizon-context-spec.md`
 
-**Problem:**
-Currently each day's summary is generated in isolation. When working on a multi-day refactoring or feature implementation, the AI has no context that "this is day 7 of 15 of a larger effort."
+**Overview:** Enable the daily summary AI to recognize and comment on multi-day tasks by providing historical context from previous summaries.
 
-**Proposed Solution:**
+**Key Components:**
+1. Context brief generation for each day's summary
+2. Historical context retrieval (past 3 days)
+3. Multi-day task detection and continuation tracking
+4. Enhanced prompts with context awareness
+5. Anthropic prompt caching for cost reduction
 
-1. **Context Window Structure:**
-   - When generating a summary, include the past 3 days of summaries as context
-   - Use Anthropic prompt caching for the repeated historical context (reduces cost)
-   - Structure: `[Day N-3 summary] [Day N-2 summary] [Day N-1 summary] [Current day commits]`
-
-2. **Smart Multi-Day Detection:**
-   - Analyze commit messages and file changes for patterns
-   - Detect when the same files/areas are being modified across multiple days
-   - Identify keywords like "WIP", "part 2", "continued", "refactor", etc.
-   - Track repository focus - if same repo gets 80%+ of commits for 3+ days, it's a focused effort
-
-3. **Condensed Historical Summaries:**
-   - Don't pass full detailed summaries for historical context
-   - Create condensed "context briefs" for each day:
-     - Main focus areas (1-2 sentences)
-     - Key repos touched
-     - Lines changed (ballpark)
-     - Any detected ongoing tasks
-   - This prevents context overload while maintaining awareness
-
-4. **Multi-Day Progress Comments:**
-   - When multi-day task detected, add encouraging but non-cheerleader comments
-   - Examples:
-     - "Day 3 of the auth refactor. Steady progress."
-     - "Still on the timeline feature - the frontend is taking shape."
-     - "Week two of this migration. The end is in sight."
-   - Avoid: "You're crushing it!" / "Amazing work on day 5!"
-
-5. **Database Schema Additions:**
-   ```sql
-   -- Add to daily_summaries table
-   context_brief TEXT,           -- Condensed summary for context passing
-   detected_focus TEXT,          -- JSON: detected ongoing task/project
-   continuation_of TEXT,         -- Reference to previous day if detected as continuation
-   ```
-
-6. **Prompt Caching Strategy (Anthropic):**
-   - System prompt + voice guidelines = static (cacheable)
-   - Historical context briefs = semi-static (cacheable if unchanged)
-   - Current day commits = dynamic (not cached)
-   - Expected savings: 50-70% input token cost for context portion
-
-**Implementation Order:**
-1. Add `context_brief` generation to current summaries
-2. Update prompt to accept historical context
-3. Add multi-day detection logic
-4. Implement Anthropic prompt caching
-5. Add continuation comments to gutter
+**Estimated Effort:** 4-6 hours across multiple sessions
 
 **Dependencies:**
-- Stable AI provider integration (done)
-- Cost tracking to measure caching effectiveness (done)
-- Prompt refinement complete (done)
+- Daily summary worker (completed)
+- D1 database (completed)
+- Claude API integration (completed)
 
 ---
 
-### HIGH PRIORITY: Recipes D1 Integration (Nov 26, 2025)
+### ~~HIGH PRIORITY: Recipes D1 Integration~~ ✅ COMPLETED (Dec 1, 2025)
 
-**Status:** Standalone plan ready
+**Status:** Fully implemented
 
-**Goal:** Mirror blog posts D1 integration for recipes, add URL field for external sources
+**What was accomplished:**
+- [x] Updated D1 schema with recipes table (includes `url` field)
+- [x] Added recipe sync endpoints to `workers/sync-posts/index.js`:
+  - `POST /sync-recipes` - Sync recipes from GitHub
+  - `GET /recipes` - List all recipes
+  - `GET /recipes/[slug]` - Get single recipe
+- [x] Created GitHub Actions workflow `.github/workflows/sync-recipes.yml`
+- [x] Updated admin recipes page to fetch from D1 with filesystem fallback
+- [x] Added Source column to admin table (shows external URL or "Original")
+- [x] Updated new recipe template with `url:` field
 
-**Key tasks:**
-- [ ] Update D1 schema with recipes table (includes `url` field)
-- [ ] Add recipe sync endpoints to Cloudflare Worker
-- [ ] Create GitHub Actions workflow for recipe syncing
-- [ ] Update admin recipes page to fetch from D1
-- [ ] Display URL field in admin table
-- [ ] Add external source link to recipe display page
+**Files Modified/Created:**
+- `workers/sync-posts/schema.sql` - Added recipes table
+- `workers/sync-posts/index.js` - Added recipe handlers
+- `.github/workflows/sync-recipes.yml` - Recipe sync workflow
+- `src/routes/admin/recipes/+page.server.js` - D1 fetch with fallback
+- `src/routes/admin/recipes/+page.svelte` - UI updates
 
-**Implementation plan:** `docs/plans/recipes-d1-integration.md`
-
-**Independent execution:** Can be run separately from other tasks at any time
+**Deployment:** Run `scripts/deploy-commands.sh` to apply schema and deploy
 
 ---
 
-### MEDIUM PRIORITY: RSS Feed Implementation
+### ~~MEDIUM PRIORITY: RSS Feed Implementation~~ ✅ COMPLETED (Dec 1, 2025)
 
-**Goal:** Add RSS feed support for blog posts
+**Status:** Implemented and deployed
 
-**Documentation:** See `docs/RSS_FEED_IMPLEMENTATION.md` for full research and implementation guide.
+**What was accomplished:**
+- [x] Created RSS endpoint at `src/routes/api/feed/+server.js`
+- [x] Added RSS autodiscovery link to `src/routes/+layout.svelte`
+- [x] Created `/rss.xml` redirect to `/api/feed`
+- [x] Proper XML escaping and CDATA handling
+- [x] Uses site config for metadata
+- [x] 1-hour cache headers
 
-**Implementation steps:**
-- [ ] Create RSS endpoint at `src/routes/api/feed/+server.js`
-- [ ] Add RSS autodiscovery link to `src/routes/+layout.svelte`
-- [ ] Test feed locally and validate with W3C validator
-- [ ] Optional: Add full content in feed
-- [ ] Optional: Create `/rss.xml` redirect
-- [ ] Optional: Add KV caching for production
+**URLs:**
+- Main feed: `/api/feed`
+- Redirect: `/rss.xml`
 
-**Key files:**
-- `src/lib/utils/markdown.js` - Use `getAllPosts()` function
-- `docs/RSS_FEED_IMPLEMENTATION.md` - Full implementation guide
+**Documentation:** `docs/RSS_FEED_IMPLEMENTATION.md`
 
 ---
 
@@ -616,11 +579,15 @@ Commits:     ████████ AutumnsGrove (150)
 
 ---
 
-### HIGH PRIORITY: Live Document Modes (Multi-Mode Editing Experience)
+### READY: Live Document Modes (Multi-Mode Editing Experience)
 
-**Status:** Planned - The Next Evolution of the Editor
+**Status:** Comprehensive specification complete - Ready for implementation
+
+**Full Specification:** `docs/plans/live-document-modes-spec.md`
 
 **Goal:** Transform the markdown editor into a fluid, multi-mode writing experience that adapts to different workflows. Think Notion meets Obsidian meets your terminal-grove aesthetic.
+
+**Estimated Effort:** 6-8 hours across multiple sessions
 
 **The Three Modes (All Working Together):**
 
@@ -887,61 +854,35 @@ The goal: **Best of all worlds**, in your unique forest terminal aesthetic.
 
 ## 💡 Future Ideas & Enhancements
 
-### AI Writing Assistant for MarkdownEditor (Planned - Not Started)
+### READY: AI Writing Assistant for MarkdownEditor
 
-**Status:** Comprehensive plan created, awaiting implementation
+**Status:** Comprehensive specification complete - Ready for implementation
+
+**Full Specification:** `docs/plans/ai-writing-assistant-spec.md`
 
 **Goal:** Add ethical AI writing tools to help polish posts WITHOUT generating content
 
 **Core Principle:** AI is a TOOL, never a writer. Users write their own posts.
 
-**Allowed Features (Enhancement Tools):**
-- [ ] Grammar/spelling corrections (like Grammarly)
-- [ ] Readability scoring (Flesch-Kincaid)
-- [ ] Tone analysis ("sounds harsh here")
-- [ ] Word choice suggestions
-- [ ] Structural feedback (paragraph length)
+**Key Features:**
+- Grammar/spelling corrections (like Grammarly)
+- Readability scoring (Flesch-Kincaid)
+- Tone analysis and suggestions
+- Settings toggle (OFF by default)
+- Command palette integration
+- Usage tracking with cost transparency
 
-**Forbidden Features (Content Generation):**
-- ❌ "Write a post about X"
-- ❌ "Expand this to 1000 words"
-- ❌ Auto-completion or predictive text
-- ❌ Any full sentence generation
-
-**Implementation Plan:**
-- **Phase 1 (Week 1):** Settings toggle (OFF by default) + grammar check via Cmd+K
-- **Phase 2 (Week 2):** Readability + tone analysis
-- **Phase 3 (Week 3):** Usage dashboard with cost transparency
-- **Phase 4 (Future):** Inline highlights, custom writing rules
+**Estimated Effort:** 8-12 hours across multiple sessions
 
 **Infrastructure (Already Ready):**
-- ✅ Anthropic API configured in wrangler.toml
-- ✅ D1 `ai_requests` table for usage tracking
-- ✅ Claude Haiku 4.5 integration working (timeline uses it)
-- ✅ Settings system in place
+- Anthropic API configured
+- D1 database for usage tracking
+- Claude Haiku 4.5 integration working
+- Settings system in place
 
 **Estimated Costs:**
-- Light user (10 posts, 3 checks each): ~$0.015/month
+- Light user (10 posts, 3 checks each): ~$0.02/month
 - Heavy user (50 posts, 10 checks each): ~$0.25/month
-- Power user (100+ analyses): ~$0.50-1.00/month
-
-**Design Principles:**
-- All AI features OFF by default (zero friction for non-users)
-- Command palette integration (Cmd+K → "AI: Check Grammar")
-- Terminal-grove aesthetic (sidebar panel, muted green accents)
-- Full transparency (settings explain data sent to Anthropic)
-- User model selection (Haiku for speed, Sonnet for quality)
-
-**Documentation:**
-- Full plan: `~/.claude/plans/ai-writing-assistant.md` (1,468 lines)
-- Includes code examples, UI mockups, cost analysis, ethical safeguards
-
-**Next Steps (When Ready):**
-1. Review plan document
-2. Approve Phase 1 scope
-3. Implement settings toggle + API endpoint
-4. Add AI panel to MarkdownEditor
-5. Deploy behind feature flag
 
 ---
 
@@ -1052,68 +993,51 @@ npx wrangler pages dev -- npm run dev
 
 When you return to work on this project:
 
-1. **Deploy Markdown Editor (ALL PHASES COMPLETE):**
-   ```bash
-   # The POSTS_DB binding was added to wrangler.toml
-   # Posts database already exists: autumnsgrove-posts (510badf3-457a-4892-bf2a-45d4bfd7a7bb)
+### 1. Deploy Recent Changes
 
-   # Add gutter_content column to posts table (required for gutter manager)
-   wrangler d1 execute autumnsgrove-posts --command "ALTER TABLE posts ADD COLUMN gutter_content TEXT DEFAULT '[]'"
+Run the deployment script to apply all recent changes:
+```bash
+# Interactive deployment script - handles migrations, secrets, and deploys
+./scripts/deploy-commands.sh
 
-   # Deploy the main site with new editor routes
-   npm run build && wrangler pages deploy .svelte-kit/cloudflare
+# Or deploy manually:
+# Apply recipes table migration
+wrangler d1 execute autumnsgrove-posts --file=workers/sync-posts/schema.sql
 
-   # Or for local testing:
-   npx wrangler pages dev -- npm run dev
-   ```
+# Deploy sync-posts worker (includes recipe endpoints)
+cd workers/sync-posts && wrangler deploy && cd ../..
 
-   **Routes:**
-   - `/admin/blog/new` - Create new post with full markdown editor
-   - `/admin/blog/edit/[slug]` - Edit existing posts
+# Deploy main site
+npm run build && wrangler pages deploy .svelte-kit/cloudflare
+```
 
-   **API Endpoints:**
-   - `GET /api/posts` - List all posts
-   - `POST /api/posts` - Create new post (with gutter_content)
-   - `GET /api/posts/[slug]` - Get single post
-   - `PUT /api/posts/[slug]` - Update post (with gutter_content)
-   - `DELETE /api/posts/[slug]` - Delete post
+### 2. Verify New Features
 
-   **All Implemented Features:**
-   - Phase 1: Core markdown editor with live preview, terminal-grove styling
-   - Phase 2: GutterManager, CDN image picker, anchor insertion
-   - Phase 3: Drag-drop image upload to R2, auto-save drafts, full preview mode
+**RSS Feed:**
+- Visit `/api/feed` - should return valid RSS XML
+- Visit `/rss.xml` - should redirect to `/api/feed`
+- Test in an RSS reader
 
-2. **Deploy AI Timeline Updates:**
-   ```bash
-   # Apply database migrations
-   wrangler d1 execute autumnsgrove-git-stats --file=src/lib/db/schema.sql
+**Recipes D1:**
+- Push a recipe to `UserContent/Recipes/` - GitHub Action should sync
+- Visit `/admin/recipes` - should show "Loading from D1" badge
+- Try adding `url:` field to a recipe frontmatter
 
-   # Add Anthropic API key (if not already set)
-   cd workers/daily-summary && wrangler secret put ANTHROPIC_API_KEY
+### 3. Next Implementation Options
 
-   # Deploy the worker
-   wrangler deploy
-   ```
+**Ready for Implementation (with full specs):**
 
-3. **Test New Features:**
-   - Timeline page with inline gutter comments under headers
-   - Admin timeline page with:
-     - AI model selector dropdown
-     - Usage & cost tracking display
-     - Sync backfill for past dates (async removed - Queues require paid plan)
-   - Test Claude Haiku 4.5 output tone (should be less cheerleader-y)
+| Feature | Effort | Spec |
+|---------|--------|------|
+| Live Document Modes | 6-8 hours | `docs/plans/live-document-modes-spec.md` |
+| Long-Horizon Context | 4-6 hours | `docs/plans/long-horizon-context-spec.md` |
+| AI Writing Assistant | 8-12 hours | `docs/plans/ai-writing-assistant-spec.md` |
 
-3. **Timeline Visualizations (DONE):**
-   - [x] Activity overview with GitHub-style heatmap and sparklines
-   - [x] LOC (lines of code) bar charts per day
-   - [x] Repo breakdown visualization
-   - [x] Activity API endpoint for aggregated data
-
-4. **Other tasks to consider:**
-   - RSS Feed implementation (medium priority)
-   - Recipes D1 integration
-   - Long-horizon context system (see planning section above)
+**Lower Priority:**
+- Dashboard Data Expansion (paginate all repos)
+- Dashboard Visualizations (comparison charts)
+- UI Polish (mobile, loading states)
 
 ---
 
-*Last updated: November 28, 2025 - Completed in-website markdown editor with all Phase 3 features*
+*Last updated: December 1, 2025 - RSS feed, Recipes D1 integration, comprehensive scoping docs*

@@ -40,3 +40,24 @@ CREATE INDEX IF NOT EXISTS idx_pages_type ON pages(type);
 
 -- Index for ordering by update time
 CREATE INDEX IF NOT EXISTS idx_pages_updated ON pages(updated_at DESC);
+
+-- Table for storing recipes (mirrors posts structure with url field)
+CREATE TABLE IF NOT EXISTS recipes (
+  slug TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  date TEXT NOT NULL,
+  tags TEXT,
+  description TEXT,
+  url TEXT,                          -- External recipe source URL
+  markdown_content TEXT NOT NULL,
+  html_content TEXT,
+  file_hash TEXT NOT NULL,
+  last_synced TEXT NOT NULL,
+  created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create indexes for common queries
+CREATE INDEX IF NOT EXISTS idx_recipes_date ON recipes(date DESC);
+CREATE INDEX IF NOT EXISTS idx_recipes_title ON recipes(title);
+CREATE INDEX IF NOT EXISTS idx_recipes_last_synced ON recipes(last_synced);
