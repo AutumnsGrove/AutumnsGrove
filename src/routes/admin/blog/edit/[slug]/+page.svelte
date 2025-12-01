@@ -8,6 +8,7 @@
   import Button from "$lib/components/ui/Button.svelte";
   import Dialog from "$lib/components/ui/Dialog.svelte";
   import { toast } from "$lib/components/ui/toast";
+  import { api } from "$lib/utils/api.js";
 
   let { data } = $props();
 
@@ -82,27 +83,15 @@
     saving = true;
 
     try {
-      const response = await fetch(`/api/posts/${slug}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: title.trim(),
-          date,
-          description: description.trim(),
-          tags: parseTags(tagsInput),
-          font,
-          markdown_content: content,
-          gutter_content: JSON.stringify(gutterItems),
-        }),
+      await api.put(`/api/posts/${slug}`, {
+        title: title.trim(),
+        date,
+        description: description.trim(),
+        tags: parseTags(tagsInput),
+        font,
+        markdown_content: content,
+        gutter_content: JSON.stringify(gutterItems),
       });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to update post");
-      }
 
       // Clear draft on successful save
       editorRef?.clearDraft();
@@ -125,15 +114,7 @@
     saving = true;
 
     try {
-      const response = await fetch(`/api/posts/${slug}`, {
-        method: "DELETE",
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to delete post");
-      }
+      await api.delete(`/api/posts/${slug}`);
 
       toast.success("Post deleted successfully");
       // Redirect to blog admin

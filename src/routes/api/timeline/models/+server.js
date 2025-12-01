@@ -5,6 +5,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { verifySession, isAllowedAdmin } from '$lib/auth/session.js';
 
 const WORKER_URL = 'https://autumnsgrove-daily-summary.m7jv4v7npb.workers.dev';
 
@@ -118,11 +119,28 @@ function getFallbackModels() {
   return models;
 }
 
-export async function GET({ cookies }) {
-  // Check admin authentication
+export async function GET({ cookies, platform }) {
+  // Verify admin authentication
   const sessionToken = cookies.get('session');
   if (!sessionToken) {
     throw error(401, 'Authentication required');
+  }
+
+  let user;
+  try {
+    user = await verifySession(sessionToken, platform.env.SESSION_SECRET);
+    if (!user) {
+      throw error(401, 'Invalid session');
+    }
+  } catch (e) {
+    if (e.status) throw e;
+    throw error(401, 'Authentication failed');
+  }
+
+  // Verify admin access
+  const allowedAdmins = platform.env.ALLOWED_EMAILS || '';
+  if (!isAllowedAdmin(user.email, allowedAdmins)) {
+    throw error(403, 'Admin access required');
   }
 
   try {

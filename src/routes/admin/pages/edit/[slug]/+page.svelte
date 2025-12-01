@@ -7,6 +7,7 @@
   import Textarea from "$lib/components/ui/Textarea.svelte";
   import Button from "$lib/components/ui/Button.svelte";
   import { toast } from "$lib/components/ui/toast";
+  import { api } from "$lib/utils/api.js";
 
   let { data } = $props();
 
@@ -90,24 +91,12 @@
         }
       }
 
-      const response = await fetch(`/api/pages/${slug}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: title.trim(),
-          description: description.trim(),
-          markdown_content: content,
-          hero: hero ? JSON.stringify(hero) : null,
-        }),
+      await api.put(`/api/pages/${slug}`, {
+        title: title.trim(),
+        description: description.trim(),
+        markdown_content: content,
+        hero: hero ? JSON.stringify(hero) : null,
       });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to update page");
-      }
 
       // Clear draft on successful save
       editorRef?.clearDraft();

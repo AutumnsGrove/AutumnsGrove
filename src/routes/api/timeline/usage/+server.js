@@ -5,14 +5,32 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { verifySession, isAllowedAdmin } from '$lib/auth/session.js';
 
 const WORKER_URL = 'https://autumnsgrove-daily-summary.m7jv4v7npb.workers.dev';
 
-export async function GET({ url, cookies }) {
-  // Check admin authentication
+export async function GET({ url, cookies, platform }) {
+  // Verify admin authentication
   const sessionToken = cookies.get('session');
   if (!sessionToken) {
     throw error(401, 'Authentication required');
+  }
+
+  let user;
+  try {
+    user = await verifySession(sessionToken, platform.env.SESSION_SECRET);
+    if (!user) {
+      throw error(401, 'Invalid session');
+    }
+  } catch (e) {
+    if (e.status) throw e;
+    throw error(401, 'Authentication failed');
+  }
+
+  // Verify admin access
+  const allowedAdmins = platform.env.ALLOWED_EMAILS || '';
+  if (!isAllowedAdmin(user.email, allowedAdmins)) {
+    throw error(403, 'Admin access required');
   }
 
   const days = url.searchParams.get('days') || '30';
@@ -35,6 +53,6 @@ export async function GET({ url, cookies }) {
   } catch (e) {
     console.error('Usage fetch error:', e);
     if (e.status) throw e;
-    throw error(500, e.message || 'Failed to fetch usage stats');
+    throw error(500, 'Failed to fetch usage stats');
   }
 }

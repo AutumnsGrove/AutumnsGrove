@@ -1,10 +1,11 @@
-import { json } from "@sveltejs/kit";
+import { json, error } from "@sveltejs/kit";
 import {
   getLogs,
   getAllLogs,
   getLogStats,
   subscribe,
 } from "$lib/server/logger.js";
+import { verifySession, isAllowedAdmin } from "$lib/auth/session.js";
 
 export const prerender = false;
 
@@ -17,13 +18,33 @@ export const prerender = false;
  * - since: ISO timestamp to get logs after this time
  * - stream: 'true' for Server-Sent Events streaming
  */
-export async function GET({ url, request }) {
+export async function GET({ url, request, cookies, platform }) {
+  // Verify admin authentication
+  const sessionToken = cookies.get("session");
+  if (!sessionToken) {
+    throw error(401, "Authentication required");
+  }
+
+  let user;
+  try {
+    user = await verifySession(sessionToken, platform.env.SESSION_SECRET);
+    if (!user) {
+      throw error(401, "Invalid session");
+    }
+  } catch (e) {
+    if (e.status) throw e;
+    throw error(401, "Authentication failed");
+  }
+
+  // Verify admin access
+  const allowedAdmins = platform.env.ALLOWED_EMAILS || "";
+  if (!isAllowedAdmin(user.email, allowedAdmins)) {
+    throw error(403, "Admin access required");
+  }
+
   const category = url.searchParams.get("category") || "all";
   const since = url.searchParams.get("since");
   const stream = url.searchParams.get("stream") === "true";
-
-  // Check if admin is authenticated (you can add proper auth check here)
-  // For now, we'll rely on the admin layout's auth
 
   // Server-Sent Events streaming
   if (stream) {
@@ -114,10 +135,10 @@ export async function GET({ url, request }) {
       count: logs.length,
       timestamp: new Date().toISOString(),
     });
-  } catch (error) {
-    console.error("[API] Error fetching logs:", error);
+  } catch (e) {
+    console.error("[API] Error fetching logs:", e);
     return json(
-      { error: "Failed to fetch logs", message: error.message },
+      { error: "Failed to fetch logs" },
       { status: 500 },
     );
   }

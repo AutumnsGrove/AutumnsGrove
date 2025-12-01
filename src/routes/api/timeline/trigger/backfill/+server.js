@@ -8,15 +8,33 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import { verifySession, isAllowedAdmin } from '$lib/auth/session.js';
 
 // Worker URL
 const WORKER_URL = 'https://autumnsgrove-daily-summary.m7jv4v7npb.workers.dev';
 
 export async function POST({ url, cookies, platform }) {
-  // Check admin authentication
+  // Verify admin authentication
   const sessionToken = cookies.get('session');
   if (!sessionToken) {
     throw error(401, 'Authentication required');
+  }
+
+  let user;
+  try {
+    user = await verifySession(sessionToken, platform.env.SESSION_SECRET);
+    if (!user) {
+      throw error(401, 'Invalid session');
+    }
+  } catch (e) {
+    if (e.status) throw e;
+    throw error(401, 'Authentication failed');
+  }
+
+  // Verify admin access
+  const allowedAdmins = platform.env.ALLOWED_EMAILS || '';
+  if (!isAllowedAdmin(user.email, allowedAdmins)) {
+    throw error(403, 'Admin access required');
   }
 
   const githubToken = platform?.env?.GITHUB_TOKEN;
@@ -61,6 +79,6 @@ export async function POST({ url, cookies, platform }) {
   } catch (e) {
     console.error('Timeline backfill error:', e);
     if (e.status) throw e;
-    throw error(500, e.message || 'Failed to backfill summaries');
+    throw error(500, 'Failed to backfill summaries');
   }
 }
