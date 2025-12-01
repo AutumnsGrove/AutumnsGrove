@@ -1,3 +1,7 @@
+<svelte:head>
+	<link rel="alternate" type="application/rss+xml" title="AutumnsGrove Blog" href="/api/feed" />
+</svelte:head>
+
 <script>
 	import '../app.css';
 	import '$lib/styles/tokens.css';

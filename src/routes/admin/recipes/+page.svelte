@@ -17,12 +17,13 @@
     return new Date().toISOString().split('T')[0];
   }
 
-  // Create the new recipe URL with frontmatter template
+  // Create the new recipe URL with frontmatter template (includes url field)
   function getNewRecipeUrl() {
     const template = `---
 title: Your Recipe Title
 date: ${getTodayDate()}
 description: A brief description of your recipe
+url: # Optional: link to original recipe source
 tags:
   - recipe
   - tag2
@@ -39,6 +40,11 @@ tags:
 2. Second step
 `;
     return `https://github.com/AutumnsGrove/AutumnsGrove/new/main/UserContent/Recipes?filename=New-Recipe.md&value=${encodeURIComponent(template)}`;
+  }
+
+  // Check if recipe has external URL
+  function hasUrl(recipe) {
+    return recipe.url && recipe.url.trim() !== '';
   }
 </script>
 
@@ -63,6 +69,7 @@ tags:
           <th>Title</th>
           <th>Date</th>
           <th>Tags</th>
+          <th>Source</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -89,6 +96,15 @@ tags:
                 <span class="no-tags">-</span>
               {/if}
             </td>
+            <td class="url-cell">
+              {#if hasUrl(recipe)}
+                <a href={recipe.url} target="_blank" rel="noopener noreferrer" class="source-link">
+                  View Source
+                </a>
+              {:else}
+                <span class="no-url">Original</span>
+              {/if}
+            </td>
             <td class="actions-cell">
               <a href="/recipes/{recipe.slug}" target="_blank" class="action-link">View</a>
               <a
@@ -102,7 +118,7 @@ tags:
           </tr>
         {:else}
           <tr>
-            <td colspan="4" class="empty-state">
+            <td colspan="5" class="empty-state">
               No recipes yet. Create your first recipe!
             </td>
           </tr>
@@ -114,13 +130,18 @@ tags:
   <div class="info-box">
     <h3>How Recipes Work</h3>
     <p>
-      Recipes are markdown files stored in the <code>UserContent/Recipes/</code> directory.
-      To add or edit recipes, you can:
+      Recipes are markdown files stored in the <code>UserContent/Recipes/</code> directory
+      and synced to D1 database.
+      {#if data.source === 'd1'}
+        <span class="source-badge d1">Loading from D1</span>
+      {:else}
+        <span class="source-badge filesystem">Loading from filesystem</span>
+      {/if}
     </p>
     <ul>
       <li>Use the "Edit" links above to modify files directly on GitHub</li>
-      <li>Clone the repo and edit files locally with your preferred editor</li>
-      <li>Changes will deploy automatically when pushed to main</li>
+      <li>Add a <code>url:</code> field in frontmatter to link to original recipe sources</li>
+      <li>Changes sync to D1 automatically when pushed to main</li>
     </ul>
   </div>
 </div>
@@ -205,6 +226,24 @@ tags:
     color: var(--color-text-subtle);
     transition: color 0.3s ease;
   }
+  .url-cell {
+    white-space: nowrap;
+  }
+  .source-link {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+  }
+  .source-link:hover {
+    text-decoration: underline;
+  }
+  .no-url {
+    color: var(--color-text-subtle);
+    font-size: 0.85rem;
+    font-style: italic;
+    transition: color 0.3s ease;
+  }
   .actions-cell {
     white-space: nowrap;
   }
@@ -261,6 +300,22 @@ tags:
     font-size: 0.85em;
     transition: background-color 0.3s ease;
   }
+  .source-badge {
+    display: inline-block;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-left: 0.5rem;
+  }
+  .source-badge.d1 {
+    background: #2c5f2d;
+    color: white;
+  }
+  .source-badge.filesystem {
+    background: #666;
+    color: white;
+  }
   /* Mobile styles */
   @media (max-width: 768px) {
     .page-header {
@@ -268,10 +323,13 @@ tags:
       align-items: stretch;
       gap: 1rem;
     }
+    /* Hide Date, Tags, and Source columns on mobile */
     .recipes-table th:nth-child(2),
     .recipes-table td:nth-child(2),
     .recipes-table th:nth-child(3),
-    .recipes-table td:nth-child(3) {
+    .recipes-table td:nth-child(3),
+    .recipes-table th:nth-child(4),
+    .recipes-table td:nth-child(4) {
       display: none;
     }
     .recipes-table th,
