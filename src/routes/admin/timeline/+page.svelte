@@ -4,6 +4,7 @@
   import Input from '$lib/components/ui/Input.svelte';
   import Select from '$lib/components/ui/Select.svelte';
   import { toast } from '$lib/components/ui/toast';
+  import { apiRequest } from '$lib/utils/api.js';
 
   let triggerLoading = $state(false);
   let backfillLoading = $state(false);
@@ -107,14 +108,7 @@
         url += `&model=${encodeURIComponent(selectedModel)}`;
       }
 
-      const res = await fetch(url, { method: 'POST' });
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to trigger summary');
-      }
-
-      result = data;
+      result = await apiRequest(url, { method: 'POST' });
       await Promise.all([fetchLatestSummary(), fetchUsageStats()]);
     } catch (e) {
       error = e.message;
@@ -141,14 +135,7 @@
         url += `&model=${encodeURIComponent(selectedModel)}`;
       }
 
-      const res = await fetch(url, { method: 'POST' });
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to backfill summaries');
-      }
-
-      result = data;
+      result = await apiRequest(url, { method: 'POST' });
       await Promise.all([fetchLatestSummary(), fetchUsageStats()]);
     } catch (e) {
       error = e.message;
@@ -235,9 +222,8 @@
     editSuccess = null;
 
     try {
-      const res = await fetch(`/api/timeline/${editingEntry.summary_date}`, {
+      const data = await apiRequest(`/api/timeline/${editingEntry.summary_date}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           brief_summary: editForm.brief_summary,
           detailed_timeline: editForm.detailed_timeline,
@@ -246,24 +232,6 @@
           expected_updated_at: editingEntry.updated_at
         })
       });
-
-      // Handle network errors vs API errors
-      let data;
-      try {
-        data = await res.json();
-      } catch {
-        throw new Error('Network error. Please check your connection and try again.');
-      }
-
-      if (!res.ok) {
-        // Special handling for conflict (race condition)
-        if (res.status === 409) {
-          // Refresh entries list so user can get latest version
-          await fetchEntries();
-          throw new Error('This entry was modified by someone else. The list has been refreshed - please close and reopen to see the latest version.');
-        }
-        throw new Error(data.message || `Server error (${res.status})`);
-      }
 
       editSuccess = 'Entry updated successfully!';
 

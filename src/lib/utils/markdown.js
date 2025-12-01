@@ -1,7 +1,7 @@
 import { marked } from "marked";
 import matter from "gray-matter";
 import mermaid from "mermaid";
-import { sanitizeSVG } from './sanitize.js';
+import { sanitizeSVG, sanitizeMarkdown } from './sanitize.js';
 
 // Configure Mermaid
 mermaid.initialize({
@@ -719,7 +719,7 @@ export function getHomePage() {
     const content = entry[1];
 
     const { data, content: markdown } = matter(content);
-    const htmlContent = marked.parse(markdown);
+    const htmlContent = sanitizeMarkdown(marked.parse(markdown));
 
     // Extract headers for table of contents
     const headers = extractHeaders(markdown);
@@ -761,7 +761,7 @@ export function getContactPage() {
     const content = entry[1];
 
     const { data, content: markdown } = matter(content);
-    const htmlContent = marked.parse(markdown);
+    const htmlContent = sanitizeMarkdown(marked.parse(markdown));
 
     // Extract headers for table of contents
     const headers = extractHeaders(markdown);
@@ -801,7 +801,7 @@ export function getAboutPage() {
     const content = entry[1];
 
     const { data, content: markdown } = matter(content);
-    const htmlContent = marked.parse(markdown);
+    const htmlContent = sanitizeMarkdown(marked.parse(markdown));
 
     // Extract headers for table of contents
     const headers = extractHeaders(markdown);

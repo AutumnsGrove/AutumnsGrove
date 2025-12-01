@@ -4,6 +4,7 @@
   import { browser } from "$app/environment";
   import MarkdownEditor from "$lib/components/admin/MarkdownEditor.svelte";
   import GutterManager from "$lib/components/admin/GutterManager.svelte";
+  import { api } from "$lib/utils/api.js";
 
   // Form state
   let title = $state("");
@@ -85,28 +86,16 @@
     saving = true;
 
     try {
-      const response = await fetch("/api/posts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          title: title.trim(),
-          slug: slug.trim(),
-          date,
-          description: description.trim(),
-          tags: parseTags(tagsInput),
-          font,
-          markdown_content: content,
-          gutter_content: JSON.stringify(gutterItems),
-        }),
+      const result = await api.post("/api/posts", {
+        title: title.trim(),
+        slug: slug.trim(),
+        date,
+        description: description.trim(),
+        tags: parseTags(tagsInput),
+        font,
+        markdown_content: content,
+        gutter_content: JSON.stringify(gutterItems),
       });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || "Failed to create post");
-      }
 
       // Clear draft on successful save
       editorRef?.clearDraft();
