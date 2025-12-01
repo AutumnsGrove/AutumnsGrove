@@ -158,3 +158,81 @@ CREATE INDEX IF NOT EXISTS idx_ai_usage_date ON ai_usage(usage_date DESC);
 CREATE INDEX IF NOT EXISTS idx_ai_requests_date ON ai_requests(request_date DESC);
 CREATE INDEX IF NOT EXISTS idx_background_jobs_status ON background_jobs(status);
 CREATE INDEX IF NOT EXISTS idx_background_jobs_created ON background_jobs(created_at DESC);
+
+-- Gallery System Tables
+-- Image metadata with hybrid R2 + D1 approach
+
+-- Gallery image metadata (hybrid R2 + D1 approach)
+CREATE TABLE IF NOT EXISTS gallery_images (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    r2_key TEXT NOT NULL UNIQUE,              -- R2 object key (filename/path)
+
+    -- Parsed metadata (auto-extracted from filename)
+    parsed_date TEXT,                          -- YYYY-MM-DD from filename
+    parsed_category TEXT,                      -- e.g., 'minecraft', 'selfies' from path
+    parsed_slug TEXT,                          -- e.g., 'forest-walk' from 'forest-walk.jpg'
+
+    -- Custom metadata (manually added via admin)
+    custom_title TEXT,                         -- Override parsed slug
+    custom_description TEXT,                   -- Rich description
+    custom_date TEXT,                          -- Override parsed date
+
+    -- R2 cached data (synced periodically)
+    file_size INTEGER,
+    uploaded_at TEXT,
+    cdn_url TEXT,
+
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Gallery tags (user-defined categories)
+CREATE TABLE IF NOT EXISTS gallery_tags (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,                 -- e.g., 'minecraft', 'food', 'selfies'
+    slug TEXT NOT NULL UNIQUE,                 -- URL-safe version
+    color TEXT DEFAULT '#5cb85f',              -- Hex color for badge
+    description TEXT,                          -- Optional tag description
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+-- Many-to-many: images to tags
+CREATE TABLE IF NOT EXISTS gallery_image_tags (
+    image_id INTEGER NOT NULL,
+    tag_id INTEGER NOT NULL,
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    PRIMARY KEY (image_id, tag_id),
+    FOREIGN KEY (image_id) REFERENCES gallery_images(id) ON DELETE CASCADE,
+    FOREIGN KEY (tag_id) REFERENCES gallery_tags(id) ON DELETE CASCADE
+);
+
+-- Gallery collections (curated albums)
+CREATE TABLE IF NOT EXISTS gallery_collections (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,                        -- e.g., 'Pride 2024', 'Grove Progress'
+    slug TEXT NOT NULL UNIQUE,
+    description TEXT,
+    cover_image_id INTEGER,                    -- Featured image for collection
+    display_order INTEGER DEFAULT 0,           -- Sort order for display
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY (cover_image_id) REFERENCES gallery_images(id) ON DELETE SET NULL
+);
+
+-- Many-to-many: images to collections
+CREATE TABLE IF NOT EXISTS gallery_collection_images (
+    collection_id INTEGER NOT NULL,
+    image_id INTEGER NOT NULL,
+    display_order INTEGER DEFAULT 0,          -- Order within collection
+    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    PRIMARY KEY (collection_id, image_id),
+    FOREIGN KEY (collection_id) REFERENCES gallery_collections(id) ON DELETE CASCADE,
+    FOREIGN KEY (image_id) REFERENCES gallery_images(id) ON DELETE CASCADE
+);
+
+-- Indexes for gallery performance
+CREATE INDEX IF NOT EXISTS idx_gallery_images_parsed_date ON gallery_images(parsed_date DESC);
+CREATE INDEX IF NOT EXISTS idx_gallery_images_parsed_category ON gallery_images(parsed_category);
+CREATE INDEX IF NOT EXISTS idx_gallery_images_r2_key ON gallery_images(r2_key);
+CREATE INDEX IF NOT EXISTS idx_gallery_tags_slug ON gallery_tags(slug);
+CREATE INDEX IF NOT EXISTS idx_gallery_collections_slug ON gallery_collections(slug);
