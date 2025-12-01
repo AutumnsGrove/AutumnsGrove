@@ -1,6 +1,6 @@
 <script>
   import { onMount } from 'svelte';
-  import { Button, Dialog, Select, toast } from "$lib/components/ui";
+  import { Button, Dialog, Select, Tabs, Badge, Input, toast } from "$lib/components/ui";
   import { api, apiRequest } from "$lib/utils/api";
 
   let folder = $state('blog');
@@ -26,6 +26,23 @@
   let imageToDelete = $state(null);
   let deleting = $state(false);
 
+  // Tab state
+  let activeTab = $state('upload');
+
+  // Tags state
+  let tags = $state([]);
+  let newTagName = $state('');
+  let newTagColor = $state('#8b9467');
+
+  // Bulk tagging state
+  let selectedImages = $state([]);
+  let selectedTagId = $state(null);
+
+  // Sync state
+  let syncing = $state(false);
+  let syncResult = $state(null);
+  let d1ImageCount = $state(0);
+
   const folderOptions = [
     { value: 'blog', label: 'Blog Posts' },
     { value: 'recipes', label: 'Recipes' },
@@ -36,6 +53,7 @@
 
   onMount(() => {
     loadGallery();
+    loadTags();
   });
 
   async function loadGallery(append = false) {
@@ -229,201 +247,426 @@
       imageToDelete = null;
     }
   }
+
+  // Tag management functions
+  async function loadTags() {
+    try {
+      const data = await api.get('/api/admin/gallery/tags');
+      tags = data.tags || [];
+    } catch (err) {
+      console.error('Failed to load tags:', err);
+      tags = [];
+    }
+  }
+
+  async function handleCreateTag(e) {
+    e.preventDefault();
+    if (!newTagName.trim()) return;
+
+    try {
+      await api.post('/api/admin/gallery/tags', {
+        body: JSON.stringify({ name: newTagName, color: newTagColor })
+      });
+      toast.success('Tag created');
+      newTagName = '';
+      newTagColor = '#8b9467';
+      await loadTags();
+    } catch (err) {
+      toast.error('Failed to create tag: ' + err.message);
+    }
+  }
+
+  async function deleteTag(id) {
+    if (!confirm('Delete this tag? This will remove it from all images.')) return;
+
+    try {
+      await api.delete(`/api/admin/gallery/tags/${id}`);
+      toast.success('Tag deleted');
+      await loadTags();
+    } catch (err) {
+      toast.error('Failed to delete tag: ' + err.message);
+    }
+  }
+
+  // Bulk tagging functions
+  function toggleImageSelection(key) {
+    if (selectedImages.includes(key)) {
+      selectedImages = selectedImages.filter(k => k !== key);
+    } else {
+      selectedImages = [...selectedImages, key];
+    }
+  }
+
+  async function applyBulkTag() {
+    if (!selectedTagId || selectedImages.length === 0) {
+      toast.error('Please select images and a tag');
+      return;
+    }
+
+    try {
+      const result = await api.post('/api/admin/gallery/bulk-tag', {
+        body: JSON.stringify({
+          imageKeys: selectedImages,
+          tagId: selectedTagId
+        })
+      });
+
+      toast.success(`Tagged ${result.tagged || selectedImages.length} images`);
+      selectedImages = [];
+      selectedTagId = null;
+    } catch (err) {
+      toast.error('Failed to apply tags: ' + err.message);
+    }
+  }
+
+  // Sync functions
+  async function handleSync() {
+    syncing = true;
+    syncResult = null;
+
+    try {
+      const result = await api.post('/api/admin/gallery/sync');
+      syncResult = result;
+      toast.success(`Synced ${result.total || result.added || 0} images`);
+      await loadD1Count();
+    } catch (err) {
+      toast.error('Sync failed: ' + err.message);
+    } finally {
+      syncing = false;
+    }
+  }
+
+  async function loadD1Count() {
+    if (syncResult) {
+      d1ImageCount = syncResult.total || syncResult.added || 0;
+    }
+  }
 </script>
 
 <div class="images-page">
   <header class="page-header">
-    <h1>Upload Images</h1>
-    <p class="subtitle">Drag and drop images to upload to CDN</p>
+    <h1>Image Management</h1>
+    <p class="subtitle">Upload, organize, and sync images</p>
   </header>
 
-  <div class="upload-config">
-    <label class="folder-select">
-      <span>Upload to:</span>
-      <select bind:value={folder}>
-        {#each folderOptions as opt (opt.value)}
-          <option value={opt.value}>{opt.label}</option>
-        {/each}
-      </select>
-    </label>
-
-    {#if folder === 'custom'}
-      <input
-        type="text"
-        class="custom-folder"
-        placeholder="e.g., blog/my-post-slug"
-        bind:value={customFolder}
-      />
-    {/if}
-  </div>
-
-  <div
-    class="drop-zone"
-    class:dragging={isDragging}
-    role="button"
-    tabindex="0"
-    aria-label="Drag and drop zone for image uploads"
-    ondragover={handleDragOver}
-    ondragleave={handleDragLeave}
-    ondrop={handleDrop}
-    onclick={() => document.getElementById('file-input').click()}
-    onkeydown={(e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        document.getElementById('file-input').click();
-      }
-    }}
+  <Tabs
+    bind:value={activeTab}
+    tabs={[
+      { value: 'upload', label: 'Upload' },
+      { value: 'gallery', label: 'CDN Gallery' },
+      { value: 'metadata', label: 'Metadata & Tags' },
+      { value: 'sync', label: 'Sync' }
+    ]}
   >
-    <input
-      type="file"
-      id="file-input"
-      accept="image/*"
-      multiple
-      onchange={handleFileSelect}
-      hidden
-    />
+    {#snippet content(tab)}
+      {#if tab.value === 'upload'}
+        <!-- Upload Tab -->
+        <div class="upload-config">
+          <label class="folder-select">
+            <span>Upload to:</span>
+            <select bind:value={folder}>
+              {#each folderOptions as opt (opt.value)}
+                <option value={opt.value}>{opt.label}</option>
+              {/each}
+            </select>
+          </label>
 
-    <div class="drop-content">
-      <span class="drop-icon">&#x1F4F7;</span>
-      <p class="drop-text">
-        {#if isDragging}
-          Drop images here
-        {:else}
-          Drag & drop images here
-        {/if}
-      </p>
-      <p class="drop-hint">or click to browse</p>
-      <p class="drop-formats">JPG, PNG, GIF, WebP, SVG (max 10MB)</p>
-    </div>
-  </div>
+          {#if folder === 'custom'}
+            <input
+              type="text"
+              class="custom-folder"
+              placeholder="e.g., blog/my-post-slug"
+              bind:value={customFolder}
+            />
+          {/if}
+        </div>
 
-  {#if uploads.length > 0}
-    <div class="uploads-section">
-      <div class="uploads-header">
-        <h2>Uploads</h2>
-        <Button variant="secondary" size="sm" onclick={clearCompleted}>Clear completed</Button>
-      </div>
+        <div
+          class="drop-zone"
+          class:dragging={isDragging}
+          role="button"
+          tabindex="0"
+          aria-label="Drag and drop zone for image uploads"
+          ondragover={handleDragOver}
+          ondragleave={handleDragLeave}
+          ondrop={handleDrop}
+          onclick={() => document.getElementById('file-input').click()}
+          onkeydown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              document.getElementById('file-input').click();
+            }
+          }}
+        >
+          <input
+            type="file"
+            id="file-input"
+            accept="image/*"
+            multiple
+            onchange={handleFileSelect}
+            hidden
+          />
 
-      <div class="uploads-list">
-        {#each uploads as upload (upload.id)}
-          <div class="upload-item" class:success={upload.status === 'success'} class:error={upload.status === 'error'}>
-            <div class="upload-info">
-              <span class="upload-name">{upload.name}</span>
-              {#if upload.status === 'uploading'}
-                <span class="upload-status uploading">Uploading...</span>
-              {:else if upload.status === 'success'}
-                <span class="upload-status success">Uploaded</span>
-              {:else if upload.status === 'error'}
-                <span class="upload-status error">{upload.error}</span>
+          <div class="drop-content">
+            <span class="drop-icon">&#x1F4F7;</span>
+            <p class="drop-text">
+              {#if isDragging}
+                Drop images here
+              {:else}
+                Drag & drop images here
               {/if}
+            </p>
+            <p class="drop-hint">or click to browse</p>
+            <p class="drop-formats">JPG, PNG, GIF, WebP, SVG (max 10MB)</p>
+          </div>
+        </div>
+
+        {#if uploads.length > 0}
+          <div class="uploads-section">
+            <div class="uploads-header">
+              <h2>Uploads</h2>
+              <Button variant="secondary" size="sm" onclick={clearCompleted}>Clear completed</Button>
             </div>
 
-            {#if upload.status === 'success'}
-              <div class="upload-actions">
-                <div class="url-display">
-                  <code>{upload.url}</code>
+            <div class="uploads-list">
+              {#each uploads as upload (upload.id)}
+                <div class="upload-item" class:success={upload.status === 'success'} class:error={upload.status === 'error'}>
+                  <div class="upload-info">
+                    <span class="upload-name">{upload.name}</span>
+                    {#if upload.status === 'uploading'}
+                      <span class="upload-status uploading">Uploading...</span>
+                    {:else if upload.status === 'success'}
+                      <span class="upload-status success">Uploaded</span>
+                    {:else if upload.status === 'error'}
+                      <span class="upload-status error">{upload.error}</span>
+                    {/if}
+                  </div>
+
+                  {#if upload.status === 'success'}
+                    <div class="upload-actions">
+                      <div class="url-display">
+                        <code>{upload.url}</code>
+                      </div>
+                      <div class="copy-buttons">
+                        <Button variant="primary" size="sm" onclick={() => copyToClipboard(upload.url, 'url', upload.id)}>
+                          {copiedItem === `${upload.id}-url` ? 'Copied!' : 'Copy URL'}
+                        </Button>
+                        <Button variant="primary" size="sm" onclick={() => copyToClipboard(upload.markdown, 'markdown', upload.id)}>
+                          {copiedItem === `${upload.id}-markdown` ? 'Copied!' : 'Copy Markdown'}
+                        </Button>
+                        <Button variant="primary" size="sm" onclick={() => copyToClipboard(upload.svelte, 'svelte', upload.id)}>
+                          {copiedItem === `${upload.id}-svelte` ? 'Copied!' : 'Copy Svelte'}
+                        </Button>
+                      </div>
+                    </div>
+                  {/if}
                 </div>
-                <div class="copy-buttons">
-                  <Button variant="primary" size="sm" onclick={() => copyToClipboard(upload.url, 'url', upload.id)}>
-                    {copiedItem === `${upload.id}-url` ? 'Copied!' : 'Copy URL'}
-                  </Button>
-                  <Button variant="primary" size="sm" onclick={() => copyToClipboard(upload.markdown, 'markdown', upload.id)}>
-                    {copiedItem === `${upload.id}-markdown` ? 'Copied!' : 'Copy Markdown'}
-                  </Button>
-                  <Button variant="primary" size="sm" onclick={() => copyToClipboard(upload.svelte, 'svelte', upload.id)}>
-                    {copiedItem === `${upload.id}-svelte` ? 'Copied!' : 'Copy Svelte'}
+              {/each}
+            </div>
+          </div>
+        {/if}
+
+      {:else if tab.value === 'gallery'}
+        <!-- CDN Gallery Tab -->
+        <div class="gallery-section">
+          <div class="gallery-header">
+            <div class="gallery-title">
+              <h2>CDN Gallery</h2>
+              <p class="gallery-subtitle">Hosted in website CDN</p>
+            </div>
+            <div class="gallery-controls">
+              <div class="control-group">
+                <label for="sortBy">Sort by:</label>
+                <select id="sortBy" bind:value={gallerySortBy} onchange={changeSortOrder}>
+                  <option value="date-desc">Newest First</option>
+                  <option value="date-asc">Oldest First</option>
+                  <option value="name-asc">Name (A-Z)</option>
+                  <option value="name-desc">Name (Z-A)</option>
+                  <option value="size-desc">Largest First</option>
+                  <option value="size-asc">Smallest First</option>
+                </select>
+              </div>
+              <div class="control-group">
+                <label for="filterInput">Filter by folder:</label>
+                <input
+                  id="filterInput"
+                  type="text"
+                  class="gallery-filter"
+                  placeholder="e.g., blog/"
+                  bind:value={galleryFilter}
+                  onkeydown={(e) => e.key === 'Enter' && filterGallery()}
+                />
+                <Button variant="secondary" size="sm" onclick={filterGallery}>Filter</Button>
+              </div>
+              <Button variant="secondary" size="sm" onclick={() => loadGallery()}>Refresh</Button>
+            </div>
+          </div>
+
+          {#if galleryError}
+            <div class="gallery-error">{galleryError}</div>
+          {/if}
+
+          {#if galleryLoading && galleryImages.length === 0}
+            <div class="gallery-loading">Loading images...</div>
+          {:else if galleryImages.length === 0}
+            <div class="gallery-empty">No images found</div>
+          {:else}
+            <div class="gallery-grid">
+              {#each galleryImages as image (image.key)}
+                <div class="gallery-item">
+                  <div class="gallery-image-container">
+                    <img src={image.url} alt={getFileName(image.key)} loading="lazy" />
+                  </div>
+                  <div class="gallery-item-info">
+                    <span class="gallery-item-name" title={image.key}>{getFileName(image.key)}</span>
+                    <span class="gallery-item-size">{formatFileSize(image.size)}</span>
+                  </div>
+                  <div class="gallery-item-actions">
+                    <Button variant="primary" size="sm" onclick={() => copyToClipboard(image.url, 'url', image.key)}>
+                      {copiedItem === `${image.key}-url` ? '✓' : 'URL'}
+                    </Button>
+                    <Button variant="primary" size="sm" onclick={() => copyToClipboard(`![](${image.url})`, 'markdown', image.key)}>
+                      {copiedItem === `${image.key}-markdown` ? '✓' : 'MD'}
+                    </Button>
+                    <Button variant="danger" size="sm" onclick={() => confirmDelete(image)} aria-label="Delete image" title="Delete image">
+                      X
+                    </Button>
+                  </div>
+                </div>
+              {/each}
+            </div>
+
+            {#if galleryHasMore}
+              <div class="gallery-load-more">
+                <Button
+                  variant="primary"
+                  onclick={() => loadGallery(true)}
+                  disabled={galleryLoading}
+                >
+                  {galleryLoading ? 'Loading...' : 'Load More'}
+                </Button>
+              </div>
+            {/if}
+          {/if}
+        </div>
+
+      {:else if tab.value === 'metadata'}
+        <!-- Metadata & Tags Tab -->
+        <div class="metadata-section">
+          <!-- Tag Management Section -->
+          <div class="tags-section">
+            <h2>Manage Tags</h2>
+
+            <!-- Create Tag Form -->
+            <form class="create-tag-form" onsubmit={handleCreateTag}>
+              <Input placeholder="Tag name (e.g., 'minecraft')" bind:value={newTagName} />
+              <input type="color" class="color-picker" bind:value={newTagColor} />
+              <Button type="submit">Create Tag</Button>
+            </form>
+
+            <!-- Tag List -->
+            <div class="tag-list">
+              {#each tags as tag (tag.id)}
+                <div class="tag-item">
+                  <Badge style="background-color: {tag.color}; color: white;">{tag.name}</Badge>
+                  <span class="tag-slug">{tag.slug}</span>
+                  <Button variant="ghost" size="sm" onclick={() => deleteTag(tag.id)}>
+                    Delete
                   </Button>
                 </div>
+              {:else}
+                <p class="empty-state">No tags yet. Create one above to get started.</p>
+              {/each}
+            </div>
+          </div>
+
+          <!-- Bulk Tagging Section -->
+          <div class="bulk-tagging-section">
+            <h2>Bulk Tag Images</h2>
+
+            <!-- Image Grid with Multi-Select -->
+            <div class="bulk-tag-grid">
+              {#each galleryImages as image (image.key)}
+                <div
+                  class="bulk-tag-item"
+                  class:selected={selectedImages.includes(image.key)}
+                  onclick={() => toggleImageSelection(image.key)}
+                  role="button"
+                  tabindex="0"
+                  onkeydown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      toggleImageSelection(image.key);
+                    }
+                  }}
+                >
+                  <img src={image.url} alt={getFileName(image.key)} loading="lazy" />
+                  <div class="selection-overlay">
+                    {#if selectedImages.includes(image.key)}
+                      <svg class="checkmark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                        <polyline points="20 6 9 17 4 12"></polyline>
+                      </svg>
+                    {/if}
+                  </div>
+                </div>
+              {:else}
+                <p class="empty-state">No images in gallery yet.</p>
+              {/each}
+            </div>
+
+            <!-- Bulk Actions Bar -->
+            {#if selectedImages.length > 0}
+              <div class="bulk-actions">
+                <p class="selection-count">{selectedImages.length} images selected</p>
+                <select class="tag-select" bind:value={selectedTagId}>
+                  <option value={null}>Select tag...</option>
+                  {#each tags as tag (tag.id)}
+                    <option value={tag.id}>{tag.name}</option>
+                  {/each}
+                </select>
+                <Button onclick={applyBulkTag} disabled={!selectedTagId}>Apply Tag</Button>
+                <Button variant="ghost" onclick={() => selectedImages = []}>Clear Selection</Button>
               </div>
             {/if}
           </div>
-        {/each}
-      </div>
-    </div>
-  {/if}
-
-  <!-- Gallery Section -->
-  <div class="gallery-section">
-    <div class="gallery-header">
-      <div class="gallery-title">
-        <h2>CDN Gallery</h2>
-        <p class="gallery-subtitle">Hosted in website CDN</p>
-      </div>
-      <div class="gallery-controls">
-        <div class="control-group">
-          <label for="sortBy">Sort by:</label>
-          <select id="sortBy" bind:value={gallerySortBy} onchange={changeSortOrder}>
-            <option value="date-desc">Newest First</option>
-            <option value="date-asc">Oldest First</option>
-            <option value="name-asc">Name (A-Z)</option>
-            <option value="name-desc">Name (Z-A)</option>
-            <option value="size-desc">Largest First</option>
-            <option value="size-asc">Smallest First</option>
-          </select>
         </div>
-        <div class="control-group">
-          <label for="filterInput">Filter by folder:</label>
-          <input
-            id="filterInput"
-            type="text"
-            class="gallery-filter"
-            placeholder="e.g., blog/"
-            bind:value={galleryFilter}
-            onkeydown={(e) => e.key === 'Enter' && filterGallery()}
-          />
-          <Button variant="secondary" size="sm" onclick={filterGallery}>Filter</Button>
-        </div>
-        <Button variant="secondary" size="sm" onclick={() => loadGallery()}>Refresh</Button>
-      </div>
-    </div>
 
-    {#if galleryError}
-      <div class="gallery-error">{galleryError}</div>
-    {/if}
+      {:else if tab.value === 'sync'}
+        <!-- Sync Tab -->
+        <div class="sync-section">
+          <h2>R2 ↔ D1 Sync</h2>
+          <p class="sync-description">Sync R2 images to the D1 database for metadata support.</p>
 
-    {#if galleryLoading && galleryImages.length === 0}
-      <div class="gallery-loading">Loading images...</div>
-    {:else if galleryImages.length === 0}
-      <div class="gallery-empty">No images found</div>
-    {:else}
-      <div class="gallery-grid">
-        {#each galleryImages as image (image.key)}
-          <div class="gallery-item">
-            <div class="gallery-image-container">
-              <img src={image.url} alt={getFileName(image.key)} loading="lazy" />
+          <!-- Sync Stats -->
+          <div class="sync-stats">
+            <div class="stat-card">
+              <h3>R2 Images</h3>
+              <p class="stat-number">{galleryImages.length}</p>
             </div>
-            <div class="gallery-item-info">
-              <span class="gallery-item-name" title={image.key}>{getFileName(image.key)}</span>
-              <span class="gallery-item-size">{formatFileSize(image.size)}</span>
+            <div class="stat-card">
+              <h3>D1 Records</h3>
+              <p class="stat-number">{d1ImageCount}</p>
             </div>
-            <div class="gallery-item-actions">
-              <Button variant="primary" size="sm" onclick={() => copyToClipboard(image.url, 'url', image.key)}>
-                {copiedItem === `${image.key}-url` ? '✓' : 'URL'}
-              </Button>
-              <Button variant="primary" size="sm" onclick={() => copyToClipboard(`![](${image.url})`, 'markdown', image.key)}>
-                {copiedItem === `${image.key}-markdown` ? '✓' : 'MD'}
-              </Button>
-              <Button variant="danger" size="sm" onclick={() => confirmDelete(image)} aria-label="Delete image" title="Delete image">
-                X
-              </Button>
+            <div class="stat-card">
+              <h3>Not Synced</h3>
+              <p class="stat-number">{Math.max(0, galleryImages.length - d1ImageCount)}</p>
             </div>
           </div>
-        {/each}
-      </div>
 
-      {#if galleryHasMore}
-        <div class="gallery-load-more">
-          <Button
-            variant="primary"
-            onclick={() => loadGallery(true)}
-            disabled={galleryLoading}
-          >
-            {galleryLoading ? 'Loading...' : 'Load More'}
+          <Button onclick={handleSync} disabled={syncing}>
+            {syncing ? 'Syncing...' : 'Sync Now'}
           </Button>
+
+          {#if syncResult}
+            <div class="sync-result">
+              <p>✅ Synced {syncResult.added || 0} new images</p>
+              <p>🔄 Updated {syncResult.updated || 0} existing records</p>
+            </div>
+          {/if}
         </div>
       {/if}
-    {/if}
-  </div>
+    {/snippet}
+  </Tabs>
 </div>
 
 <!-- Delete Confirmation Modal -->
@@ -823,5 +1066,270 @@
     display: flex;
     gap: 0.75rem;
     justify-content: flex-end;
+  }
+
+  /* Metadata & Tags Section */
+  .metadata-section {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .tags-section {
+    background: var(--mobile-menu-bg);
+    border-radius: var(--border-radius-standard);
+    padding: 1.5rem;
+    transition: background-color 0.3s ease;
+  }
+
+  .tags-section h2,
+  .bulk-tagging-section h2 {
+    margin: 0 0 1rem 0;
+    font-size: 1.25rem;
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    transition: color 0.3s ease;
+  }
+
+  .create-tag-form {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .color-picker {
+    width: 50px;
+    height: 38px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-small);
+    cursor: pointer;
+    background: var(--mobile-menu-bg);
+    transition: border-color 0.3s ease;
+  }
+
+  .color-picker:hover {
+    border-color: var(--color-primary);
+  }
+
+  .tag-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .tag-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem;
+    background: var(--color-bg-secondary);
+    border-radius: var(--border-radius-small);
+    border: 1px solid var(--color-border);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  .tag-slug {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    flex: 1;
+    transition: color 0.3s ease;
+  }
+
+  .empty-state {
+    text-align: center;
+    color: var(--color-text-muted);
+    padding: 2rem;
+    font-style: italic;
+    transition: color 0.3s ease;
+  }
+
+  /* Bulk Tagging Section */
+  .bulk-tagging-section {
+    background: var(--mobile-menu-bg);
+    border-radius: var(--border-radius-standard);
+    padding: 1.5rem;
+    transition: background-color 0.3s ease;
+  }
+
+  .bulk-tag-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 1024px) {
+    .bulk-tag-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .bulk-tag-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .bulk-tag-item {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: var(--border-radius-button);
+    overflow: hidden;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: all 0.2s ease;
+  }
+
+  .bulk-tag-item:hover {
+    border-color: var(--color-text-muted);
+  }
+
+  .bulk-tag-item.selected {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 2px var(--color-primary);
+  }
+
+  .bulk-tag-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .selection-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+
+  .bulk-tag-item.selected .selection-overlay {
+    opacity: 1;
+  }
+
+  .checkmark {
+    width: 48px;
+    height: 48px;
+    color: var(--color-primary);
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+  }
+
+  .bulk-actions {
+    position: sticky;
+    bottom: 0;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    padding: 1rem;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-standard);
+    flex-wrap: wrap;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  .selection-count {
+    margin: 0;
+    font-weight: 600;
+    color: var(--color-text);
+    transition: color 0.3s ease;
+  }
+
+  .tag-select {
+    padding: 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-small);
+    background: var(--mobile-menu-bg);
+    color: var(--color-text);
+    font-size: 0.9rem;
+    min-width: 150px;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  }
+
+  /* Sync Section */
+  .sync-section {
+    background: var(--mobile-menu-bg);
+    border-radius: var(--border-radius-standard);
+    padding: 1.5rem;
+    transition: background-color 0.3s ease;
+  }
+
+  .sync-section h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    transition: color 0.3s ease;
+  }
+
+  .sync-description {
+    margin: 0 0 1.5rem 0;
+    color: var(--color-text-muted);
+    transition: color 0.3s ease;
+  }
+
+  .sync-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    .sync-stats {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .stat-card {
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-standard);
+    padding: 1.5rem;
+    text-align: center;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  .stat-card h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: color 0.3s ease;
+  }
+
+  .stat-number {
+    margin: 0;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    font-family: var(--font-mono);
+    transition: color 0.3s ease;
+  }
+
+  .sync-result {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--accent-success);
+    border-radius: var(--border-radius-standard);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+  }
+
+  .sync-result p {
+    margin: 0.5rem 0;
+    color: var(--color-text);
+    transition: color 0.3s ease;
   }
 </style>
