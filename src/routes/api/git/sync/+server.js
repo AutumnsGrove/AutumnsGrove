@@ -4,7 +4,7 @@ import {
   getHeaders,
   GITHUB_API_BASE,
 } from "$lib/utils/github.js";
-import { sanitizeObject } from "@groveengine/engine/utils/validation";
+import { sanitizeObject } from "@autumnsgrove/grove-engine/utils/validation";
 
 export const prerender = false;
 

@@ -1,5 +1,5 @@
 <script>
-	import { CollapsibleSection } from '@groveengine/engine';
+	import { CollapsibleSection } from '@autumnsgrove/grove-engine';
 
 	let { iconsUsed = [] } = $props();
 

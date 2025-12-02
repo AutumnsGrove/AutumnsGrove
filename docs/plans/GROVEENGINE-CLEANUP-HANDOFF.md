@@ -1,13 +1,13 @@
 # GroveEngine Cleanup Handoff
 
 > **Purpose**: Guide for deleting remnant local code after GroveEngine package is properly installed and tested.
-> **Status**: Pending - execute after `@groveengine/engine` is published to npm and symlinked/installed.
+> **Status**: Pending - execute after `@autumnsgrove/grove-engine` is published to npm and symlinked/installed.
 
 ## Prerequisites
 
 Before executing this cleanup:
 
-1. [ ] `@groveengine/engine` package is available (either published to npm or symlinked locally)
+1. [ ] `@autumnsgrove/grove-engine` package is available (either published to npm or symlinked locally)
 2. [ ] `npm install` or symlink setup completed successfully
 3. [ ] Application builds without errors (`npm run build`)
 4. [ ] Application runs locally and all routes work
@@ -27,7 +27,7 @@ Once all prerequisites are confirmed, delete the following files/directories:
 ### 1. Custom Components (Now in GroveEngine)
 
 ```bash
-# Delete these files - they are now exported from @groveengine/engine
+# Delete these files - they are now exported from @autumnsgrove/grove-engine
 rm src/lib/components/custom/ContentWithGutter.svelte
 rm src/lib/components/custom/TableOfContents.svelte
 rm src/lib/components/custom/MobileTOC.svelte
@@ -47,7 +47,7 @@ rm src/lib/components/admin/GutterManager.svelte
 ### 3. UI Components (Now in GroveEngine)
 
 ```bash
-# Delete entire UI directory - all components are in @groveengine/engine/components/ui
+# Delete entire UI directory - all components are in @autumnsgrove/grove-engine/components/ui
 rm -rf src/lib/components/ui/
 ```
 
@@ -102,7 +102,7 @@ After verifying prerequisites, run this script:
 ```bash
 #!/bin/bash
 # GROVEENGINE CLEANUP SCRIPT
-# Run from project root after verifying the app works with @groveengine/engine
+# Run from project root after verifying the app works with @autumnsgrove/grove-engine
 
 set -e  # Exit on error
 
@@ -174,7 +174,7 @@ After cleanup:
 4. Commit the deletions:
    ```bash
    git add -A
-   git commit -m "chore: Remove migrated code, now using @groveengine/engine"
+   git commit -m "chore: Remove migrated code, now using @autumnsgrove/grove-engine"
    ```
 
 ## Rollback
@@ -194,4 +194,4 @@ For details on what was migrated and how, see:
 ---
 
 *Created: December 2025*
-*Context: Migration from local components to @groveengine/engine package*
+*Context: Migration from local components to @autumnsgrove/grove-engine package*

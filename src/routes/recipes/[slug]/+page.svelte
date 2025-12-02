@@ -1,9 +1,9 @@
 <script>
 	import { untrack } from 'svelte';
-	import { renderMermaidDiagrams } from '@groveengine/engine/utils/markdown';
-	import { ContentWithGutter } from '@groveengine/engine';
+	import { renderMermaidDiagrams } from '@autumnsgrove/grove-engine/utils/markdown';
+	import { ContentWithGutter } from '@autumnsgrove/grove-engine';
 	import IconLegend from '$lib/components/custom/IconLegend.svelte';
-	import { Button, Badge } from '@groveengine/engine/components/ui';
+	import { Button, Badge } from '@autumnsgrove/grove-engine/components/ui';
 
 	let { data } = $props();
 

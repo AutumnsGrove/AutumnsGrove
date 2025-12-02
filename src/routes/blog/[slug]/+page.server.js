@@ -1,7 +1,7 @@
-import { getPostBySlug, processAnchorTags } from '@groveengine/engine/utils/markdown';
+import { getPostBySlug, processAnchorTags } from '@autumnsgrove/grove-engine/utils/markdown';
 import { error } from '@sveltejs/kit';
 import { marked } from 'marked';
-import { sanitizeMarkdown } from '@groveengine/engine/utils/sanitize';
+import { sanitizeMarkdown } from '@autumnsgrove/grove-engine/utils/sanitize';
 
 // Disable prerendering - D1 posts are fetched dynamically at runtime
 export const prerender = false;

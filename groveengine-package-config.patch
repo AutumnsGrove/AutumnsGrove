@@ -7,17 +7,17 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-- Rename @grove/engine to @groveengine/engine
+- Rename @grove/engine to @autumnsgrove/grove-engine
 - Rename @groveplace/ui to @groveengine/ui
 - Add exports configuration for components, utils, auth
 - Add @sveltejs/package for library builds
 - Add peerDependencies (svelte, sveltekit, tailwindcss)
 - Create main index.ts entry point exporting all modules
 
-This enables AutumnsGrove to import from @groveengine/engine:
-- import { ContentWithGutter } from '@groveengine/engine'
-- import { parseMarkdown } from '@groveengine/engine/utils/markdown'
-- import { verifySession } from '@groveengine/engine/auth/session'
+This enables AutumnsGrove to import from @autumnsgrove/grove-engine:
+- import { ContentWithGutter } from '@autumnsgrove/grove-engine'
+- import { parseMarkdown } from '@autumnsgrove/grove-engine/utils/markdown'
+- import { verifySession } from '@autumnsgrove/grove-engine/auth/session'
 
 🤖 Generated with [Claude Code](https://claude.ai/code)
 
@@ -36,7 +36,7 @@ index 61ba130..eba6faa 100644
 @@ -1,5 +1,5 @@
  {
 -  "name": "@grove/engine",
-+  "name": "@groveengine/engine",
++  "name": "@autumnsgrove/grove-engine",
    "version": "0.1.0",
    "description": "Multi-tenant blog engine for Grove Platform. Features gutter annotations, markdown editing, magic code auth, and Cloudflare Workers deployment.",
    "author": "AutumnsGrove",
@@ -129,7 +129,7 @@ index 0000000..a8e4d37
 --- /dev/null
 +++ b/packages/engine/src/lib/index.ts
 @@ -0,0 +1,56 @@
-+// @groveengine/engine - Main entry point
++// @autumnsgrove/grove-engine - Main entry point
 +// Multi-tenant blog engine for Grove Platform
 +
 +// ============================================

@@ -1,6 +1,6 @@
 <script>
-	import { ContentWithGutter } from '@groveengine/engine';
-	import { Card } from '@groveengine/engine/components/ui';
+	import { ContentWithGutter } from '@autumnsgrove/grove-engine';
+	import { Card } from '@autumnsgrove/grove-engine/components/ui';
 
 	let { data } = $props();
 </script>

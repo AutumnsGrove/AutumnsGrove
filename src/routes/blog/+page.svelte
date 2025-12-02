@@ -1,6 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { Card, Badge } from '@groveengine/engine/components/ui';
+	import { Card, Badge } from '@autumnsgrove/grove-engine/components/ui';
 
 	let { data } = $props();
 

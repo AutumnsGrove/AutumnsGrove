@@ -1,7 +1,7 @@
-import { getHomePage, getLatestPost, processAnchorTags } from "@groveengine/engine/utils/markdown";
+import { getHomePage, getLatestPost, processAnchorTags } from "@autumnsgrove/grove-engine/utils/markdown";
 import { error } from "@sveltejs/kit";
 import { marked } from "marked";
-import { sanitizeMarkdown } from "@groveengine/engine/utils/sanitize";
+import { sanitizeMarkdown } from "@autumnsgrove/grove-engine/utils/sanitize";
 
 // Disable prerendering - latest post is fetched from D1 at runtime
 export const prerender = false;

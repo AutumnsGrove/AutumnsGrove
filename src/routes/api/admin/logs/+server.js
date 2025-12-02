@@ -5,7 +5,7 @@ import {
   getLogStats,
   subscribe,
 } from "$lib/server/logger.js";
-import { verifySession, isAllowedAdmin } from "@groveengine/engine/auth/session";
+import { verifySession, isAllowedAdmin } from "@autumnsgrove/grove-engine/auth/session";
 
 export const prerender = false;
 

@@ -1,5 +1,5 @@
 <script>
-  import { Button, Badge } from "@groveengine/engine/components/ui";
+  import { Button, Badge } from "@autumnsgrove/grove-engine/components/ui";
 
   let { data } = $props();
 
