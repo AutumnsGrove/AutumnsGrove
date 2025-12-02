@@ -1,9 +1,9 @@
 <script>
 	import { marked } from 'marked';
-	import { sanitizeMarkdown } from '$lib/utils/sanitize.js';
+	import { sanitizeMarkdown } from '@groveengine/engine/utils/sanitize';
 	import { Calendar, GitCommit, Plus, Minus, FolderGit2, ChevronDown, ChevronUp, Cloud, Loader2, MessageCircle, TrendingUp } from 'lucide-svelte';
 	import { ActivityOverview, LOCBar, RepoBreakdown } from '$lib/components/charts';
-	import { toast } from '$lib/components/ui/toast';
+	import { toast } from '@groveengine/engine/components/ui/toast';
 
 	/** @type {{ summaries: any[], pagination: any, error?: string }} */
 	let { data } = $props();

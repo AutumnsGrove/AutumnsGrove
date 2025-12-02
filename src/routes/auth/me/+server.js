@@ -1,5 +1,5 @@
 import { json } from "@sveltejs/kit";
-import { parseSessionCookie, verifySession } from "$lib/auth/session.js";
+import { parseSessionCookie, verifySession } from "@groveengine/engine/auth/session";
 
 export async function GET({ request, platform }) {
   const cookieHeader = request.headers.get("cookie");

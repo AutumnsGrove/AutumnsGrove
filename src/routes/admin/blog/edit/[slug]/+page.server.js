@@ -1,5 +1,5 @@
 import { error } from "@sveltejs/kit";
-import { getPostBySlug } from "$lib/utils/markdown.js";
+import { getPostBySlug } from "@groveengine/engine/utils/markdown";
 import matter from "gray-matter";
 
 export async function load({ params, platform, locals }) {

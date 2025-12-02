@@ -1,5 +1,5 @@
 import { json, error } from "@sveltejs/kit";
-import { parseImageFilename } from "$lib/utils/gallery.js";
+import { parseImageFilename } from "@groveengine/engine/utils/gallery";
 
 /**
  * GET /api/images/filters

@@ -1,6 +1,6 @@
 import { json, error } from "@sveltejs/kit";
-import { validateCSRF } from "$lib/utils/csrf.js";
-import { sanitizeObject } from "$lib/utils/validation.js";
+import { validateCSRF } from "@groveengine/engine/utils/csrf";
+import { sanitizeObject } from "@groveengine/engine/utils/validation";
 
 export const prerender = false;
 

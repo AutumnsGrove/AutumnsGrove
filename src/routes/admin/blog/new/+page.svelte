@@ -2,9 +2,8 @@
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
   import { browser } from "$app/environment";
-  import MarkdownEditor from "$lib/components/admin/MarkdownEditor.svelte";
-  import GutterManager from "$lib/components/admin/GutterManager.svelte";
-  import { api } from "$lib/utils/api.js";
+  import { MarkdownEditor, GutterManager } from "@groveengine/engine";
+  import { api } from "@groveengine/engine/utils/api";
 
   // Form state
   let title = $state("");

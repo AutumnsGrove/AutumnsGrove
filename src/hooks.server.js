@@ -1,6 +1,6 @@
 import crypto from 'crypto';
-import { parseSessionCookie, verifySession } from "$lib/auth/session.js";
-import { generateCSRFToken, validateCSRFToken } from "$lib/utils/csrf.js";
+import { parseSessionCookie, verifySession } from "@groveengine/engine/auth/session";
+import { generateCSRFToken, validateCSRFToken } from "@groveengine/engine/utils/csrf";
 import { error } from "@sveltejs/kit";
 
 export async function handle({ event, resolve }) {

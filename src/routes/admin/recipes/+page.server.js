@@ -1,4 +1,4 @@
-import { getAllRecipes } from "$lib/utils/markdown.js";
+import { getAllRecipes } from "@groveengine/engine/utils/markdown";
 
 export const prerender = false;
 

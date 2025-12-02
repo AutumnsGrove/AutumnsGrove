@@ -1,8 +1,8 @@
 <script>
 	import { onMount } from 'svelte';
-	import ZoomableImage from '$lib/components/gallery/ZoomableImage.svelte';
-	import { getImageTitle, getImageDate } from '$lib/utils/gallery.js';
-	import { Input, Button, Badge, Select } from '$lib/components/ui';
+	import { ZoomableImage } from '@groveengine/engine';
+	import { getImageTitle, getImageDate } from '@groveengine/engine/utils/gallery';
+	import { Input, Button, Badge, Select } from '@groveengine/engine/components/ui';
 	import { debounce } from '$lib/utils/debounce.js';
 
 	let { data } = $props();

@@ -2,12 +2,9 @@
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
   import { browser } from "$app/environment";
-  import MarkdownEditor from "$lib/components/admin/MarkdownEditor.svelte";
-  import Input from "$lib/components/ui/Input.svelte";
-  import Textarea from "$lib/components/ui/Textarea.svelte";
-  import Button from "$lib/components/ui/Button.svelte";
-  import { toast } from "$lib/components/ui/toast";
-  import { api } from "$lib/utils/api.js";
+  import { MarkdownEditor } from "@groveengine/engine";
+  import { Input, Textarea, Button, toast } from "@groveengine/engine/components/ui";
+  import { api } from "@groveengine/engine/utils/api";
 
   let { data } = $props();
 

@@ -13,14 +13,14 @@
 		Skeleton,
 		Table,
 		toast
-	} from '$lib/components/ui';
+	} from '@groveengine/engine/components/ui';
 	import {
 		TableHeader,
 		TableBody,
 		TableRow,
 		TableCell,
 		TableHead
-	} from '$lib/components/ui/table';
+	} from '@groveengine/engine/components/ui/table';
 
 	// State for interactive examples
 	let sampleInput = $state('');

@@ -1,6 +1,6 @@
 import { json, error } from "@sveltejs/kit";
-import { validateCSRF } from "$lib/utils/csrf.js";
-import { validateFileSignature } from "$lib/utils/validation.js";
+import { validateCSRF } from "@groveengine/engine/utils/csrf";
+import { validateFileSignature } from "@groveengine/engine/utils/validation";
 
 export async function POST({ request, platform, locals }) {
   // Authentication check

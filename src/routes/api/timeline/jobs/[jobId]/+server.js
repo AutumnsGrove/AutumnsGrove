@@ -5,7 +5,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import { verifySession, isAllowedAdmin } from '$lib/auth/session.js';
+import { verifySession, isAllowedAdmin } from '@groveengine/engine/auth/session';
 
 const WORKER_URL = 'https://autumnsgrove-daily-summary.m7jv4v7npb.workers.dev';
 

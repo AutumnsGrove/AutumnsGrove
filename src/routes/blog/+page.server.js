@@ -1,4 +1,4 @@
-import { getAllPosts } from '$lib/utils/markdown.js';
+import { getAllPosts } from '@groveengine/engine/utils/markdown';
 
 // Disable prerendering - posts are fetched from D1 at runtime
 // This also ensures user auth state is available for the admin link

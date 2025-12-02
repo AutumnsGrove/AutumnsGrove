@@ -1,5 +1,5 @@
 import { json } from "@sveltejs/kit";
-import { createSession, createSessionCookie } from "$lib/auth/session.js";
+import { createSession, createSessionCookie } from "@groveengine/engine/auth/session";
 
 // Constants
 const MAX_FAILED_ATTEMPTS = 5;
