@@ -3,16 +3,19 @@
 > **Purpose**: Guide for deleting remnant local code after GroveEngine package is properly installed and tested.
 > **Status**: Pending - execute after `@autumnsgrove/grove-engine` is verified working.
 
-## TODO: Migrate to npmjs.com
+## BLOCKING: GitHub Actions Required for Cloudflare Deployment
 
-**Current State**: Package is installed via git URL (`github:AutumnsGrove/grove-engine`) as a workaround for GitHub Packages authentication issues with Cloudflare Pages.
+**Current State**: Package is published to GitHub Packages as `@autumnsgrove/grove-engine`. However, Cloudflare Pages cannot install it due to:
+1. GitHub Packages requires authentication even for public packages
+2. Cloudflare Pages has known bugs with npm token handling
+3. npm rewrites `git+https://` URLs to `git+ssh://` which fails without SSH keys
+4. Tarball URLs don't work because grove-engine is in a monorepo (`packages/engine/`)
 
-**Future Task**: Once npm login is resolved, migrate to proper npm registry:
-1. Publish `@autumnsgrove/grove-engine` to npmjs.com
-2. Update `package.json` from `github:AutumnsGrove/grove-engine` to `@autumnsgrove/grove-engine: "^0.1.0"`
-3. Benefits: faster installs, proper semver, download stats, standard npm workflow
+**Required Fix**: Set up GitHub Actions in the `groveengine` repo to:
+1. Build this site (AutumnsGrove) in GitHub Actions where `GITHUB_TOKEN` works natively
+2. Deploy the built output to Cloudflare Pages using `wrangler pages deploy`
 
-**Why we're using git URL**: GitHub Packages requires authentication even for public packages, and Cloudflare Pages has known issues with token handling. Git URLs work without auth for public repos.
+**Future Alternative**: Publish `@autumnsgrove/grove-engine` to npmjs.com (once npm login is fixed). This would eliminate all authentication issues.
 
 ## Prerequisites
 
