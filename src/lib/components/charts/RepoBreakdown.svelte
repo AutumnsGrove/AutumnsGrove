@@ -58,7 +58,7 @@
         <div
           class="breakdown-segment"
           style="width: {segment.percent}%; background-color: {segment.color};"
-          title="{segment.name}: {segment.value} {mode === 'commits' ? 'commits' : 'lines'}"
+          title="{segment.name}{segment.value > 1 ? `: ${segment.value} ${mode === 'commits' ? 'commits' : 'lines'}` : ''}"
         ></div>
       {/each}
     </div>

@@ -507,16 +507,12 @@
 	}
 	.date-full {
 		font-weight: 600;
-		color: var(--light-border-secondary);
+		color: var(--light-text-primary);
 	}
 	.date-short {
 		display: none;
 		font-weight: 600;
-		color: var(--light-border-secondary);
-	}
-	:global(.dark) .date-full,
-	:global(.dark) .date-short {
-		color: var(--light-text-very-light);
+		color: var(--light-text-primary);
 	}
 	.today-badge {
 		background: var(--accent-success);
@@ -565,11 +561,8 @@
 	}
 	.brief-summary {
 		margin: 0 0 0.75rem;
-		color: var(--light-border-secondary);
+		color: var(--light-text-primary);
 		line-height: 1.5;
-	}
-	:global(.dark) .brief-summary {
-		color: var(--light-border-light);
 	}
 	.meta-info {
 		display: flex;
@@ -671,12 +664,8 @@
 		background: var(--light-bg-secondary);
 		border-radius: 8px;
 		font-size: 0.9rem;
-		color: var(--light-border-light);
-		line-height: 1.6;
-	}
-	:global(.dark) .detailed-timeline {
-		background: #222;
 		color: var(--light-text-secondary);
+		line-height: 1.6;
 	}
 	/* Markdown Styling */
 	.markdown-content :global(h2) {
@@ -692,11 +681,8 @@
 	}
 	.markdown-content :global(h3) {
 		font-size: 1rem;
-		color: var(--light-border-light);
+		color: var(--light-text-secondary);
 		margin: 1rem 0 0.5rem;
-	}
-	:global(.dark) .markdown-content :global(h3) {
-		color: var(--light-border-light);
 	}
 	.markdown-content :global(h3 a) {
 		color: #2c5f2d;
