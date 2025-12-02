@@ -1,7 +1,7 @@
 # AutumnsGrove ← GroveEngine Migration Master Plan
 
 **Purpose:** Complete migration guide for an orchestrating agent to execute in one session
-**Target:** Replace redundant AutumnsGrove code with @autumnsgrove/grove-engine imports
+**Target:** Replace redundant AutumnsGrove code with @autumnsgrove/groveengine imports
 **Outcome:** Website runs flawlessly with shared engine code
 
 ---
@@ -12,17 +12,17 @@ Before executing this plan:
 1. GroveEngine repo has all package configuration merged to main
 2. GroveEngine `packages/engine` has been built (`npm run package`)
 3. Either:
-   - `@autumnsgrove/grove-engine` is published to npm, OR
+   - `@autumnsgrove/groveengine` is published to npm, OR
    - Using git URL dependency (see Step 1)
 
 ---
 
-## Phase 1: Install @autumnsgrove/grove-engine
+## Phase 1: Install @autumnsgrove/groveengine
 
 ### Option A: If npm package is published
 ```bash
 cd /home/user/AutumnsGrove
-npm install @autumnsgrove/grove-engine
+npm install @autumnsgrove/groveengine
 ```
 
 ### Option B: If using git URL (npm auth issues workaround)
@@ -35,7 +35,7 @@ Or add to package.json:
 ```json
 {
   "dependencies": {
-    "@autumnsgrove/grove-engine": "github:AutumnsGrove/GroveEngine#main"
+    "@autumnsgrove/groveengine": "github:AutumnsGrove/GroveEngine#main"
   }
 }
 ```
@@ -50,60 +50,60 @@ Or add to package.json:
 
 | AutumnsGrove Path | New Import Path |
 |-------------------|-----------------|
-| `$lib/components/custom/ContentWithGutter.svelte` | `@autumnsgrove/grove-engine` or `@autumnsgrove/grove-engine/components/custom/ContentWithGutter.svelte` |
-| `$lib/components/custom/GutterItem.svelte` | `@autumnsgrove/grove-engine` |
-| `$lib/components/custom/LeftGutter.svelte` | `@autumnsgrove/grove-engine` |
-| `$lib/components/custom/TableOfContents.svelte` | `@autumnsgrove/grove-engine` |
-| `$lib/components/custom/MobileTOC.svelte` | `@autumnsgrove/grove-engine` |
-| `$lib/components/custom/CollapsibleSection.svelte` | `@autumnsgrove/grove-engine` |
-| `$lib/components/admin/MarkdownEditor.svelte` | `@autumnsgrove/grove-engine` |
-| `$lib/components/admin/GutterManager.svelte` | `@autumnsgrove/grove-engine` |
-| `$lib/components/gallery/ImageGallery.svelte` | `@autumnsgrove/grove-engine` |
-| `$lib/components/gallery/Lightbox.svelte` | `@autumnsgrove/grove-engine` |
-| `$lib/components/gallery/LightboxCaption.svelte` | `@autumnsgrove/grove-engine` |
-| `$lib/components/gallery/ZoomableImage.svelte` | `@autumnsgrove/grove-engine` |
+| `$lib/components/custom/ContentWithGutter.svelte` | `@autumnsgrove/groveengine` or `@autumnsgrove/groveengine/components/custom/ContentWithGutter.svelte` |
+| `$lib/components/custom/GutterItem.svelte` | `@autumnsgrove/groveengine` |
+| `$lib/components/custom/LeftGutter.svelte` | `@autumnsgrove/groveengine` |
+| `$lib/components/custom/TableOfContents.svelte` | `@autumnsgrove/groveengine` |
+| `$lib/components/custom/MobileTOC.svelte` | `@autumnsgrove/groveengine` |
+| `$lib/components/custom/CollapsibleSection.svelte` | `@autumnsgrove/groveengine` |
+| `$lib/components/admin/MarkdownEditor.svelte` | `@autumnsgrove/groveengine` |
+| `$lib/components/admin/GutterManager.svelte` | `@autumnsgrove/groveengine` |
+| `$lib/components/gallery/ImageGallery.svelte` | `@autumnsgrove/groveengine` |
+| `$lib/components/gallery/Lightbox.svelte` | `@autumnsgrove/groveengine` |
+| `$lib/components/gallery/LightboxCaption.svelte` | `@autumnsgrove/groveengine` |
+| `$lib/components/gallery/ZoomableImage.svelte` | `@autumnsgrove/groveengine` |
 
 ### UI Components
 
 | AutumnsGrove Path | New Import Path |
 |-------------------|-----------------|
-| `$lib/components/ui` | `@autumnsgrove/grove-engine/components/ui` |
-| `$lib/components/ui/Button.svelte` | `@autumnsgrove/grove-engine/components/ui` (use named export) |
-| `$lib/components/ui/Card.svelte` | `@autumnsgrove/grove-engine/components/ui` |
-| `$lib/components/ui/Dialog.svelte` | `@autumnsgrove/grove-engine/components/ui` |
-| `$lib/components/ui/Input.svelte` | `@autumnsgrove/grove-engine/components/ui` |
-| `$lib/components/ui/Select.svelte` | `@autumnsgrove/grove-engine/components/ui` |
-| `$lib/components/ui/Tabs.svelte` | `@autumnsgrove/grove-engine/components/ui` |
-| `$lib/components/ui/Sheet.svelte` | `@autumnsgrove/grove-engine/components/ui` |
-| `$lib/components/ui/Skeleton.svelte` | `@autumnsgrove/grove-engine/components/ui` |
-| `$lib/components/ui/Table.svelte` | `@autumnsgrove/grove-engine/components/ui` |
-| `$lib/components/ui/Accordion.svelte` | `@autumnsgrove/grove-engine/components/ui` |
-| `$lib/components/ui/Badge.svelte` | `@autumnsgrove/grove-engine/components/ui` |
-| `$lib/components/ui/Textarea.svelte` | `@autumnsgrove/grove-engine/components/ui` |
-| `$lib/components/ui/Toast.svelte` | `@autumnsgrove/grove-engine/components/ui` |
-| `$lib/components/ui/toast` (the .ts file) | `@autumnsgrove/grove-engine/components/ui` |
+| `$lib/components/ui` | `@autumnsgrove/groveengine/components/ui` |
+| `$lib/components/ui/Button.svelte` | `@autumnsgrove/groveengine/components/ui` (use named export) |
+| `$lib/components/ui/Card.svelte` | `@autumnsgrove/groveengine/components/ui` |
+| `$lib/components/ui/Dialog.svelte` | `@autumnsgrove/groveengine/components/ui` |
+| `$lib/components/ui/Input.svelte` | `@autumnsgrove/groveengine/components/ui` |
+| `$lib/components/ui/Select.svelte` | `@autumnsgrove/groveengine/components/ui` |
+| `$lib/components/ui/Tabs.svelte` | `@autumnsgrove/groveengine/components/ui` |
+| `$lib/components/ui/Sheet.svelte` | `@autumnsgrove/groveengine/components/ui` |
+| `$lib/components/ui/Skeleton.svelte` | `@autumnsgrove/groveengine/components/ui` |
+| `$lib/components/ui/Table.svelte` | `@autumnsgrove/groveengine/components/ui` |
+| `$lib/components/ui/Accordion.svelte` | `@autumnsgrove/groveengine/components/ui` |
+| `$lib/components/ui/Badge.svelte` | `@autumnsgrove/groveengine/components/ui` |
+| `$lib/components/ui/Textarea.svelte` | `@autumnsgrove/groveengine/components/ui` |
+| `$lib/components/ui/Toast.svelte` | `@autumnsgrove/groveengine/components/ui` |
+| `$lib/components/ui/toast` (the .ts file) | `@autumnsgrove/groveengine/components/ui` |
 
 ### Utilities
 
 | AutumnsGrove Path | New Import Path |
 |-------------------|-----------------|
-| `$lib/utils/markdown.js` | `@autumnsgrove/grove-engine/utils/markdown` |
-| `$lib/utils/sanitize.js` | `@autumnsgrove/grove-engine/utils/sanitize` |
-| `$lib/utils/csrf.js` | `@autumnsgrove/grove-engine/utils/csrf` |
-| `$lib/utils/gutter.js` | `@autumnsgrove/grove-engine/utils/gutter` |
-| `$lib/utils/gallery.js` | `@autumnsgrove/grove-engine/utils/gallery` |
-| `$lib/utils/validation.js` | `@autumnsgrove/grove-engine/utils/validation` |
-| `$lib/utils/api.js` | `@autumnsgrove/grove-engine/utils/api` |
-| `$lib/utils/debounce.js` | `@autumnsgrove/grove-engine/utils/debounce` |
-| `$lib/utils/json.js` | `@autumnsgrove/grove-engine/utils/json` |
-| `$lib/utils/cn` | `@autumnsgrove/grove-engine` (use named export `cn`) |
+| `$lib/utils/markdown.js` | `@autumnsgrove/groveengine/utils/markdown` |
+| `$lib/utils/sanitize.js` | `@autumnsgrove/groveengine/utils/sanitize` |
+| `$lib/utils/csrf.js` | `@autumnsgrove/groveengine/utils/csrf` |
+| `$lib/utils/gutter.js` | `@autumnsgrove/groveengine/utils/gutter` |
+| `$lib/utils/gallery.js` | `@autumnsgrove/groveengine/utils/gallery` |
+| `$lib/utils/validation.js` | `@autumnsgrove/groveengine/utils/validation` |
+| `$lib/utils/api.js` | `@autumnsgrove/groveengine/utils/api` |
+| `$lib/utils/debounce.js` | `@autumnsgrove/groveengine/utils/debounce` |
+| `$lib/utils/json.js` | `@autumnsgrove/groveengine/utils/json` |
+| `$lib/utils/cn` | `@autumnsgrove/groveengine` (use named export `cn`) |
 
 ### Auth
 
 | AutumnsGrove Path | New Import Path |
 |-------------------|-----------------|
-| `$lib/auth/jwt.js` | `@autumnsgrove/grove-engine/auth/jwt` |
-| `$lib/auth/session.js` | `@autumnsgrove/grove-engine/auth/session` |
+| `$lib/auth/jwt.js` | `@autumnsgrove/groveengine/auth/jwt` |
+| `$lib/auth/session.js` | `@autumnsgrove/groveengine/auth/session` |
 
 ---
 
@@ -118,8 +118,8 @@ Or add to package.json:
    import { generateCSRFToken, validateCSRFToken } from "$lib/utils/csrf.js";
 
    // AFTER
-   import { parseSessionCookie, verifySession } from "@autumnsgrove/grove-engine/auth/session";
-   import { generateCSRFToken, validateCSRFToken } from "@autumnsgrove/grove-engine/utils/csrf";
+   import { parseSessionCookie, verifySession } from "@autumnsgrove/groveengine/auth/session";
+   import { generateCSRFToken, validateCSRFToken } from "@autumnsgrove/groveengine/utils/csrf";
    ```
 
 2. **`src/routes/+layout.svelte`** - UI component imports

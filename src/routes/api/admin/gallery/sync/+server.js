@@ -1,5 +1,5 @@
 import { json, error } from "@sveltejs/kit";
-import { parseImageFilename } from "@autumnsgrove/grove-engine/utils/gallery";
+import { parseImageFilename } from "@autumnsgrove/groveengine/utils/gallery";
 
 /**
  * POST /api/admin/gallery/sync

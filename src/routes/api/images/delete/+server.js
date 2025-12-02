@@ -1,5 +1,5 @@
 import { json, error } from "@sveltejs/kit";
-import { sanitizeObject } from "@autumnsgrove/grove-engine/utils/validation";
+import { sanitizeObject } from "@autumnsgrove/groveengine/utils/validation";
 
 /**
  * DELETE endpoint for removing images from CDN (R2)

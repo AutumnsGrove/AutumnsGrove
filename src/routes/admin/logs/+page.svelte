@@ -1,6 +1,6 @@
 <script>
   import LogViewer from '$lib/components/custom/LogViewer.svelte';
-  import { Tabs } from '@autumnsgrove/grove-engine/components/ui';
+  import { Tabs } from '@autumnsgrove/groveengine/components/ui';
 
   let activeTab = $state('all');
 

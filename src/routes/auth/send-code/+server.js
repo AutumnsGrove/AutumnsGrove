@@ -1,5 +1,5 @@
 import { json } from "@sveltejs/kit";
-import { isAllowedAdmin } from "@autumnsgrove/grove-engine/auth/session";
+import { isAllowedAdmin } from "@autumnsgrove/groveengine/auth/session";
 
 // Constants
 const CODE_EXPIRATION_MS = 10 * 60 * 1000; // 10 minutes

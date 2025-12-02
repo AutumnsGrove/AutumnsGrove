@@ -1,4 +1,4 @@
-import { getAllRecipes } from "@autumnsgrove/grove-engine/utils/markdown";
+import { getAllRecipes } from "@autumnsgrove/groveengine/utils/markdown";
 
 export const prerender = false;
 

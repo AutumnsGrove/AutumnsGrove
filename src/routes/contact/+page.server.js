@@ -1,4 +1,4 @@
-import { getContactPage } from "@autumnsgrove/grove-engine/utils/markdown";
+import { getContactPage } from "@autumnsgrove/groveengine/utils/markdown";
 import { error } from "@sveltejs/kit";
 
 export const prerender = true;

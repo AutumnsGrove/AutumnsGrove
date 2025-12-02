@@ -4,12 +4,21 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:  # Allows manual trigger from GitHub Actions tab
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+# Top-level permissions for all jobs
+permissions:
+  contents: read
+  packages: read
+  deployments: write
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    name: Run Security Tests
+    name: Run Tests
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -18,10 +27,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@autumnsgrove'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Run security tests
         run: npm run test:security
@@ -35,10 +48,10 @@ jobs:
         run: npm run test:coverage
         continue-on-error: true
 
-  build:
+  build-and-deploy:
     needs: test
     runs-on: ubuntu-latest
-    name: Build Application
+    name: Build and Deploy
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -47,42 +60,30 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@autumnsgrove'
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build
         run: npm run build
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      deployments: write
-    name: Deploy to Cloudflare Pages
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-      - name: Deploy to Cloudflare Pages
-        uses: cloudflare/pages-action@v1
+      - name: Deploy to Cloudflare Pages (Production)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          projectName: autumns-grove
-          directory: .svelte-kit/cloudflare
-          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          command: pages deploy .svelte-kit/cloudflare --project-name=autumns-grove
+
+      - name: Deploy to Cloudflare Pages (Preview)
+        if: github.event_name == 'pull_request'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy .svelte-kit/cloudflare --project-name=autumns-grove --branch=${{ github.head_ref }}

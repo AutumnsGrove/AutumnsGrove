@@ -1,27 +1,27 @@
 # GroveEngine Cleanup Handoff
 
 > **Purpose**: Guide for deleting remnant local code after GroveEngine package is properly installed and tested.
-> **Status**: Pending - execute after `@autumnsgrove/grove-engine` is verified working.
+> **Status**: Pending - execute after `@autumnsgrove/groveengine` is verified working.
 
 ## BLOCKING: GitHub Actions Required for Cloudflare Deployment
 
-**Current State**: Package is published to GitHub Packages as `@autumnsgrove/grove-engine`. However, Cloudflare Pages cannot install it due to:
+**Current State**: Package is published to GitHub Packages as `@autumnsgrove/groveengine`. However, Cloudflare Pages cannot install it due to:
 1. GitHub Packages requires authentication even for public packages
 2. Cloudflare Pages has known bugs with npm token handling
 3. npm rewrites `git+https://` URLs to `git+ssh://` which fails without SSH keys
-4. Tarball URLs don't work because grove-engine is in a monorepo (`packages/engine/`)
+4. Tarball URLs don't work because groveengine is in a monorepo (`packages/engine/`)
 
 **Required Fix**: Set up GitHub Actions in the `groveengine` repo to:
 1. Build this site (AutumnsGrove) in GitHub Actions where `GITHUB_TOKEN` works natively
 2. Deploy the built output to Cloudflare Pages using `wrangler pages deploy`
 
-**Future Alternative**: Publish `@autumnsgrove/grove-engine` to npmjs.com (once npm login is fixed). This would eliminate all authentication issues.
+**Future Alternative**: Publish `@autumnsgrove/groveengine` to npmjs.com (once npm login is fixed). This would eliminate all authentication issues.
 
 ## Prerequisites
 
 Before executing this cleanup:
 
-1. [ ] `@autumnsgrove/grove-engine` package is available (either published to npm or symlinked locally)
+1. [ ] `@autumnsgrove/groveengine` package is available (either published to npm or symlinked locally)
 2. [ ] `npm install` or symlink setup completed successfully
 3. [ ] Application builds without errors (`npm run build`)
 4. [ ] Application runs locally and all routes work
@@ -41,7 +41,7 @@ Once all prerequisites are confirmed, delete the following files/directories:
 ### 1. Custom Components (Now in GroveEngine)
 
 ```bash
-# Delete these files - they are now exported from @autumnsgrove/grove-engine
+# Delete these files - they are now exported from @autumnsgrove/groveengine
 rm src/lib/components/custom/ContentWithGutter.svelte
 rm src/lib/components/custom/TableOfContents.svelte
 rm src/lib/components/custom/MobileTOC.svelte
@@ -61,7 +61,7 @@ rm src/lib/components/admin/GutterManager.svelte
 ### 3. UI Components (Now in GroveEngine)
 
 ```bash
-# Delete entire UI directory - all components are in @autumnsgrove/grove-engine/components/ui
+# Delete entire UI directory - all components are in @autumnsgrove/groveengine/components/ui
 rm -rf src/lib/components/ui/
 ```
 
@@ -116,7 +116,7 @@ After verifying prerequisites, run this script:
 ```bash
 #!/bin/bash
 # GROVEENGINE CLEANUP SCRIPT
-# Run from project root after verifying the app works with @autumnsgrove/grove-engine
+# Run from project root after verifying the app works with @autumnsgrove/groveengine
 
 set -e  # Exit on error
 
@@ -188,7 +188,7 @@ After cleanup:
 4. Commit the deletions:
    ```bash
    git add -A
-   git commit -m "chore: Remove migrated code, now using @autumnsgrove/grove-engine"
+   git commit -m "chore: Remove migrated code, now using @autumnsgrove/groveengine"
    ```
 
 ## Rollback
@@ -208,4 +208,4 @@ For details on what was migrated and how, see:
 ---
 
 *Created: December 2025*
-*Context: Migration from local components to @autumnsgrove/grove-engine package*
+*Context: Migration from local components to @autumnsgrove/groveengine package*

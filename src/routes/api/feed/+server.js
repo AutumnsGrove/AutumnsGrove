@@ -1,4 +1,4 @@
-import { getAllPosts, getSiteConfig } from '@autumnsgrove/grove-engine/utils/markdown';
+import { getAllPosts, getSiteConfig } from '@autumnsgrove/groveengine/utils/markdown';
 
 export const prerender = true;
 

@@ -6,9 +6,9 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import { verifySession, isAllowedAdmin } from '@autumnsgrove/grove-engine/auth/session';
+import { verifySession, isAllowedAdmin } from '@autumnsgrove/groveengine/auth/session';
 import { safeJsonParse } from '$lib/utils/json.js';
-import { sanitizeObject } from '@autumnsgrove/grove-engine/utils/validation';
+import { sanitizeObject } from '@autumnsgrove/groveengine/utils/validation';
 
 // Validation constants
 const MAX_BRIEF_SUMMARY_LENGTH = 500;

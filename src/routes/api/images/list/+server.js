@@ -1,5 +1,5 @@
 import { json, error } from "@sveltejs/kit";
-import { parseImageFilename } from "@autumnsgrove/grove-engine/utils/gallery";
+import { parseImageFilename } from "@autumnsgrove/groveengine/utils/gallery";
 
 export async function GET({ url, platform, locals }) {
 	// Authentication check (optional - can make public for gallery)

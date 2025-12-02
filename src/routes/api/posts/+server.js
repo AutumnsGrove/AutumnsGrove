@@ -1,8 +1,8 @@
 import { json, error } from "@sveltejs/kit";
 import { marked } from "marked";
-import { validateCSRF } from "@autumnsgrove/grove-engine/utils/csrf";
-import { sanitizeObject } from "@autumnsgrove/grove-engine/utils/validation";
-import { sanitizeMarkdown } from "@autumnsgrove/grove-engine/utils/sanitize";
+import { validateCSRF } from "@autumnsgrove/groveengine/utils/csrf";
+import { sanitizeObject } from "@autumnsgrove/groveengine/utils/validation";
+import { sanitizeMarkdown } from "@autumnsgrove/groveengine/utils/sanitize";
 
 /**
  * GET /api/posts - List all posts from D1

@@ -2,7 +2,7 @@
 	import { untrack } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import Heatmap from './Heatmap.svelte';
-	import { CollapsibleSection } from '@autumnsgrove/grove-engine';
+	import { CollapsibleSection } from '@autumnsgrove/groveengine';
 	import {
 		GitCommit,
 		Plus,
