@@ -1,6 +1,44 @@
 # TODOs for AutumnsGrove
 
-> **Last Updated:** December 1, 2025 - RSS feed, Recipes D1 integration, comprehensive scoping docs for future features
+> **Last Updated:** December 2, 2025 - GroveEngine Vite aliases, Timeline dark mode fix, Admin page investigation
+
+---
+
+## 🔴 HIGH PRIORITY: Investigate Admin Page Issue
+
+**Status:** Needs investigation
+
+**Problem:** Admin page (`/admin`) shows blank or 500 error after logging in. The auth flow works (login page loads, can enter email), but the admin dashboard doesn't render once authenticated.
+
+**What we know:**
+- Build succeeds locally and on Cloudflare Pages
+- `/admin` correctly redirects to `/auth/login` when not authenticated
+- Login page renders correctly
+- Issue occurs after authentication when trying to load admin dashboard
+- May be a session/cookie issue or runtime error in admin components
+
+**To investigate:**
+- [ ] Check browser console for JavaScript errors when logged in
+- [ ] Verify session cookie is being set correctly
+- [ ] Check Cloudflare Pages function logs for errors
+- [ ] Test admin page with wrangler dev locally while authenticated
+
+---
+
+## 🔧 GroveEngine Package Migration (In Progress)
+
+**Status:** Temporary workaround in place
+
+**Current state:** Using Vite aliases to redirect `@autumnsgrove/groveengine` imports to local files. This is a temporary fix while the GroveEngine package is being properly published to GitHub Packages.
+
+**Files involved:**
+- `vite.config.js` - Contains alias configuration
+- `src/lib/groveengine-local.js` - Local entry point for main exports
+
+**To complete migration:**
+- [ ] Publish GroveEngine to GitHub Packages with built `dist` folder
+- [ ] Update AutumnsGrove to install from registry instead of git
+- [ ] Remove Vite aliases once package works
 
 ---
 
