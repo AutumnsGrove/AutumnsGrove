@@ -236,3 +236,20 @@ CREATE INDEX IF NOT EXISTS idx_gallery_images_parsed_category ON gallery_images(
 CREATE INDEX IF NOT EXISTS idx_gallery_images_r2_key ON gallery_images(r2_key);
 CREATE INDEX IF NOT EXISTS idx_gallery_tags_slug ON gallery_tags(slug);
 CREATE INDEX IF NOT EXISTS idx_gallery_collections_slug ON gallery_collections(slug);
+
+-- AI Writing Assistant Tables
+-- Track AI writing assistant usage for grammar, tone, and readability analysis
+CREATE TABLE IF NOT EXISTS ai_writing_requests (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id TEXT,                              -- User email who made the request
+    action TEXT NOT NULL,                      -- 'grammar', 'tone', 'readability', 'all'
+    model TEXT NOT NULL,                       -- Full model ID used
+    input_tokens INTEGER DEFAULT 0,
+    output_tokens INTEGER DEFAULT 0,
+    cost REAL DEFAULT 0,                       -- Estimated cost in USD
+    post_slug TEXT,                            -- Optional: which post was analyzed
+    created_at TEXT NOT NULL DEFAULT (datetime('now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_ai_writing_created ON ai_writing_requests(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_ai_writing_user ON ai_writing_requests(user_id);
