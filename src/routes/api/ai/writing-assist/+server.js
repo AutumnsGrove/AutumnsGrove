@@ -2,7 +2,9 @@ import { json, error } from "@sveltejs/kit";
 import {
   AI_MODELS,
   MAX_CONTENT_LENGTH,
+  MAX_OUTPUT_TOKENS,
   RATE_LIMIT,
+  MONTHLY_COST_CAP,
   getModelId,
   calculateCost
 } from "$lib/config/ai-models.js";
@@ -11,6 +13,15 @@ import { validateCSRF } from "$lib/utils/csrf";
 export const prerender = false;
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
+
+/**
+ * Sanitize error for logging - remove sensitive data
+ */
+function sanitizeErrorForLog(err) {
+  if (!err) return "Unknown error";
+  // Only log error message and name, not stack traces or internal details
+  return `${err.name || "Error"}: ${err.message || "No message"}`;
+}
 
 /**
  * AI Writing Assistant - Grammar, Tone, and Readability Analysis
@@ -75,18 +86,40 @@ export async function POST({ request, platform, locals }) {
     return json({ error: "Invalid action. Use: grammar, tone, readability, or all" }, { status: 400 });
   }
 
-  // Rate limiting with slight random delay to prevent user enumeration
+  // Rate limiting and cost cap enforcement
   if (db) {
     const windowStart = new Date(Date.now() - RATE_LIMIT.windowMs).toISOString();
-    const recentRequests = await db
-      .prepare("SELECT COUNT(*) as count FROM ai_writing_requests WHERE user_id = ? AND created_at > ?")
-      .bind(locals.user.email, windowStart)
+    const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+
+    // Use a single query to get both hourly requests and monthly cost
+    // This reduces race condition window (though D1 doesn't support true transactions)
+    const usage = await db
+      .prepare(`
+        SELECT
+          (SELECT COUNT(*) FROM ai_writing_requests WHERE user_id = ? AND created_at > ?) as hourly_count,
+          (SELECT COALESCE(SUM(cost), 0) FROM ai_writing_requests WHERE user_id = ? AND created_at > ?) as monthly_cost
+      `)
+      .bind(locals.user.email, windowStart, locals.user.email, monthStart)
       .first();
 
-    if (recentRequests && recentRequests.count >= RATE_LIMIT.maxRequests) {
+    // Check hourly rate limit
+    if (usage && usage.hourly_count >= RATE_LIMIT.maxRequests) {
       // Add slight random delay to prevent timing attacks
       await new Promise(r => setTimeout(r, Math.random() * 200 + 100));
       return json({ error: "Rate limit exceeded. Try again in an hour." }, { status: 429 });
+    }
+
+    // Check monthly cost cap
+    if (MONTHLY_COST_CAP.enabled && usage && usage.monthly_cost >= MONTHLY_COST_CAP.maxCostUSD) {
+      return json({
+        error: `Monthly usage limit reached ($${MONTHLY_COST_CAP.maxCostUSD.toFixed(2)}). Resets on the 1st.`
+      }, { status: 429 });
+    }
+
+    // Warn if approaching cost cap
+    if (MONTHLY_COST_CAP.enabled && usage &&
+        usage.monthly_cost >= MONTHLY_COST_CAP.maxCostUSD * MONTHLY_COST_CAP.warningThreshold) {
+      // Continue but include warning in response later
     }
   }
 
@@ -144,7 +177,8 @@ export async function POST({ request, platform, locals }) {
     });
 
   } catch (err) {
-    console.error("AI writing assist error:", err);
+    // Log sanitized error (no stack traces or sensitive data in production)
+    console.error("AI writing assist error:", sanitizeErrorForLog(err));
     return json({ error: "Analysis failed. Please try again." }, { status: 500 });
   }
 }
@@ -189,7 +223,7 @@ export async function GET({ platform, locals }) {
       period: "30 days"
     });
   } catch (err) {
-    console.error("Error fetching AI usage stats:", err);
+    console.error("Error fetching AI usage stats:", sanitizeErrorForLog(err));
     return json({ requests: 0, tokens: 0, cost: 0 });
   }
 }
@@ -238,20 +272,21 @@ ${content}
 
 Return ONLY valid JSON. No explanation or markdown.`;
 
-  const response = await callAnthropic(prompt, model, apiKey, 2048);
+  const response = await callAnthropic(prompt, model, apiKey, MAX_OUTPUT_TOKENS.grammar);
 
   try {
     const result = JSON.parse(response.text);
     return {
       result: {
         suggestions: result.suggestions || [],
-        overallScore: result.overallScore || 85
+        overallScore: typeof result.overallScore === "number" ? result.overallScore : null
       },
       usage: response.usage
     };
   } catch {
+    // Don't return a misleading score on parse failure
     return {
-      result: { suggestions: [], overallScore: 85, parseError: true },
+      result: { suggestions: [], overallScore: null, parseError: true },
       usage: response.usage
     };
   }
@@ -299,13 +334,13 @@ ${content}
 
 Return ONLY valid JSON. No explanation or markdown.`;
 
-  const response = await callAnthropic(prompt, model, apiKey, 1024);
+  const response = await callAnthropic(prompt, model, apiKey, MAX_OUTPUT_TOKENS.tone);
 
   try {
     const result = JSON.parse(response.text);
     return {
       result: {
-        analysis: result.analysis || "Unable to analyze tone.",
+        analysis: result.analysis || null,
         traits: result.traits || [],
         suggestions: result.suggestions || []
       },
@@ -314,7 +349,7 @@ Return ONLY valid JSON. No explanation or markdown.`;
   } catch {
     return {
       result: {
-        analysis: "Tone analysis unavailable.",
+        analysis: null,
         traits: [],
         suggestions: [],
         parseError: true
@@ -344,7 +379,8 @@ async function callAnthropic(prompt, model, apiKey, maxTokens) {
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error("Anthropic API error:", errorText);
+    // Log truncated error (may contain sensitive info in full response)
+    console.error("Anthropic API error:", response.status, errorText.substring(0, 100));
     throw new Error(`Anthropic API error: ${response.status}`);
   }
 
@@ -408,6 +444,17 @@ function calculateReadability(content) {
 
 /**
  * Count syllables in a word (approximate)
+ *
+ * NOTE: This is a regex-based approximation that works reasonably well for
+ * common English words but will be inaccurate for:
+ * - Words with silent vowels (e.g., "subtle", "queue")
+ * - Compound words and contractions
+ * - Words borrowed from other languages
+ * - Proper nouns and technical terms
+ *
+ * For readability scoring purposes, this approximation is sufficient since
+ * Flesch-Kincaid is already an estimate and small syllable miscounts don't
+ * significantly impact the final grade level calculation.
  */
 function countSyllables(word) {
   word = word.toLowerCase().replace(/[^a-z]/g, "");

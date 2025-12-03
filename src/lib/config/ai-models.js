@@ -42,10 +42,24 @@ export const DEFAULT_MODEL = "haiku";
 // Maximum content length for analysis (characters)
 export const MAX_CONTENT_LENGTH = 50000;
 
+// Max output tokens by analysis type
+export const MAX_OUTPUT_TOKENS = {
+  grammar: 2048,      // Grammar analysis needs more room for multiple suggestions
+  tone: 1024,         // Tone analysis is more concise
+  readability: 0,     // No AI call needed - local calculation
+};
+
 // Rate limit settings
 export const RATE_LIMIT = {
-  maxRequests: 20,     // Maximum requests
+  maxRequests: 20,          // Maximum requests per window
   windowMs: 60 * 60 * 1000, // Per hour (in milliseconds)
+};
+
+// Monthly cost cap (per user)
+export const MONTHLY_COST_CAP = {
+  enabled: true,
+  maxCostUSD: 5.00,         // $5 per user per month
+  warningThreshold: 0.8,    // Warn at 80% of cap
 };
 
 /**
