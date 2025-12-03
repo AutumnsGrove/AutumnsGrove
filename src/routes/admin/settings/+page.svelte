@@ -13,6 +13,14 @@
   let fontMessage = $state('');
   let loadingFont = $state(true);
 
+  // AI Writing Assistant settings
+  let aiEnabled = $state(false);
+  let aiModel = $state('haiku');
+  let savingAI = $state(false);
+  let aiMessage = $state('');
+  let loadingAI = $state(true);
+  let aiUsage = $state({ requests: 0, tokens: 0, cost: 0 });
+
   async function fetchHealth() {
     loadingHealth = true;
     try {
@@ -87,9 +95,70 @@
     savingFont = false;
   }
 
+  // Fetch AI assistant settings
+  async function fetchAISettings() {
+    loadingAI = true;
+    try {
+      const data = await api.get('/api/settings');
+      aiEnabled = data.ai_assistant_enabled === 'true';
+      aiModel = data.ai_model || 'haiku';
+
+      // Also fetch usage stats
+      try {
+        const usage = await api.get('/api/ai/writing-assist');
+        aiUsage = {
+          requests: usage.requests || 0,
+          tokens: usage.tokens || 0,
+          cost: usage.cost || 0
+        };
+      } catch (e) {
+        // Usage stats are optional, don't fail if unavailable
+        console.warn('Could not fetch AI usage stats:', e);
+      }
+    } catch (error) {
+      console.error('Failed to fetch AI settings:', error);
+      aiEnabled = false;
+      aiModel = 'haiku';
+    }
+    loadingAI = false;
+  }
+
+  // Save AI setting
+  async function saveAISetting(key, value) {
+    savingAI = true;
+    aiMessage = '';
+
+    try {
+      await api.put('/api/admin/settings', {
+        setting_key: key,
+        setting_value: value
+      });
+
+      aiMessage = 'Setting saved!';
+      setTimeout(() => aiMessage = '', 3000);
+    } catch (error) {
+      aiMessage = 'Error: ' + error.message;
+    }
+
+    savingAI = false;
+  }
+
+  // Toggle AI enabled state
+  async function toggleAIEnabled() {
+    aiEnabled = !aiEnabled;
+    await saveAISetting('ai_assistant_enabled', aiEnabled.toString());
+  }
+
+  // Change AI model
+  async function changeAIModel(event) {
+    aiModel = event.target.value;
+    await saveAISetting('ai_model', aiModel);
+  }
+
   $effect(() => {
     fetchHealth();
     fetchCurrentFont();
+    fetchAISettings();
   });
 </script>
 
@@ -269,6 +338,92 @@
       <p class="note">
         See <a href="/credits">font credits and licenses</a> for attribution.
       </p>
+    {/if}
+  </section>
+
+  <section class="settings-section">
+    <h2>AI Writing Assistant</h2>
+    <p class="section-description">
+      Get grammar, tone, and readability feedback on your writing. Powered by Claude AI.
+    </p>
+
+    {#if loadingAI}
+      <Skeleton class="h-24 w-full" />
+    {:else}
+      <div class="ai-toggle">
+        <label class="toggle-option">
+          <input
+            type="checkbox"
+            checked={aiEnabled}
+            onchange={toggleAIEnabled}
+            disabled={savingAI}
+          />
+          <div class="toggle-info">
+            <span class="toggle-label">Enable AI Writing Assistant</span>
+            <span class="toggle-desc">Show the assistant panel in the markdown editor</span>
+          </div>
+        </label>
+      </div>
+
+      {#if aiEnabled}
+        <div class="ai-model-selector">
+          <label for="ai-model">Preferred Model</label>
+          <select id="ai-model" value={aiModel} onchange={changeAIModel} disabled={savingAI}>
+            <option value="haiku">Claude Haiku (faster, cheaper)</option>
+            <option value="sonnet">Claude Sonnet (more thorough)</option>
+          </select>
+        </div>
+
+        <div class="ai-info-box">
+          <pre class="ai-vibe">
+    .  *  .    .  *
+  .    _    .      .
+     /   \\    *  .
+    / ~ ~ \\  .    .
+   /       \\______
+  ~~~~~~~~~~~~~~~~~~~
+    a helper, not a writer</pre>
+
+          <div class="ai-details">
+            <p>The AI Writing Assistant helps you polish your writing by:</p>
+            <ul>
+              <li>Checking grammar and spelling</li>
+              <li>Analyzing tone and voice</li>
+              <li>Measuring readability</li>
+            </ul>
+            <p class="ai-note">
+              Your content is sent to Anthropic for analysis.
+              The assistant will never generate or expand content.
+            </p>
+          </div>
+        </div>
+
+        {#if aiUsage.requests > 0}
+          <div class="ai-usage-stats">
+            <h4>Usage (last 30 days)</h4>
+            <div class="usage-grid">
+              <div class="usage-stat">
+                <span class="usage-value">{aiUsage.requests}</span>
+                <span class="usage-label">requests</span>
+              </div>
+              <div class="usage-stat">
+                <span class="usage-value">{aiUsage.tokens.toLocaleString()}</span>
+                <span class="usage-label">tokens</span>
+              </div>
+              <div class="usage-stat">
+                <span class="usage-value">${aiUsage.cost.toFixed(4)}</span>
+                <span class="usage-label">estimated cost</span>
+              </div>
+            </div>
+          </div>
+        {/if}
+      {/if}
+
+      {#if aiMessage}
+        <div class="message" class:success={aiMessage.includes('saved')} class:error={!aiMessage.includes('saved')}>
+          {aiMessage}
+        </div>
+      {/if}
     {/if}
   </section>
 
@@ -523,5 +678,143 @@
   .loading-text {
     color: var(--color-text-muted);
     font-style: italic;
+  }
+  /* AI Writing Assistant styles */
+  .ai-toggle {
+    margin-bottom: 1rem;
+  }
+  .toggle-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    border: 2px solid var(--color-border);
+    border-radius: var(--border-radius-standard);
+    cursor: pointer;
+    transition: border-color 0.2s, background-color 0.2s;
+  }
+  .toggle-option:hover {
+    border-color: var(--color-primary);
+  }
+  .toggle-option input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--color-primary);
+    margin-top: 0.1rem;
+  }
+  .toggle-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .toggle-label {
+    font-weight: 600;
+    color: var(--color-text);
+  }
+  .toggle-desc {
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+  }
+  .ai-model-selector {
+    margin-bottom: 1rem;
+  }
+  .ai-model-selector label {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    margin-bottom: 0.5rem;
+  }
+  .ai-model-selector select {
+    width: 100%;
+    padding: 0.5rem;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-button);
+    color: var(--color-text);
+    font-size: 0.9rem;
+  }
+  .ai-info-box {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1rem;
+    background: var(--color-bg-secondary);
+    border-radius: var(--border-radius-standard);
+    margin-bottom: 1rem;
+  }
+  .ai-vibe {
+    font-family: monospace;
+    font-size: 0.55rem;
+    line-height: 1.2;
+    color: var(--color-primary);
+    opacity: 0.8;
+    margin: 0;
+    white-space: pre;
+    flex-shrink: 0;
+  }
+  .ai-details {
+    flex: 1;
+    font-size: 0.85rem;
+  }
+  .ai-details p {
+    margin: 0 0 0.5rem 0;
+    color: var(--color-text-muted);
+  }
+  .ai-details ul {
+    margin: 0 0 0.5rem 0;
+    padding-left: 1.25rem;
+  }
+  .ai-details li {
+    color: var(--color-text);
+    margin-bottom: 0.25rem;
+  }
+  .ai-note {
+    font-size: 0.8rem;
+    font-style: italic;
+    opacity: 0.8;
+  }
+  .ai-usage-stats {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--color-bg-secondary);
+    border-radius: var(--border-radius-standard);
+    border: 1px solid var(--color-border);
+  }
+  .ai-usage-stats h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    text-transform: lowercase;
+  }
+  .usage-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  .usage-stat {
+    text-align: center;
+  }
+  .usage-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-primary);
+  }
+  .usage-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin-top: 0.25rem;
+  }
+  @media (max-width: 600px) {
+    .ai-info-box {
+      flex-direction: column;
+    }
+    .ai-vibe {
+      text-align: center;
+    }
+    .usage-grid {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
+    }
   }
 </style>

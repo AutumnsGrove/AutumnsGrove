@@ -7,6 +7,7 @@
   import Dialog from "$lib/components/ui/Dialog.svelte";
   import Button from "$lib/components/ui/Button.svelte";
   import Input from "$lib/components/ui/Input.svelte";
+  import AIWritingPanel from "./AIWritingPanel.svelte";
 
   // Initialize mermaid with grove-themed dark config
   mermaid.initialize({
@@ -624,7 +625,12 @@
     { id: "soundPanel", label: "Sound Settings", shortcut: "", action: () => toggleSoundPanel() },
   ];
 
-  // Add theme commands dynamically
+  // AI assistant commands (only shown when enabled)
+  const aiPaletteCommands = [
+    { id: "ai-panel", label: "AI: Toggle Writing Assistant", shortcut: "", action: () => aiAssistant.panelOpen = !aiAssistant.panelOpen },
+  ];
+
+  // Add theme and AI commands dynamically
   let paletteCommands = $derived(() => {
     const themeCommands = Object.entries(themes).map(([key, theme]) => ({
       id: `theme-${key}`,
@@ -632,7 +638,11 @@
       shortcut: currentTheme === key ? "●" : "",
       action: () => setTheme(key),
     }));
-    return [...basePaletteCommands, ...themeCommands];
+
+    // Include AI commands only when AI assistant is enabled
+    const aiCmds = aiAssistant.enabled ? aiPaletteCommands : [];
+
+    return [...basePaletteCommands, ...aiCmds, ...themeCommands];
   });
 
   let filteredPaletteCommands = $derived(
@@ -1227,11 +1237,59 @@
     lastSavedContent = content;
   }
 
+  // Fetch AI assistant settings
+  async function loadAISettings() {
+    try {
+      const res = await fetch("/api/settings");
+      if (res.ok) {
+        const settings = await res.json();
+        aiAssistant.enabled = settings.ai_assistant_enabled === "true";
+      }
+    } catch (e) {
+      console.warn("Failed to load AI settings:", e);
+    }
+  }
+
+  // Handle applying a grammar fix from the AI panel
+  function handleApplyFix(original, suggestion) {
+    if (!textareaRef) return;
+
+    // Get cursor position to find the most relevant occurrence
+    const cursorPos = textareaRef.selectionStart;
+
+    // Find all occurrences and pick the one closest to cursor
+    let index = content.indexOf(original);
+    if (index === -1) return;
+
+    let bestIndex = index;
+    let nextIndex = content.indexOf(original, index + 1);
+
+    // If multiple occurrences exist, find the one closest to cursor
+    while (nextIndex !== -1) {
+      if (Math.abs(nextIndex - cursorPos) < Math.abs(bestIndex - cursorPos)) {
+        bestIndex = nextIndex;
+      }
+      nextIndex = content.indexOf(original, nextIndex + 1);
+    }
+
+    // Apply the fix
+    content = content.substring(0, bestIndex) + suggestion + content.substring(bestIndex + original.length);
+
+    // Move cursor to end of replacement
+    setTimeout(() => {
+      if (textareaRef) {
+        textareaRef.selectionStart = textareaRef.selectionEnd = bestIndex + suggestion.length;
+        textareaRef.focus();
+      }
+    }, 0);
+  }
+
   onMount(() => {
     updateCursorPosition();
     loadSnippets();
     loadSoundSettings();
     loadTheme();
+    loadAISettings();
 
     // Check for existing draft on mount
     if (draftKey) {
@@ -1524,6 +1582,14 @@
       {/if}
     </div>
   </div>
+
+  <!-- AI Writing Panel - sits on the side, non-intrusive -->
+  <AIWritingPanel
+    {content}
+    enabled={aiAssistant.enabled}
+    postTitle={previewTitle}
+    onApplyFix={handleApplyFix}
+  />
 </div>
 
 <!-- Slash Commands Menu -->

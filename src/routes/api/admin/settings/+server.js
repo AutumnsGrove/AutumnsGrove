@@ -38,7 +38,7 @@ export async function PUT({ request, platform, locals }) {
     }
 
     // Whitelist allowed settings to prevent arbitrary data injection
-    const allowedSettings = ["font_family"];
+    const allowedSettings = ["font_family", "ai_assistant_enabled", "ai_model"];
     if (!allowedSettings.includes(setting_key)) {
       throw error(400, "Invalid setting key");
     }
@@ -48,6 +48,19 @@ export async function PUT({ request, platform, locals }) {
       const validFonts = ["alagard", "cozette", "atkinson", "opendyslexic", "lexend", "cormorant", "quicksand"];
       if (!validFonts.includes(setting_value)) {
         throw error(400, "Invalid font value");
+      }
+    }
+
+    // Validate AI assistant settings
+    if (setting_key === "ai_assistant_enabled") {
+      if (!["true", "false"].includes(setting_value)) {
+        throw error(400, "Invalid value for ai_assistant_enabled");
+      }
+    }
+
+    if (setting_key === "ai_model") {
+      if (!["haiku", "sonnet"].includes(setting_value)) {
+        throw error(400, "Invalid value for ai_model");
       }
     }
 
