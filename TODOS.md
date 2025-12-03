@@ -46,13 +46,6 @@
 - [ ] Lazy-load Chart.js (reduce initial bundle)
 - [ ] Add error boundaries for graceful failures
 
-### AI Assistant for Markdown Editor (Stubs - Not Deployed)
-- [ ] Sidebar panel for AI suggestions (hidden by default)
-- [ ] Grammar/spelling suggestions
-- [ ] Tone analysis
-- [ ] Readability scoring (Flesch-Kincaid)
-- [ ] "Improve this paragraph" action
-
 ---
 
 ## 📋 READY: Features with Complete Specs
@@ -63,7 +56,6 @@ These features have comprehensive specifications and are ready for implementatio
 |---------|--------|---------------|
 | Live Document Modes | 6-8 hours | `docs/plans/live-document-modes-spec.md` |
 | Long-Horizon Context | 4-6 hours | `docs/plans/long-horizon-context-spec.md` |
-| AI Writing Assistant | 8-12 hours | `docs/plans/ai-writing-assistant-spec.md` |
 
 ### Live Document Modes Summary
 Multi-mode editing experience with three modes:
@@ -74,12 +66,23 @@ Multi-mode editing experience with three modes:
 ### Long-Horizon Context Summary
 Enable daily summary AI to recognize multi-day tasks by providing historical context from previous summaries. Includes context brief generation, multi-day task detection, and Anthropic prompt caching.
 
-### AI Writing Assistant Summary
-Ethical AI writing tools for polish (grammar, readability, tone) - NOT content generation. Uses Claude Haiku 4.5, estimated cost ~$0.02-$0.25/month.
-
 ---
 
 ## ✅ Recently Completed
+
+### AI Writing Assistant (Dec 3, 2025) - Complete
+- [x] Non-intrusive panel that sits on the side as a minimized tab
+- [x] Grammar, spelling, and style analysis via Claude AI
+- [x] Tone analysis with trait visualization
+- [x] Local readability scoring (Flesch-Kincaid grade level)
+- [x] ASCII art "vibes" - text landscapes that create atmosphere
+- [x] Apply grammar fixes directly from suggestions
+- [x] Rate limiting (20 requests/hour) and usage tracking
+- [x] Settings page integration with enable/disable toggle
+- [x] Model selection (Haiku for speed, Sonnet for depth)
+- [x] Command palette integration when enabled
+- [x] Database schema for `ai_writing_requests` tracking
+- Spec: `docs/plans/ai-writing-assistant-spec.md`
 
 ### Admin Page 500 Error (Dec 3, 2025) - Partially Fixed
 - [x] Fixed `@autumnsgrove/groveengine` import resolution at Cloudflare Pages runtime
@@ -255,7 +258,6 @@ npx wrangler pages dev -- npm run dev
 |---------|--------|--------|
 | Live Document Modes | 6-8 hours | Spec ready |
 | Long-Horizon Context | 4-6 hours | Spec ready |
-| AI Writing Assistant | 8-12 hours | Spec ready |
 | Dashboard Pagination | 2-3 hours | Low priority |
 
 ---
