@@ -1,7 +1,7 @@
 <script>
   import { onMount } from 'svelte';
-  import { Button, Dialog, Select, toast } from "@autumnsgrove/groveengine/components/ui";
-  import { api, apiRequest } from "@autumnsgrove/groveengine/utils/api";
+  import { Button, Dialog, Select, toast } from "$lib/components/ui";
+  import { api, apiRequest } from "$lib/utils/api";
 
   let folder = $state('blog');
   let customFolder = $state('');
