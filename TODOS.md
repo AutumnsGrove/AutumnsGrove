@@ -32,6 +32,9 @@
 ### Deploy Pending
 - [ ] Deploy worker with `wrangler secret put ANTHROPIC_API_KEY`
 
+### RSS Feed Fix
+- [ ] Include full post content in RSS feed (currently only sends description, making it not useful for readers who want to read in their RSS app)
+
 ### Dashboard Enhancements (Low Priority)
 - [ ] Task C: Paginate to fetch all repos using GraphQL cursor pagination
 - [ ] Project comparison charts (bar chart, radar/spider, activity timeline)
