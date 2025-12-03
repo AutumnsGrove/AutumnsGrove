@@ -11,36 +11,27 @@
 Before executing this plan:
 1. GroveEngine repo has all package configuration merged to main
 2. GroveEngine `packages/engine` has been built (`npm run package`)
-3. Either:
-   - `@autumnsgrove/groveengine` is published to npm, OR
-   - Using git URL dependency (see Step 1)
+3. `@autumnsgrove/groveengine` is published to npm ✅
+
+**npm package:** https://www.npmjs.com/package/@autumnsgrove/groveengine
 
 ---
 
 ## Phase 1: Install @autumnsgrove/groveengine
 
-### Option A: If npm package is published
 ```bash
 cd /home/user/AutumnsGrove
 npm install @autumnsgrove/groveengine
 ```
 
-### Option B: If using git URL (npm auth issues workaround)
-```bash
-cd /home/user/AutumnsGrove
-npm install github:AutumnsGrove/GroveEngine#main
-```
-
-Or add to package.json:
+Or in package.json:
 ```json
 {
   "dependencies": {
-    "@autumnsgrove/groveengine": "github:AutumnsGrove/GroveEngine#main"
+    "@autumnsgrove/groveengine": "^0.1.0"
   }
 }
 ```
-
-**Note:** Git URL installs from the repo. The `exports` in package.json will resolve imports correctly.
 
 ---
 
@@ -343,18 +334,13 @@ npm run dev
 
 ## Execution Order for Agent
 
-1. **Clone GroveEngine** (if not already present)
-   ```bash
-   git clone https://github.com/AutumnsGrove/GroveEngine /tmp/GroveEngine
-   ```
-
-2. **Install dependency** (using git URL)
+1. **Install dependency from npm**
    ```bash
    cd /home/user/AutumnsGrove
-   npm install github:AutumnsGrove/GroveEngine#main
+   npm install @autumnsgrove/groveengine
    ```
 
-3. **Update imports in batches:**
+2. **Update imports in batches:**
    - Batch 1: `hooks.server.js` (critical)
    - Batch 2: Layout files (`+layout.svelte`)
    - Batch 3: Auth routes
@@ -364,13 +350,13 @@ npm run dev
    - Batch 7: Other routes
    - Batch 8: Component files that import other components
 
-4. **Run build check** after each batch
+3. **Run build check** after each batch
 
-5. **Delete redundant code** only after all imports work
+4. **Delete redundant code** only after all imports work
 
-6. **Final validation** - run dev server and test all pages
+5. **Final validation** - run dev server and test all pages
 
-7. **Commit and push**
+6. **Commit and push**
 
 ---
 
@@ -391,11 +377,12 @@ This reverts all changes and reinstalls original dependencies.
 1. **Use parallel subagents** for updating multiple files simultaneously
 2. **Check build after each phase** - don't proceed if errors
 3. **Keep personal features intact** - never touch github.js or chart components
-4. **The git URL dependency works** - no need to wait for npm publish
+4. **npm package is live** - use `@autumnsgrove/groveengine` from npm registry
 5. **Test incrementally** - verify each batch before proceeding
 
 ---
 
 *Created: December 2, 2025*
+*Updated: December 3, 2025 - npm package now available*
 *Status: Ready for Execution*
-*Dependencies: GroveEngine package configuration complete*
+*Dependencies: GroveEngine package published to npm ✅*

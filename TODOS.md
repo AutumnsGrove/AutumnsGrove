@@ -4,21 +4,21 @@
 
 ---
 
-## 🔧 BLOCKED: GroveEngine Package Migration
+## ✅ READY: GroveEngine Package Migration
 
-**Status:** Ready to execute when npm auth is fixed
+**Status:** `@autumnsgrove/groveengine` is now published on npm!
 
-**Issue:** Cannot login to npm to publish `@autumnsgrove/groveengine` package. Working with npm support.
+**npm package:** https://www.npmjs.com/package/@autumnsgrove/groveengine
 
 **Current State:**
 - AutumnsGrove uses direct `$lib/*` imports (works perfectly)
-- GroveEngine package exists but isn't published to npm
+- GroveEngine package is live on npm (`^0.1.0`)
 - Migration planning complete
 
 **Full Specification:** `docs/plans/MIGRATION-MASTER-PLAN.md`
 
 **Quick Reference - Phases:**
-1. Publish GroveEngine to npm (~30 min)
+1. ~~Publish GroveEngine to npm~~ ✅ Done!
 2. Update AutumnsGrove dependencies (~15 min)
 3. Update import paths (~2-3 hours, see import mapping in spec)
 4. Delete redundant local code (~30 min)
