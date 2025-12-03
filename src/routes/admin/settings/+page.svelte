@@ -102,6 +102,19 @@
       const data = await api.get('/api/settings');
       aiEnabled = data.ai_assistant_enabled === 'true';
       aiModel = data.ai_model || 'haiku';
+
+      // Also fetch usage stats
+      try {
+        const usage = await api.get('/api/ai/writing-assist');
+        aiUsage = {
+          requests: usage.requests || 0,
+          tokens: usage.tokens || 0,
+          cost: usage.cost || 0
+        };
+      } catch (e) {
+        // Usage stats are optional, don't fail if unavailable
+        console.warn('Could not fetch AI usage stats:', e);
+      }
     } catch (error) {
       console.error('Failed to fetch AI settings:', error);
       aiEnabled = false;
@@ -384,6 +397,26 @@
             </p>
           </div>
         </div>
+
+        {#if aiUsage.requests > 0}
+          <div class="ai-usage-stats">
+            <h4>Usage (last 30 days)</h4>
+            <div class="usage-grid">
+              <div class="usage-stat">
+                <span class="usage-value">{aiUsage.requests}</span>
+                <span class="usage-label">requests</span>
+              </div>
+              <div class="usage-stat">
+                <span class="usage-value">{aiUsage.tokens.toLocaleString()}</span>
+                <span class="usage-label">tokens</span>
+              </div>
+              <div class="usage-stat">
+                <span class="usage-value">${aiUsage.cost.toFixed(4)}</span>
+                <span class="usage-label">estimated cost</span>
+              </div>
+            </div>
+          </div>
+        {/if}
       {/if}
 
       {#if aiMessage}
@@ -739,12 +772,49 @@
     font-style: italic;
     opacity: 0.8;
   }
+  .ai-usage-stats {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: var(--color-bg-secondary);
+    border-radius: var(--border-radius-standard);
+    border: 1px solid var(--color-border);
+  }
+  .ai-usage-stats h4 {
+    margin: 0 0 0.75rem 0;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+    text-transform: lowercase;
+  }
+  .usage-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  .usage-stat {
+    text-align: center;
+  }
+  .usage-value {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-primary);
+  }
+  .usage-label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    margin-top: 0.25rem;
+  }
   @media (max-width: 600px) {
     .ai-info-box {
       flex-direction: column;
     }
     .ai-vibe {
       text-align: center;
+    }
+    .usage-grid {
+      grid-template-columns: 1fr;
+      gap: 0.75rem;
     }
   }
 </style>

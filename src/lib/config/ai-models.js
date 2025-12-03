@@ -6,6 +6,8 @@
  *
  * Last verified: December 3, 2025
  * Anthropic pricing page: https://www.anthropic.com/pricing
+ *
+ * TODO: Verify pricing quarterly (next check: March 2026)
  */
 
 export const AI_MODELS = {
