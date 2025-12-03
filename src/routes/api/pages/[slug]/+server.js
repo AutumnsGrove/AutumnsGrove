@@ -1,8 +1,8 @@
 import { json, error } from '@sveltejs/kit';
 import { marked } from 'marked';
-import { validateCSRF } from '@autumnsgrove/groveengine/utils/csrf';
-import { sanitizeObject } from '@autumnsgrove/groveengine/utils/validation';
-import { sanitizeMarkdown } from '@autumnsgrove/groveengine/utils/sanitize';
+import { validateCSRF } from '$lib/utils/csrf';
+import { sanitizeObject } from '$lib/utils/validation';
+import { sanitizeMarkdown } from '$lib/utils/sanitize';
 
 /**
  * PUT /api/pages/[slug] - Update an existing page in D1

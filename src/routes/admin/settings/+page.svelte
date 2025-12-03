@@ -1,6 +1,6 @@
 <script>
-  import { Button, Skeleton, toast } from "@autumnsgrove/groveengine/components/ui";
-  import { api } from "@autumnsgrove/groveengine/utils/api";
+  import { Button, Skeleton, toast } from "$lib/components/ui";
+  import { api } from "$lib/utils/api";
 
   let clearingCache = $state(false);
   let cacheMessage = $state('');

@@ -1,4 +1,4 @@
-import { getAllPosts } from '@autumnsgrove/groveengine/utils/markdown';
+import { getAllPosts } from '$lib/utils/markdown';
 
 export const prerender = false;
 
