@@ -1254,11 +1254,34 @@
   function handleApplyFix(original, suggestion) {
     if (!textareaRef) return;
 
-    // Find the original text in content
-    const index = content.indexOf(original);
-    if (index !== -1) {
-      content = content.substring(0, index) + suggestion + content.substring(index + original.length);
+    // Get cursor position to find the most relevant occurrence
+    const cursorPos = textareaRef.selectionStart;
+
+    // Find all occurrences and pick the one closest to cursor
+    let index = content.indexOf(original);
+    if (index === -1) return;
+
+    let bestIndex = index;
+    let nextIndex = content.indexOf(original, index + 1);
+
+    // If multiple occurrences exist, find the one closest to cursor
+    while (nextIndex !== -1) {
+      if (Math.abs(nextIndex - cursorPos) < Math.abs(bestIndex - cursorPos)) {
+        bestIndex = nextIndex;
+      }
+      nextIndex = content.indexOf(original, nextIndex + 1);
     }
+
+    // Apply the fix
+    content = content.substring(0, bestIndex) + suggestion + content.substring(bestIndex + original.length);
+
+    // Move cursor to end of replacement
+    setTimeout(() => {
+      if (textareaRef) {
+        textareaRef.selectionStart = textareaRef.selectionEnd = bestIndex + suggestion.length;
+        textareaRef.focus();
+      }
+    }, 0);
   }
 
   onMount(() => {

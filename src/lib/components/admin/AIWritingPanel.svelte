@@ -1,6 +1,7 @@
 <script>
   import { slide, fade } from "svelte/transition";
   import Button from "$lib/components/ui/Button.svelte";
+  import { MAX_CONTENT_LENGTH } from "$lib/config/ai-models.js";
 
   // Props
   let {
@@ -134,6 +135,16 @@
   ];
 
   let vibeIndex = $state(0);
+  let panelRef = $state(null);
+
+  // Content length status (MAX_CONTENT_LENGTH imported from config)
+  let contentLengthStatus = $derived(() => {
+    const len = content.length;
+    const pct = Math.round((len / MAX_CONTENT_LENGTH) * 100);
+    if (len > MAX_CONTENT_LENGTH) return { status: "over", pct: 100, len };
+    if (pct > 80) return { status: "warn", pct, len };
+    return { status: "ok", pct, len };
+  });
 
   // Rotate through vibes when idle
   $effect(() => {
@@ -145,6 +156,14 @@
 
     return () => clearInterval(interval);
   });
+
+  // Handle keyboard navigation
+  function handleKeydown(e) {
+    if (e.key === "Escape" && isOpen) {
+      e.preventDefault();
+      minimize();
+    }
+  }
 
   // Get the display vibe
   let displayVibe = $derived(() => {
@@ -158,6 +177,11 @@
   async function runAnalysis(action = "all") {
     if (!content.trim()) {
       analysisError = "Write something first!";
+      return;
+    }
+
+    if (content.length > MAX_CONTENT_LENGTH) {
+      analysisError = `Content too long (${content.length.toLocaleString()} chars). Max ${MAX_CONTENT_LENGTH.toLocaleString()}.`;
       return;
     }
 
@@ -242,6 +266,8 @@
   }
 </script>
 
+<svelte:window onkeydown={handleKeydown} />
+
 {#if enabled}
   <!-- Minimized tab on the side -->
   {#if isMinimized}
@@ -249,32 +275,54 @@
       class="ai-tab"
       onclick={togglePanel}
       title="Open AI Writing Assistant"
+      aria-label="Open AI Writing Assistant"
       transition:fade={{ duration: 150 }}
     >
-      <span class="tab-icon">~</span>
+      <span class="tab-icon" aria-hidden="true">~</span>
       <span class="tab-text">AI</span>
     </button>
   {/if}
 
   <!-- Main panel -->
   {#if isOpen && !isMinimized}
-    <aside class="ai-panel" transition:slide={{ axis: "x", duration: 200 }}>
+    <aside
+      class="ai-panel"
+      role="complementary"
+      aria-label="AI Writing Assistant"
+      bind:this={panelRef}
+      transition:slide={{ axis: "x", duration: 200 }}
+    >
       <!-- Header -->
       <header class="panel-header">
         <h3>grove assistant</h3>
         <div class="header-actions">
-          <button class="icon-btn" onclick={minimize} title="Minimize">
-            <span>−</span>
+          <button class="icon-btn" onclick={minimize} title="Minimize" aria-label="Minimize panel">
+            <span aria-hidden="true">−</span>
           </button>
-          <button class="icon-btn" onclick={() => isOpen = false} title="Close">
-            <span>×</span>
+          <button class="icon-btn" onclick={() => isOpen = false} title="Close (Esc)" aria-label="Close panel">
+            <span aria-hidden="true">×</span>
           </button>
         </div>
       </header>
 
+      <!-- Content length indicator -->
+      <div
+        class="content-length"
+        class:warn={contentLengthStatus().status === "warn"}
+        class:over={contentLengthStatus().status === "over"}
+        aria-live="polite"
+      >
+        <span class="length-text">
+          {contentLengthStatus().len.toLocaleString()} / {MAX_CONTENT_LENGTH.toLocaleString()}
+        </span>
+        <div class="length-bar">
+          <div class="length-fill" style="width: {contentLengthStatus().pct}%"></div>
+        </div>
+      </div>
+
       <!-- Vibes section - the ASCII art atmosphere -->
       <div class="vibes-section">
-        <pre class="ascii-vibe">{displayVibe()}</pre>
+        <pre class="ascii-vibe" aria-hidden="true">{displayVibe()}</pre>
       </div>
 
       <!-- Model selector -->
@@ -290,18 +338,20 @@
       </div>
 
       <!-- Action buttons -->
-      <div class="actions">
+      <div class="actions" role="group" aria-label="Analysis actions">
         <button
           class="action-btn"
           onclick={() => runAnalysis("grammar")}
-          disabled={isAnalyzing}
+          disabled={isAnalyzing || contentLengthStatus().status === "over"}
+          aria-busy={isAnalyzing}
         >
           grammar
         </button>
         <button
           class="action-btn"
           onclick={() => runAnalysis("tone")}
-          disabled={isAnalyzing}
+          disabled={isAnalyzing || contentLengthStatus().status === "over"}
+          aria-busy={isAnalyzing}
         >
           tone
         </button>
@@ -309,13 +359,15 @@
           class="action-btn"
           onclick={() => runAnalysis("readability")}
           disabled={isAnalyzing}
+          aria-busy={isAnalyzing}
         >
           reading
         </button>
         <button
           class="action-btn action-full"
           onclick={() => runAnalysis("all")}
-          disabled={isAnalyzing}
+          disabled={isAnalyzing || contentLengthStatus().status === "over"}
+          aria-busy={isAnalyzing}
         >
           {isAnalyzing ? "thinking..." : "full check"}
         </button>
@@ -578,6 +630,56 @@
   .icon-btn:hover {
     background: var(--color-bg-secondary, #252526);
     color: var(--color-text, #d4d4d4);
+  }
+
+  /* Content length indicator */
+  .content-length {
+    padding: 0.25rem 0.75rem;
+    border-bottom: 1px solid var(--color-border, #3a3a3a);
+    font-size: 0.65rem;
+    color: var(--color-text-muted, #9d9d9d);
+  }
+
+  .content-length.warn {
+    background: rgba(255, 193, 7, 0.1);
+  }
+
+  .content-length.warn .length-text {
+    color: #ffc107;
+  }
+
+  .content-length.over {
+    background: rgba(220, 53, 69, 0.1);
+  }
+
+  .content-length.over .length-text {
+    color: #dc3545;
+  }
+
+  .length-text {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
+
+  .length-bar {
+    height: 2px;
+    background: var(--color-border, #3a3a3a);
+    border-radius: 1px;
+    overflow: hidden;
+  }
+
+  .length-fill {
+    height: 100%;
+    background: var(--accent, #8bc48b);
+    transition: width 0.2s ease;
+  }
+
+  .content-length.warn .length-fill {
+    background: #ffc107;
+  }
+
+  .content-length.over .length-fill {
+    background: #dc3545;
   }
 
   /* Vibes section */

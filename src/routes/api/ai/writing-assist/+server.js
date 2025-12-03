@@ -1,10 +1,15 @@
 import { json, error } from "@sveltejs/kit";
+import {
+  AI_MODELS,
+  MAX_CONTENT_LENGTH,
+  RATE_LIMIT,
+  getModelId,
+  calculateCost
+} from "$lib/config/ai-models.js";
 
 export const prerender = false;
 
 const ANTHROPIC_API_URL = "https://api.anthropic.com/v1/messages";
-const MAX_CONTENT_LENGTH = 50000; // ~10k words
-const RATE_LIMIT_REQUESTS = 20; // per hour
 
 /**
  * AI Writing Assistant - Grammar, Tone, and Readability Analysis
@@ -64,23 +69,23 @@ export async function POST({ request, platform, locals }) {
     return json({ error: "Invalid action. Use: grammar, tone, readability, or all" }, { status: 400 });
   }
 
-  // Rate limiting
+  // Rate limiting with slight random delay to prevent user enumeration
   if (db) {
-    const hourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const windowStart = new Date(Date.now() - RATE_LIMIT.windowMs).toISOString();
     const recentRequests = await db
       .prepare("SELECT COUNT(*) as count FROM ai_writing_requests WHERE user_id = ? AND created_at > ?")
-      .bind(locals.user.email, hourAgo)
+      .bind(locals.user.email, windowStart)
       .first();
 
-    if (recentRequests && recentRequests.count >= RATE_LIMIT_REQUESTS) {
+    if (recentRequests && recentRequests.count >= RATE_LIMIT.maxRequests) {
+      // Add slight random delay to prevent timing attacks
+      await new Promise(r => setTimeout(r, Math.random() * 200 + 100));
       return json({ error: "Rate limit exceeded. Try again in an hour." }, { status: 429 });
     }
   }
 
-  // Select model
-  const modelId = model === "sonnet"
-    ? "claude-sonnet-4-20250514"
-    : "claude-haiku-4-5-20251022";
+  // Select model from config
+  const modelId = getModelId(model);
 
   const result = {};
   let totalTokens = { input: 0, output: 0 };
@@ -107,8 +112,8 @@ export async function POST({ request, platform, locals }) {
       result.readability = calculateReadability(content);
     }
 
-    // Calculate cost
-    const cost = calculateCost(modelId, totalTokens.input, totalTokens.output);
+    // Calculate cost using model key (haiku/sonnet), not modelId
+    const cost = calculateCost(model, totalTokens.input, totalTokens.output);
 
     // Log usage to database
     if (db) {
@@ -400,16 +405,4 @@ function calculateVariance(numbers) {
   return numbers.reduce((sum, n) => sum + Math.pow(n - mean, 2), 0) / numbers.length;
 }
 
-/**
- * Calculate cost based on model and token usage
- */
-function calculateCost(model, inputTokens, outputTokens) {
-  // Pricing as of late 2024 (per million tokens)
-  const rates = {
-    "claude-haiku-4-5-20251022": { input: 1.00, output: 5.00 },
-    "claude-sonnet-4-20250514": { input: 3.00, output: 15.00 }
-  };
-
-  const rate = rates[model] || rates["claude-haiku-4-5-20251022"];
-  return (inputTokens * rate.input + outputTokens * rate.output) / 1000000;
-}
+// Note: calculateCost is imported from $lib/config/ai-models.js
