@@ -1,44 +1,350 @@
 # TODOs for AutumnsGrove
 
-> **Last Updated:** December 2, 2025 - GroveEngine Vite aliases, Timeline dark mode fix, Admin page investigation
+> **Last Updated:** December 3, 2025 - Admin 500 error FIXED, GroveEngine migration ready
 
 ---
 
-## 🔴 HIGH PRIORITY: Investigate Admin Page Issue
+## ✅ FIXED: Admin Page 500 Error
 
-**Status:** Needs investigation
+**Status:** RESOLVED (December 3, 2025)
 
-**Problem:** Admin page (`/admin`) shows blank or 500 error after logging in. The auth flow works (login page loads, can enter email), but the admin dashboard doesn't render once authenticated.
+**Problem:** Admin page (`/admin`) returned 500 error after authentication.
 
-**What we know:**
-- Build succeeds locally and on Cloudflare Pages
-- `/admin` correctly redirects to `/auth/login` when not authenticated
-- Login page renders correctly
-- Issue occurs after authentication when trying to load admin dashboard
-- May be a session/cookie issue or runtime error in admin components
+**Root Cause:** `@autumnsgrove/groveengine` package imports weren't resolving at Cloudflare Pages runtime. Vite aliases only worked at build time, not SSR/edge.
 
-**To investigate:**
-- [ ] Check browser console for JavaScript errors when logged in
-- [ ] Verify session cookie is being set correctly
-- [ ] Check Cloudflare Pages function logs for errors
-- [ ] Test admin page with wrangler dev locally while authenticated
+**Solution Applied:**
+- Replaced ALL `@autumnsgrove/groveengine/*` imports with direct `$lib/*` imports across 45+ files
+- Removed Vite aliases from `vite.config.js`
+- Deleted `src/lib/groveengine-local.js` (no longer needed)
+
+**Commits:**
+- `6a13638` - Fix admin route imports
+- `09635bf` - Fix all remaining imports, remove Vite aliases
 
 ---
 
-## 🔧 GroveEngine Package Migration (In Progress)
+## 🔧 READY: GroveEngine Package Migration
 
-**Status:** Temporary workaround in place
+**Status:** Ready to execute when npm auth is fixed
 
-**Current state:** Using Vite aliases to redirect `@autumnsgrove/groveengine` imports to local files. This is a temporary fix while the GroveEngine package is being properly published to GitHub Packages.
+**Blocking Issue:** Cannot login to npm to publish `@autumnsgrove/groveengine` package. Working with npm support.
 
-**Files involved:**
-- `vite.config.js` - Contains alias configuration
-- `src/lib/groveengine-local.js` - Local entry point for main exports
+**Current State:**
+- AutumnsGrove uses direct `$lib/*` imports (works perfectly)
+- GroveEngine package exists but isn't published to npm
+- All migration planning is complete
 
-**To complete migration:**
-- [ ] Publish GroveEngine to GitHub Packages with built `dist` folder
-- [ ] Update AutumnsGrove to install from registry instead of git
-- [ ] Remove Vite aliases once package works
+**Full Specification:** `docs/plans/MIGRATION-MASTER-PLAN.md`
+
+---
+
+### Migration Execution Plan (For Agent Team)
+
+When npm auth is fixed, execute these phases in order:
+
+#### Phase 1: Publish GroveEngine Package
+**Agent:** Package Publisher
+**Estimated Time:** 30 minutes
+
+```bash
+# 1. Clone GroveEngine
+cd /tmp && git clone https://github.com/AutumnsGrove/GroveEngine
+
+# 2. Build the package
+cd GroveEngine/packages/engine
+npm install
+npm run package
+
+# 3. Verify dist folder exists
+ls -la dist/
+
+# 4. Login to npm (requires auth fix)
+npm login
+
+# 5. Publish package
+npm publish --access public
+```
+
+**Validation:**
+- [ ] Package appears at https://www.npmjs.com/package/@autumnsgrove/groveengine
+- [ ] Can run `npm info @autumnsgrove/groveengine`
+
+---
+
+#### Phase 2: Update AutumnsGrove Dependencies
+**Agent:** Dependency Updater
+**Estimated Time:** 15 minutes
+
+```bash
+cd /home/user/AutumnsGrove
+
+# 1. Install from npm (not git)
+npm install @autumnsgrove/groveengine@latest
+
+# 2. Verify installation
+npm ls @autumnsgrove/groveengine
+
+# 3. Check package has dist folder
+ls -la node_modules/@autumnsgrove/groveengine/dist/
+```
+
+**Validation:**
+- [ ] Package installs without errors
+- [ ] `node_modules/@autumnsgrove/groveengine/dist/` exists
+- [ ] `node_modules/@autumnsgrove/groveengine/package.json` has correct exports
+
+---
+
+#### Phase 3: Update Import Paths
+**Agent:** Import Migrator (can run multiple in parallel)
+**Estimated Time:** 2-3 hours
+
+**Import Mapping:**
+
+| Current `$lib/*` Path | New `@autumnsgrove/groveengine/*` Path |
+|-----------------------|----------------------------------------|
+| `$lib/components/ui` | `@autumnsgrove/groveengine/components/ui` |
+| `$lib/components/ui/toast` | `@autumnsgrove/groveengine/components/ui/toast` |
+| `$lib/components/ui/table` | `@autumnsgrove/groveengine/components/ui/table` |
+| `$lib/utils/markdown` | `@autumnsgrove/groveengine/utils/markdown` |
+| `$lib/utils/sanitize` | `@autumnsgrove/groveengine/utils/sanitize` |
+| `$lib/utils/gallery` | `@autumnsgrove/groveengine/utils/gallery` |
+| `$lib/utils/api` | `@autumnsgrove/groveengine/utils/api` |
+| `$lib/utils/csrf` | `@autumnsgrove/groveengine/utils/csrf` |
+| `$lib/utils/validation` | `@autumnsgrove/groveengine/utils/validation` |
+| `$lib/auth/session` | `@autumnsgrove/groveengine/auth/session` |
+| `$lib/components/custom/ContentWithGutter.svelte` | `@autumnsgrove/groveengine` (named export) |
+| `$lib/components/custom/CollapsibleSection.svelte` | `@autumnsgrove/groveengine` (named export) |
+| `$lib/components/gallery/ZoomableImage.svelte` | `@autumnsgrove/groveengine` (named export) |
+| `$lib/components/admin/MarkdownEditor.svelte` | `@autumnsgrove/groveengine` (named export) |
+| `$lib/components/admin/GutterManager.svelte` | `@autumnsgrove/groveengine` (named export) |
+
+**Files to Update (by batch):**
+
+**Batch 1 - Core (do first):**
+- [ ] `src/hooks.server.js`
+- [ ] `src/routes/+layout.svelte`
+
+**Batch 2 - Auth Routes:**
+- [ ] `src/routes/auth/logout/+server.js`
+- [ ] `src/routes/auth/me/+server.js`
+- [ ] `src/routes/auth/send-code/+server.js`
+- [ ] `src/routes/auth/verify-code/+server.js`
+
+**Batch 3 - Admin Routes:**
+- [ ] `src/routes/admin/+layout.svelte`
+- [ ] `src/routes/admin/+page.svelte`
+- [ ] `src/routes/admin/analytics/+page.svelte`
+- [ ] `src/routes/admin/blog/+page.svelte`
+- [ ] `src/routes/admin/blog/edit/[slug]/+page.server.js`
+- [ ] `src/routes/admin/blog/edit/[slug]/+page.svelte`
+- [ ] `src/routes/admin/blog/new/+page.svelte`
+- [ ] `src/routes/admin/images/+page.svelte`
+- [ ] `src/routes/admin/logs/+page.svelte`
+- [ ] `src/routes/admin/pages/+page.svelte`
+- [ ] `src/routes/admin/pages/edit/[slug]/+page.svelte`
+- [ ] `src/routes/admin/recipes/+page.server.js`
+- [ ] `src/routes/admin/recipes/+page.svelte`
+- [ ] `src/routes/admin/settings/+page.svelte`
+- [ ] `src/routes/admin/timeline/+page.svelte`
+
+**Batch 4 - Public Routes:**
+- [ ] `src/routes/+page.server.js`
+- [ ] `src/routes/+page.svelte`
+- [ ] `src/routes/about/+page.svelte`
+- [ ] `src/routes/blog/+page.server.js`
+- [ ] `src/routes/blog/+page.svelte`
+- [ ] `src/routes/blog/search/+page.server.js`
+- [ ] `src/routes/blog/search/+page.svelte`
+- [ ] `src/routes/blog/[slug]/+page.server.js`
+- [ ] `src/routes/blog/[slug]/+page.svelte`
+- [ ] `src/routes/contact/+page.server.js`
+- [ ] `src/routes/gallery/+page.server.js`
+- [ ] `src/routes/gallery/+page.svelte`
+- [ ] `src/routes/recipes/+page.svelte`
+- [ ] `src/routes/recipes/[slug]/+page.svelte`
+- [ ] `src/routes/showcase/+page.svelte`
+- [ ] `src/routes/dashboard/+page.svelte`
+- [ ] `src/routes/timeline/+page.svelte`
+
+**Batch 5 - API Routes:**
+- [ ] `src/routes/api/feed/+server.js`
+- [ ] `src/routes/api/posts/+server.js`
+- [ ] `src/routes/api/posts/[slug]/+server.js`
+- [ ] `src/routes/api/pages/[slug]/+server.js`
+- [ ] `src/routes/api/images/delete/+server.js`
+- [ ] `src/routes/api/images/filters/+server.js`
+- [ ] `src/routes/api/images/list/+server.js`
+- [ ] `src/routes/api/images/upload/+server.js`
+- [ ] `src/routes/api/git/sync/+server.js`
+- [ ] `src/routes/api/admin/settings/+server.js`
+- [ ] `src/routes/api/admin/logs/+server.js`
+- [ ] `src/routes/api/admin/gallery/sync/+server.js`
+- [ ] `src/routes/api/timeline/usage/+server.js`
+- [ ] `src/routes/api/timeline/models/+server.js`
+- [ ] `src/routes/api/timeline/trigger/+server.js`
+- [ ] `src/routes/api/timeline/trigger/backfill/+server.js`
+- [ ] `src/routes/api/timeline/jobs/+server.js`
+- [ ] `src/routes/api/timeline/jobs/[jobId]/+server.js`
+- [ ] `src/routes/api/timeline/[date]/+server.js`
+
+**Batch 6 - Lib Components:**
+- [ ] `src/lib/components/custom/IconLegend.svelte`
+
+**After each batch, run:**
+```bash
+npm run build
+```
+
+---
+
+#### Phase 4: Delete Redundant Local Code
+**Agent:** Code Cleaner
+**Estimated Time:** 30 minutes
+
+**ONLY delete after all imports are working!**
+
+```bash
+cd /home/user/AutumnsGrove
+
+# Delete UI components (now from package)
+rm -rf src/lib/components/ui/
+
+# Delete admin components (now from package)
+rm -rf src/lib/components/admin/
+
+# Delete gallery components (now from package)
+rm -rf src/lib/components/gallery/
+
+# Delete custom components that moved to package
+rm src/lib/components/custom/ContentWithGutter.svelte
+rm src/lib/components/custom/GutterItem.svelte
+rm src/lib/components/custom/LeftGutter.svelte
+rm src/lib/components/custom/TableOfContents.svelte
+rm src/lib/components/custom/MobileTOC.svelte
+rm src/lib/components/custom/CollapsibleSection.svelte
+
+# Delete utils (now from package)
+rm src/lib/utils/api.js
+rm src/lib/utils/cn.ts
+rm src/lib/utils/csrf.js
+rm src/lib/utils/debounce.js
+rm src/lib/utils/gallery.js
+rm src/lib/utils/gutter.js
+rm src/lib/utils/json.js
+rm src/lib/utils/markdown.js
+rm src/lib/utils/sanitize.js
+rm src/lib/utils/validation.js
+
+# Delete auth (now from package)
+rm -rf src/lib/auth/
+
+# Delete utils.ts if it only re-exports cn
+rm src/lib/utils.ts
+```
+
+**DO NOT DELETE (AutumnsGrove-specific):**
+- `src/lib/utils/github.js` - Personal GitHub integration
+- `src/lib/components/custom/IconLegend.svelte` - Recipe icons
+- `src/lib/components/custom/InternalsPostViewer.svelte` - Home page
+- `src/lib/components/custom/LogViewer.svelte` - Admin logs
+- `src/lib/components/charts/*` - Dashboard charts
+
+---
+
+#### Phase 5: Final Validation
+**Agent:** QA Tester
+**Estimated Time:** 1 hour
+
+**Build & Type Check:**
+```bash
+npm run build    # Must complete with no errors
+npm run check    # Must complete with no type errors
+```
+
+**Manual Testing Checklist:**
+
+**Public Pages:**
+- [ ] Homepage loads (`/`)
+- [ ] About page loads (`/about`)
+- [ ] Blog list loads (`/blog`)
+- [ ] Blog post with gutter annotations (`/blog/[any-slug]`)
+- [ ] Blog search works (`/blog/search`)
+- [ ] Gallery loads (`/gallery`)
+- [ ] Recipes list (`/recipes`)
+- [ ] Recipe detail with icons (`/recipes/[any-slug]`)
+- [ ] Timeline loads (`/timeline`)
+- [ ] Showcase/component demo (`/showcase`)
+- [ ] Dashboard with charts (`/dashboard`)
+
+**Admin Panel:**
+- [ ] Login works (`/auth/login`)
+- [ ] Admin dashboard loads (`/admin`)
+- [ ] Blog management (`/admin/blog`)
+- [ ] New post editor (`/admin/blog/new`)
+- [ ] Edit post (`/admin/blog/edit/[slug]`)
+- [ ] Images gallery (`/admin/images`)
+- [ ] Settings (`/admin/settings`)
+- [ ] Pages editor (`/admin/pages`)
+- [ ] Timeline admin (`/admin/timeline`)
+
+**Critical Features:**
+- [ ] Gutter annotations render correctly
+- [ ] Table of contents generates
+- [ ] Mobile TOC works
+- [ ] Image galleries work
+- [ ] Lightbox opens and zooms
+- [ ] Markdown editor functions
+- [ ] Post saving works
+- [ ] Image upload works
+- [ ] Dark mode toggle works
+- [ ] RSS feed (`/api/feed`)
+
+---
+
+#### Phase 6: Deploy & Commit
+**Agent:** Deployer
+**Estimated Time:** 15 minutes
+
+```bash
+# Commit changes
+git add -A
+git commit -m "chore: Migrate to @autumnsgrove/groveengine package
+
+- Replace all $lib imports with package imports
+- Delete redundant local code (~3000+ lines removed)
+- Package installed from npm registry
+"
+
+# Push to main
+git push origin main
+
+# Deploy to Cloudflare Pages
+npm run build
+wrangler pages deploy .svelte-kit/cloudflare
+```
+
+---
+
+### Rollback Plan
+
+If migration fails at any point:
+```bash
+git checkout -- .
+npm install
+```
+
+This reverts all changes and reinstalls original dependencies.
+
+---
+
+### Agent Coordination Notes
+
+1. **Phase 1-2 are sequential** - Must complete before others start
+2. **Phase 3 batches can run in parallel** - Multiple agents updating different files
+3. **Build check after each batch** - Don't proceed if errors
+4. **Phase 4-6 are sequential** - Must be done in order
+5. **Keep personal features intact** - Never touch github.js or chart components
 
 ---
 
