@@ -1,5 +1,5 @@
-import { parseSessionCookie, verifySession } from "@autumnsgrove/groveengine/auth/session";
-import { generateCSRFToken, validateCSRFToken } from "@autumnsgrove/groveengine/utils/csrf";
+import { parseSessionCookie, verifySession } from "$lib/auth/session";
+import { generateCSRFToken, validateCSRFToken } from "$lib/utils/csrf";
 import { error } from "@sveltejs/kit";
 
 export async function handle({ event, resolve }) {

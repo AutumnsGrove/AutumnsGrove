@@ -8,7 +8,7 @@
  */
 
 import { json, error } from '@sveltejs/kit';
-import { verifySession, isAllowedAdmin } from '@autumnsgrove/groveengine/auth/session';
+import { verifySession, isAllowedAdmin } from '$lib/auth/session';
 
 // Worker URL
 const WORKER_URL = 'https://autumnsgrove-daily-summary.m7jv4v7npb.workers.dev';

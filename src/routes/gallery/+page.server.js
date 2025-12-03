@@ -3,7 +3,7 @@ import {
   parseImageFilename,
   getAvailableYears,
   getAvailableCategories,
-} from "@autumnsgrove/groveengine/utils/gallery";
+} from "$lib/utils/gallery";
 
 /**
  * Server-side loader for the gallery page
