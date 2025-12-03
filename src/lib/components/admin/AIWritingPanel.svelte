@@ -529,7 +529,7 @@
       {/if}
 
       <!-- Footer note -->
-      <footer class="panel-footer">
+      <footer class="panel-footer" aria-label="AI assistant philosophy: analyzes your writing but never generates content">
         <p>a helper, not a writer</p>
       </footer>
     </aside>
