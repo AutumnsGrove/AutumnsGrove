@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import { parseSessionCookie, verifySession } from "@autumnsgrove/groveengine/auth/session";
 import { generateCSRFToken, validateCSRFToken } from "@autumnsgrove/groveengine/utils/csrf";
 import { error } from "@sveltejs/kit";
