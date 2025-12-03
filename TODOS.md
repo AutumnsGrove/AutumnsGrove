@@ -32,6 +32,9 @@
 ### Deploy Pending
 - [ ] Deploy worker with `wrangler secret put ANTHROPIC_API_KEY`
 
+### Admin Page Still Broken
+- [ ] Admin page (`/admin`) still not accessible after GroveEngine import fix - needs further investigation
+
 ### RSS Feed Fix
 - [ ] Include full post content in RSS feed (currently only sends description, making it not useful for readers who want to read in their RSS app)
 
@@ -78,10 +81,11 @@ Ethical AI writing tools for polish (grammar, readability, tone) - NOT content g
 
 ## ✅ Recently Completed
 
-### Admin Page 500 Error (Dec 3, 2025)
+### Admin Page 500 Error (Dec 3, 2025) - Partially Fixed
 - [x] Fixed `@autumnsgrove/groveengine` import resolution at Cloudflare Pages runtime
 - [x] Replaced all imports with direct `$lib/*` imports across 45+ files
 - [x] Commits: `6a13638`, `09635bf`
+- ⚠️ **Still broken** - admin page still not accessible, needs further investigation
 
 ### RSS Feed (Dec 1, 2025)
 - [x] Created RSS endpoint at `/api/feed`
