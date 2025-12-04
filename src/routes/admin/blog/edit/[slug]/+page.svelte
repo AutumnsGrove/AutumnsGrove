@@ -2,8 +2,7 @@
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
   import { browser } from "$app/environment";
-  import MarkdownEditor from "$lib/components/admin/MarkdownEditor.svelte";
-  import GutterManager from "$lib/components/admin/GutterManager.svelte";
+  import { MarkdownEditor, GutterManager } from "$lib/components";
   import { Input, Button, Dialog, toast } from "$lib/components/ui";
   import { api } from "$lib/utils/api";
 

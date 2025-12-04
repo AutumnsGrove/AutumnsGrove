@@ -1,5 +1,5 @@
 <script>
-	import ContentWithGutter from '$lib/components/custom/ContentWithGutter.svelte';
+	import { ContentWithGutter } from '$lib/components';
 	import { Card } from '$lib/components/ui';
 
 	let { data } = $props();

@@ -1,5 +1,5 @@
 <script>
-	import CollapsibleSection from '$lib/components/custom/CollapsibleSection.svelte';
+	import { CollapsibleSection } from '$lib/components';
 
 	let { iconsUsed = [] } = $props();
 
