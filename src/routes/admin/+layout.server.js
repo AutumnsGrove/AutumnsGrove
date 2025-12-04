@@ -5,6 +5,13 @@ import { redirect, error } from "@sveltejs/kit";
 export const prerender = false;
 
 export async function load({ locals, url }) {
+  // Debug info
+  const debugInfo = {
+    hasUser: !!locals.user,
+    userEmail: locals.user?.email || 'none',
+    pathname: url.pathname,
+  };
+
   try {
     if (!locals.user) {
       throw redirect(
@@ -22,15 +29,7 @@ export async function load({ locals, url }) {
       throw err;
     }
 
-    // Otherwise, log the actual error with details
-    console.error('[ADMIN LAYOUT ERROR]', {
-      message: err.message,
-      stack: err.stack,
-      url: url.pathname,
-      hasUser: !!locals.user,
-    });
-
-    // Throw a more descriptive error
-    throw error(500, `Admin layout failed: ${err.message}`);
+    // Otherwise, throw a descriptive error with debug info
+    throw error(500, `Admin layout error: ${err.message} | Debug: ${JSON.stringify(debugInfo)} | Stack: ${err.stack?.substring(0, 200)}`);
   }
 }

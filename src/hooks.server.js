@@ -20,12 +20,17 @@ export async function handle({ event, resolve }) {
         event.locals.user = user;
       }
     } catch (err) {
+      // Session verification failed - clear the bad cookie
       console.error("[HOOKS] Session verification failed:", {
         message: err.message,
         path: event.url.pathname,
         hasSecret: !!event.platform?.env?.SESSION_SECRET,
+        tokenPrefix: sessionToken?.substring(0, 20),
       });
+      // Don't throw, just leave user as null so they get redirected to login
     }
+  } else if (sessionToken && !event.platform?.env?.SESSION_SECRET) {
+    console.error("[HOOKS] Session token exists but SESSION_SECRET is missing!");
   }
 
   // Parse or generate CSRF token from cookie
