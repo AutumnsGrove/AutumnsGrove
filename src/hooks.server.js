@@ -74,11 +74,11 @@ export async function handle({ event, resolve }) {
   // Note: 'unsafe-inline' is used for the theme script in app.html (required for prerendering)
   const csp = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+    "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' https://cdn.autumnsgrove.com data:",
     "font-src 'self'",
-    "connect-src 'self' https://api.github.com https://autumnsgrove-sync-posts.m7jv4v7npb.workers.dev https://autumnsgrove-daily-summary.m7jv4v7npb.workers.dev",
+    "connect-src 'self' https://api.github.com https://autumnsgrove-sync-posts.m7jv4v7npb.workers.dev https://autumnsgrove-daily-summary.m7jv4v7npb.workers.dev https://cloudflareinsights.com",
     "frame-ancestors 'none'"
   ].join('; ');
 
