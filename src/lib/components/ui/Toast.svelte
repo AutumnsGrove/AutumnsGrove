@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { browser } from "$app/environment";
 	import { Toaster } from "sonner";
 
 	interface Props {
@@ -15,4 +16,6 @@
 	let { position = "bottom-right", theme = "system" }: Props = $props();
 </script>
 
-<Toaster {position} {theme} />
+{#if browser}
+	<Toaster {position} {theme} />
+{/if}
