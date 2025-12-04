@@ -71,11 +71,10 @@ export async function handle({ event, resolve }) {
   response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
 
   // Content-Security-Policy
-  // Note: 'unsafe-eval' is required for Mermaid diagram rendering
   // Note: 'unsafe-inline' is used for the theme script in app.html (required for prerendering)
   const csp = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
+    "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' https://cdn.autumnsgrove.com data:",
     "font-src 'self'",
