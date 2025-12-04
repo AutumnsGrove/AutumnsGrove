@@ -4,8 +4,8 @@ export async function load({ locals, platform }) {
 
   // Only fetch from database at runtime (not during prerendering)
   // The Cloudflare adapter throws when accessing platform.env during prerendering
+  // We wrap everything in try-catch because even checking platform?.env can throw during prerendering
   try {
-    // Check if platform and env exist (they won't during prerendering or if bindings aren't configured)
     if (platform?.env?.GIT_STATS_DB) {
       const db = platform.env.GIT_STATS_DB;
       const result = await db
@@ -21,10 +21,12 @@ export async function load({ locals, platform }) {
   } catch (err) {
     // During prerendering or if DB bindings aren't configured, gracefully fall back to defaults
     // This prevents 500 errors when D1 bindings aren't set up in Cloudflare Pages dashboard
-    console.error("[ROOT LAYOUT] Failed to load site settings (using defaults):", {
-      message: err.message,
-      hasDB: !!platform?.env?.GIT_STATS_DB,
-    });
+    // Silent fail during prerendering - this is expected behavior
+    if (!err.message?.includes('prerenderable route')) {
+      console.error("[ROOT LAYOUT] Failed to load site settings (using defaults):", {
+        message: err.message,
+      });
+    }
   }
 
   return {
