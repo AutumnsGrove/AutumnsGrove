@@ -259,26 +259,6 @@
     </article>
 
     <article class="credit-item">
-      <h3>Mermaid</h3>
-      <p class="credit-description">
-        JavaScript diagramming tool that renders Markdown-inspired text into diagrams.
-        Winner of the 2019 JavaScript Open Source Award for "Most Exciting Use of Technology".
-      </p>
-      <dl class="credit-details">
-        <dt>Author</dt>
-        <dd>Knut Sveidqvist & Mermaid contributors</dd>
-        <dt>Source</dt>
-        <dd>
-          <a href="https://mermaid.js.org/" target="_blank" rel="noopener noreferrer">
-            mermaid.js.org
-          </a>
-        </dd>
-        <dt>License</dt>
-        <dd>MIT License</dd>
-      </dl>
-    </article>
-
-    <article class="credit-item">
       <h3>Chart.js</h3>
       <p class="credit-description">
         Open-source JavaScript charting library supporting 8 chart types.

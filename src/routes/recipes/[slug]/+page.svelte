@@ -1,6 +1,5 @@
 <script>
 	import { untrack } from 'svelte';
-	import { renderMermaidDiagrams } from '$lib/utils/markdown';
 	import ContentWithGutter from '$lib/components/custom/ContentWithGutter.svelte';
 	import IconLegend from '$lib/components/custom/IconLegend.svelte';
 	import { Button, Badge } from '$lib/components/ui';
@@ -13,13 +12,10 @@
 
 	$effect(() => {
 		untrack(() => {
-			// Render Mermaid diagrams after component mounts (async operation)
-			renderMermaidDiagrams().then(() => {
-				// Inject instruction icons into step headings after mermaid completes
-				if (sidecar?.steps) {
-					injectStepIcons();
-				}
-			});
+			// Inject instruction icons into step headings after component mounts
+			if (sidecar?.steps) {
+				injectStepIcons();
+			}
 		});
 	});
 
@@ -107,41 +103,6 @@
 		align-items: center;
 		gap: 1rem;
 		flex-wrap: wrap;
-	}
-
-	/* Mermaid diagram styling */
-	:global(.mermaid-container) {
-		margin: 2rem 0;
-		text-align: center;
-		background: #f9f9f9;
-		padding: 1rem;
-		border-radius: 8px;
-		border: 1px solid #e0e0e0;
-		transition: background-color 0.3s ease, border-color 0.3s ease;
-	}
-
-	:global(.dark .mermaid-container) {
-		background: #2a2a2a;
-		border: 1px solid #444;
-	}
-
-	:global(.mermaid-container svg) {
-		max-width: 100%;
-		height: auto;
-	}
-
-	:global(.mermaid-container .error) {
-		color: #d32f2f;
-		background: #ffebee;
-		padding: 1rem;
-		border-radius: 4px;
-		border: 1px solid #ffcdd2;
-	}
-
-	:global(.dark .mermaid-container .error) {
-		color: #ff6b6b;
-		background: #2d1b1b;
-		border: 1px solid #4a2c2c;
 	}
 
 	/* Step instruction icons */
