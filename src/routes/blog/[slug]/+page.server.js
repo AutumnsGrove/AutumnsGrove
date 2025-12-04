@@ -14,13 +14,29 @@ export async function load({ params, platform }) {
 		if (platform?.env?.POSTS_DB) {
 			try {
 				const post = await platform.env.POSTS_DB.prepare(
-					`SELECT slug, title, date, tags, description, html_content, gutter_content, font
+					`SELECT slug, title, date, tags, description, html_content, markdown_content, gutter_content, font
 					 FROM posts WHERE slug = ?`
 				).bind(slug).first();
 
 				if (post) {
+					// Get HTML content - prefer stored html_content, but re-parse from markdown if it looks like raw markdown
+					let htmlContent = post.html_content || '';
+
+					// Check if html_content appears to be raw markdown (missing basic HTML tags)
+					// This can happen if a post was saved before markdown parsing was implemented
+					const looksLikeRawMarkdown = htmlContent &&
+						!htmlContent.includes('<p>') &&
+						!htmlContent.includes('<h') &&
+						(htmlContent.includes('\n\n') || htmlContent.includes('*') || htmlContent.includes('#'));
+
+					if (looksLikeRawMarkdown && post.markdown_content) {
+						// Re-parse the markdown content to generate proper HTML
+						console.warn(`Post "${slug}" has raw markdown in html_content, re-parsing from markdown_content`);
+						htmlContent = sanitizeMarkdown(marked.parse(post.markdown_content));
+					}
+
 					// Process anchor tags in HTML content (same as filesystem posts)
-					const processedHtml = processAnchorTags(post.html_content || '');
+					const processedHtml = processAnchorTags(htmlContent);
 
 					// Extract headers from HTML for table of contents
 					// Note: For D1 posts, we extract from HTML since we don't store raw markdown
