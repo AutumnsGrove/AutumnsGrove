@@ -39,7 +39,7 @@
   },
   "dependencies": {
     "@autumnsgrove/groveengine": "^0.3.3",
-    "@groveengine/ui": "^0.3.0",
+    "@groveengine/ui": "^0.3.1",
     "@types/dompurify": "^3.0.5",
     "chart.js": "^4.5.1",
     "clsx": "^2.1.1",

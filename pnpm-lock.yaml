@@ -12,8 +12,8 @@ importers:
         specifier: ^0.3.3
         version: 0.3.3(@sveltejs/kit@2.49.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(tailwindcss@3.4.18)
       '@groveengine/ui':
-        specifier: ^0.3.0
-        version: 0.3.0(svelte@5.45.5)(tailwindcss@3.4.18)
+        specifier: ^0.3.1
+        version: 0.3.1(svelte@5.45.5)(tailwindcss@3.4.18)
       '@types/dompurify':
         specifier: ^3.0.5
         version: 3.2.0
@@ -684,8 +684,8 @@ packages:
   '@floating-ui/utils@0.2.10':
     resolution: {integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==}
 
-  '@groveengine/ui@0.3.0':
-    resolution: {integrity: sha512-UcZN4tWlhfDacUKh8rvd2RUpBUuSC0hh6eeKrqcM1HCw+9s459GvFLCVf/intHzYeCmHhK75jKjdtl3TCntcMQ==}
+  '@groveengine/ui@0.3.1':
+    resolution: {integrity: sha512-livBINw/Gwwsoy9P+zSIaTSyr42c24VZ9gFDyqxrSaKg8sYzQoY7TgxsrKPeKpTEzxITCZLB1Tmo5l9N16e9Ag==}
     peerDependencies:
       svelte: ^5.0.0
       tailwindcss: ^3.4.0
@@ -1844,9 +1844,6 @@ packages:
   tabbable@6.3.0:
     resolution: {integrity: sha512-EIHvdY5bPLuWForiR/AN2Bxngzpuwn1is4asboytXtpTgsArc+WmSJKVLlhdh71u7jFcryDqB2A8lQvj78MkyQ==}
 
-  tailwind-merge@2.5.4:
-    resolution: {integrity: sha512-0q8cfZHMu9nuYP/b5Shb7Y7Sh1B7Nnl5GqNr1U+n2p6+mybvRtayrQ+0042Z5byvTA8ihjlP8Odo8/VnHbZu4Q==}
-
   tailwind-merge@2.6.0:
     resolution: {integrity: sha512-P+Vu1qXfzediirmHOC3xKGAYeZtPcV9g76X+xg2FD4tYgR71ewMA35Y3sCz3zhiN/dwefRpJX0yBcgwi1fXNQA==}
 
@@ -1855,12 +1852,6 @@ packages:
 
   tailwind-variants@0.2.1:
     resolution: {integrity: sha512-2xmhAf4UIc3PijOUcJPA1LP4AbxhpcHuHM2C26xM0k81r0maAO6uoUSHl3APmvHZcY5cZCY/bYuJdfFa4eGoaw==}
-    engines: {node: '>=16.x', pnpm: '>=7.x'}
-    peerDependencies:
-      tailwindcss: '*'
-
-  tailwind-variants@0.3.1:
-    resolution: {integrity: sha512-krn67M3FpPwElg4FsZrOQd0U26o7UDH/QOkK8RNaiCCrr052f6YJPBUfNKnPo/s/xRzNPtv1Mldlxsg8Tb46BQ==}
     engines: {node: '>=16.x', pnpm: '>=7.x'}
     peerDependencies:
       tailwindcss: '*'
@@ -2172,7 +2163,7 @@ snapshots:
 
   '@autumnsgrove/groveengine@0.3.3(@sveltejs/kit@2.49.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(tailwindcss@3.4.18)':
     dependencies:
-      '@groveengine/ui': 0.3.0(svelte@5.45.5)(tailwindcss@3.4.18)
+      '@groveengine/ui': 0.3.1(svelte@5.45.5)(tailwindcss@3.4.18)
       '@sveltejs/kit': 2.49.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25))
       '@types/dompurify': 3.2.0
       chart.js: 4.5.1
@@ -2490,13 +2481,9 @@ snapshots:
 
   '@floating-ui/utils@0.2.10': {}
 
-  '@groveengine/ui@0.3.0(svelte@5.45.5)(tailwindcss@3.4.18)':
+  '@groveengine/ui@0.3.1(svelte@5.45.5)(tailwindcss@3.4.18)':
     dependencies:
-      bits-ui: 1.8.0(svelte@5.45.5)
-      clsx: 2.1.1
       svelte: 5.45.5
-      tailwind-merge: 2.6.0
-      tailwind-variants: 0.3.1(tailwindcss@3.4.18)
       tailwindcss: 3.4.18
 
   '@img/sharp-darwin-arm64@0.33.5':
@@ -3659,8 +3646,6 @@ snapshots:
 
   tabbable@6.3.0: {}
 
-  tailwind-merge@2.5.4: {}
-
   tailwind-merge@2.6.0: {}
 
   tailwind-merge@3.4.0: {}
@@ -3668,11 +3653,6 @@ snapshots:
   tailwind-variants@0.2.1(tailwindcss@3.4.18):
     dependencies:
       tailwind-merge: 2.6.0
-      tailwindcss: 3.4.18
-
-  tailwind-variants@0.3.1(tailwindcss@3.4.18):
-    dependencies:
-      tailwind-merge: 2.5.4
       tailwindcss: 3.4.18
 
   tailwindcss@3.4.18:
