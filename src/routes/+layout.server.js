@@ -18,10 +18,13 @@ export async function load({ locals, platform }) {
         }
       }
     }
-  } catch (error) {
+  } catch (err) {
     // During prerendering or if DB bindings aren't configured, gracefully fall back to defaults
     // This prevents 500 errors when D1 bindings aren't set up in Cloudflare Pages dashboard
-    console.error("Failed to load site settings (using defaults):", error.message);
+    console.error("[ROOT LAYOUT] Failed to load site settings (using defaults):", {
+      message: err.message,
+      hasDB: !!platform?.env?.GIT_STATS_DB,
+    });
   }
 
   return {

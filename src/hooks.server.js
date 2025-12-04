@@ -11,12 +11,20 @@ export async function handle({ event, resolve }) {
   const sessionToken = parseSessionCookie(cookieHeader);
 
   if (sessionToken && event.platform?.env?.SESSION_SECRET) {
-    const user = await verifySession(
-      sessionToken,
-      event.platform.env.SESSION_SECRET,
-    );
-    if (user) {
-      event.locals.user = user;
+    try {
+      const user = await verifySession(
+        sessionToken,
+        event.platform.env.SESSION_SECRET,
+      );
+      if (user) {
+        event.locals.user = user;
+      }
+    } catch (err) {
+      console.error("[HOOKS] Session verification failed:", {
+        message: err.message,
+        path: event.url.pathname,
+        hasSecret: !!event.platform?.env?.SESSION_SECRET,
+      });
     }
   }
 
