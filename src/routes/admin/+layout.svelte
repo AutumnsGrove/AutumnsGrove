@@ -86,9 +86,11 @@
     </nav>
 
     <div class="sidebar-footer">
-      <div class="user-info">
-        <span class="email">{data.user.email}</span>
-      </div>
+      {#if data?.user}
+        <div class="user-info">
+          <span class="email">{data.user.email}</span>
+        </div>
+      {/if}
       <a href="/auth/logout" class="logout-btn">Logout</a>
     </div>
   </aside>
