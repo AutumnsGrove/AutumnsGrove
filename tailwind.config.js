@@ -3,7 +3,11 @@ import typographyConfig from './tailwind.typography.config.js';
 /** @type {import('tailwindcss').Config} */
 export default {
 	darkMode: 'class',
-	content: ['./src/**/*.{html,js,svelte,ts}'],
+	content: [
+		'./src/**/*.{html,js,svelte,ts}',
+		'./node_modules/@autumnsgrove/groveengine/**/*.{svelte,js,ts}',
+		'./node_modules/@groveengine/ui/**/*.{svelte,js,ts}'
+	],
 	theme: {
 		extend: {
 			typography: typographyConfig,
