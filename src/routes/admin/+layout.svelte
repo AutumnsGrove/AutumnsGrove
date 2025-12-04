@@ -1,5 +1,6 @@
 <script>
-  import { Toast } from "$lib/components/ui";
+  // Toast temporarily removed for debugging
+  // import { Toast } from "$lib/components/ui";
 
   let { data, children } = $props();
   let sidebarOpen = $state(false);
@@ -100,7 +101,8 @@
   </main>
 </div>
 
-<Toast />
+<!-- Toast temporarily removed for debugging -->
+<!-- <Toast /> -->
 
 <style>
   .admin-layout {
