@@ -5,6 +5,7 @@
 <script>
 	import '../app.css';
 	import '@autumnsgrove/groveengine/ui/styles/tokens.css';
+	import '@autumnsgrove/groveengine/ui/styles/content.css';
 	import { page } from '$app/stores';
 	import { fade } from 'svelte/transition';
 	import { onMount } from 'svelte';
