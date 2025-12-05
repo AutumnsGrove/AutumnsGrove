@@ -1,6 +1,7 @@
 {
   "name": "autumnsgrove",
   "version": "1.0.0",
+  "packageManager": "pnpm@9.15.0",
   "description": "A personal website for blogging, demonstrating projects, and sharing articles. Built with SvelteKit and deployed to Cloudflare Pages.",
   "type": "module",
   "scripts": {
