@@ -1,5 +1,5 @@
 import { json } from "@sveltejs/kit";
-import { isAllowedAdmin } from "$lib/auth/session";
+import { isAllowedAdmin } from "@autumnsgrove/groveengine/auth";
 
 // Constants
 const CODE_EXPIRATION_MS = 10 * 60 * 1000; // 10 minutes
@@ -19,7 +19,7 @@ const MAX_REQUESTS_PER_IP = 10; // Max 10 requests per IP per minute
 function generateCode() {
   const array = new Uint32Array(1);
   crypto.getRandomValues(array);
-  return (array[0] % CODE_RANGE + CODE_MIN).toString();
+  return ((array[0] % CODE_RANGE) + CODE_MIN).toString();
 }
 
 /**
@@ -35,21 +35,34 @@ async function checkRateLimit(db, email, ip) {
 
   try {
     // Check email rate limit
-    const emailCount = await db.prepare(
-      "SELECT COUNT(*) as count FROM magic_codes WHERE email = ? AND created_at > ?"
-    ).bind(email, windowStart).first();
+    const emailCount = await db
+      .prepare(
+        "SELECT COUNT(*) as count FROM magic_codes WHERE email = ? AND created_at > ?",
+      )
+      .bind(email, windowStart)
+      .first();
 
     if (emailCount && emailCount.count >= MAX_REQUESTS_PER_EMAIL) {
-      return { allowed: false, reason: "Too many requests. Please wait before requesting another code." };
+      return {
+        allowed: false,
+        reason:
+          "Too many requests. Please wait before requesting another code.",
+      };
     }
 
     // Check IP rate limit using a separate rate_limits table
-    const ipCount = await db.prepare(
-      "SELECT COUNT(*) as count FROM rate_limits WHERE ip_address = ? AND created_at > ?"
-    ).bind(ip, windowStart).first();
+    const ipCount = await db
+      .prepare(
+        "SELECT COUNT(*) as count FROM rate_limits WHERE ip_address = ? AND created_at > ?",
+      )
+      .bind(ip, windowStart)
+      .first();
 
     if (ipCount && ipCount.count >= MAX_REQUESTS_PER_IP) {
-      return { allowed: false, reason: "Too many requests from this IP. Please try again later." };
+      return {
+        allowed: false,
+        reason: "Too many requests from this IP. Please try again later.",
+      };
     }
 
     return { allowed: true };
@@ -69,13 +82,15 @@ async function recordRateLimit(db, ip) {
   const now = Date.now();
   try {
     // Clean up old rate limit entries and insert new one
-    await db.prepare(
-      "DELETE FROM rate_limits WHERE created_at < ?"
-    ).bind(now - RATE_LIMIT_WINDOW_MS).run();
+    await db
+      .prepare("DELETE FROM rate_limits WHERE created_at < ?")
+      .bind(now - RATE_LIMIT_WINDOW_MS)
+      .run();
 
-    await db.prepare(
-      "INSERT INTO rate_limits (ip_address, created_at) VALUES (?, ?)"
-    ).bind(ip, now).run();
+    await db
+      .prepare("INSERT INTO rate_limits (ip_address, created_at) VALUES (?, ?)")
+      .bind(ip, now)
+      .run();
   } catch (error) {
     // Table might not exist yet - that's ok
     console.warn("Rate limit recording failed:", error);
@@ -92,7 +107,7 @@ async function sendEmail(email, code, apiKey) {
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
-      "Authorization": `Bearer ${apiKey}`,
+      Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -133,9 +148,15 @@ export async function POST({ request, platform, getClientAddress }) {
     return json({ error: "Server configuration error" }, { status: 500 });
   }
 
-  const { RESEND_API_KEY, ALLOWED_ADMIN_EMAILS, SESSION_SECRET, GIT_STATS_DB } = env;
+  const { RESEND_API_KEY, ALLOWED_ADMIN_EMAILS, SESSION_SECRET, GIT_STATS_DB } =
+    env;
 
-  if (!RESEND_API_KEY || !ALLOWED_ADMIN_EMAILS || !SESSION_SECRET || !GIT_STATS_DB) {
+  if (
+    !RESEND_API_KEY ||
+    !ALLOWED_ADMIN_EMAILS ||
+    !SESSION_SECRET ||
+    !GIT_STATS_DB
+  ) {
     return json({ error: "Server configuration error" }, { status: 500 });
   }
 
@@ -158,7 +179,11 @@ export async function POST({ request, platform, getClientAddress }) {
   const normalizedEmail = email.trim().toLowerCase();
 
   // Check rate limits before processing
-  const rateLimit = await checkRateLimit(GIT_STATS_DB, normalizedEmail, clientIP);
+  const rateLimit = await checkRateLimit(
+    GIT_STATS_DB,
+    normalizedEmail,
+    clientIP,
+  );
   if (!rateLimit.allowed) {
     return json({ error: rateLimit.reason }, { status: 429 });
   }
@@ -169,7 +194,10 @@ export async function POST({ request, platform, getClientAddress }) {
   // Check if email is allowed
   if (!isAllowedAdmin(normalizedEmail, ALLOWED_ADMIN_EMAILS)) {
     // Return generic message to prevent email enumeration
-    return json({ success: true, message: "If this email is registered, a code has been sent." });
+    return json({
+      success: true,
+      message: "If this email is registered, a code has been sent.",
+    });
   }
 
   // Generate code
@@ -181,13 +209,17 @@ export async function POST({ request, platform, getClientAddress }) {
   try {
     // Clean up old codes for this email
     await GIT_STATS_DB.prepare(
-      "DELETE FROM magic_codes WHERE email = ? OR expires_at < ?"
-    ).bind(normalizedEmail, now).run();
+      "DELETE FROM magic_codes WHERE email = ? OR expires_at < ?",
+    )
+      .bind(normalizedEmail, now)
+      .run();
 
     // Insert new code
     await GIT_STATS_DB.prepare(
-      "INSERT INTO magic_codes (email, code, created_at, expires_at, used) VALUES (?, ?, ?, ?, 0)"
-    ).bind(normalizedEmail, code, now, expiresAt).run();
+      "INSERT INTO magic_codes (email, code, created_at, expires_at, used) VALUES (?, ?, ?, ?, 0)",
+    )
+      .bind(normalizedEmail, code, now, expiresAt)
+      .run();
   } catch (error) {
     console.error("Database error:", error);
     return json({ error: "Failed to generate code" }, { status: 500 });
@@ -201,5 +233,8 @@ export async function POST({ request, platform, getClientAddress }) {
     return json({ error: "Failed to send email" }, { status: 500 });
   }
 
-  return json({ success: true, message: "If this email is registered, a code has been sent." });
+  return json({
+    success: true,
+    message: "If this email is registered, a code has been sent.",
+  });
 }

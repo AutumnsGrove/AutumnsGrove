@@ -1,5 +1,5 @@
 <script>
-	import { Card, Badge } from '$lib/components/ui';
+	import { Card, Badge } from '@autumnsgrove/groveengine/ui';
 
 	let { data } = $props();
 </script>

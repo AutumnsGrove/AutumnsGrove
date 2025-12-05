@@ -1,4 +1,4 @@
-import { getContactPage } from "$lib/utils/markdown";
+import { getContactPage } from "$lib/content/markdown";
 import { error } from "@sveltejs/kit";
 
 export const prerender = true;

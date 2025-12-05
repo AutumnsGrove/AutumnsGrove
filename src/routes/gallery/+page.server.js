@@ -3,7 +3,7 @@ import {
   parseImageFilename,
   getAvailableYears,
   getAvailableCategories,
-} from "$lib/utils/gallery";
+} from "@autumnsgrove/groveengine/utils";
 
 /**
  * Server-side loader for the gallery page
@@ -153,13 +153,13 @@ export async function load({ platform }) {
 
       // Fetch all available tags (for filters)
       const allTagsResult = await platform.env.DB.prepare(
-        "SELECT id, name, slug, color FROM gallery_tags ORDER BY name"
+        "SELECT id, name, slug, color FROM gallery_tags ORDER BY name",
       ).all();
       allTags = allTagsResult.results || [];
 
       // Fetch all collections (for filters)
       const collectionsResult = await platform.env.DB.prepare(
-        "SELECT id, name, slug, description FROM gallery_collections ORDER BY display_order, name"
+        "SELECT id, name, slug, description FROM gallery_collections ORDER BY display_order, name",
       ).all();
       allCollections = collectionsResult.results || [];
     }

@@ -5,7 +5,7 @@ import {
   MAX_LIMIT,
   MIN_LIMIT,
   getCacheKey,
-} from "$lib/utils/github.js";
+} from "$lib/utils/github";
 
 export const prerender = false;
 
@@ -39,7 +39,10 @@ export async function GET({ params, url, platform }) {
     page = Math.max(1, Math.min(page, MAX_PAGES));
 
     // Parse per_page parameter
-    let perPage = parseInt(url.searchParams.get("per_page") || String(DEFAULT_PER_PAGE), 10);
+    let perPage = parseInt(
+      url.searchParams.get("per_page") || String(DEFAULT_PER_PAGE),
+      10,
+    );
     perPage = Math.max(1, Math.min(perPage, MAX_PER_PAGE));
 
     // Parse since parameter (ISO date string for time range filtering)
@@ -68,7 +71,14 @@ export async function GET({ params, url, platform }) {
     }
 
     // Fetch paginated commits using GraphQL
-    const result = await fetchCommitsPaginated(username, repoLimit, token, page, perPage, since);
+    const result = await fetchCommitsPaginated(
+      username,
+      repoLimit,
+      token,
+      page,
+      perPage,
+      since,
+    );
 
     // Cache the result
     if (kv) {
@@ -96,7 +106,10 @@ export async function GET({ params, url, platform }) {
       throw error(401, "GitHub token required for this endpoint");
     }
     if (e.message?.includes("rate limit")) {
-      throw error(429, "GitHub API rate limit exceeded. Please try again later.");
+      throw error(
+        429,
+        "GitHub API rate limit exceeded. Please try again later.",
+      );
     }
 
     // Return generic message to avoid exposing internal details

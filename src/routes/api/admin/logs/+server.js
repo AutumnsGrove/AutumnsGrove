@@ -4,8 +4,8 @@ import {
   getAllLogs,
   getLogStats,
   subscribe,
-} from "$lib/server/logger.js";
-import { verifySession, isAllowedAdmin } from "$lib/auth/session";
+} from "@autumnsgrove/groveengine/server";
+import { verifySession, isAllowedAdmin } from "@autumnsgrove/groveengine/auth";
 
 export const prerender = false;
 
@@ -137,9 +137,6 @@ export async function GET({ url, request, cookies, platform }) {
     });
   } catch (e) {
     console.error("[API] Error fetching logs:", e);
-    return json(
-      { error: "Failed to fetch logs" },
-      { status: 500 },
-    );
+    return json({ error: "Failed to fetch logs" }, { status: 500 });
   }
 }

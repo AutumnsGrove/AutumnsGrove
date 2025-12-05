@@ -4,12 +4,12 @@
 
 <script>
 	import '../app.css';
-	import '$lib/styles/tokens.css';
+	import '@autumnsgrove/groveengine/ui/styles/tokens.css';
 	import { page } from '$app/stores';
 	import { fade } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { Button, Input } from '$lib/components/ui';
+	import { Button, Input } from '@autumnsgrove/groveengine/ui';
 
 	let { children, data } = $props();
 

@@ -2,7 +2,7 @@
 	import { untrack } from 'svelte';
 	import { ContentWithGutter } from '$lib/components';
 	import IconLegend from '$lib/components/custom/IconLegend.svelte';
-	import { Button, Badge } from '$lib/components/ui';
+	import { Button, Badge } from '@autumnsgrove/groveengine/ui';
 
 	let { data } = $props();
 

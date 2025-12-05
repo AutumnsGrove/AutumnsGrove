@@ -12,15 +12,13 @@
 		Toast,
 		Skeleton,
 		Table,
-		toast
-	} from '$lib/components/ui';
-	import {
+		toast,
 		TableHeader,
 		TableBody,
 		TableRow,
 		TableCell,
 		TableHead
-	} from '$lib/components/ui/table';
+	} from '@autumnsgrove/groveengine/ui';
 
 	// State for interactive examples
 	let sampleInput = $state('');

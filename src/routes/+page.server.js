@@ -1,7 +1,11 @@
-import { getHomePage, getLatestPost, processAnchorTags } from "$lib/utils/markdown";
+import {
+  getHomePage,
+  getLatestPost,
+  processAnchorTags,
+} from "$lib/content/markdown";
+import { sanitizeMarkdown } from "@autumnsgrove/groveengine/utils";
 import { error } from "@sveltejs/kit";
 import { marked } from "marked";
-import { sanitizeMarkdown } from "$lib/utils/sanitize";
 
 // Disable prerendering - latest post is fetched from D1 at runtime
 export const prerender = false;
@@ -15,8 +19,10 @@ export async function load({ platform }) {
       const pageData = await platform.env.POSTS_DB.prepare(
         `SELECT slug, title, description, markdown_content, html_content, hero, gutter_content, font
          FROM pages
-         WHERE slug = ?`
-      ).bind('home').first();
+         WHERE slug = ?`,
+      )
+        .bind("home")
+        .first();
 
       if (pageData) {
         // Parse hero JSON
@@ -25,7 +31,7 @@ export async function load({ platform }) {
           try {
             hero = JSON.parse(pageData.hero);
           } catch (e) {
-            console.warn('Failed to parse hero for home page:', e);
+            console.warn("Failed to parse hero for home page:", e);
             hero = null;
           }
         }
@@ -33,11 +39,13 @@ export async function load({ platform }) {
         // Generate HTML from markdown if not stored
         let htmlContent = pageData.html_content;
         if (!htmlContent && pageData.markdown_content) {
-          htmlContent = sanitizeMarkdown(marked.parse(pageData.markdown_content));
+          htmlContent = sanitizeMarkdown(
+            marked.parse(pageData.markdown_content),
+          );
         }
 
         // Extract headers from HTML for table of contents
-        const headers = extractHeadersFromHtml(htmlContent || '');
+        const headers = extractHeadersFromHtml(htmlContent || "");
 
         // Safe JSON parsing for gutter content
         let gutterContent = [];
@@ -45,17 +53,20 @@ export async function load({ platform }) {
           try {
             gutterContent = JSON.parse(pageData.gutter_content);
             // Process gutter items: convert markdown to HTML for comment/markdown items
-            gutterContent = gutterContent.map(item => {
-              if ((item.type === 'comment' || item.type === 'markdown') && item.content) {
+            gutterContent = gutterContent.map((item) => {
+              if (
+                (item.type === "comment" || item.type === "markdown") &&
+                item.content
+              ) {
                 return {
                   ...item,
-                  content: sanitizeMarkdown(marked.parse(item.content))
+                  content: sanitizeMarkdown(marked.parse(item.content)),
                 };
               }
               return item;
             });
           } catch (e) {
-            console.warn('Failed to parse gutter_content for home page:', e);
+            console.warn("Failed to parse gutter_content for home page:", e);
             gutterContent = [];
           }
         }
@@ -63,16 +74,16 @@ export async function load({ platform }) {
         page = {
           slug: pageData.slug,
           title: pageData.title,
-          description: pageData.description || '',
+          description: pageData.description || "",
           hero,
           content: htmlContent,
           headers,
           gutterContent,
-          font: pageData.font || 'default'
+          font: pageData.font || "default",
         };
       }
     } catch (err) {
-      console.error('D1 fetch error for home page:', err);
+      console.error("D1 fetch error for home page:", err);
       // Fall through to filesystem fallback
     }
   }
@@ -95,12 +106,12 @@ export async function load({ platform }) {
         `SELECT slug, title, date, tags, description, html_content, gutter_content, font
          FROM posts
          ORDER BY date DESC
-         LIMIT 1`
+         LIMIT 1`,
       ).first();
 
       if (post) {
         // Process anchor tags in HTML content (same as individual post pages)
-        const processedHtml = processAnchorTags(post.html_content || '');
+        const processedHtml = processAnchorTags(post.html_content || "");
 
         // Extract headers from HTML for table of contents
         const headers = extractHeadersFromHtml(processedHtml);
@@ -111,7 +122,7 @@ export async function load({ platform }) {
           try {
             tags = JSON.parse(post.tags);
           } catch (e) {
-            console.warn('Failed to parse tags for latest post:', e);
+            console.warn("Failed to parse tags for latest post:", e);
             tags = [];
           }
         }
@@ -122,17 +133,20 @@ export async function load({ platform }) {
           try {
             gutterContent = JSON.parse(post.gutter_content);
             // Process gutter items: convert markdown to HTML for comment/markdown items
-            gutterContent = gutterContent.map(item => {
-              if ((item.type === 'comment' || item.type === 'markdown') && item.content) {
+            gutterContent = gutterContent.map((item) => {
+              if (
+                (item.type === "comment" || item.type === "markdown") &&
+                item.content
+              ) {
                 return {
                   ...item,
-                  content: sanitizeMarkdown(marked.parse(item.content))
+                  content: sanitizeMarkdown(marked.parse(item.content)),
                 };
               }
               return item;
             });
           } catch (e) {
-            console.warn('Failed to parse gutter_content for latest post:', e);
+            console.warn("Failed to parse gutter_content for latest post:", e);
             gutterContent = [];
           }
         }
@@ -142,15 +156,15 @@ export async function load({ platform }) {
           title: post.title,
           date: post.date,
           tags,
-          description: post.description || '',
+          description: post.description || "",
           content: processedHtml,
           headers,
           gutterContent,
-          font: post.font || 'default'
+          font: post.font || "default",
         };
       }
     } catch (err) {
-      console.error('D1 fetch error for latest post:', err);
+      console.error("D1 fetch error for latest post:", err);
       // Fall through to filesystem fallback
     }
   }
@@ -186,7 +200,7 @@ function extractHeadersFromHtml(html) {
     headers.push({
       level: parseInt(match[1]),
       id: match[2],
-      text: match[3].trim()
+      text: match[3].trim(),
     });
   }
 

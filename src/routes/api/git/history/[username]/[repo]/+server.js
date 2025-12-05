@@ -1,5 +1,5 @@
 import { json, error } from "@sveltejs/kit";
-import { validateUsername, getCacheKey } from "$lib/utils/github.js";
+import { validateUsername, getCacheKey } from "$lib/utils/github";
 
 export const prerender = false;
 

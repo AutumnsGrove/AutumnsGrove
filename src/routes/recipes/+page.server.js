@@ -1,11 +1,11 @@
-import { getAllRecipes } from '$lib/utils/markdown.js';
+import { getAllRecipes } from "$lib/content/markdown";
 
 export const prerender = true;
 
 export function load() {
-	const recipes = getAllRecipes();
+  const recipes = getAllRecipes();
 
-	return {
-		recipes
-	};
+  return {
+    recipes,
+  };
 }

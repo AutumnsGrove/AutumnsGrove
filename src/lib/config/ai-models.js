@@ -18,8 +18,8 @@ export const AI_MODELS = {
     description: "Fast and cost-effective",
     // Pricing per million tokens (as of Dec 2025)
     pricing: {
-      input: 1.00,   // $1.00 per million input tokens
-      output: 5.00,  // $5.00 per million output tokens
+      input: 1.0, // $1.00 per million input tokens
+      output: 5.0, // $5.00 per million output tokens
     },
   },
 
@@ -30,8 +30,8 @@ export const AI_MODELS = {
     description: "More thorough analysis",
     // Pricing per million tokens (as of Dec 2025)
     pricing: {
-      input: 3.00,   // $3.00 per million input tokens
-      output: 15.00, // $15.00 per million output tokens
+      input: 3.0, // $3.00 per million input tokens
+      output: 15.0, // $15.00 per million output tokens
     },
   },
 };
@@ -44,22 +44,22 @@ export const MAX_CONTENT_LENGTH = 50000;
 
 // Max output tokens by analysis type
 export const MAX_OUTPUT_TOKENS = {
-  grammar: 2048,      // Grammar analysis needs more room for multiple suggestions
-  tone: 1024,         // Tone analysis is more concise
-  readability: 0,     // No AI call needed - local calculation
+  grammar: 2048, // Grammar analysis needs more room for multiple suggestions
+  tone: 1024, // Tone analysis is more concise
+  readability: 0, // No AI call needed - local calculation
 };
 
 // Rate limit settings
 export const RATE_LIMIT = {
-  maxRequests: 20,          // Maximum requests per window
+  maxRequests: 20, // Maximum requests per window
   windowMs: 60 * 60 * 1000, // Per hour (in milliseconds)
 };
 
 // Monthly cost cap (per user)
 export const MONTHLY_COST_CAP = {
   enabled: true,
-  maxCostUSD: 5.00,         // $5 per user per month
-  warningThreshold: 0.8,    // Warn at 80% of cap
+  maxCostUSD: 5.0, // $5 per user per month
+  warningThreshold: 0.8, // Warn at 80% of cap
 };
 
 /**
@@ -82,5 +82,7 @@ export function calculateCost(modelKey, inputTokens, outputTokens) {
   const model = AI_MODELS[modelKey] || AI_MODELS[DEFAULT_MODEL];
   const { pricing } = model;
 
-  return (inputTokens * pricing.input + outputTokens * pricing.output) / 1000000;
+  return (
+    (inputTokens * pricing.input + outputTokens * pricing.output) / 1000000
+  );
 }

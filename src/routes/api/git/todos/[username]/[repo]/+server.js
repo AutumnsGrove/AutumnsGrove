@@ -4,7 +4,7 @@ import {
   getHeaders,
   GITHUB_API_BASE,
   getCacheKey,
-} from "$lib/utils/github.js";
+} from "$lib/utils/github";
 
 export const prerender = false;
 

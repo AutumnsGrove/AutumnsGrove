@@ -17,7 +17,7 @@ export const DEFAULT_TIMEOUT = 60000; // 60 seconds in ms
  * @returns {boolean}
  */
 export function isValidUsername(username) {
-  if (!username || typeof username !== 'string') {
+  if (!username || typeof username !== "string") {
     return false;
   }
 
@@ -29,11 +29,11 @@ export function isValidUsername(username) {
     return false;
   }
 
-  if (username.startsWith('-') || username.endsWith('-')) {
+  if (username.startsWith("-") || username.endsWith("-")) {
     return false;
   }
 
-  if (username.includes('--')) {
+  if (username.includes("--")) {
     return false;
   }
 
@@ -141,7 +141,7 @@ export async function fetchStatsGraphQL(username, limit, token, since = null) {
     commits_by_repo: {},
     recent_commits: [],
     repos_analyzed: 0,
-    time_range: since ? 'filtered' : 'all_time',
+    time_range: since ? "filtered" : "all_time",
     filtered_since: since || null, // Include the actual filter date for debugging
   };
 
@@ -230,7 +230,10 @@ export async function fetchStatsGraphQL(username, limit, token, since = null) {
 
       // Match by GitHub login if available, otherwise skip commits without linked accounts
       // This allows commits from users who have their git email linked to their GitHub account
-      if (commitAuthorLogin && commitAuthorLogin.toLowerCase() !== username.toLowerCase()) {
+      if (
+        commitAuthorLogin &&
+        commitAuthorLogin.toLowerCase() !== username.toLowerCase()
+      ) {
         continue;
       }
       // If no login is available (author.user is null), include the commit anyway
@@ -266,7 +269,11 @@ export async function fetchStatsGraphQL(username, limit, token, since = null) {
       if (stats.recent_commits.length < 20) {
         const message = commit.message || "";
         // Get first 3 lines of commit message
-        const messageLines = message.split("\n").slice(0, 3).join("\n").substring(0, 300);
+        const messageLines = message
+          .split("\n")
+          .slice(0, 3)
+          .join("\n")
+          .substring(0, 300);
         stats.recent_commits.push({
           sha: (commit.oid || "").substring(0, 7),
           message: messageLines,
@@ -374,7 +381,14 @@ query($username: String!, $first: Int!, $since: GitTimestamp) {
  * @param {string|null} since - ISO date string for filtering commits (optional)
  * @returns {Promise<object>}
  */
-export async function fetchCommitsPaginated(username, repoLimit, token, page = 1, perPage = 20, since = null) {
+export async function fetchCommitsPaginated(
+  username,
+  repoLimit,
+  token,
+  page = 1,
+  perPage = 20,
+  since = null,
+) {
   // Build variables, only include since if provided
   const variables = {
     username,
@@ -442,7 +456,10 @@ export async function fetchCommitsPaginated(username, repoLimit, token, page = 1
 
       // Match by GitHub login if available, otherwise skip commits without linked accounts
       // This allows commits from users who have their git email linked to their GitHub account
-      if (commitAuthorLogin && commitAuthorLogin.toLowerCase() !== username.toLowerCase()) {
+      if (
+        commitAuthorLogin &&
+        commitAuthorLogin.toLowerCase() !== username.toLowerCase()
+      ) {
         continue;
       }
       // If no login is available (author.user is null), include the commit anyway
@@ -452,7 +469,11 @@ export async function fetchCommitsPaginated(username, repoLimit, token, page = 1
       const commitDate = commit.committedDate;
       const message = commit.message || "";
       // Get first 3 lines of commit message
-      const messageLines = message.split("\n").slice(0, 3).join("\n").substring(0, 300);
+      const messageLines = message
+        .split("\n")
+        .slice(0, 3)
+        .join("\n")
+        .substring(0, 300);
 
       allCommits.push({
         sha: (commit.oid || "").substring(0, 7),

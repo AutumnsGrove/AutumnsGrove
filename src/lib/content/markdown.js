@@ -1,6 +1,6 @@
 import { marked } from "marked";
 import matter from "gray-matter";
-import { sanitizeMarkdown } from './sanitize.js';
+import { sanitizeMarkdown } from "@autumnsgrove/groveengine/utils";
 
 // Configure marked renderer for GitHub-style code blocks
 const renderer = new marked.Renderer();
@@ -899,4 +899,3 @@ export function getRecipeBySlug(slug) {
     sidecar: sidecar,
   };
 }
-

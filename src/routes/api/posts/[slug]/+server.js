@@ -1,9 +1,11 @@
 import { json, error } from "@sveltejs/kit";
 import { marked } from "marked";
-import { getPostBySlug } from "$lib/utils/markdown";
-import { validateCSRF } from "$lib/utils/csrf";
-import { sanitizeObject } from "$lib/utils/validation";
-import { sanitizeMarkdown } from "$lib/utils/sanitize";
+import { getPostBySlug } from "$lib/content/markdown";
+import {
+  validateCSRF,
+  sanitizeObject,
+  sanitizeMarkdown,
+} from "@autumnsgrove/groveengine/utils";
 
 /**
  * GET /api/posts/[slug] - Get a single post
@@ -27,7 +29,7 @@ export async function GET({ params, platform, locals }) {
       const post = await platform.env.POSTS_DB.prepare(
         `SELECT slug, title, date, tags, description, markdown_content, html_content, gutter_content, font, last_synced, updated_at
          FROM posts
-         WHERE slug = ?`
+         WHERE slug = ?`,
       )
         .bind(slug)
         .first();
@@ -111,7 +113,7 @@ export async function PUT({ params, request, platform, locals }) {
     // Validation constants
     const MAX_TITLE_LENGTH = 200;
     const MAX_DESCRIPTION_LENGTH = 500;
-    const MAX_MARKDOWN_LENGTH = 1024 * 1024;  // 1MB
+    const MAX_MARKDOWN_LENGTH = 1024 * 1024; // 1MB
 
     // Validate lengths
     if (data.title.length > MAX_TITLE_LENGTH) {
@@ -119,16 +121,19 @@ export async function PUT({ params, request, platform, locals }) {
     }
 
     if (data.description && data.description.length > MAX_DESCRIPTION_LENGTH) {
-      throw error(400, `Description too long (max ${MAX_DESCRIPTION_LENGTH} characters)`);
+      throw error(
+        400,
+        `Description too long (max ${MAX_DESCRIPTION_LENGTH} characters)`,
+      );
     }
 
     if (data.markdown_content.length > MAX_MARKDOWN_LENGTH) {
-      throw error(400, 'Content too large (max 1MB)');
+      throw error(400, "Content too large (max 1MB)");
     }
 
     // Check if post exists
     const existing = await platform.env.POSTS_DB.prepare(
-      "SELECT slug FROM posts WHERE slug = ?"
+      "SELECT slug FROM posts WHERE slug = ?",
     )
       .bind(slug)
       .first();
@@ -171,7 +176,9 @@ export async function PUT({ params, request, platform, locals }) {
       slug,
     ];
 
-    await platform.env.POSTS_DB.prepare(updateQuery).bind(...params).run();
+    await platform.env.POSTS_DB.prepare(updateQuery)
+      .bind(...params)
+      .run();
 
     return json({
       success: true,
@@ -212,7 +219,7 @@ export async function DELETE({ request, params, platform, locals }) {
   try {
     // Check if post exists
     const existing = await platform.env.POSTS_DB.prepare(
-      "SELECT slug FROM posts WHERE slug = ?"
+      "SELECT slug FROM posts WHERE slug = ?",
     )
       .bind(slug)
       .first();

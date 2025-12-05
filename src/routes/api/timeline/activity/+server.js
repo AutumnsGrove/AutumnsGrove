@@ -8,25 +8,28 @@
  * Returns daily activity data optimized for charts
  */
 
-import { json, error } from '@sveltejs/kit';
+import { json, error } from "@sveltejs/kit";
 
 export async function GET({ url, platform }) {
   const db = platform?.env?.GIT_STATS_DB;
   const kv = platform?.env?.CACHE_KV;
 
   if (!db) {
-    throw error(500, 'Database not available');
+    throw error(500, "Database not available");
   }
 
-  const days = Math.min(Math.max(parseInt(url.searchParams.get('days') || '14'), 1), 90);
+  const days = Math.min(
+    Math.max(parseInt(url.searchParams.get("days") || "14"), 1),
+    90,
+  );
 
   // Calculate date range
   const endDate = new Date();
   const startDate = new Date();
   startDate.setDate(startDate.getDate() - days + 1);
 
-  const startDateStr = startDate.toISOString().split('T')[0];
-  const endDateStr = endDate.toISOString().split('T')[0];
+  const startDateStr = startDate.toISOString().split("T")[0];
+  const endDateStr = endDate.toISOString().split("T")[0];
 
   // Cache key
   const cacheKey = `activity:${days}:${endDateStr}`;
@@ -39,7 +42,7 @@ export async function GET({ url, platform }) {
         return json({ ...JSON.parse(cached), cached: true });
       }
     } catch (e) {
-      console.warn('Cache read error:', e);
+      console.warn("Cache read error:", e);
     }
   }
 
@@ -67,7 +70,7 @@ export async function GET({ url, platform }) {
         commits: row.commits,
         additions: row.additions,
         deletions: row.deletions,
-        repos: row.repos_active ? JSON.parse(row.repos_active) : []
+        repos: row.repos_active ? JSON.parse(row.repos_active) : [],
       };
     }
 
@@ -75,24 +78,29 @@ export async function GET({ url, platform }) {
     const activity = [];
     const current = new Date(startDate);
     while (current <= endDate) {
-      const dateStr = current.toISOString().split('T')[0];
-      activity.push(activityMap[dateStr] || {
-        date: dateStr,
-        commits: 0,
-        additions: 0,
-        deletions: 0,
-        repos: []
-      });
+      const dateStr = current.toISOString().split("T")[0];
+      activity.push(
+        activityMap[dateStr] || {
+          date: dateStr,
+          commits: 0,
+          additions: 0,
+          deletions: 0,
+          repos: [],
+        },
+      );
       current.setDate(current.getDate() + 1);
     }
 
     // Calculate totals
-    const totals = activity.reduce((acc, day) => ({
-      commits: acc.commits + day.commits,
-      additions: acc.additions + day.additions,
-      deletions: acc.deletions + day.deletions,
-      activeDays: acc.activeDays + (day.commits > 0 ? 1 : 0)
-    }), { commits: 0, additions: 0, deletions: 0, activeDays: 0 });
+    const totals = activity.reduce(
+      (acc, day) => ({
+        commits: acc.commits + day.commits,
+        additions: acc.additions + day.additions,
+        deletions: acc.deletions + day.deletions,
+        activeDays: acc.activeDays + (day.commits > 0 ? 1 : 0),
+      }),
+      { commits: 0, additions: 0, deletions: 0, activeDays: 0 },
+    );
 
     // Get repo breakdown
     const repoCommits = {};
@@ -112,25 +120,24 @@ export async function GET({ url, platform }) {
       days,
       range: {
         start: startDateStr,
-        end: endDateStr
-      }
+        end: endDateStr,
+      },
     };
 
     // Cache for 10 minutes
     if (kv) {
       try {
         await kv.put(cacheKey, JSON.stringify(response), {
-          expirationTtl: 600
+          expirationTtl: 600,
         });
       } catch (e) {
-        console.warn('Cache write error:', e);
+        console.warn("Cache write error:", e);
       }
     }
 
     return json(response);
-
   } catch (e) {
-    console.error('Activity API error:', e);
-    throw error(500, 'Failed to fetch activity data');
+    console.error("Activity API error:", e);
+    throw error(500, "Failed to fetch activity data");
   }
 }

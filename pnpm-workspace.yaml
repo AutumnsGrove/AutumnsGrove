@@ -1,0 +1,2 @@
+overrides:
+  '@autumnsgrove/groveengine': link:../GroveEngine/packages/engine

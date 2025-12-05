@@ -17,14 +17,14 @@ export {
   GutterItem,
   TableOfContents,
   MobileTOC,
-  CollapsibleSection
-} from '@autumnsgrove/groveengine';
+  CollapsibleSection,
+} from "@autumnsgrove/groveengine";
 
 // Site-specific custom components - keep local
 export { default as IconLegend } from "./custom/IconLegend.svelte";
 export { default as InternalsPostViewer } from "./custom/InternalsPostViewer.svelte";
 export { default as LogViewer } from "./custom/LogViewer.svelte";
-export { default as AIWritingPanel } from "./admin/AIWritingPanel.svelte";
+export { default as AIWritingPanel } from "./custom/AIWritingPanel.svelte";
 
 // Chart components - keep local (site-specific GitDashboard feature)
 export { default as Sparkline } from "./charts/Sparkline.svelte";

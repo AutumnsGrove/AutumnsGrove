@@ -1,6 +1,6 @@
 import { json, error } from "@sveltejs/kit";
-import { validateCSRF } from "$lib/utils/csrf";
-import { sanitizeObject } from "$lib/utils/validation";
+import { validateCSRF } from "@autumnsgrove/groveengine/utils";
+import { sanitizeObject } from "@autumnsgrove/groveengine/utils";
 
 export const prerender = false;
 
@@ -45,7 +45,15 @@ export async function PUT({ request, platform, locals }) {
 
     // Validate font_family value specifically
     if (setting_key === "font_family") {
-      const validFonts = ["alagard", "cozette", "atkinson", "opendyslexic", "lexend", "cormorant", "quicksand"];
+      const validFonts = [
+        "alagard",
+        "cozette",
+        "atkinson",
+        "opendyslexic",
+        "lexend",
+        "cormorant",
+        "quicksand",
+      ];
       if (!validFonts.includes(setting_value)) {
         throw error(400, "Invalid font value");
       }
@@ -75,7 +83,7 @@ export async function PUT({ request, platform, locals }) {
       ON CONFLICT(setting_key) DO UPDATE SET
         setting_value = excluded.setting_value,
         updated_at = excluded.updated_at
-    `
+    `,
       )
       .bind(setting_key, setting_value, now)
       .run();

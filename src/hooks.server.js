@@ -1,5 +1,11 @@
-import { parseSessionCookie, verifySession } from "$lib/auth/session";
-import { generateCSRFToken, validateCSRFToken } from "$lib/utils/csrf";
+import {
+  parseSessionCookie,
+  verifySession,
+} from "@autumnsgrove/groveengine/auth";
+import {
+  generateCSRFToken,
+  validateCSRFToken,
+} from "@autumnsgrove/groveengine/utils";
 import { error } from "@sveltejs/kit";
 
 export async function handle({ event, resolve }) {
@@ -30,7 +36,9 @@ export async function handle({ event, resolve }) {
       // Don't throw, just leave user as null so they get redirected to login
     }
   } else if (sessionToken && !event.platform?.env?.SESSION_SECRET) {
-    console.error("[HOOKS] Session token exists but SESSION_SECRET is missing!");
+    console.error(
+      "[HOOKS] Session token exists but SESSION_SECRET is missing!",
+    );
   }
 
   // Parse or generate CSRF token from cookie
@@ -49,11 +57,11 @@ export async function handle({ event, resolve }) {
   event.locals.csrfToken = csrfToken;
 
   // Auto-validate CSRF on state-changing methods
-  if (['POST', 'PUT', 'DELETE', 'PATCH'].includes(event.request.method)) {
+  if (["POST", "PUT", "DELETE", "PATCH"].includes(event.request.method)) {
     // Skip CSRF validation for login endpoint (it has its own protection)
-    if (!event.url.pathname.includes('/auth/')) {
+    if (!event.url.pathname.includes("/auth/")) {
       if (!validateCSRFToken(event.request, csrfToken)) {
-        throw error(403, 'Invalid CSRF token');
+        throw error(403, "Invalid CSRF token");
       }
     }
   }
@@ -61,27 +69,31 @@ export async function handle({ event, resolve }) {
   const response = await resolve(event);
 
   // Set CSRF token cookie if it was just generated
-  if (!cookieHeader || !cookieHeader.includes('csrf_token=')) {
-    const isProduction = event.url.hostname !== 'localhost' && event.url.hostname !== '127.0.0.1';
+  if (!cookieHeader || !cookieHeader.includes("csrf_token=")) {
+    const isProduction =
+      event.url.hostname !== "localhost" && event.url.hostname !== "127.0.0.1";
     const cookieParts = [
       `csrf_token=${csrfToken}`,
-      'Path=/',
-      'Max-Age=604800', // 7 days
-      'SameSite=Lax'
+      "Path=/",
+      "Max-Age=604800", // 7 days
+      "SameSite=Lax",
     ];
 
     if (isProduction) {
-      cookieParts.push('Secure');
+      cookieParts.push("Secure");
     }
 
-    response.headers.append('Set-Cookie', cookieParts.join('; '));
+    response.headers.append("Set-Cookie", cookieParts.join("; "));
   }
 
   // Add security headers
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
-  response.headers.set('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set(
+    "Permissions-Policy",
+    "geolocation=(), microphone=(), camera=()",
+  );
 
   // Content-Security-Policy
   // Note: 'unsafe-inline' is used for the theme script in app.html (required for prerendering)
@@ -92,10 +104,10 @@ export async function handle({ event, resolve }) {
     "img-src 'self' https://cdn.autumnsgrove.com data:",
     "font-src 'self'",
     "connect-src 'self' https://api.github.com https://autumnsgrove-sync-posts.m7jv4v7npb.workers.dev https://autumnsgrove-daily-summary.m7jv4v7npb.workers.dev https://cloudflareinsights.com",
-    "frame-ancestors 'none'"
-  ].join('; ');
+    "frame-ancestors 'none'",
+  ].join("; ");
 
-  response.headers.set('Content-Security-Policy', csp);
+  response.headers.set("Content-Security-Policy", csp);
 
   return response;
 }

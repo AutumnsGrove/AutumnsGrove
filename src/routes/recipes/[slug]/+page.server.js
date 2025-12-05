@@ -1,22 +1,22 @@
-import { getRecipeBySlug, getAllRecipes } from '$lib/utils/markdown.js';
-import { error } from '@sveltejs/kit';
+import { getRecipeBySlug, getAllRecipes } from "$lib/content/markdown";
+import { error } from "@sveltejs/kit";
 
 export function load({ params }) {
-	const recipe = getRecipeBySlug(params.slug);
+  const recipe = getRecipeBySlug(params.slug);
 
-	if (!recipe) {
-		throw error(404, 'Recipe not found');
-	}
+  if (!recipe) {
+    throw error(404, "Recipe not found");
+  }
 
-	return {
-		recipe
-	};
+  return {
+    recipe,
+  };
 }
 
 // Generate static paths for all recipes during build
 export function entries() {
-	const recipes = getAllRecipes();
-	return recipes.map(recipe => ({ slug: recipe.slug }));
+  const recipes = getAllRecipes();
+  return recipes.map((recipe) => ({ slug: recipe.slug }));
 }
 
 export const prerender = true;

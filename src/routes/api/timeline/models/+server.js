@@ -4,99 +4,99 @@
  * GET /api/timeline/models - List all available models
  */
 
-import { json, error } from '@sveltejs/kit';
-import { verifySession, isAllowedAdmin } from '$lib/auth/session';
+import { json, error } from "@sveltejs/kit";
+import { verifySession, isAllowedAdmin } from "@autumnsgrove/groveengine/auth";
 
-const WORKER_URL = 'https://autumnsgrove-daily-summary.m7jv4v7npb.workers.dev';
+const WORKER_URL = "https://autumnsgrove-daily-summary.m7jv4v7npb.workers.dev";
 
 // Fallback model definitions (mirrors workers/daily-summary/providers.js)
 const FALLBACK_MODELS = {
   anthropic: {
-    name: 'Anthropic',
+    name: "Anthropic",
     models: {
-      'claude-haiku-4-5-20250514': {
-        name: 'Claude 4.5 Haiku',
-        quality: 'high',
-        speed: 'fastest',
-        inputCostPer1M: 0.80,
-        outputCostPer1M: 4.00,
+      "claude-haiku-4-5-20250514": {
+        name: "Claude 4.5 Haiku",
+        quality: "high",
+        speed: "fastest",
+        inputCostPer1M: 0.8,
+        outputCostPer1M: 4.0,
       },
-      'claude-sonnet-4-20250514': {
-        name: 'Claude 4 Sonnet',
-        quality: 'highest',
-        speed: 'medium',
-        inputCostPer1M: 3.00,
-        outputCostPer1M: 15.00,
+      "claude-sonnet-4-20250514": {
+        name: "Claude 4 Sonnet",
+        quality: "highest",
+        speed: "medium",
+        inputCostPer1M: 3.0,
+        outputCostPer1M: 15.0,
       },
-      'claude-sonnet-4-5-20250514': {
-        name: 'Claude 4.5 Sonnet',
-        quality: 'highest',
-        speed: 'fast',
-        inputCostPer1M: 3.00,
-        outputCostPer1M: 15.00,
+      "claude-sonnet-4-5-20250514": {
+        name: "Claude 4.5 Sonnet",
+        quality: "highest",
+        speed: "fast",
+        inputCostPer1M: 3.0,
+        outputCostPer1M: 15.0,
       },
     },
-    defaultModel: 'claude-haiku-4-5-20250514',
+    defaultModel: "claude-haiku-4-5-20250514",
   },
   cloudflare: {
-    name: 'Cloudflare Workers AI',
+    name: "Cloudflare Workers AI",
     models: {
-      '@cf/meta/llama-3.3-70b-instruct-fp8-fast': {
-        name: 'Llama 3.3 70B (Fast)',
-        quality: 'highest',
-        speed: 'medium',
+      "@cf/meta/llama-3.3-70b-instruct-fp8-fast": {
+        name: "Llama 3.3 70B (Fast)",
+        quality: "highest",
+        speed: "medium",
         inputCostPer1M: 0,
         outputCostPer1M: 0,
       },
-      '@cf/meta/llama-3.1-70b-instruct': {
-        name: 'Llama 3.1 70B',
-        quality: 'high',
-        speed: 'medium',
+      "@cf/meta/llama-3.1-70b-instruct": {
+        name: "Llama 3.1 70B",
+        quality: "high",
+        speed: "medium",
         inputCostPer1M: 0,
         outputCostPer1M: 0,
       },
-      '@cf/google/gemma-3-12b-it': {
-        name: 'Gemma 3 12B',
-        quality: 'high',
-        speed: 'fast',
+      "@cf/google/gemma-3-12b-it": {
+        name: "Gemma 3 12B",
+        quality: "high",
+        speed: "fast",
         inputCostPer1M: 0,
         outputCostPer1M: 0,
       },
-      '@cf/mistralai/mistral-small-3.1-24b-instruct': {
-        name: 'Mistral Small 24B',
-        quality: 'high',
-        speed: 'fast',
+      "@cf/mistralai/mistral-small-3.1-24b-instruct": {
+        name: "Mistral Small 24B",
+        quality: "high",
+        speed: "fast",
         inputCostPer1M: 0,
         outputCostPer1M: 0,
       },
-      '@cf/meta/llama-3.1-8b-instruct-fast': {
-        name: 'Llama 3.1 8B (Fast)',
-        quality: 'good',
-        speed: 'fastest',
+      "@cf/meta/llama-3.1-8b-instruct-fast": {
+        name: "Llama 3.1 8B (Fast)",
+        quality: "good",
+        speed: "fastest",
         inputCostPer1M: 0,
         outputCostPer1M: 0,
       },
     },
-    defaultModel: '@cf/meta/llama-3.1-70b-instruct',
+    defaultModel: "@cf/meta/llama-3.1-70b-instruct",
   },
   moonshot: {
-    name: 'Moonshot AI',
+    name: "Moonshot AI",
     models: {
-      'kimi-k2': {
-        name: 'Kimi K2',
-        quality: 'high',
-        speed: 'medium',
-        inputCostPer1M: 0.60,
-        outputCostPer1M: 2.40,
+      "kimi-k2": {
+        name: "Kimi K2",
+        quality: "high",
+        speed: "medium",
+        inputCostPer1M: 0.6,
+        outputCostPer1M: 2.4,
       },
     },
-    defaultModel: 'kimi-k2',
+    defaultModel: "kimi-k2",
     notImplemented: true,
   },
 };
 
-const DEFAULT_PROVIDER = 'anthropic';
-const DEFAULT_MODEL = 'claude-haiku-4-5-20250514';
+const DEFAULT_PROVIDER = "anthropic";
+const DEFAULT_MODEL = "claude-haiku-4-5-20250514";
 
 function getFallbackModels() {
   const models = [];
@@ -121,34 +121,34 @@ function getFallbackModels() {
 
 export async function GET({ cookies, platform }) {
   // Verify admin authentication
-  const sessionToken = cookies.get('session');
+  const sessionToken = cookies.get("session");
   if (!sessionToken) {
-    throw error(401, 'Authentication required');
+    throw error(401, "Authentication required");
   }
 
   let user;
   try {
     user = await verifySession(sessionToken, platform.env.SESSION_SECRET);
     if (!user) {
-      throw error(401, 'Invalid session');
+      throw error(401, "Invalid session");
     }
   } catch (e) {
     if (e.status) throw e;
-    throw error(401, 'Authentication failed');
+    throw error(401, "Authentication failed");
   }
 
   // Verify admin access
-  const allowedAdmins = platform.env.ALLOWED_EMAILS || '';
+  const allowedAdmins = platform.env.ALLOWED_EMAILS || "";
   if (!isAllowedAdmin(user.email, allowedAdmins)) {
-    throw error(403, 'Admin access required');
+    throw error(403, "Admin access required");
   }
 
   try {
     const response = await fetch(`${WORKER_URL}/models`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json'
-      }
+        "Content-Type": "application/json",
+      },
     });
 
     if (response.ok) {
@@ -159,9 +159,14 @@ export async function GET({ cookies, platform }) {
     }
 
     // Fall through to fallback if worker returns empty or fails
-    console.warn('Worker models endpoint failed or returned empty, using fallback');
+    console.warn(
+      "Worker models endpoint failed or returned empty, using fallback",
+    );
   } catch (e) {
-    console.warn('Failed to fetch models from worker, using fallback:', e.message);
+    console.warn(
+      "Failed to fetch models from worker, using fallback:",
+      e.message,
+    );
   }
 
   // Return fallback models
@@ -171,9 +176,9 @@ export async function GET({ cookies, platform }) {
     providers: Object.entries(FALLBACK_MODELS).map(([id, p]) => ({
       id,
       name: p.name,
-      notImplemented: p.notImplemented || false
+      notImplemented: p.notImplemented || false,
     })),
     default: { provider: DEFAULT_PROVIDER, model: DEFAULT_MODEL },
-    current: { provider: DEFAULT_PROVIDER, model: DEFAULT_MODEL }
+    current: { provider: DEFAULT_PROVIDER, model: DEFAULT_MODEL },
   });
 }

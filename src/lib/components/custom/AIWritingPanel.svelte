@@ -1,7 +1,7 @@
 <script>
   import { slide, fade } from "svelte/transition";
-  import Button from "$lib/components/ui/Button.svelte";
-  import { MAX_CONTENT_LENGTH } from "$lib/config/ai-models.js";
+  import { Button } from "@autumnsgrove/groveengine/ui";
+  import { MAX_CONTENT_LENGTH } from "$lib/config/ai-models";
 
   // Props
   let {

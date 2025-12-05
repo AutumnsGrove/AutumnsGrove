@@ -1,8 +1,10 @@
 import { json, error } from "@sveltejs/kit";
 import { marked } from "marked";
-import { validateCSRF } from "$lib/utils/csrf";
-import { sanitizeObject } from "$lib/utils/validation";
-import { sanitizeMarkdown } from "$lib/utils/sanitize";
+import {
+  validateCSRF,
+  sanitizeObject,
+  sanitizeMarkdown,
+} from "@autumnsgrove/groveengine/utils";
 
 /**
  * GET /api/posts - List all posts from D1
@@ -21,7 +23,7 @@ export async function GET({ platform, locals }) {
     const result = await platform.env.POSTS_DB.prepare(
       `SELECT slug, title, date, tags, description, last_synced, updated_at
        FROM posts
-       ORDER BY date DESC`
+       ORDER BY date DESC`,
     ).all();
 
     const posts = result.results.map((post) => ({
@@ -59,13 +61,16 @@ export async function POST({ request, platform, locals }) {
 
     // Validate required fields
     if (!data.title || !data.slug || !data.markdown_content) {
-      throw error(400, "Missing required fields: title, slug, markdown_content");
+      throw error(
+        400,
+        "Missing required fields: title, slug, markdown_content",
+      );
     }
 
     // Validation constants
     const MAX_TITLE_LENGTH = 200;
     const MAX_DESCRIPTION_LENGTH = 500;
-    const MAX_MARKDOWN_LENGTH = 1024 * 1024;  // 1MB
+    const MAX_MARKDOWN_LENGTH = 1024 * 1024; // 1MB
     const MAX_SLUG_LENGTH = 100;
 
     // Validate lengths
@@ -74,11 +79,14 @@ export async function POST({ request, platform, locals }) {
     }
 
     if (data.description && data.description.length > MAX_DESCRIPTION_LENGTH) {
-      throw error(400, `Description too long (max ${MAX_DESCRIPTION_LENGTH} characters)`);
+      throw error(
+        400,
+        `Description too long (max ${MAX_DESCRIPTION_LENGTH} characters)`,
+      );
     }
 
     if (data.markdown_content.length > MAX_MARKDOWN_LENGTH) {
-      throw error(400, 'Content too large (max 1MB)');
+      throw error(400, "Content too large (max 1MB)");
     }
 
     if (data.slug.length > MAX_SLUG_LENGTH) {
@@ -94,8 +102,10 @@ export async function POST({ request, platform, locals }) {
 
     // Check if slug already exists
     const existing = await platform.env.POSTS_DB.prepare(
-      "SELECT slug FROM posts WHERE slug = ?"
-    ).bind(slug).first();
+      "SELECT slug FROM posts WHERE slug = ?",
+    )
+      .bind(slug)
+      .first();
 
     if (existing) {
       throw error(409, "A post with this slug already exists");
@@ -109,7 +119,9 @@ export async function POST({ request, platform, locals }) {
     const contentData = encoder.encode(data.markdown_content);
     const hashBuffer = await crypto.subtle.digest("SHA-256", contentData);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const file_hash = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+    const file_hash = hashArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
 
     const now = new Date().toISOString();
     const tags = JSON.stringify(data.tags || []);
@@ -134,7 +146,9 @@ export async function POST({ request, platform, locals }) {
       now,
     ];
 
-    await platform.env.POSTS_DB.prepare(insertQuery).bind(...params).run();
+    await platform.env.POSTS_DB.prepare(insertQuery)
+      .bind(...params)
+      .run();
 
     return json({
       success: true,

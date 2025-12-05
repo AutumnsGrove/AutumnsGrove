@@ -5,8 +5,8 @@ import {
   MAX_LIMIT,
   MIN_LIMIT,
   getCacheKey,
-} from "$lib/utils/github.js";
-import { logAPI, logCache, logError } from "$lib/server/logger.js";
+} from "$lib/utils/github";
+import { logAPI, logCache, logError } from "@autumnsgrove/groveengine/server";
 
 export const prerender = false;
 

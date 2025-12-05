@@ -3,8 +3,13 @@ import {
   validateUsername,
   getGraphQLHeaders,
   getCacheKey,
-} from "$lib/utils/github.js";
-import { logAPI, logGitHub, logCache, logError } from "$lib/server/logger.js";
+} from "$lib/utils/github";
+import {
+  logAPI,
+  logGitHub,
+  logCache,
+  logError,
+} from "@autumnsgrove/groveengine/server";
 
 export const prerender = false;
 

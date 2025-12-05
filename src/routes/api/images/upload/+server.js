@@ -1,6 +1,6 @@
 import { json, error } from "@sveltejs/kit";
-import { validateCSRF } from "$lib/utils/csrf";
-import { validateFileSignature } from "$lib/utils/validation";
+import { validateCSRF } from "@autumnsgrove/groveengine/utils";
+import { validateFileSignature } from "@autumnsgrove/groveengine/utils";
 
 export async function POST({ request, platform, locals }) {
   // Authentication check
@@ -28,12 +28,7 @@ export async function POST({ request, platform, locals }) {
     }
 
     // Validate file type (SVG removed for security - can contain embedded JavaScript)
-    const allowedTypes = [
-      "image/jpeg",
-      "image/png",
-      "image/gif",
-      "image/webp",
-    ];
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
     // 2. Check MIME type first
     if (!allowedTypes.includes(file.type)) {
@@ -56,25 +51,30 @@ export async function POST({ request, platform, locals }) {
     const buffer = new Uint8Array(arrayBuffer);
     const isValidSignature = await (async () => {
       const FILE_SIGNATURES = {
-        'image/jpeg': [
-          [0xFF, 0xD8, 0xFF, 0xE0], // JPEG/JFIF
-          [0xFF, 0xD8, 0xFF, 0xE1], // JPEG/Exif
-          [0xFF, 0xD8, 0xFF, 0xE8]  // JPEG/SPIFF
+        "image/jpeg": [
+          [0xff, 0xd8, 0xff, 0xe0], // JPEG/JFIF
+          [0xff, 0xd8, 0xff, 0xe1], // JPEG/Exif
+          [0xff, 0xd8, 0xff, 0xe8], // JPEG/SPIFF
         ],
-        'image/png': [[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A]],
-        'image/gif': [
+        "image/png": [[0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]],
+        "image/gif": [
           [0x47, 0x49, 0x46, 0x38, 0x37, 0x61], // GIF87a
-          [0x47, 0x49, 0x46, 0x38, 0x39, 0x61]  // GIF89a
+          [0x47, 0x49, 0x46, 0x38, 0x39, 0x61], // GIF89a
         ],
-        'image/webp': [[0x52, 0x49, 0x46, 0x46]] // RIFF (WebP container)
+        "image/webp": [[0x52, 0x49, 0x46, 0x46]], // RIFF (WebP container)
       };
       const signatures = FILE_SIGNATURES[file.type];
       if (!signatures) return false;
-      return signatures.some(sig => sig.every((byte, i) => buffer[i] === byte));
+      return signatures.some((sig) =>
+        sig.every((byte, i) => buffer[i] === byte),
+      );
     })();
 
     if (!isValidSignature) {
-      throw error(400, "Invalid file signature - file may be corrupted or spoofed");
+      throw error(
+        400,
+        "Invalid file signature - file may be corrupted or spoofed",
+      );
     }
 
     // Sanitize filename
@@ -97,27 +97,30 @@ export async function POST({ request, platform, locals }) {
     await platform.env.IMAGES.put(key, arrayBuffer, {
       httpMetadata: {
         contentType: file.type,
-        cacheControl: 'public, max-age=31536000, immutable', // 1 year cache for immutable images
+        cacheControl: "public, max-age=31536000, immutable", // 1 year cache for immutable images
       },
     });
 
     // Build CDN URL
     const cdnUrl = `https://cdn.autumnsgrove.com/${key}`;
 
-    return json({
-      success: true,
-      url: cdnUrl,
-      key: key,
-      filename: sanitizedName,
-      size: file.size,
-      type: file.type,
-      markdown: `![Alt text](${cdnUrl})`,
-      svelte: `<img src="${cdnUrl}" alt="Description" />`,
-    }, {
-      headers: {
-        'Cache-Control': 'public, max-age=31536000',
-      }
-    });
+    return json(
+      {
+        success: true,
+        url: cdnUrl,
+        key: key,
+        filename: sanitizedName,
+        size: file.size,
+        type: file.type,
+        markdown: `![Alt text](${cdnUrl})`,
+        svelte: `<img src="${cdnUrl}" alt="Description" />`,
+      },
+      {
+        headers: {
+          "Cache-Control": "public, max-age=31536000",
+        },
+      },
+    );
   } catch (err) {
     if (err.status) throw err;
     console.error("Upload error:", err);

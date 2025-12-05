@@ -6,9 +6,9 @@ import {
   RATE_LIMIT,
   MONTHLY_COST_CAP,
   getModelId,
-  calculateCost
-} from "$lib/config/ai-models.js";
-import { validateCSRF } from "$lib/utils/csrf";
+  calculateCost,
+} from "$lib/config/ai-models";
+import { validateCSRF } from "@autumnsgrove/groveengine/utils";
 
 export const prerender = false;
 
@@ -58,7 +58,10 @@ export async function POST({ request, platform, locals }) {
       .first();
 
     if (!settings || settings.setting_value !== "true") {
-      return json({ error: "AI Writing Assistant is disabled. Enable it in Settings." }, { status: 403 });
+      return json(
+        { error: "AI Writing Assistant is disabled. Enable it in Settings." },
+        { status: 403 },
+      );
     }
   }
 
@@ -77,48 +80,76 @@ export async function POST({ request, platform, locals }) {
   }
 
   if (content.length > MAX_CONTENT_LENGTH) {
-    return json({ error: `Content too long. Maximum ${MAX_CONTENT_LENGTH} characters.` }, { status: 400 });
+    return json(
+      { error: `Content too long. Maximum ${MAX_CONTENT_LENGTH} characters.` },
+      { status: 400 },
+    );
   }
 
   // Validate action
   const validActions = ["grammar", "tone", "readability", "all"];
   if (!validActions.includes(action)) {
-    return json({ error: "Invalid action. Use: grammar, tone, readability, or all" }, { status: 400 });
+    return json(
+      { error: "Invalid action. Use: grammar, tone, readability, or all" },
+      { status: 400 },
+    );
   }
 
   // Rate limiting and cost cap enforcement
   if (db) {
-    const windowStart = new Date(Date.now() - RATE_LIMIT.windowMs).toISOString();
-    const monthStart = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString();
+    const windowStart = new Date(
+      Date.now() - RATE_LIMIT.windowMs,
+    ).toISOString();
+    const monthStart = new Date(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      1,
+    ).toISOString();
 
     // Use a single query to get both hourly requests and monthly cost
     // This reduces race condition window (though D1 doesn't support true transactions)
     const usage = await db
-      .prepare(`
+      .prepare(
+        `
         SELECT
           (SELECT COUNT(*) FROM ai_writing_requests WHERE user_id = ? AND created_at > ?) as hourly_count,
           (SELECT COALESCE(SUM(cost), 0) FROM ai_writing_requests WHERE user_id = ? AND created_at > ?) as monthly_cost
-      `)
+      `,
+      )
       .bind(locals.user.email, windowStart, locals.user.email, monthStart)
       .first();
 
     // Check hourly rate limit
     if (usage && usage.hourly_count >= RATE_LIMIT.maxRequests) {
       // Add slight random delay to prevent timing attacks
-      await new Promise(r => setTimeout(r, Math.random() * 200 + 100));
-      return json({ error: "Rate limit exceeded. Try again in an hour." }, { status: 429 });
+      await new Promise((r) => setTimeout(r, Math.random() * 200 + 100));
+      return json(
+        { error: "Rate limit exceeded. Try again in an hour." },
+        { status: 429 },
+      );
     }
 
     // Check monthly cost cap
-    if (MONTHLY_COST_CAP.enabled && usage && usage.monthly_cost >= MONTHLY_COST_CAP.maxCostUSD) {
-      return json({
-        error: `Monthly usage limit reached ($${MONTHLY_COST_CAP.maxCostUSD.toFixed(2)}). Resets on the 1st.`
-      }, { status: 429 });
+    if (
+      MONTHLY_COST_CAP.enabled &&
+      usage &&
+      usage.monthly_cost >= MONTHLY_COST_CAP.maxCostUSD
+    ) {
+      return json(
+        {
+          error: `Monthly usage limit reached ($${MONTHLY_COST_CAP.maxCostUSD.toFixed(2)}). Resets on the 1st.`,
+        },
+        { status: 429 },
+      );
     }
 
     // Warn if approaching cost cap
-    if (MONTHLY_COST_CAP.enabled && usage &&
-        usage.monthly_cost >= MONTHLY_COST_CAP.maxCostUSD * MONTHLY_COST_CAP.warningThreshold) {
+    if (
+      MONTHLY_COST_CAP.enabled &&
+      usage &&
+      usage.monthly_cost >=
+        MONTHLY_COST_CAP.maxCostUSD * MONTHLY_COST_CAP.warningThreshold
+    ) {
       // Continue but include warning in response later
     }
   }
@@ -132,7 +163,11 @@ export async function POST({ request, platform, locals }) {
   try {
     // Grammar analysis (via AI)
     if (action === "grammar" || action === "all") {
-      const grammarResult = await analyzeGrammar(content, modelId, anthropicKey);
+      const grammarResult = await analyzeGrammar(
+        content,
+        modelId,
+        anthropicKey,
+      );
       result.grammar = grammarResult.result;
       totalTokens.input += grammarResult.usage.input;
       totalTokens.output += grammarResult.usage.output;
@@ -140,7 +175,12 @@ export async function POST({ request, platform, locals }) {
 
     // Tone analysis (via AI)
     if (action === "tone" || action === "all") {
-      const toneResult = await analyzeTone(content, modelId, anthropicKey, context);
+      const toneResult = await analyzeTone(
+        content,
+        modelId,
+        anthropicKey,
+        context,
+      );
       result.tone = toneResult.result;
       totalTokens.input += toneResult.usage.input;
       totalTokens.output += toneResult.usage.output;
@@ -156,30 +196,37 @@ export async function POST({ request, platform, locals }) {
 
     // Log usage to database
     if (db) {
-      await db.prepare(`
+      await db
+        .prepare(
+          `
         INSERT INTO ai_writing_requests (user_id, action, model, input_tokens, output_tokens, cost)
         VALUES (?, ?, ?, ?, ?, ?)
-      `).bind(
-        locals.user.email,
-        action,
-        modelId,
-        totalTokens.input,
-        totalTokens.output,
-        cost
-      ).run();
+      `,
+        )
+        .bind(
+          locals.user.email,
+          action,
+          modelId,
+          totalTokens.input,
+          totalTokens.output,
+          cost,
+        )
+        .run();
     }
 
     return json({
       ...result,
       tokensUsed: totalTokens.input + totalTokens.output,
       cost,
-      model: modelId
+      model: modelId,
     });
-
   } catch (err) {
     // Log sanitized error (no stack traces or sensitive data in production)
     console.error("AI writing assist error:", sanitizeErrorForLog(err));
-    return json({ error: "Analysis failed. Please try again." }, { status: 500 });
+    return json(
+      { error: "Analysis failed. Please try again." },
+      { status: 500 },
+    );
   }
 }
 
@@ -202,17 +249,21 @@ export async function GET({ platform, locals }) {
 
   try {
     // Get stats for this user in the last 30 days
-    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    const thirtyDaysAgo = new Date(
+      Date.now() - 30 * 24 * 60 * 60 * 1000,
+    ).toISOString();
 
     const stats = await db
-      .prepare(`
+      .prepare(
+        `
         SELECT
           COUNT(*) as requests,
           COALESCE(SUM(input_tokens + output_tokens), 0) as tokens,
           COALESCE(SUM(cost), 0) as cost
         FROM ai_writing_requests
         WHERE user_id = ? AND created_at > ?
-      `)
+      `,
+      )
       .bind(locals.user.email, thirtyDaysAgo)
       .first();
 
@@ -220,7 +271,7 @@ export async function GET({ platform, locals }) {
       requests: stats?.requests || 0,
       tokens: stats?.tokens || 0,
       cost: stats?.cost || 0,
-      period: "30 days"
+      period: "30 days",
     });
   } catch (err) {
     console.error("Error fetching AI usage stats:", sanitizeErrorForLog(err));
@@ -272,22 +323,28 @@ ${content}
 
 Return ONLY valid JSON. No explanation or markdown.`;
 
-  const response = await callAnthropic(prompt, model, apiKey, MAX_OUTPUT_TOKENS.grammar);
+  const response = await callAnthropic(
+    prompt,
+    model,
+    apiKey,
+    MAX_OUTPUT_TOKENS.grammar,
+  );
 
   try {
     const result = JSON.parse(response.text);
     return {
       result: {
         suggestions: result.suggestions || [],
-        overallScore: typeof result.overallScore === "number" ? result.overallScore : null
+        overallScore:
+          typeof result.overallScore === "number" ? result.overallScore : null,
       },
-      usage: response.usage
+      usage: response.usage,
     };
   } catch {
     // Don't return a misleading score on parse failure
     return {
       result: { suggestions: [], overallScore: null, parseError: true },
-      usage: response.usage
+      usage: response.usage,
     };
   }
 }
@@ -334,7 +391,12 @@ ${content}
 
 Return ONLY valid JSON. No explanation or markdown.`;
 
-  const response = await callAnthropic(prompt, model, apiKey, MAX_OUTPUT_TOKENS.tone);
+  const response = await callAnthropic(
+    prompt,
+    model,
+    apiKey,
+    MAX_OUTPUT_TOKENS.tone,
+  );
 
   try {
     const result = JSON.parse(response.text);
@@ -342,9 +404,9 @@ Return ONLY valid JSON. No explanation or markdown.`;
       result: {
         analysis: result.analysis || null,
         traits: result.traits || [],
-        suggestions: result.suggestions || []
+        suggestions: result.suggestions || [],
       },
-      usage: response.usage
+      usage: response.usage,
     };
   } catch {
     return {
@@ -352,9 +414,9 @@ Return ONLY valid JSON. No explanation or markdown.`;
         analysis: null,
         traits: [],
         suggestions: [],
-        parseError: true
+        parseError: true,
       },
-      usage: response.usage
+      usage: response.usage,
     };
   }
 }
@@ -373,14 +435,18 @@ async function callAnthropic(prompt, model, apiKey, maxTokens) {
     body: JSON.stringify({
       model,
       max_tokens: maxTokens,
-      messages: [{ role: "user", content: prompt }]
+      messages: [{ role: "user", content: prompt }],
     }),
   });
 
   if (!response.ok) {
     const errorText = await response.text();
     // Log truncated error (may contain sensitive info in full response)
-    console.error("Anthropic API error:", response.status, errorText.substring(0, 100));
+    console.error(
+      "Anthropic API error:",
+      response.status,
+      errorText.substring(0, 100),
+    );
     throw new Error(`Anthropic API error: ${response.status}`);
   }
 
@@ -390,8 +456,8 @@ async function callAnthropic(prompt, model, apiKey, maxTokens) {
     text: data.content[0]?.text || "",
     usage: {
       input: data.usage?.input_tokens || 0,
-      output: data.usage?.output_tokens || 0
-    }
+      output: data.usage?.output_tokens || 0,
+    },
   };
 }
 
@@ -401,16 +467,16 @@ async function callAnthropic(prompt, model, apiKey, maxTokens) {
 function calculateReadability(content) {
   // Strip markdown syntax for clean text analysis
   const text = content
-    .replace(/```[\s\S]*?```/g, "")         // Remove code blocks
-    .replace(/`[^`]+`/g, "")                 // Remove inline code
+    .replace(/```[\s\S]*?```/g, "") // Remove code blocks
+    .replace(/`[^`]+`/g, "") // Remove inline code
     .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1") // Replace links with text
-    .replace(/[#*_~>]/g, "")                 // Remove markdown chars
-    .replace(/^\s*[-+*]\s+/gm, "")           // Remove list markers
-    .replace(/^\s*\d+\.\s+/gm, "")           // Remove numbered list markers
+    .replace(/[#*_~>]/g, "") // Remove markdown chars
+    .replace(/^\s*[-+*]\s+/gm, "") // Remove list markers
+    .replace(/^\s*\d+\.\s+/gm, "") // Remove numbered list markers
     .trim();
 
-  const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
-  const words = text.split(/\s+/).filter(w => w.length > 0);
+  const sentences = text.split(/[.!?]+/).filter((s) => s.trim().length > 0);
+  const words = text.split(/\s+/).filter((w) => w.length > 0);
   const syllables = words.reduce((sum, word) => sum + countSyllables(word), 0);
 
   const sentenceCount = Math.max(sentences.length, 1);
@@ -420,13 +486,18 @@ function calculateReadability(content) {
   const syllablesPerWord = syllables / wordCount;
 
   // Flesch-Kincaid Grade Level
-  const fleschKincaid = Math.max(0, 0.39 * wordsPerSentence + 11.8 * syllablesPerWord - 15.59);
+  const fleschKincaid = Math.max(
+    0,
+    0.39 * wordsPerSentence + 11.8 * syllablesPerWord - 15.59,
+  );
 
   // Reading time (~200 words per minute for focused reading)
   const minutes = Math.ceil(wordCount / 200);
 
   // Sentence length stats
-  const sentenceLengths = sentences.map(s => s.split(/\s+/).filter(w => w.length > 0).length);
+  const sentenceLengths = sentences.map(
+    (s) => s.split(/\s+/).filter((w) => w.length > 0).length,
+  );
 
   return {
     fleschKincaid: Math.round(fleschKincaid * 10) / 10,
@@ -436,9 +507,13 @@ function calculateReadability(content) {
     sentenceStats: {
       average: Math.round(wordsPerSentence),
       longest: Math.max(...sentenceLengths, 0),
-      shortest: sentenceLengths.length > 0 ? Math.min(...sentenceLengths) : 0
+      shortest: sentenceLengths.length > 0 ? Math.min(...sentenceLengths) : 0,
     },
-    suggestions: generateReadabilitySuggestions(fleschKincaid, wordsPerSentence, sentenceLengths)
+    suggestions: generateReadabilitySuggestions(
+      fleschKincaid,
+      wordsPerSentence,
+      sentenceLengths,
+    ),
   };
 }
 
@@ -474,31 +549,45 @@ function generateReadabilitySuggestions(grade, avgSentence, sentenceLengths) {
   const suggestions = [];
 
   if (grade > 14) {
-    suggestions.push("Your writing is quite complex. Consider simplifying for broader accessibility.");
+    suggestions.push(
+      "Your writing is quite complex. Consider simplifying for broader accessibility.",
+    );
   } else if (grade > 12) {
-    suggestions.push("College-level reading. Consider if this matches your audience.");
+    suggestions.push(
+      "College-level reading. Consider if this matches your audience.",
+    );
   }
 
   if (avgSentence > 30) {
-    suggestions.push("Many sentences are quite long. Breaking them up could improve clarity.");
+    suggestions.push(
+      "Many sentences are quite long. Breaking them up could improve clarity.",
+    );
   } else if (avgSentence > 25) {
-    suggestions.push("Some sentences are on the longer side. Variety in length can improve flow.");
+    suggestions.push(
+      "Some sentences are on the longer side. Variety in length can improve flow.",
+    );
   }
 
-  const veryLong = sentenceLengths.filter(l => l > 40);
+  const veryLong = sentenceLengths.filter((l) => l > 40);
   if (veryLong.length > 0) {
-    suggestions.push(`Found ${veryLong.length} sentence${veryLong.length > 1 ? "s" : ""} over 40 words.`);
+    suggestions.push(
+      `Found ${veryLong.length} sentence${veryLong.length > 1 ? "s" : ""} over 40 words.`,
+    );
   }
 
   if (grade < 6 && avgSentence < 10) {
-    suggestions.push("Very simple sentences. This works well for accessibility or quick reads.");
+    suggestions.push(
+      "Very simple sentences. This works well for accessibility or quick reads.",
+    );
   }
 
   // Variety suggestion
   if (sentenceLengths.length > 5) {
     const variance = calculateVariance(sentenceLengths);
     if (variance < 10) {
-      suggestions.push("Sentence lengths are very uniform. Varying rhythm can make writing more engaging.");
+      suggestions.push(
+        "Sentence lengths are very uniform. Varying rhythm can make writing more engaging.",
+      );
     }
   }
 
@@ -511,7 +600,9 @@ function generateReadabilitySuggestions(grade, avgSentence, sentenceLengths) {
 function calculateVariance(numbers) {
   if (numbers.length === 0) return 0;
   const mean = numbers.reduce((a, b) => a + b, 0) / numbers.length;
-  return numbers.reduce((sum, n) => sum + Math.pow(n - mean, 2), 0) / numbers.length;
+  return (
+    numbers.reduce((sum, n) => sum + Math.pow(n - mean, 2), 0) / numbers.length
+  );
 }
 
 // Note: calculateCost is imported from $lib/config/ai-models.js

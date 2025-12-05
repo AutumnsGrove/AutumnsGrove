@@ -1,5 +1,5 @@
 <script>
-  import { Toast } from "$lib/components/ui";
+  import { Toast } from "@autumnsgrove/groveengine/ui";
 
   let { data, children } = $props();
   let sidebarOpen = $state(false);

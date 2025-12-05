@@ -1,5 +1,5 @@
 import { error } from "@sveltejs/kit";
-import { getPostBySlug } from "$lib/utils/markdown";
+import { getPostBySlug } from "$lib/content/markdown";
 import matter from "gray-matter";
 
 export async function load({ params, platform, locals }) {
@@ -16,7 +16,7 @@ export async function load({ params, platform, locals }) {
       const post = await platform.env.POSTS_DB.prepare(
         `SELECT slug, title, date, tags, description, markdown_content, html_content, gutter_content, last_synced, updated_at
          FROM posts
-         WHERE slug = ?`
+         WHERE slug = ?`,
       )
         .bind(slug)
         .first();

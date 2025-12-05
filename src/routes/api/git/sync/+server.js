@@ -3,8 +3,8 @@ import {
   fetchStatsGraphQL,
   getHeaders,
   GITHUB_API_BASE,
-} from "$lib/utils/github.js";
-import { sanitizeObject } from "$lib/utils/validation";
+} from "$lib/utils/github";
+import { sanitizeObject } from "@autumnsgrove/groveengine/utils";
 
 export const prerender = false;
 

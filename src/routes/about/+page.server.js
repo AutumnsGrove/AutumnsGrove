@@ -1,16 +1,16 @@
-import { getAboutPage } from '$lib/utils/markdown.js';
-import { error } from '@sveltejs/kit';
+import { getAboutPage } from "$lib/content/markdown";
+import { error } from "@sveltejs/kit";
 
 export function load() {
-	const page = getAboutPage();
+  const page = getAboutPage();
 
-	if (!page) {
-		throw error(404, 'About page not found');
-	}
+  if (!page) {
+    throw error(404, "About page not found");
+  }
 
-	return {
-		page
-	};
+  return {
+    page,
+  };
 }
 
 export const prerender = true;

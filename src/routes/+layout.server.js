@@ -22,10 +22,13 @@ export async function load({ locals, platform }) {
     // During prerendering or if DB bindings aren't configured, gracefully fall back to defaults
     // This prevents 500 errors when D1 bindings aren't set up in Cloudflare Pages dashboard
     // Silent fail during prerendering - this is expected behavior
-    if (!err.message?.includes('prerenderable route')) {
-      console.error("[ROOT LAYOUT] Failed to load site settings (using defaults):", {
-        message: err.message,
-      });
+    if (!err.message?.includes("prerenderable route")) {
+      console.error(
+        "[ROOT LAYOUT] Failed to load site settings (using defaults):",
+        {
+          message: err.message,
+        },
+      );
     }
   }
 

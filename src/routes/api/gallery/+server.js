@@ -22,7 +22,7 @@ export async function GET({ url, platform }) {
 
     // Transform objects to include CDN URLs
     // Filter to only include image files
-    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.avif'];
+    const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif"];
     const images = listResult.objects
       .filter((obj) => {
         const key = obj.key.toLowerCase();

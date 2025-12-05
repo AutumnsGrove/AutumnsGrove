@@ -1,41 +1,43 @@
-import { getAllPosts, getSiteConfig } from '$lib/utils/markdown';
+import { getAllPosts, getSiteConfig } from "$lib/content/markdown";
 
 export const prerender = true;
 
 export async function GET() {
-    const posts = getAllPosts();
-    const siteConfig = getSiteConfig();
+  const posts = getAllPosts();
+  const siteConfig = getSiteConfig();
 
-    // Sort by date descending
-    const sortedPosts = posts.sort((a, b) =>
-        new Date(b.date) - new Date(a.date)
-    );
+  // Sort by date descending
+  const sortedPosts = posts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    const siteUrl = 'https://autumnsgrove.com';
-    const feedTitle = `${siteConfig.site?.title || 'AutumnsGrove'} Blog`;
-    const feedDescription = siteConfig.site?.description || 'A personal website for blogging, demonstrating projects, and sharing articles';
-    const feedAuthor = siteConfig.owner?.name || 'Autumn';
-    const feedEmail = siteConfig.owner?.email || 'autumnbrown23@pm.me';
+  const siteUrl = "https://autumnsgrove.com";
+  const feedTitle = `${siteConfig.site?.title || "AutumnsGrove"} Blog`;
+  const feedDescription =
+    siteConfig.site?.description ||
+    "A personal website for blogging, demonstrating projects, and sharing articles";
+  const feedAuthor = siteConfig.owner?.name || "Autumn";
+  const feedEmail = siteConfig.owner?.email || "autumnbrown23@pm.me";
 
-    const items = sortedPosts.map(post => {
-        // Normalize slug for URL (lowercase kebab-case)
-        const normalizedSlug = post.slug
-            .toLowerCase()
-            .replace(/\s+/g, '-')
-            .replace(/[^a-z0-9-]/g, '');
+  const items = sortedPosts
+    .map((post) => {
+      // Normalize slug for URL (lowercase kebab-case)
+      const normalizedSlug = post.slug
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/[^a-z0-9-]/g, "");
 
-        return `
+      return `
     <item>
       <title><![CDATA[${escapeXml(post.title)}]]></title>
       <link>${siteUrl}/blog/${normalizedSlug}</link>
       <guid isPermaLink="true">${siteUrl}/blog/${normalizedSlug}</guid>
       <pubDate>${new Date(post.date).toUTCString()}</pubDate>
-      <description><![CDATA[${escapeXml(post.description || '')}]]></description>
-      ${post.tags && post.tags.length > 0 ? post.tags.map(tag => `<category>${escapeXml(tag)}</category>`).join('\n      ') : ''}
+      <description><![CDATA[${escapeXml(post.description || "")}]]></description>
+      ${post.tags && post.tags.length > 0 ? post.tags.map((tag) => `<category>${escapeXml(tag)}</category>`).join("\n      ") : ""}
     </item>`;
-    }).join('');
+    })
+    .join("");
 
-    const xml = `<?xml version="1.0" encoding="UTF-8"?>
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>${escapeXml(feedTitle)}</title>
@@ -50,12 +52,12 @@ export async function GET() {
   </channel>
 </rss>`;
 
-    return new Response(xml, {
-        headers: {
-            'Content-Type': 'application/rss+xml; charset=utf-8',
-            'Cache-Control': 'max-age=3600, s-maxage=3600'
-        }
-    });
+  return new Response(xml, {
+    headers: {
+      "Content-Type": "application/rss+xml; charset=utf-8",
+      "Cache-Control": "max-age=3600, s-maxage=3600",
+    },
+  });
 }
 
 /**
@@ -64,11 +66,11 @@ export async function GET() {
  * @returns {string} Escaped string
  */
 function escapeXml(str) {
-    if (!str) return '';
-    return str
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&apos;');
+  if (!str) return "";
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
 }

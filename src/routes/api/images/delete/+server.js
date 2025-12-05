@@ -1,5 +1,5 @@
 import { json, error } from "@sveltejs/kit";
-import { sanitizeObject } from "$lib/utils/validation";
+import { sanitizeObject } from "@autumnsgrove/groveengine/utils";
 
 /**
  * DELETE endpoint for removing images from CDN (R2)
@@ -19,11 +19,15 @@ export async function DELETE({ request, platform, locals }) {
     try {
       const originUrl = new URL(origin);
       // Allow localhost for development, otherwise validate host matches
-      const isLocalhost = originUrl.hostname === "localhost" || originUrl.hostname === "127.0.0.1";
+      const isLocalhost =
+        originUrl.hostname === "localhost" ||
+        originUrl.hostname === "127.0.0.1";
       const hostMatches = host && originUrl.host === host;
 
       if (!isLocalhost && !hostMatches) {
-        console.warn(`CSRF violation: origin ${origin} does not match host ${host}`);
+        console.warn(
+          `CSRF violation: origin ${origin} does not match host ${host}`,
+        );
         throw error(403, "Invalid origin");
       }
     } catch (err) {
@@ -47,14 +51,18 @@ export async function DELETE({ request, platform, locals }) {
 
     // Comprehensive key sanitization to prevent directory traversal
     let sanitizedKey = key
-      .replace(/\.\./g, "")           // Remove parent directory traversal
-      .replace(/^\/+/, "")            // Remove leading slashes
-      .replace(/\/\/+/g, "/")         // Remove consecutive slashes
-      .replace(/\\/g, "/")            // Normalize backslashes to forward slashes
+      .replace(/\.\./g, "") // Remove parent directory traversal
+      .replace(/^\/+/, "") // Remove leading slashes
+      .replace(/\/\/+/g, "/") // Remove consecutive slashes
+      .replace(/\\/g, "/") // Normalize backslashes to forward slashes
       .trim();
 
     // Additional validation: ensure key doesn't contain dangerous patterns
-    if (sanitizedKey.includes("..") || sanitizedKey.startsWith("/") || !sanitizedKey) {
+    if (
+      sanitizedKey.includes("..") ||
+      sanitizedKey.startsWith("/") ||
+      !sanitizedKey
+    ) {
       throw error(400, "Invalid image key format");
     }
 

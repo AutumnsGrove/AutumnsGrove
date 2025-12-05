@@ -1,5 +1,5 @@
 import { redirect } from "@sveltejs/kit";
-import { clearSessionCookie } from "$lib/auth/session";
+import { clearSessionCookie } from "@autumnsgrove/groveengine/auth";
 
 export async function GET() {
   return new Response(null, {

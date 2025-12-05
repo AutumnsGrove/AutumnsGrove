@@ -5,17 +5,19 @@ import { json, error } from "@sveltejs/kit";
  * List all tags
  */
 export async function GET({ platform, locals }) {
-	if (!locals.user) {
-		throw error(401, "Unauthorized");
-	}
+  if (!locals.user) {
+    throw error(401, "Unauthorized");
+  }
 
-	if (!platform?.env?.DB) {
-		throw error(500, "D1 not configured");
-	}
+  if (!platform?.env?.DB) {
+    throw error(500, "D1 not configured");
+  }
 
-	const tags = await platform.env.DB.prepare("SELECT * FROM gallery_tags ORDER BY name ASC").all();
+  const tags = await platform.env.DB.prepare(
+    "SELECT * FROM gallery_tags ORDER BY name ASC",
+  ).all();
 
-	return json({ success: true, tags: tags.results || [] });
+  return json({ success: true, tags: tags.results || [] });
 }
 
 /**
@@ -23,36 +25,36 @@ export async function GET({ platform, locals }) {
  * Create a new tag
  */
 export async function POST({ request, platform, locals }) {
-	if (!locals.user) {
-		throw error(401, "Unauthorized");
-	}
+  if (!locals.user) {
+    throw error(401, "Unauthorized");
+  }
 
-	if (!platform?.env?.DB) {
-		throw error(500, "D1 not configured");
-	}
+  if (!platform?.env?.DB) {
+    throw error(500, "D1 not configured");
+  }
 
-	const { name, color } = await request.json();
+  const { name, color } = await request.json();
 
-	if (!name) {
-		throw error(400, "Tag name required");
-	}
+  if (!name) {
+    throw error(400, "Tag name required");
+  }
 
-	// Generate slug
-	const slug = name
-		.toLowerCase()
-		.replace(/\s+/g, "-")
-		.replace(/[^a-z0-9-]/g, "");
+  // Generate slug
+  const slug = name
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
 
-	await platform.env.DB.prepare(
-		`
+  await platform.env.DB.prepare(
+    `
 		INSERT INTO gallery_tags (name, slug, color)
 		VALUES (?, ?, ?)
-	`
-	)
-		.bind(name, slug, color || "#5cb85f")
-		.run();
+	`,
+  )
+    .bind(name, slug, color || "#5cb85f")
+    .run();
 
-	return json({ success: true, slug });
+  return json({ success: true, slug });
 }
 
 /**
@@ -60,23 +62,25 @@ export async function POST({ request, platform, locals }) {
  * Delete a tag
  */
 export async function DELETE({ url, platform, locals }) {
-	if (!locals.user) {
-		throw error(401, "Unauthorized");
-	}
+  if (!locals.user) {
+    throw error(401, "Unauthorized");
+  }
 
-	if (!platform?.env?.DB) {
-		throw error(500, "D1 not configured");
-	}
+  if (!platform?.env?.DB) {
+    throw error(500, "D1 not configured");
+  }
 
-	// Extract ID from URL path
-	const pathParts = url.pathname.split("/");
-	const id = pathParts[pathParts.length - 1];
+  // Extract ID from URL path
+  const pathParts = url.pathname.split("/");
+  const id = pathParts[pathParts.length - 1];
 
-	if (!id || id === "tags") {
-		throw error(400, "Tag ID required");
-	}
+  if (!id || id === "tags") {
+    throw error(400, "Tag ID required");
+  }
 
-	await platform.env.DB.prepare("DELETE FROM gallery_tags WHERE id = ?").bind(id).run();
+  await platform.env.DB.prepare("DELETE FROM gallery_tags WHERE id = ?")
+    .bind(id)
+    .run();
 
-	return json({ success: true });
+  return json({ success: true });
 }
