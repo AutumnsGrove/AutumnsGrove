@@ -79,13 +79,6 @@ const modules = import.meta.glob("/UserContent/Posts/*.md", {
   import: "default",
 });
 
-// Recipes
-const recipeModules = import.meta.glob("../../../UserContent/Recipes/*.md", {
-  eager: true,
-  query: "?raw",
-  import: "default",
-});
-
 // About
 const aboutModules = import.meta.glob("../../../UserContent/About/*.md", {
   eager: true,
@@ -130,14 +123,6 @@ export function getSiteConfig() {
     social: {},
   };
 }
-
-// Load recipe metadata JSON files (step icons, etc.)
-const recipeMetadataModules = import.meta.glob(
-  "../../../UserContent/Recipes/*/gutter/recipe.json",
-  {
-    eager: true,
-  },
-);
 
 // Load gutter manifest files for blog posts
 const gutterManifestModules = import.meta.glob(
@@ -188,34 +173,6 @@ const aboutGutterMarkdownModules = import.meta.glob(
 // Load about page gutter image files
 const aboutGutterImageModules = import.meta.glob(
   "../../../UserContent/About/*/gutter/*.{jpg,jpeg,png,gif,webp}",
-  {
-    eager: true,
-    query: "?url",
-    import: "default",
-  },
-);
-
-// Load recipe gutter manifest files
-const recipeGutterManifestModules = import.meta.glob(
-  "../../../UserContent/Recipes/*/gutter/manifest.json",
-  {
-    eager: true,
-  },
-);
-
-// Load recipe gutter markdown content files
-const recipeGutterMarkdownModules = import.meta.glob(
-  "../../../UserContent/Recipes/*/gutter/*.md",
-  {
-    eager: true,
-    query: "?raw",
-    import: "default",
-  },
-);
-
-// Load recipe gutter image files
-const recipeGutterImageModules = import.meta.glob(
-  "../../../UserContent/Recipes/*/gutter/*.{jpg,jpeg,png,gif,webp}",
   {
     eager: true,
     query: "?url",
@@ -339,41 +296,6 @@ export function getLatestPost() {
   }
   // Get the full post content for the most recent post
   return getPostBySlug(posts[0].slug);
-}
-
-/**
- * Get all recipes from the recipes directory
- * @returns {Array} Array of recipe objects with metadata and slug
- */
-export function getAllRecipes() {
-  try {
-    const recipes = Object.entries(recipeModules)
-      .map(([filepath, content]) => {
-        try {
-          // Extract slug from filepath: ../../../UserContent/Recipes/example.md -> example
-          const slug = filepath.split("/").pop().replace(".md", "");
-          const { data } = matter(content);
-
-          return {
-            slug,
-            title: data.title || "Untitled Recipe",
-            date: data.date || new Date().toISOString(),
-            tags: data.tags || [],
-            description: data.description || "",
-          };
-        } catch (err) {
-          console.error(`Error processing recipe ${filepath}:`, err);
-          return null;
-        }
-      })
-      .filter(Boolean)
-      .sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    return recipes;
-  } catch (err) {
-    console.error("Error in getAllRecipes:", err);
-    return [];
-  }
 }
 
 /**
@@ -638,20 +560,6 @@ function getGutterContentFromModules(
 }
 
 /**
- * Get gutter content for a recipe by slug
- * @param {string} slug - The recipe slug
- * @returns {Array} Array of gutter items with content and position info
- */
-export function getRecipeGutterContent(slug) {
-  return getGutterContentFromModules(
-    slug,
-    recipeGutterManifestModules,
-    recipeGutterMarkdownModules,
-    recipeGutterImageModules,
-  );
-}
-
-/**
  * Get gutter content for a blog post by slug
  * @param {string} slug - The post slug
  * @returns {Array} Array of gutter items with content and position info
@@ -828,74 +736,4 @@ export function getAboutGutterContent(slug) {
     aboutGutterMarkdownModules,
     aboutGutterImageModules,
   );
-}
-
-/**
- * Get recipe metadata (step icons, etc.) for a recipe by slug
- * @param {string} slug - The recipe slug
- * @returns {Object|null} Recipe metadata with instruction icons
- */
-export function getRecipeSidecar(slug) {
-  // Find the recipe.json file in the gutter folder
-  // Expected path: ../../../UserContent/Recipes/{slug}/gutter/recipe.json
-  // parts[-3] extracts the recipe folder name from this path structure
-  const entry = Object.entries(recipeMetadataModules).find(([filepath]) => {
-    const parts = filepath.split("/");
-    const folder = parts[parts.length - 3]; // Get the recipe folder name
-    return folder === slug;
-  });
-
-  if (!entry) {
-    return null;
-  }
-
-  // The module is already parsed JSON
-  return entry[1].default || entry[1];
-}
-
-/**
- * Get a single recipe by slug
- * @param {string} slug - The recipe slug
- * @returns {Object|null} Recipe object with content and metadata
- */
-export function getRecipeBySlug(slug) {
-  // Find the matching module by slug
-  const entry = Object.entries(recipeModules).find(([filepath]) => {
-    const fileSlug = filepath.split("/").pop().replace(".md", "");
-    return fileSlug === slug;
-  });
-
-  if (!entry) {
-    return null;
-  }
-
-  const content = entry[1];
-
-  const { data, content: markdown } = matter(content);
-
-  let htmlContent = marked.parse(markdown);
-
-  // Process anchor tags in the HTML content
-  htmlContent = processAnchorTags(htmlContent);
-
-  // Extract headers for table of contents
-  const headers = extractHeaders(markdown);
-
-  // Get sidecar data if available
-  const sidecar = getRecipeSidecar(slug);
-
-  // Get gutter content for this recipe
-  const gutterContent = getRecipeGutterContent(slug);
-
-  return {
-    slug,
-    title: data.title || "Untitled Recipe",
-    date: data.date || new Date().toISOString(),
-    tags: data.tags || [],
-    description: data.description || "",
-    content: htmlContent,
-    headers,
-    gutterContent,
-    sidecar: sidecar,
-  };
 }
