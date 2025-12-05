@@ -59,10 +59,6 @@
         <span class="nav-icon">&#x1F4C4;</span>
         Pages
       </a>
-      <a href="/admin/recipes" class="nav-item" onclick={closeSidebar}>
-        <span class="nav-icon">&#x1F373;</span>
-        Recipes
-      </a>
       <a href="/admin/images" class="nav-item" onclick={closeSidebar}>
         <span class="nav-icon">&#x1F4F7;</span>
         Images
