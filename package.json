@@ -1,6 +1,7 @@
 {
   "name": "autumnsgrove",
   "version": "1.0.0",
+  "packageManager": "pnpm@9.15.0",
   "description": "A personal website for blogging, demonstrating projects, and sharing articles. Built with SvelteKit and deployed to Cloudflare Pages.",
   "type": "module",
   "scripts": {
@@ -38,7 +39,7 @@
     "vitest": "^4.0.14"
   },
   "dependencies": {
-    "@autumnsgrove/groveengine": "^0.4.0",
+    "@autumnsgrove/groveengine": "^0.4.1",
     "@types/dompurify": "^3.0.5",
     "chart.js": "^4.5.1",
     "clsx": "^2.1.1",
