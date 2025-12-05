@@ -1,6 +1,7 @@
 {
   "name": "autumnsgrove",
   "version": "1.0.0",
+  "packageManager": "pnpm@9.15.0",
   "description": "A personal website for blogging, demonstrating projects, and sharing articles. Built with SvelteKit and deployed to Cloudflare Pages.",
   "type": "module",
   "scripts": {
@@ -8,8 +9,8 @@
     "dev:wrangler": "wrangler pages dev -- vite dev",
     "build": "vite build",
     "preview": "vite preview",
-    "audit": "npm audit --audit-level=moderate",
-    "audit:fix": "npm audit fix",
+    "audit": "pnpm audit --audit-level=moderate",
+    "audit:fix": "pnpm audit --fix",
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
