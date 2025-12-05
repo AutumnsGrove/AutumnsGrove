@@ -2,6 +2,14 @@
 
 > **Note:** This is the website/project documentation. For the profile README, see [README.md](README.md).
 
+## Reference Implementation
+
+This site serves as the **reference implementation** for building Grove-powered websites using [`@autumnsgrove/groveengine`](https://www.npmjs.com/package/@autumnsgrove/groveengine).
+
+If you're building a new site with GroveEngine, use this project as a template. See [`CLIENT_TEMPLATE.md`](https://github.com/AutumnsGrove/GroveEngine/blob/main/packages/engine/CLIENT_TEMPLATE.md) for the minimal structure.
+
+---
+
 A personal website for blogging, sharing recipes, demonstrating projects, and visualizing GitHub activity. Built with SvelteKit 5 and deployed to Cloudflare Pages with D1 database, R2 storage, and KV caching.
 
 **Features:**
@@ -295,11 +303,12 @@ See `.dev.vars.example` for local development setup.
 
 ## Tech Stack
 
+- **[@autumnsgrove/groveengine](https://www.npmjs.com/package/@autumnsgrove/groveengine)** - Core engine with UI components, auth, utils, and server utilities
 - **[SvelteKit 5](https://kit.svelte.dev/)** - Web framework with Svelte 5 runes
 - **[Vite](https://vitejs.dev/)** - Build tool
-- **[Marked](https://marked.js.org/)** - Markdown parser
-- **[Gray Matter](https://github.com/jonschlinkert/gray-matter)** - Frontmatter parser
-- **[Chart.js](https://www.chartjs.org/)** - Data visualization
+- **[Tailwind CSS](https://tailwindcss.com/)** - Utility-first CSS framework
+- **[Marked](https://marked.js.org/)** - Markdown parser (via engine)
+- **[Chart.js](https://www.chartjs.org/)** - Data visualization (via engine)
 - **[Mermaid](https://mermaid.js.org/)** - Diagram generation
 - **[@sveltejs/adapter-cloudflare](https://kit.svelte.dev/docs/adapter-cloudflare)** - Cloudflare Pages adapter
 
@@ -427,5 +436,5 @@ See [LICENSE](LICENSE) for full details.
 
 ---
 
-**Last updated:** 2025-11-27
-**Built with:** SvelteKit 5 + Cloudflare Pages + Claude Code
+**Last updated:** 2025-12-04
+**Built with:** SvelteKit 5 + @autumnsgrove/groveengine + Cloudflare Pages
