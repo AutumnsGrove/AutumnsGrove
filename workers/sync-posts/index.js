@@ -319,6 +319,11 @@ async function handleSync(request, env, corsHeaders) {
         ? data.date.toISOString()
         : (data.date || new Date().toISOString());
 
+      // Process gutter content if provided
+      const gutterContentJson = post.gutterContent
+        ? JSON.stringify(post.gutterContent)
+        : '[]';
+
       if (existingHash) {
         // Update existing post
         batchStatements.push(
@@ -326,7 +331,7 @@ async function handleSync(request, env, corsHeaders) {
             UPDATE posts
             SET title = ?, date = ?, tags = ?, description = ?,
                 markdown_content = ?, html_content = ?, file_hash = ?,
-                last_synced = ?, updated_at = CURRENT_TIMESTAMP
+                last_synced = ?, gutter_content = ?, updated_at = CURRENT_TIMESTAMP
             WHERE slug = ?
           `).bind(
             title,
@@ -337,13 +342,15 @@ async function handleSync(request, env, corsHeaders) {
             htmlContent,
             fileHash,
             timestamp,
+            gutterContentJson,
             post.slug
           )
         );
 
         results.details.push({
           slug: post.slug,
-          action: 'updated'
+          action: 'updated',
+          hasGutter: post.gutterContent ? post.gutterContent.length : 0
         });
       } else {
         // Insert new post
@@ -351,8 +358,8 @@ async function handleSync(request, env, corsHeaders) {
           env.DB.prepare(`
             INSERT INTO posts (
               slug, title, date, tags, description,
-              markdown_content, html_content, file_hash, last_synced
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+              markdown_content, html_content, file_hash, last_synced, gutter_content
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
           `).bind(
             post.slug,
             title,
@@ -362,13 +369,15 @@ async function handleSync(request, env, corsHeaders) {
             post.content,
             htmlContent,
             fileHash,
-            timestamp
+            timestamp,
+            gutterContentJson
           )
         );
 
         results.details.push({
           slug: post.slug,
-          action: 'created'
+          action: 'created',
+          hasGutter: post.gutterContent ? post.gutterContent.length : 0
         });
       }
 

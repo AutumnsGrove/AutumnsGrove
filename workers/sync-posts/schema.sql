@@ -12,7 +12,9 @@ CREATE TABLE IF NOT EXISTS posts (
   file_hash TEXT NOT NULL,
   last_synced TEXT NOT NULL,
   created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-  updated_at TEXT DEFAULT CURRENT_TIMESTAMP
+  updated_at TEXT DEFAULT CURRENT_TIMESTAMP,
+  gutter_content TEXT DEFAULT '[]',  -- JSON array for gutter items (comments, photos, galleries)
+  font TEXT DEFAULT 'default'        -- Post-specific font override
 );
 
 -- Create indexes for common queries

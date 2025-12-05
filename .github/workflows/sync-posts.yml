@@ -45,6 +45,45 @@ jobs:
             .replace(/^-+|-+$/g, '');
         }
 
+        // Process gutter manifest for a post
+        function processGutterContent(postsDir, slug) {
+          const gutterDir = path.join(postsDir, slug, 'gutter');
+          const manifestPath = path.join(gutterDir, 'manifest.json');
+
+          if (!fs.existsSync(manifestPath)) {
+            return null;
+          }
+
+          try {
+            const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+            const items = manifest.items || [];
+
+            // Process each item - read .md files for comment content
+            const processedItems = items.map(item => {
+              if ((item.type === 'comment' || item.type === 'markdown') && item.file) {
+                // Check if it's a local file (not a URL)
+                if (!item.file.startsWith('http')) {
+                  const mdPath = path.join(gutterDir, item.file);
+                  if (fs.existsSync(mdPath)) {
+                    const content = fs.readFileSync(mdPath, 'utf8').trim();
+                    return { ...item, content, file: undefined };
+                  }
+                }
+              }
+              // For photos/galleries with file field pointing to URL, rename to url
+              if ((item.type === 'photo' || item.type === 'image') && item.file && item.file.startsWith('http')) {
+                return { ...item, url: item.file, file: undefined };
+              }
+              return item;
+            });
+
+            return processedItems;
+          } catch (err) {
+            console.error(`Warning: Failed to process gutter for ${slug}:`, err.message);
+            return null;
+          }
+        }
+
         const postsDir = './UserContent/Posts';
         const posts = [];
 
@@ -64,13 +103,23 @@ jobs:
             continue;
           }
 
-          posts.push({
+          // Process gutter content if it exists
+          const gutterContent = processGutterContent(postsDir, rawSlug);
+
+          const postData = {
             slug,
             content,
             filePath
-          });
+          };
 
-          console.log(`Processed: ${file} -> ${slug}`);
+          if (gutterContent && gutterContent.length > 0) {
+            postData.gutterContent = gutterContent;
+            console.log(`Processed: ${file} -> ${slug} (with ${gutterContent.length} gutter items)`);
+          } else {
+            console.log(`Processed: ${file} -> ${slug}`);
+          }
+
+          posts.push(postData);
         }
 
         // Write posts to a JSON file to avoid shell escaping issues
