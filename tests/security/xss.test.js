@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { sanitizeHTML, sanitizeSVG, sanitizeURL } from '../../src/lib/utils/sanitize.js';
+import { sanitizeHTML, sanitizeSVG, sanitizeURL } from '@autumnsgrove/groveengine/utils';
 
 /**
  * XSS Protection Test Suite

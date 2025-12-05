@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { validateFileSignature, sanitizeFilename } from '../../src/lib/utils/validation.js';
+import { validateFileSignature, sanitizeFilename } from '@autumnsgrove/groveengine/utils';
 
 /**
  * File Upload Security Test Suite

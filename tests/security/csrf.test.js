@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { validateCSRF } from '../../src/lib/utils/csrf.js';
+import { validateCSRF } from '@autumnsgrove/groveengine/utils';
 
 /**
  * CSRF Protection Test Suite
