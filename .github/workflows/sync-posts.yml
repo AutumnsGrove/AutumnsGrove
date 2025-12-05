@@ -16,14 +16,20 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v4
       
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9
+
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
-        
+        node-version: '20'
+        cache: 'pnpm'
+
     - name: Install dependencies
       run: |
-        npm install gray-matter marked
+        pnpm add gray-matter marked
         
     - name: Read and process posts
       id: process-posts
