@@ -11,7 +11,7 @@ AutumnsGrove is a personal website for blogging, demonstrating projects, and sha
 - Language: Python, JavaScript, HTML/CSS
 - Framework: SvelteKit (frontend), Cloudflare Workers (backend)
 - Key Libraries: D3.js for visualizations
-- Package Manager: UV (Python), npm (JavaScript)
+- Package Manager: UV (Python), pnpm (JavaScript)
 
 ## Architecture Notes
 Static website with dynamic content via Cloudflare Workers. Organized around blog posts, project showcases, and article sharing. Uses R2 for image/CDN hosting and D1 for data storage.
