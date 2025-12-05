@@ -219,7 +219,7 @@
 		transition: color 0.3s ease;
 	}
 	:global(.dark) .search-header h1 {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	.search-header p {
 		color: #666;
@@ -239,7 +239,7 @@
 	.search-icon {
 		position: absolute;
 		left: 1rem;
-		color: var(--light-text-light);
+		color: var(--bark-500);
 		pointer-events: none;
 		transition: color 0.3s ease;
 	}
@@ -247,26 +247,26 @@
 		width: 100%;
 		padding: 1rem 3rem;
 		font-size: 1rem;
-		border: 2px solid var(--light-border-primary);
+		border: 2px solid var(--color-border);
 		border-radius: 12px;
 		background: white;
-		color: var(--light-border-secondary);
+		color: var(--color-border-strong);
 		transition: border-color 0.2s ease, background-color 0.3s ease, color 0.3s ease;
 	}
 	:global(.dark) .search-input {
-		background: var(--light-bg-tertiary);
-		border-color: var(--light-border-light);
-		color: var(--color-text-dark);
+		background: var(--cream-300);
+		border-color: var(--cream-100);
+		color: var(--color-foreground);
 	}
 	.search-input:focus {
 		outline: none;
 		border-color: #2c5f2d;
 	}
 	:global(.dark) .search-input:focus {
-		border-color: var(--accent-success);
+		border-color: var(--grove-500);
 	}
 	.search-input::placeholder {
-		color: var(--light-text-muted);
+		color: var(--color-muted-foreground);
 	}
 	:global(.dark) .search-input::placeholder {
 		color: #777;
@@ -300,7 +300,7 @@
 		color: #2c5f2d;
 	}
 	:global(.dark) .results-info strong {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	.no-results {
 		text-align: center;

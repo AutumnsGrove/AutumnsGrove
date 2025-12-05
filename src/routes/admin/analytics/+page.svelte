@@ -148,12 +148,12 @@
   .header-content h1 {
     margin: 0 0 0.25rem 0;
     font-size: 2rem;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
   .subtitle {
     margin: 0;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     transition: color 0.3s ease;
   }
   .loading-state,
@@ -171,7 +171,7 @@
   }
   .error-state p {
     margin: 0 0 1rem 0;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     transition: color 0.3s ease;
   }
   .stats-grid {
@@ -192,7 +192,7 @@
     margin: 0;
     font-size: 2rem;
     font-weight: 700;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
   .section {
@@ -206,18 +206,18 @@
   .section h2 {
     margin: 0 0 1rem 0;
     font-size: 1.1rem;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
   .section.info {
-    background: var(--color-bg-secondary);
+    background: var(--cream-200);
     box-shadow: none;
     border: 1px solid var(--color-border);
     transition: background-color 0.3s ease, border-color 0.3s ease;
   }
   .section.info p {
     margin: 0 0 0.75rem 0;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     font-size: 0.9rem;
     transition: color 0.3s ease;
   }
@@ -257,7 +257,7 @@
   .repo-description {
     margin: 0.25rem 0 0 0;
     font-size: 0.85rem;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     transition: color 0.3s ease;
   }
   .repo-stats {
@@ -266,7 +266,7 @@
   }
   .repo-stat {
     font-size: 0.85rem;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     transition: color 0.3s ease;
   }
   .commits-list {
@@ -285,13 +285,13 @@
   .commit-message {
     margin: 0 0 0.25rem 0;
     font-size: 0.9rem;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
   .commit-meta {
     margin: 0;
     font-size: 0.8rem;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     transition: color 0.3s ease;
   }
   .commit-meta a {

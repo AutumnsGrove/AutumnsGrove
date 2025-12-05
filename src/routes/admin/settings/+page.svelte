@@ -489,12 +489,12 @@
   .page-header h1 {
     margin: 0 0 0.25rem 0;
     font-size: 2rem;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
   .subtitle {
     margin: 0;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     transition: color 0.3s ease;
   }
   .settings-section {
@@ -508,12 +508,12 @@
   .settings-section h2 {
     margin: 0 0 1rem 0;
     font-size: 1.25rem;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
   .section-description {
     margin: 0 0 1rem 0;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     font-size: 0.9rem;
     transition: color 0.3s ease;
   }
@@ -533,20 +533,20 @@
   }
   .health-label {
     font-size: 0.85rem;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     transition: color 0.3s ease;
   }
   .health-value {
     font-weight: 600;
   }
   .health-value.healthy {
-    color: var(--accent-success);
+    color: var(--grove-500);
   }
   .health-value.error {
-    color: var(--accent-danger);
+    color: var(--color-error);
   }
   .health-value.loading {
-    color: var(--color-text-subtle);
+    color: var(--bark-500);
     transition: color 0.3s ease;
   }
   .message {
@@ -557,20 +557,20 @@
   }
   .message.success {
     background: #dcffe4;
-    color: var(--accent-success-dark);
+    color: var(--grove-700);
   }
   .message.error {
     background: #ffeef0;
-    color: var(--accent-danger);
+    color: var(--color-error);
   }
   .note {
     margin: 1rem 0 0 0;
     font-size: 0.8rem;
-    color: var(--color-text-subtle);
+    color: var(--bark-500);
     transition: color 0.3s ease;
   }
   .note code {
-    background: var(--color-bg-secondary);
+    background: var(--cream-200);
     padding: 0.125rem 0.25rem;
     border-radius: var(--border-radius-small);
     font-size: 0.85em;
@@ -591,7 +591,7 @@
     border-bottom: none;
   }
   .env-label {
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     font-size: 0.9rem;
     transition: color 0.3s ease;
   }
@@ -662,12 +662,12 @@
   .font-name {
     font-size: 1.1rem;
     font-weight: 600;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
   .font-description {
     font-size: 0.85rem;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     transition: color 0.3s ease;
   }
   .button-row {
@@ -676,7 +676,7 @@
     margin-bottom: 1rem;
   }
   .loading-text {
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     font-style: italic;
   }
   /* AI Writing Assistant styles */
@@ -709,11 +709,11 @@
   }
   .toggle-label {
     font-weight: 600;
-    color: var(--color-text);
+    color: var(--color-foreground);
   }
   .toggle-desc {
     font-size: 0.85rem;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
   }
   .ai-model-selector {
     margin-bottom: 1rem;
@@ -721,23 +721,23 @@
   .ai-model-selector label {
     display: block;
     font-size: 0.9rem;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     margin-bottom: 0.5rem;
   }
   .ai-model-selector select {
     width: 100%;
     padding: 0.5rem;
-    background: var(--color-bg-secondary);
+    background: var(--cream-200);
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-button);
-    color: var(--color-text);
+    color: var(--color-foreground);
     font-size: 0.9rem;
   }
   .ai-info-box {
     display: flex;
     gap: 1.5rem;
     padding: 1rem;
-    background: var(--color-bg-secondary);
+    background: var(--cream-200);
     border-radius: var(--border-radius-standard);
     margin-bottom: 1rem;
   }
@@ -757,14 +757,14 @@
   }
   .ai-details p {
     margin: 0 0 0.5rem 0;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
   }
   .ai-details ul {
     margin: 0 0 0.5rem 0;
     padding-left: 1.25rem;
   }
   .ai-details li {
-    color: var(--color-text);
+    color: var(--color-foreground);
     margin-bottom: 0.25rem;
   }
   .ai-note {
@@ -775,14 +775,14 @@
   .ai-usage-stats {
     margin-top: 1rem;
     padding: 1rem;
-    background: var(--color-bg-secondary);
+    background: var(--cream-200);
     border-radius: var(--border-radius-standard);
     border: 1px solid var(--color-border);
   }
   .ai-usage-stats h4 {
     margin: 0 0 0.75rem 0;
     font-size: 0.85rem;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     text-transform: lowercase;
   }
   .usage-grid {
@@ -802,7 +802,7 @@
   .usage-label {
     display: block;
     font-size: 0.75rem;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     margin-top: 0.25rem;
   }
   @media (max-width: 600px) {

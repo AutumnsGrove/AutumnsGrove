@@ -701,12 +701,12 @@
   .page-header h1 {
     margin: 0 0 0.5rem 0;
     font-size: 2rem;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
   .subtitle {
     margin: 0;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     transition: color 0.3s ease;
   }
   .upload-config {
@@ -723,7 +723,7 @@
   }
   .folder-select span {
     font-weight: 500;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
   .folder-select select {
@@ -732,7 +732,7 @@
     border-radius: var(--border-radius-small);
     font-size: 0.9rem;
     background: var(--mobile-menu-bg);
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
   .custom-folder {
@@ -743,7 +743,7 @@
     border-radius: var(--border-radius-small);
     font-size: 0.9rem;
     background: var(--mobile-menu-bg);
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
   .drop-zone {
@@ -757,11 +757,11 @@
   }
   .drop-zone:hover {
     border-color: var(--color-primary);
-    background: var(--color-bg-secondary);
+    background: var(--cream-200);
     transition: background-color 0.3s ease, border-color 0.3s ease;
   }
   .drop-zone.dragging {
-    border-color: var(--accent-success);
+    border-color: var(--grove-500);
     background: #f0fff4;
   }
   :global(.dark) .drop-zone.dragging {
@@ -778,18 +778,18 @@
   .drop-text {
     font-size: 1.25rem;
     font-weight: 500;
-    color: var(--color-text);
+    color: var(--color-foreground);
     margin: 0 0 0.5rem 0;
     transition: color 0.3s ease;
   }
   .drop-hint {
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     margin: 0 0 0.5rem 0;
     transition: color 0.3s ease;
   }
   .drop-formats {
     font-size: 0.85rem;
-    color: var(--color-text-subtle);
+    color: var(--bark-500);
     margin: 0;
     transition: color 0.3s ease;
   }
@@ -805,7 +805,7 @@
   .uploads-header h2 {
     margin: 0;
     font-size: 1.25rem;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
   .uploads-list {
@@ -821,10 +821,10 @@
     transition: background-color 0.3s ease, border-color 0.3s ease;
   }
   .upload-item.success {
-    border-color: var(--accent-success);
+    border-color: var(--grove-500);
   }
   .upload-item.error {
-    border-color: var(--accent-danger);
+    border-color: var(--color-error);
   }
   .upload-info {
     display: flex;
@@ -834,7 +834,7 @@
   }
   .upload-name {
     font-weight: 500;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
   .upload-status {
@@ -844,15 +844,15 @@
   }
   .upload-status.uploading {
     background: #fff5b1;
-    color: var(--status-warning-bg);
+    color: var(--color-warning-light);
   }
   .upload-status.success {
     background: #dcffe4;
-    color: var(--accent-success-dark);
+    color: var(--grove-700);
   }
   .upload-status.error {
     background: #ffeef0;
-    color: var(--accent-danger);
+    color: var(--color-error);
   }
   .upload-actions {
     display: flex;
@@ -860,7 +860,7 @@
     gap: 0.75rem;
   }
   .url-display {
-    background: var(--color-bg-secondary);
+    background: var(--cream-200);
     padding: 0.5rem;
     border-radius: var(--border-radius-small);
     overflow-x: auto;
@@ -868,7 +868,7 @@
   }
   .url-display code {
     font-size: 0.8rem;
-    color: var(--color-text);
+    color: var(--color-foreground);
     word-break: break-all;
     transition: color 0.3s ease;
   }
@@ -897,13 +897,13 @@
   .gallery-title h2 {
     margin: 0;
     font-size: 1.25rem;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
   .gallery-subtitle {
     margin: 0.25rem 0 0 0;
     font-size: 0.85rem;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     font-style: italic;
     transition: color 0.3s ease;
   }
@@ -920,7 +920,7 @@
   }
   .control-group label {
     font-size: 0.875rem;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     transition: color 0.3s ease;
   }
   .control-group select {
@@ -929,7 +929,7 @@
     border-radius: var(--border-radius-small);
     font-size: 0.85rem;
     background: var(--mobile-menu-bg);
-    color: var(--color-text);
+    color: var(--color-foreground);
     cursor: pointer;
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
@@ -940,12 +940,12 @@
     font-size: 0.85rem;
     min-width: 180px;
     background: var(--mobile-menu-bg);
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
   .gallery-error {
     background: #ffeef0;
-    color: var(--accent-danger);
+    color: var(--color-error);
     padding: 1rem;
     border-radius: var(--border-radius-small);
     margin-bottom: 1rem;
@@ -953,7 +953,7 @@
   .gallery-loading,
   .gallery-empty {
     text-align: center;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     padding: 2rem;
     transition: color 0.3s ease;
   }
@@ -966,7 +966,7 @@
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-button);
     overflow: hidden;
-    background: var(--color-bg-secondary);
+    background: var(--cream-200);
     transition: background-color 0.3s ease, border-color 0.3s ease;
   }
   .gallery-image-container {
@@ -991,7 +991,7 @@
   .gallery-item-name {
     display: block;
     font-size: 0.75rem;
-    color: var(--color-text);
+    color: var(--color-foreground);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -999,7 +999,7 @@
   }
   .gallery-item-size {
     font-size: 0.7rem;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     transition: color 0.3s ease;
   }
   .gallery-item-actions {
@@ -1034,7 +1034,7 @@
   .modal-filename {
     font-family: monospace;
     font-size: 0.9rem;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     word-break: break-all;
     margin: 0 0 1rem 0;
     transition: color 0.3s ease;
@@ -1043,7 +1043,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background: var(--color-bg-secondary);
+    background: var(--cream-200);
     border-radius: var(--border-radius-small);
     padding: 0.5rem;
     margin-bottom: 1rem;
@@ -1058,7 +1058,7 @@
   }
   .modal-warning {
     font-size: 0.85rem;
-    color: var(--color-danger, var(--accent-danger));
+    color: var(--color-danger, var(--color-error));
     margin: 0 0 1.5rem 0;
     font-weight: 500;
   }
@@ -1086,7 +1086,7 @@
   .bulk-tagging-section h2 {
     margin: 0 0 1rem 0;
     font-size: 1.25rem;
-    color: var(--color-text);
+    color: var(--color-foreground);
     font-family: var(--font-mono);
     transition: color 0.3s ease;
   }
@@ -1124,7 +1124,7 @@
     align-items: center;
     gap: 1rem;
     padding: 0.75rem;
-    background: var(--color-bg-secondary);
+    background: var(--cream-200);
     border-radius: var(--border-radius-small);
     border: 1px solid var(--color-border);
     transition: background-color 0.3s ease, border-color 0.3s ease;
@@ -1133,14 +1133,14 @@
   .tag-slug {
     font-family: var(--font-mono);
     font-size: 0.85rem;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     flex: 1;
     transition: color 0.3s ease;
   }
 
   .empty-state {
     text-align: center;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     padding: 2rem;
     font-style: italic;
     transition: color 0.3s ease;
@@ -1184,7 +1184,7 @@
   }
 
   .bulk-tag-item:hover {
-    border-color: var(--color-text-muted);
+    border-color: var(--color-muted-foreground);
   }
 
   .bulk-tag-item.selected {
@@ -1230,7 +1230,7 @@
     gap: 1rem;
     align-items: center;
     padding: 1rem;
-    background: var(--color-bg-secondary);
+    background: var(--cream-200);
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-standard);
     flex-wrap: wrap;
@@ -1240,7 +1240,7 @@
   .selection-count {
     margin: 0;
     font-weight: 600;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
 
@@ -1249,7 +1249,7 @@
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-small);
     background: var(--mobile-menu-bg);
-    color: var(--color-text);
+    color: var(--color-foreground);
     font-size: 0.9rem;
     min-width: 150px;
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
@@ -1266,14 +1266,14 @@
   .sync-section h2 {
     margin: 0 0 0.5rem 0;
     font-size: 1.5rem;
-    color: var(--color-text);
+    color: var(--color-foreground);
     font-family: var(--font-mono);
     transition: color 0.3s ease;
   }
 
   .sync-description {
     margin: 0 0 1.5rem 0;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     transition: color 0.3s ease;
   }
 
@@ -1291,7 +1291,7 @@
   }
 
   .stat-card {
-    background: var(--color-bg-secondary);
+    background: var(--cream-200);
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-standard);
     padding: 1.5rem;
@@ -1302,7 +1302,7 @@
   .stat-card h3 {
     margin: 0 0 0.5rem 0;
     font-size: 0.9rem;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -1321,15 +1321,15 @@
   .sync-result {
     margin-top: 1.5rem;
     padding: 1rem;
-    background: var(--color-bg-secondary);
-    border: 1px solid var(--accent-success);
+    background: var(--cream-200);
+    border: 1px solid var(--grove-500);
     border-radius: var(--border-radius-standard);
     transition: background-color 0.3s ease, border-color 0.3s ease;
   }
 
   .sync-result p {
     margin: 0.5rem 0;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
 </style>

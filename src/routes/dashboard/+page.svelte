@@ -514,7 +514,7 @@
 
 	<header class="text-center mb-8">
 		<h1 class="text-[#2c5f2d] dark:text-[#5cb85f] m-0">Git Dashboard</h1>
-		<p class="text-[#666] dark:text-[var(--color-text-muted-dark)] mt-2 mb-0">My GitHub commit activity</p>
+		<p class="text-[#666] dark:text-[var(--color-muted-foreground)] mt-2 mb-0">My GitHub commit activity</p>
 	</header>
 
 	<!-- Explanation Box for non-developers -->
@@ -522,29 +522,29 @@
 		<div class="flex flex-col gap-4">
 			<div class="pb-3 border-b border-[#e8e8e8] dark:border-[#333] last:pb-0 last:border-b-0">
 				<strong class="block text-[#2c5f2d] dark:text-[#5cb85f] mb-1 text-sm">Commits</strong>
-				<p class="m-0 text-[0.85rem] text-[#666] dark:text-[var(--color-text-subtle-dark)] leading-snug">A commit is like a "save point" in code. Each commit captures a snapshot of changes made to the project. More commits = more active development.</p>
+				<p class="m-0 text-[0.85rem] text-[#666] dark:text-[var(--bark-400)] leading-snug">A commit is like a "save point" in code. Each commit captures a snapshot of changes made to the project. More commits = more active development.</p>
 			</div>
 			<div class="pb-3 border-b border-[#e8e8e8] dark:border-[#333] last:pb-0 last:border-b-0">
 				<strong class="block text-[#2c5f2d] dark:text-[#5cb85f] mb-1 text-sm">Lines Added / Deleted</strong>
-				<p class="m-0 text-[0.85rem] text-[#666] dark:text-[var(--color-text-subtle-dark)] leading-snug">These show how much code was written (added) or removed (deleted). High numbers indicate significant changes to the codebase.</p>
+				<p class="m-0 text-[0.85rem] text-[#666] dark:text-[var(--bark-400)] leading-snug">These show how much code was written (added) or removed (deleted). High numbers indicate significant changes to the codebase.</p>
 			</div>
 			<div class="pb-3 border-b border-[#e8e8e8] dark:border-[#333] last:pb-0 last:border-b-0">
 				<strong class="block text-[#2c5f2d] dark:text-[#5cb85f] mb-1 text-sm">Repositories</strong>
-				<p class="m-0 text-[0.85rem] text-[#666] dark:text-[var(--color-text-subtle-dark)] leading-snug">A repository (repo) is a project folder that contains all code and history. Think of it like a folder for a specific project.</p>
+				<p class="m-0 text-[0.85rem] text-[#666] dark:text-[var(--bark-400)] leading-snug">A repository (repo) is a project folder that contains all code and history. Think of it like a folder for a specific project.</p>
 			</div>
 			<div class="pb-3 border-b border-[#e8e8e8] dark:border-[#333] last:pb-0 last:border-b-0">
 				<strong class="block text-[#2c5f2d] dark:text-[#5cb85f] mb-1 text-sm">Heatmap</strong>
-				<p class="m-0 text-[0.85rem] text-[#666] dark:text-[var(--color-text-subtle-dark)] leading-snug">The green grid shows coding activity over time. Darker squares = more commits on that day. It's like a calendar of productivity.</p>
+				<p class="m-0 text-[0.85rem] text-[#666] dark:text-[var(--bark-400)] leading-snug">The green grid shows coding activity over time. Darker squares = more commits on that day. It's like a calendar of productivity.</p>
 			</div>
 			<div class="pb-3 border-b border-[#e8e8e8] dark:border-[#333] last:pb-0 last:border-b-0">
 				<strong class="block text-[#2c5f2d] dark:text-[#5cb85f] mb-1 text-sm">Charts</strong>
-				<p class="m-0 text-[0.85rem] text-[#666] dark:text-[var(--color-text-subtle-dark)] leading-snug">The bar charts show when coding happens most - by hour of day and day of week. Useful for understanding work patterns.</p>
+				<p class="m-0 text-[0.85rem] text-[#666] dark:text-[var(--bark-400)] leading-snug">The bar charts show when coding happens most - by hour of day and day of week. Useful for understanding work patterns.</p>
 			</div>
 		</div>
 	</CollapsibleSection>
 
 	{#if loading}
-		<div class="text-center p-4 text-[#666] dark:text-[var(--color-text-muted-dark)] italic">Loading...</div>
+		<div class="text-center p-4 text-[#666] dark:text-[var(--color-muted-foreground)] italic">Loading...</div>
 	{/if}
 
 	{#if error}
@@ -770,7 +770,7 @@
 		margin: 0;
 	}
 	:global(.dark) .dashboard-header h1 {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	.dashboard-header p {
 		color: #666;
@@ -784,14 +784,14 @@
 	}
 	.explanation-item {
 		padding-bottom: 0.75rem;
-		border-bottom: 1px solid var(--light-border-secondary);
+		border-bottom: 1px solid var(--color-border-strong);
 	}
 	.explanation-item:last-child {
 		padding-bottom: 0;
 		border-bottom: none;
 	}
 	:global(.dark) .explanation-item {
-		border-bottom-color: var(--light-border-secondary);
+		border-bottom-color: var(--color-border-strong);
 	}
 	.explanation-item strong {
 		display: block;
@@ -800,7 +800,7 @@
 		font-size: 0.9rem;
 	}
 	:global(.dark) .explanation-item strong {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	.explanation-item p {
 		margin: 0;
@@ -826,7 +826,7 @@
 		margin-bottom: 1.5rem;
 	}
 	:global(.dark) .user-card-compact {
-		background: var(--light-bg-tertiary);
+		background: var(--cream-300);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 	}
 	.avatar-button {
@@ -858,7 +858,7 @@
 	}
 	.progress-ring-circle {
 		fill: none;
-		stroke: var(--accent-success);
+		stroke: var(--grove-500);
 		stroke-width: 3;
 		stroke-linecap: round;
 		transition: stroke-dashoffset 0.2s ease;
@@ -881,8 +881,8 @@
 		color: #2c5f2d;
 	}
 	:global(.dark) .refresh-message {
-		background: var(--light-bg-secondary);
-		color: var(--accent-success);
+		background: var(--cream-200);
+		color: var(--grove-500);
 	}
 	/* Time Range Selector */
 	.time-range-selector {
@@ -896,7 +896,7 @@
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 	}
 	:global(.dark) .time-range-selector {
-		background: var(--light-bg-tertiary);
+		background: var(--cream-300);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 	}
 	.time-range-selector label {
@@ -905,20 +905,20 @@
 		font-size: 0.9rem;
 	}
 	:global(.dark) .time-range-selector label {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	.time-range-selector select {
 		padding: 0.5rem 0.75rem;
-		border: 1px solid var(--light-border-light);
+		border: 1px solid var(--cream-100);
 		border-radius: 6px;
 		background: white;
-		color: var(--light-border-secondary);
+		color: var(--color-border-strong);
 		font-size: 0.9rem;
 		cursor: pointer;
 		transition: border-color 0.2s ease;
 	}
 	.time-range-selector select:hover {
-		border-color: var(--accent-success);
+		border-color: var(--grove-500);
 	}
 	.time-range-selector select:focus {
 		outline: none;
@@ -926,25 +926,25 @@
 		box-shadow: 0 0 0 2px rgba(92, 184, 95, 0.2);
 	}
 	:global(.dark) .time-range-selector select {
-		background: var(--light-border-secondary);
-		border-color: var(--light-border-light);
-		color: var(--light-text-very-light);
+		background: var(--color-border-strong);
+		border-color: var(--cream-100);
+		color: var(--bark-400);
 	}
 	:global(.dark) .time-range-selector select:hover {
-		border-color: var(--accent-success);
+		border-color: var(--grove-500);
 	}
 	:global(.dark) .time-range-selector select:focus {
-		border-color: var(--accent-success);
+		border-color: var(--grove-500);
 		box-shadow: 0 0 0 2px rgba(92, 184, 95, 0.3);
 	}
 	.selector-divider {
 		width: 1px;
 		height: 24px;
-		background: var(--light-border-light);
+		background: var(--cream-100);
 		margin: 0 0.5rem;
 	}
 	:global(.dark) .selector-divider {
-		background: var(--light-border-light);
+		background: var(--cream-100);
 	}
 	.last-refreshed-inline {
 		display: inline-flex;
@@ -965,7 +965,7 @@
 		color: #2c5f2d;
 	}
 	:global(.dark) .user-name {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	.user-meta {
 		font-size: 0.8rem;
@@ -973,15 +973,15 @@
 	}
 	.error {
 		background: #fee;
-		color: var(--accent-danger);
+		color: var(--color-error);
 		padding: 1rem;
 		border-radius: 8px;
 		margin-bottom: 1rem;
 		text-align: center;
 	}
 	:global(.dark) .error {
-		background: var(--status-danger-bg);
-		color: var(--accent-danger);
+		background: var(--color-error-light);
+		color: var(--color-error);
 	}
 	.card {
 		background: white;
@@ -991,7 +991,7 @@
 		margin-bottom: 1.5rem;
 	}
 	:global(.dark) .card {
-		background: var(--light-bg-tertiary);
+		background: var(--cream-300);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 	}
 	.card h3 {
@@ -1002,7 +1002,7 @@
 		gap: 0.5rem;
 	}
 	:global(.dark) .card h3 {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	.stats-grid {
 		display: grid;
@@ -1018,7 +1018,7 @@
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 	}
 	:global(.dark) .stat-card {
-		background: var(--light-bg-tertiary);
+		background: var(--cream-300);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 	}
 	.stat-icon {
@@ -1026,13 +1026,13 @@
 		margin-bottom: 0.5rem;
 	}
 	:global(.dark) .stat-icon {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	.stat-icon.additions {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	.stat-icon.deletions {
-		color: var(--accent-danger);
+		color: var(--color-error);
 	}
 	.stat-value {
 		font-size: 2rem;
@@ -1040,13 +1040,13 @@
 		color: #2c5f2d;
 	}
 	:global(.dark) .stat-value {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	.stat-value.additions {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	.stat-value.deletions {
-		color: var(--accent-danger);
+		color: var(--color-error);
 	}
 	.stat-label {
 		color: #666;
@@ -1080,11 +1080,11 @@
 		justify-content: space-between;
 		align-items: flex-start;
 		padding: 0.75rem;
-		background: var(--light-bg-tertiary);
+		background: var(--cream-300);
 		border-radius: 8px;
 	}
 	:global(.dark) .repo-item {
-		background: var(--light-border-secondary);
+		background: var(--color-border-strong);
 	}
 	.repo-info {
 		display: flex;
@@ -1123,14 +1123,14 @@
 		border-radius: 3px;
 	}
 	.commits-list-container::-webkit-scrollbar-thumb {
-		background: var(--light-text-secondary);
+		background: var(--color-muted-foreground);
 		border-radius: 3px;
 	}
 	:global(.dark) .commits-list-container::-webkit-scrollbar-track {
-		background: var(--light-border-secondary);
+		background: var(--color-border-strong);
 	}
 	:global(.dark) .commits-list-container::-webkit-scrollbar-thumb {
-		background: var(--light-text-secondary);
+		background: var(--color-muted-foreground);
 	}
 	/* Pagination elements */
 	.commits-loading {
@@ -1149,7 +1149,7 @@
 		border: 1px solid #ffc107;
 	}
 	:global(.dark) .commits-limit-reached {
-		background: linear-gradient(135deg, var(--status-warning-bg) 0%, var(--status-warning-bg) 100%);
+		background: linear-gradient(135deg, var(--color-warning-light) 0%, var(--color-warning-light) 100%);
 		color: #ffc107;
 		border-color: #ffc107;
 	}
@@ -1163,7 +1163,7 @@
 		width: 100%;
 		padding: 0.875rem 1.5rem;
 		margin-top: 1rem;
-		background: linear-gradient(135deg, #2c5f2d 0%, var(--status-success-bg) 100%);
+		background: linear-gradient(135deg, #2c5f2d 0%, var(--color-success-light) 100%);
 		color: white;
 		border: none;
 		border-radius: 8px;
@@ -1174,7 +1174,7 @@
 		box-shadow: 0 2px 4px rgba(44, 95, 45, 0.2);
 	}
 	.load-more-btn:hover {
-		background: linear-gradient(135deg, var(--status-success-bg) 0%, var(--status-info-bg) 100%);
+		background: linear-gradient(135deg, var(--color-success-light) 0%, var(--color-info-light) 100%);
 		box-shadow: 0 4px 8px rgba(44, 95, 45, 0.3);
 		transform: translateY(-1px);
 	}
@@ -1183,7 +1183,7 @@
 		box-shadow: 0 2px 4px rgba(44, 95, 45, 0.2);
 	}
 	:global(.dark) .load-more-btn {
-		background: linear-gradient(135deg, var(--accent-success) 0%, #4a9e4d 100%);
+		background: linear-gradient(135deg, var(--grove-500) 0%, #4a9e4d 100%);
 		box-shadow: 0 2px 4px rgba(92, 184, 95, 0.3);
 	}
 	:global(.dark) .load-more-btn:hover {
@@ -1192,11 +1192,11 @@
 	}
 	.commit-item {
 		padding: 1rem;
-		background: var(--light-bg-tertiary);
+		background: var(--cream-300);
 		border-radius: 8px;
 	}
 	:global(.dark) .commit-item {
-		background: var(--light-border-secondary);
+		background: var(--color-border-strong);
 	}
 	.commit-header {
 		display: flex;
@@ -1208,19 +1208,19 @@
 	}
 	.commit-sha {
 		font-family: monospace;
-		background: var(--light-border-primary);
+		background: var(--color-border);
 		padding: 0.2rem 0.5rem;
 		border-radius: 4px;
 		font-size: 0.75rem;
 	}
 	:global(.dark) .commit-sha {
-		background: var(--light-border-light);
+		background: var(--cream-100);
 	}
 	.commit-repo-name {
 		color: #2c5f2d;
 	}
 	:global(.dark) .commit-repo-name {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	.commit-date {
 		color: #666;
@@ -1242,10 +1242,10 @@
 		text-align: center;
 		padding: 1.5rem 0;
 		margin-top: 1rem;
-		border-top: 1px solid var(--light-border-primary);
+		border-top: 1px solid var(--color-border);
 	}
 	:global(.dark) .dashboard-footer {
-		border-top-color: var(--light-border-light);
+		border-top-color: var(--cream-100);
 	}
 	.dashboard-footer a {
 		color: #2c5f2d;
@@ -1259,18 +1259,18 @@
 		text-decoration: underline;
 	}
 	:global(.dark) .dashboard-footer a {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	.dashboard-footer .attribution {
 		font-size: 0.8rem;
-		color: var(--light-text-light);
+		color: var(--bark-500);
 		margin-top: 0.5rem;
 	}
 	.additions {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	.deletions {
-		color: var(--accent-danger);
+		color: var(--color-error);
 	}
 	@media (max-width: 600px) {
 		.stats-grid {

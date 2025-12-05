@@ -577,18 +577,18 @@
   .page-header h1 {
     margin: 0 0 0.25rem 0;
     font-size: 2rem;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
   .subtitle {
     margin: 0;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     transition: color 0.3s ease;
   }
   .section-note {
     margin: 0 0 1.5rem 0;
     font-size: 0.9rem;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     font-style: italic;
   }
   .credits-section {
@@ -602,7 +602,7 @@
   .credits-section h2 {
     margin: 0 0 1rem 0;
     font-size: 1.25rem;
-    color: var(--color-text);
+    color: var(--color-foreground);
     border-bottom: 1px solid var(--color-border);
     padding-bottom: 0.5rem;
     transition: color 0.3s ease, border-color 0.3s ease;
@@ -658,7 +658,7 @@
   }
   .credit-description {
     margin: 0 0 1rem 0;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     line-height: 1.6;
     transition: color 0.3s ease;
   }
@@ -671,12 +671,12 @@
   }
   .credit-details dt {
     font-weight: 600;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
   .credit-details dd {
     margin: 0;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     transition: color 0.3s ease;
   }
   .credit-details a {

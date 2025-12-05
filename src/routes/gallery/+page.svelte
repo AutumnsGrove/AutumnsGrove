@@ -433,11 +433,11 @@
 	.gallery-header h1 {
 		font-size: 2.5rem;
 		margin: 0 0 0.5rem 0;
-		color: var(--light-border-secondary);
+		color: var(--color-border-strong);
 	}
 
 	:global(.dark) .gallery-header h1 {
-		color: var(--light-text-primary);
+		color: var(--color-foreground);
 	}
 
 	.image-count {
@@ -463,24 +463,24 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 1rem 1.25rem;
-		background: var(--light-bg-secondary);
-		border: 1px solid var(--light-border-primary);
+		background: var(--cream-200);
+		border: 1px solid var(--color-border);
 		border-radius: 8px;
 		cursor: pointer;
 		font-size: 1rem;
 		font-weight: 500;
-		color: var(--light-text-primary);
+		color: var(--color-foreground);
 		transition: background 0.2s ease;
 	}
 
 	:global(.dark) .filter-toggle {
-		background: var(--light-bg-tertiary);
-		border-color: var(--light-border-light);
-		color: var(--light-text-primary);
+		background: var(--cream-300);
+		border-color: var(--cream-100);
+		color: var(--color-foreground);
 	}
 
 	.filter-toggle:hover {
-		background: var(--light-border-primary);
+		background: var(--color-border);
 	}
 
 	:global(.dark) .filter-toggle:hover {
@@ -500,8 +500,8 @@
 	.filter-controls {
 		margin-top: 1rem;
 		padding: 1.5rem;
-		background: var(--light-bg-secondary);
-		border: 1px solid var(--light-border-primary);
+		background: var(--cream-200);
+		border: 1px solid var(--color-border);
 		border-radius: 8px;
 		display: flex;
 		flex-direction: column;
@@ -509,8 +509,8 @@
 	}
 
 	:global(.dark) .filter-controls {
-		background: var(--light-bg-tertiary);
-		border-color: var(--light-border-light);
+		background: var(--cream-300);
+		border-color: var(--cream-100);
 	}
 
 	.filter-group {
@@ -539,7 +539,7 @@
 		font-size: 0.875rem;
 		cursor: pointer;
 		transition: all 0.2s ease;
-		color: var(--light-text-primary);
+		color: var(--color-foreground);
 	}
 
 	:global(.dark) .tag-badge {
@@ -593,7 +593,7 @@
 		position: relative;
 		overflow: hidden;
 		cursor: pointer;
-		background: var(--light-text-primary);
+		background: var(--color-foreground);
 		border: none;
 		padding: 0;
 		border-radius: 4px;
@@ -601,7 +601,7 @@
 	}
 
 	:global(.dark) .mood-item {
-		background: var(--light-bg-tertiary);
+		background: var(--cream-300);
 	}
 
 	.mood-item:hover {
@@ -803,15 +803,15 @@
 	.loading-spinner {
 		width: 20px;
 		height: 20px;
-		border: 2px solid var(--light-border-primary);
+		border: 2px solid var(--color-border);
 		border-top-color: #2c5f2d;
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
 
 	:global(.dark) .loading-spinner {
-		border-color: var(--light-border-light);
-		border-top-color: var(--accent-success);
+		border-color: var(--cream-100);
+		border-top-color: var(--grove-500);
 	}
 
 	@keyframes spin {

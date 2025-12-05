@@ -73,13 +73,13 @@
     font-weight: 500;
   }
   .label-add {
-    color: var(--accent-success);
+    color: var(--grove-500);
   }
   .label-del {
-    color: var(--accent-danger);
+    color: var(--color-error);
   }
   :global(.dark) .label-add {
-    color: var(--accent-success);
+    color: var(--grove-500);
   }
   :global(.dark) .label-del {
     color: #e57373;
@@ -91,17 +91,17 @@
     overflow: hidden;
   }
   :global(.dark) .bar-container {
-    background: var(--light-border-secondary);
+    background: var(--color-border-strong);
   }
   .bar-segment {
     height: 100%;
     transition: width 0.3s ease;
   }
   .bar-add {
-    background: linear-gradient(90deg, var(--accent-success) 0%, #34d058 100%);
+    background: linear-gradient(90deg, var(--grove-500) 0%, #34d058 100%);
   }
   .bar-del {
-    background: linear-gradient(90deg, var(--accent-danger) 0%, #e57373 100%);
+    background: linear-gradient(90deg, var(--color-error) 0%, #e57373 100%);
   }
   /* Compact style */
   .loc-bar-compact {
@@ -118,7 +118,7 @@
     overflow: hidden;
   }
   :global(.dark) .loc-bar-compact .bar-track {
-    background: var(--light-border-secondary);
+    background: var(--color-border-strong);
   }
   .loc-bar-compact .bar-add,
   .loc-bar-compact .bar-del {

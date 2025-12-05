@@ -102,7 +102,7 @@
   .admin-layout {
     display: flex;
     min-height: 100vh;
-    background: var(--color-bg-secondary);
+    background: var(--cream-200);
     transition: background-color 0.3s ease;
   }
   /* Mobile header - hidden on desktop */
@@ -114,7 +114,7 @@
     right: 0;
     height: 56px;
     background: var(--mobile-menu-bg);
-    color: var(--color-text);
+    color: var(--color-foreground);
     align-items: center;
     justify-content: space-between;
     padding: 0 1rem;
@@ -147,7 +147,7 @@
   .hamburger-line {
     width: 20px;
     height: 2px;
-    background: var(--color-text);
+    background: var(--color-foreground);
     border-radius: 1px;
     transition: background-color 0.3s ease;
   }
@@ -166,7 +166,7 @@
     display: none;
     background: none;
     border: none;
-    color: var(--color-text);
+    color: var(--color-foreground);
     font-size: 1.5rem;
     cursor: pointer;
     padding: 0.25rem;
@@ -176,7 +176,7 @@
   .sidebar {
     width: 250px;
     background: var(--mobile-menu-bg);
-    color: var(--color-text);
+    color: var(--color-foreground);
     display: flex;
     flex-direction: column;
     position: fixed;
@@ -215,13 +215,13 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 1.5rem;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     text-decoration: none;
     border-radius: var(--border-radius-button);
     transition: background 0.2s, color 0.2s;
   }
   .nav-item:hover {
-    background: var(--color-bg-secondary);
+    background: var(--cream-200);
     color: var(--color-primary);
   }
   .nav-icon {
@@ -238,7 +238,7 @@
   }
   .email {
     font-size: 0.85rem;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     word-break: break-all;
     transition: color 0.3s ease;
   }
@@ -246,8 +246,8 @@
     display: block;
     text-align: center;
     padding: 0.5rem;
-    background: var(--color-bg-secondary);
-    color: var(--color-text-muted);
+    background: var(--cream-200);
+    color: var(--color-muted-foreground);
     text-decoration: none;
     border-radius: var(--border-radius-button);
     font-size: 0.85rem;
@@ -255,7 +255,7 @@
   }
   .logout-btn:hover {
     background: var(--color-border);
-    color: var(--color-text);
+    color: var(--color-foreground);
   }
   .content {
     flex: 1;

@@ -379,7 +379,7 @@
 
   <!-- Latest Summary Status -->
   <section class="status-section">
-    <h2 class="flex items-center gap-2 text-base m-0 mb-3 text-[#333] dark:text-[var(--light-text-very-light)]"><Clock size={18} /> Latest Summary</h2>
+    <h2 class="flex items-center gap-2 text-base m-0 mb-3 text-[#333] dark:text-[var(--bark-400)]"><Clock size={18} /> Latest Summary</h2>
     {#if loadingLatest}
       <div class="flex items-center gap-2 text-[#666]">
         <Loader2 size={20} class="spinner" />
@@ -413,7 +413,7 @@
 
   <!-- Generate Summary -->
   <section class="action-section">
-    <h2 class="flex items-center gap-2 text-base m-0 mb-1 text-[#333] dark:text-[var(--light-text-very-light)]"><Play size={18} /> Generate Summary</h2>
+    <h2 class="flex items-center gap-2 text-base m-0 mb-1 text-[#333] dark:text-[var(--bark-400)]"><Play size={18} /> Generate Summary</h2>
     <p class="text-[#666] dark:text-[#999] text-sm m-0 mb-4">Generate an AI summary for a specific date</p>
 
     <div class="flex gap-4 mb-4">
@@ -453,7 +453,7 @@
 
   <!-- Backfill Summaries -->
   <section class="action-section">
-    <h2 class="flex items-center gap-2 text-base m-0 mb-1 text-[#333] dark:text-[var(--light-text-very-light)]"><RefreshCw size={18} /> Backfill Past Days</h2>
+    <h2 class="flex items-center gap-2 text-base m-0 mb-1 text-[#333] dark:text-[var(--bark-400)]"><RefreshCw size={18} /> Backfill Past Days</h2>
     <p class="text-[#666] dark:text-[#999] text-sm m-0 mb-4">Generate summaries for a range of past dates (max 30 days)</p>
 
     <div class="flex gap-4 mb-4">
@@ -716,14 +716,14 @@
     font-size: 1.5rem;
   }
   :global(.dark) .page-header h1 {
-    color: var(--accent-success);
+    color: var(--grove-500);
   }
   .page-header p {
     color: #666;
     margin: 0.25rem 0 0;
   }
   :global(.dark) .page-header p {
-    color: var(--light-text-muted);
+    color: var(--color-muted-foreground);
   }
   /* Usage Section */
   .usage-section {
@@ -734,8 +734,8 @@
     border: 1px solid #c8e6c9;
   }
   :global(.dark) .usage-section {
-    background: linear-gradient(135deg, var(--light-bg-secondary) 0%, var(--light-bg-secondary) 100%);
-    border-color: var(--light-border-secondary);
+    background: linear-gradient(135deg, var(--cream-200) 0%, var(--cream-200) 100%);
+    border-color: var(--color-border-strong);
   }
   .usage-header {
     display: flex;
@@ -752,7 +752,7 @@
     color: #2c5f2d;
   }
   :global(.dark) .usage-header h2 {
-    color: var(--accent-success);
+    color: var(--grove-500);
   }
   .usage-header select {
     padding: 0.35rem 0.75rem;
@@ -760,12 +760,12 @@
     border-radius: 6px;
     font-size: 0.85rem;
     background: white;
-    color: var(--light-border-secondary);
+    color: var(--color-border-strong);
   }
   :global(.dark) .usage-header select {
-    background: var(--light-bg-secondary);
-    border-color: var(--light-border-secondary);
-    color: var(--light-text-very-light);
+    background: var(--cream-200);
+    border-color: var(--color-border-strong);
+    color: var(--bark-400);
   }
   .usage-grid {
     display: grid;
@@ -786,14 +786,14 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.1);
   }
   :global(.dark) .usage-card {
-    background: var(--light-bg-secondary);
+    background: var(--cream-200);
   }
   .usage-card.cost {
     background: #2c5f2d;
     color: white;
   }
   :global(.dark) .usage-card.cost {
-    background: var(--status-success-bg);
+    background: var(--color-success-light);
   }
   .usage-label {
     font-size: 0.75rem;
@@ -801,7 +801,7 @@
     margin-bottom: 0.25rem;
   }
   :global(.dark) .usage-label {
-    color: var(--light-text-muted);
+    color: var(--color-muted-foreground);
   }
   .usage-card.cost .usage-label {
     color: rgba(255,255,255,0.8);
@@ -812,7 +812,7 @@
     color: #2c5f2d;
   }
   :global(.dark) .usage-value {
-    color: var(--accent-success);
+    color: var(--grove-500);
   }
   .usage-card.cost .usage-value {
     color: white;
@@ -823,15 +823,15 @@
     border-top: 1px solid #c8e6c9;
   }
   :global(.dark) .provider-breakdown {
-    border-top-color: var(--light-border-secondary);
+    border-top-color: var(--color-border-strong);
   }
   .provider-breakdown h3 {
     font-size: 0.85rem;
-    color: var(--light-text-secondary);
+    color: var(--color-muted-foreground);
     margin: 0 0 0.5rem;
   }
   :global(.dark) .provider-breakdown h3 {
-    color: var(--light-text-muted);
+    color: var(--color-muted-foreground);
   }
   .breakdown-list {
     display: flex;
@@ -848,21 +848,21 @@
     font-size: 0.85rem;
   }
   :global(.dark) .breakdown-item {
-    background: var(--light-bg-secondary);
+    background: var(--cream-200);
   }
   .provider-name {
     color: #666;
     text-transform: capitalize;
   }
   :global(.dark) .provider-name {
-    color: var(--light-text-muted);
+    color: var(--color-muted-foreground);
   }
   .provider-cost {
     font-weight: 600;
     color: #2c5f2d;
   }
   :global(.dark) .provider-cost {
-    color: var(--accent-success);
+    color: var(--grove-500);
   }
   .recent-requests {
     margin-top: 1rem;
@@ -873,11 +873,11 @@
     gap: 0.35rem;
     cursor: pointer;
     font-size: 0.85rem;
-    color: var(--light-text-secondary);
+    color: var(--color-muted-foreground);
     user-select: none;
   }
   :global(.dark) .recent-requests summary {
-    color: var(--light-text-muted);
+    color: var(--color-muted-foreground);
   }
   .recent-requests[open] summary :global(svg) {
     transform: rotate(180deg);
@@ -895,19 +895,19 @@
   .requests-table td {
     padding: 0.5rem;
     text-align: left;
-    border-bottom: 1px solid var(--light-border-primary);
+    border-bottom: 1px solid var(--color-border);
   }
   :global(.dark) .requests-table th,
   :global(.dark) .requests-table td {
-    border-bottom-color: var(--light-border-secondary);
+    border-bottom-color: var(--color-border-strong);
   }
   .requests-table th {
     font-weight: 600;
-    color: var(--light-text-secondary);
+    color: var(--color-muted-foreground);
     background: rgba(255,255,255,0.5);
   }
   :global(.dark) .requests-table th {
-    color: var(--light-text-muted);
+    color: var(--color-muted-foreground);
     background: rgba(0,0,0,0.2);
   }
   .requests-table tr.failed {
@@ -915,7 +915,7 @@
     background: #fef0f0;
   }
   :global(.dark) .requests-table tr.failed {
-    background: var(--status-danger-bg);
+    background: var(--color-error-light);
   }
   .model-cell {
     font-family: monospace;
@@ -923,18 +923,18 @@
   }
   .no-usage {
     text-align: center;
-    color: var(--light-text-light);
+    color: var(--bark-500);
     padding: 1rem;
   }
   /* Status Section */
   .status-section {
-    background: var(--light-bg-secondary);
+    background: var(--cream-200);
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 1.5rem;
   }
   :global(.dark) .status-section {
-    background: var(--light-bg-tertiary);
+    background: var(--cream-300);
   }
   .status-section h2 {
     display: flex;
@@ -942,10 +942,10 @@
     gap: 0.5rem;
     font-size: 1rem;
     margin: 0 0 0.75rem;
-    color: var(--light-border-secondary);
+    color: var(--color-border-strong);
   }
   :global(.dark) .status-section h2 {
-    color: var(--light-text-very-light);
+    color: var(--bark-400);
   }
   .status-loading {
     display: flex;
@@ -963,7 +963,7 @@
     color: #2c5f2d;
   }
   :global(.dark) .summary-date {
-    color: var(--accent-success);
+    color: var(--grove-500);
   }
   .summary-stats {
     display: flex;
@@ -972,10 +972,10 @@
     color: #666;
   }
   :global(.dark) .summary-stats {
-    color: var(--light-text-muted);
+    color: var(--color-muted-foreground);
   }
   .summary-stats .rest {
-    color: var(--light-text-light);
+    color: var(--bark-500);
     font-style: italic;
   }
   .summary-stats .model {
@@ -986,16 +986,16 @@
     border-radius: 3px;
   }
   :global(.dark) .summary-stats .model {
-    background: var(--light-bg-secondary);
+    background: var(--cream-200);
   }
   .summary-brief {
     margin: 0;
     font-size: 0.9rem;
-    color: var(--light-border-light);
+    color: var(--cream-100);
     line-height: 1.4;
   }
   :global(.dark) .summary-brief {
-    color: var(--light-text-secondary);
+    color: var(--color-muted-foreground);
   }
   .no-summary {
     display: flex;
@@ -1006,14 +1006,14 @@
   /* Action Sections */
   .action-section {
     background: white;
-    border: 1px solid var(--light-border-primary);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     padding: 1.25rem;
     margin-bottom: 1.5rem;
   }
   :global(.dark) .action-section {
-    background: var(--light-bg-secondary);
-    border-color: var(--light-border-secondary);
+    background: var(--cream-200);
+    border-color: var(--color-border-strong);
   }
   .action-section h2 {
     display: flex;
@@ -1021,10 +1021,10 @@
     gap: 0.5rem;
     font-size: 1rem;
     margin: 0 0 0.25rem;
-    color: var(--light-border-secondary);
+    color: var(--color-border-strong);
   }
   :global(.dark) .action-section h2 {
-    color: var(--light-text-very-light);
+    color: var(--bark-400);
   }
   .section-desc {
     color: #666;
@@ -1032,7 +1032,7 @@
     margin: 0 0 1rem;
   }
   :global(.dark) .section-desc {
-    color: var(--light-text-muted);
+    color: var(--color-muted-foreground);
   }
   .input-row {
     display: flex;
@@ -1048,25 +1048,25 @@
   .input-group label {
     font-size: 0.85rem;
     font-weight: 500;
-    color: var(--light-text-secondary);
+    color: var(--color-muted-foreground);
   }
   :global(.dark) .input-group label {
-    color: var(--light-text-muted);
+    color: var(--color-muted-foreground);
   }
   .input-group input,
   .input-group select {
     padding: 0.5rem 0.75rem;
-    border: 1px solid var(--light-border-light);
+    border: 1px solid var(--cream-100);
     border-radius: 6px;
     font-size: 0.9rem;
     background: white;
-    color: var(--light-border-secondary);
+    color: var(--color-border-strong);
   }
   :global(.dark) .input-group input,
   :global(.dark) .input-group select {
-    background: var(--light-border-secondary);
-    border-color: var(--light-border-light);
-    color: var(--light-text-very-light);
+    background: var(--color-border-strong);
+    border-color: var(--cream-100);
+    color: var(--bark-400);
   }
   .action-btn {
     display: inline-flex;
@@ -1081,18 +1081,18 @@
     transition: all 0.15s ease;
   }
   .action-btn.primary {
-    background: var(--accent-success);
+    background: var(--grove-500);
     color: white;
   }
   .action-btn.primary:hover:not(:disabled) {
-    background: var(--accent-success-dark);
+    background: var(--grove-700);
   }
   .action-btn.secondary {
     background: #2c5f2d;
     color: white;
   }
   .action-btn.secondary:hover:not(:disabled) {
-    background: var(--status-success-bg);
+    background: var(--color-success-light);
   }
   .action-btn:disabled {
     opacity: 0.6;
@@ -1119,16 +1119,16 @@
     color: #2c5f2d;
   }
   :global(.dark) .result.success {
-    background: var(--light-bg-secondary);
-    color: var(--accent-success);
+    background: var(--cream-200);
+    color: var(--grove-500);
   }
   .result.error {
     background: #fdecea;
-    color: var(--accent-danger);
+    color: var(--color-error);
   }
   :global(.dark) .result.error {
-    background: var(--status-danger-bg);
-    color: var(--accent-danger);
+    background: var(--color-error-light);
+    color: var(--color-error);
   }
   .result-content {
     flex: 1;
@@ -1156,10 +1156,10 @@
     opacity: 0.7;
   }
   .result-list li.error {
-    color: var(--accent-danger);
+    color: var(--color-error);
   }
   :global(.dark) .result-list li.error {
-    color: var(--accent-danger);
+    color: var(--color-error);
   }
   .item-cost {
     font-size: 0.8rem;
@@ -1169,13 +1169,13 @@
   .page-footer {
     text-align: center;
     padding-top: 1rem;
-    border-top: 1px solid var(--light-border-primary);
+    border-top: 1px solid var(--color-border);
   }
   :global(.dark) .page-footer {
-    border-top-color: var(--light-border-secondary);
+    border-top-color: var(--color-border-strong);
   }
   .view-link {
-    color: var(--accent-success);
+    color: var(--grove-500);
     text-decoration: none;
     font-weight: 500;
   }
@@ -1185,14 +1185,14 @@
   /* Entries Section */
   .entries-section {
     background: white;
-    border: 1px solid var(--light-border-primary);
+    border: 1px solid var(--color-border);
     border-radius: 8px;
     padding: 1.25rem;
     margin-bottom: 1.5rem;
   }
   :global(.dark) .entries-section {
-    background: var(--light-bg-secondary);
-    border-color: var(--light-border-secondary);
+    background: var(--cream-200);
+    border-color: var(--color-border-strong);
   }
   .entries-section h2 {
     display: flex;
@@ -1200,10 +1200,10 @@
     gap: 0.5rem;
     font-size: 1rem;
     margin: 0 0 0.25rem;
-    color: var(--light-border-secondary);
+    color: var(--color-border-strong);
   }
   :global(.dark) .entries-section h2 {
-    color: var(--light-text-very-light);
+    color: var(--bark-400);
   }
   .entries-list {
     display: flex;
@@ -1217,13 +1217,13 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem;
-    background: var(--light-bg-secondary);
+    background: var(--cream-200);
     border-radius: 6px;
-    border: 1px solid var(--light-text-very-light);
+    border: 1px solid var(--bark-400);
   }
   :global(.dark) .entry-item {
-    background: var(--light-bg-tertiary);
-    border-color: var(--light-border-secondary);
+    background: var(--cream-300);
+    border-color: var(--color-border-strong);
   }
   .entry-item.rest-day {
     opacity: 0.6;
@@ -1240,17 +1240,17 @@
     font-size: 0.95rem;
   }
   :global(.dark) .entry-date {
-    color: var(--accent-success);
+    color: var(--grove-500);
   }
   .entry-stats {
     font-size: 0.8rem;
     color: #666;
   }
   :global(.dark) .entry-stats {
-    color: var(--light-text-muted);
+    color: var(--color-muted-foreground);
   }
   .rest-badge {
-    background: var(--light-text-light);
+    background: var(--bark-500);
     color: white;
     padding: 0.1rem 0.4rem;
     border-radius: 3px;
@@ -1260,18 +1260,18 @@
     flex: 1;
     margin: 0;
     font-size: 0.85rem;
-    color: var(--light-text-secondary);
+    color: var(--color-muted-foreground);
     min-width: 200px;
   }
   :global(.dark) .entry-brief {
-    color: var(--light-text-tertiary);
+    color: var(--bark-600);
   }
   .edit-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
     padding: 0.4rem 0.75rem;
-    background: var(--accent-success);
+    background: var(--grove-500);
     color: white;
     border: none;
     border-radius: 4px;
@@ -1280,10 +1280,10 @@
     transition: background 0.15s;
   }
   .edit-btn:hover:not(:disabled) {
-    background: var(--accent-success-dark);
+    background: var(--grove-700);
   }
   .edit-btn:disabled {
-    background: var(--light-text-light);
+    background: var(--bark-500);
     cursor: not-allowed;
   }
   .pagination {
@@ -1293,10 +1293,10 @@
     gap: 1rem;
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid var(--light-text-very-light);
+    border-top: 1px solid var(--bark-400);
   }
   :global(.dark) .pagination {
-    border-top-color: var(--light-border-secondary);
+    border-top-color: var(--color-border-strong);
   }
   .page-btn {
     padding: 0.4rem 0.75rem;
@@ -1308,10 +1308,10 @@
     cursor: pointer;
   }
   .page-btn:hover:not(:disabled) {
-    background: var(--status-success-bg);
+    background: var(--color-success-light);
   }
   .page-btn:disabled {
-    background: var(--light-text-light);
+    background: var(--bark-500);
     cursor: not-allowed;
   }
   .page-info {
@@ -1319,11 +1319,11 @@
     color: #666;
   }
   :global(.dark) .page-info {
-    color: var(--light-text-muted);
+    color: var(--color-muted-foreground);
   }
   .no-entries {
     text-align: center;
-    color: var(--light-text-light);
+    color: var(--bark-500);
     padding: 2rem;
   }
   /* Modal Styles */
@@ -1349,19 +1349,19 @@
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
   }
   :global(.dark) .modal-content {
-    background: var(--light-bg-primary);
+    background: var(--color-background);
   }
   .modal-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem 1.25rem;
-    border-bottom: 1px solid var(--light-border-primary);
-    background: var(--light-bg-secondary);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--cream-200);
   }
   :global(.dark) .modal-header {
-    background: var(--light-bg-secondary);
-    border-bottom-color: var(--light-border-secondary);
+    background: var(--cream-200);
+    border-bottom-color: var(--color-border-strong);
   }
   .modal-header h3 {
     display: flex;
@@ -1372,7 +1372,7 @@
     color: #2c5f2d;
   }
   :global(.dark) .modal-header h3 {
-    color: var(--accent-success);
+    color: var(--grove-500);
   }
   .close-btn {
     background: none;
@@ -1383,13 +1383,13 @@
     border-radius: 4px;
   }
   .close-btn:hover {
-    background: var(--light-border-primary);
+    background: var(--color-border);
   }
   :global(.dark) .close-btn {
-    color: var(--light-text-muted);
+    color: var(--color-muted-foreground);
   }
   :global(.dark) .close-btn:hover {
-    background: var(--light-border-secondary);
+    background: var(--color-border-strong);
   }
   .modal-body {
     padding: 1.25rem;
@@ -1407,19 +1407,19 @@
   }
   .edit-message.error {
     background: #fdecea;
-    color: var(--accent-danger);
+    color: var(--color-error);
   }
   :global(.dark) .edit-message.error {
-    background: var(--status-danger-bg);
-    color: var(--accent-danger);
+    background: var(--color-error-light);
+    color: var(--color-error);
   }
   .edit-message.success {
     background: #e8f5e9;
     color: #2c5f2d;
   }
   :global(.dark) .edit-message.success {
-    background: var(--light-bg-secondary);
-    color: var(--accent-success);
+    background: var(--cream-200);
+    color: var(--grove-500);
   }
   .form-group {
     margin-bottom: 1rem;
@@ -1428,99 +1428,99 @@
     display: block;
     font-weight: 500;
     margin-bottom: 0.35rem;
-    color: var(--light-border-secondary);
+    color: var(--color-border-strong);
     font-size: 0.9rem;
   }
   :global(.dark) .form-group label {
-    color: var(--light-border-light);
+    color: var(--cream-100);
   }
   .form-group textarea {
     width: 100%;
     padding: 0.6rem;
-    border: 1px solid var(--light-border-light);
+    border: 1px solid var(--cream-100);
     border-radius: 6px;
     font-size: 0.9rem;
     font-family: inherit;
     resize: vertical;
     background: white;
-    color: var(--light-border-secondary);
+    color: var(--color-border-strong);
   }
   :global(.dark) .form-group textarea {
-    background: var(--light-bg-tertiary);
-    border-color: var(--light-border-light);
-    color: var(--light-text-very-light);
+    background: var(--cream-300);
+    border-color: var(--cream-100);
+    color: var(--bark-400);
   }
   .form-group textarea:focus {
     outline: none;
-    border-color: var(--accent-success);
+    border-color: var(--grove-500);
     box-shadow: 0 0 0 2px rgba(92, 184, 95, 0.2);
   }
   .gutter-section {
     margin-top: 1rem;
     padding-top: 1rem;
-    border-top: 1px solid var(--light-border-primary);
+    border-top: 1px solid var(--color-border);
   }
   :global(.dark) .gutter-section {
-    border-top-color: var(--light-border-secondary);
+    border-top-color: var(--color-border-strong);
   }
   .gutter-section summary {
     cursor: pointer;
     font-weight: 500;
-    color: var(--light-text-secondary);
+    color: var(--color-muted-foreground);
     font-size: 0.9rem;
     user-select: none;
   }
   :global(.dark) .gutter-section summary {
-    color: var(--light-text-muted);
+    color: var(--color-muted-foreground);
   }
   .gutter-hint {
     font-size: 0.8rem;
-    color: var(--light-text-light);
+    color: var(--bark-500);
     margin: 0.5rem 0;
   }
   .gutter-textarea {
     width: 100%;
     padding: 0.6rem;
-    border: 1px solid var(--light-border-light);
+    border: 1px solid var(--cream-100);
     border-radius: 6px;
     font-size: 0.8rem;
     font-family: monospace;
     resize: vertical;
-    background: var(--light-bg-tertiary);
-    color: var(--light-border-secondary);
+    background: var(--cream-300);
+    color: var(--color-border-strong);
   }
   :global(.dark) .gutter-textarea {
-    background: var(--light-bg-primary);
-    border-color: var(--light-border-light);
-    color: var(--light-text-secondary);
+    background: var(--color-background);
+    border-color: var(--cream-100);
+    color: var(--color-muted-foreground);
   }
   .gutter-textarea.json-invalid {
-    border-color: var(--accent-danger);
+    border-color: var(--color-error);
     background: #fff5f5;
   }
   :global(.dark) .gutter-textarea.json-invalid {
-    border-color: var(--accent-danger);
-    background: var(--status-danger-bg);
+    border-color: var(--color-error);
+    background: var(--color-error-light);
   }
   .json-error {
-    color: var(--accent-danger);
+    color: var(--color-error);
     font-size: 0.8rem;
     margin: 0.35rem 0 0;
   }
   :global(.dark) .json-error {
-    color: var(--accent-danger);
+    color: var(--color-error);
   }
   .modal-footer {
     display: flex;
     justify-content: flex-end;
     gap: 0.75rem;
     padding: 1rem 1.25rem;
-    border-top: 1px solid var(--light-border-primary);
-    background: var(--light-bg-secondary);
+    border-top: 1px solid var(--color-border);
+    background: var(--cream-200);
   }
   :global(.dark) .modal-footer {
-    background: var(--light-bg-secondary);
-    border-top-color: var(--light-border-secondary);
+    background: var(--cream-200);
+    border-top-color: var(--color-border-strong);
   }
   .modal-btn {
     display: inline-flex;
@@ -1534,25 +1534,25 @@
     transition: background 0.15s;
   }
   .modal-btn.cancel {
-    background: var(--light-border-light);
-    color: var(--light-border-secondary);
+    background: var(--cream-100);
+    color: var(--color-border-strong);
   }
   .modal-btn.cancel:hover {
-    background: var(--light-text-secondary);
+    background: var(--color-muted-foreground);
   }
   :global(.dark) .modal-btn.cancel {
-    background: var(--light-border-light);
-    color: var(--light-border-light);
+    background: var(--cream-100);
+    color: var(--cream-100);
   }
   :global(.dark) .modal-btn.cancel:hover {
-    background: var(--light-text-secondary);
+    background: var(--color-muted-foreground);
   }
   .modal-btn.save {
-    background: var(--accent-success);
+    background: var(--grove-500);
     color: white;
   }
   .modal-btn.save:hover:not(:disabled) {
-    background: var(--accent-success-dark);
+    background: var(--grove-700);
   }
   .modal-btn.save:disabled {
     opacity: 0.6;

@@ -301,7 +301,7 @@
     gap: 0.5rem;
   }
   .back-link {
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     text-decoration: none;
     font-size: 0.9rem;
     transition: color 0.2s;
@@ -312,7 +312,7 @@
   .page-header h1 {
     margin: 0;
     font-size: 1.75rem;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
   .save-btn {
@@ -423,7 +423,7 @@
     margin: 0;
     font-size: 1rem;
     font-weight: 600;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
   .metadata-panel.collapsed .panel-title {
@@ -436,7 +436,7 @@
     background: transparent;
     border: 1px solid var(--color-border);
     border-radius: 4px;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     font-size: 0.9rem;
     cursor: pointer;
     padding: 0.2rem 0.4rem;
@@ -444,7 +444,7 @@
     transition: all 0.15s ease;
   }
   .collapse-details-btn:hover {
-    background: var(--color-bg-secondary);
+    background: var(--cream-200);
     color: var(--color-primary);
   }
   .panel-content {
@@ -458,7 +458,7 @@
     margin-bottom: 0.4rem;
     font-size: 0.85rem;
     font-weight: 500;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     transition: color 0.3s ease;
   }
   .form-input {
@@ -467,8 +467,8 @@
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-small);
     font-size: 0.9rem;
-    background: var(--color-bg-secondary);
-    color: var(--color-text);
+    background: var(--cream-200);
+    color: var(--color-foreground);
     transition: border-color 0.2s, background-color 0.3s, color 0.3s;
   }
   .form-input:focus {
@@ -483,7 +483,7 @@
   .slug-input-wrapper {
     display: flex;
     align-items: center;
-    background: var(--color-bg-secondary);
+    background: var(--cream-200);
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-small);
     overflow: hidden;
@@ -494,7 +494,7 @@
   }
   .slug-prefix {
     padding: 0.5rem 0.5rem 0.5rem 0.75rem;
-    color: var(--color-text-subtle);
+    color: var(--bark-500);
     font-size: 0.85rem;
     background: var(--color-border);
     transition: background-color 0.3s, color 0.3s;
@@ -511,7 +511,7 @@
     display: block;
     margin-top: 0.35rem;
     font-size: 0.75rem;
-    color: var(--color-text-subtle);
+    color: var(--bark-500);
     transition: color 0.3s ease;
   }
   .form-warning {
@@ -524,11 +524,11 @@
   .char-count {
     font-size: 0.75rem;
     font-weight: normal;
-    color: var(--color-text-subtle);
+    color: var(--bark-500);
     margin-left: 0.5rem;
   }
   .char-count.good {
-    color: var(--accent-success);
+    color: var(--grove-500);
   }
   .char-count.warning {
     color: #e07030;
@@ -578,7 +578,7 @@
     margin-top: 0.5rem;
     padding: 0.4rem 0.75rem;
     background: #252526;
-    border: 1px solid var(--light-border-primary);
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     color: #8bc48b;
     font-size: 0.8rem;
@@ -587,7 +587,7 @@
     align-self: flex-end;
   }
   .toggle-gutter-btn:hover {
-    background: var(--light-border-primary);
+    background: var(--color-border);
     color: #a8dca8;
   }
   /* Responsive */

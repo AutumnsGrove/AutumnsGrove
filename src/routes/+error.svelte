@@ -28,11 +28,11 @@
 		transition: color 0.3s ease;
 	}
 	:global(.dark) h1 {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	.message {
 		font-size: 1.5rem;
-		color: var(--light-border-secondary);
+		color: var(--color-border-strong);
 		margin: 0 0 1rem 0;
 		font-weight: 600;
 		transition: color 0.3s ease;
@@ -54,8 +54,8 @@
 		transition: background 0.2s, transform 0.2s;
 	}
 	:global(.dark) .home-link {
-		background: var(--accent-success);
-		color: var(--light-bg-primary);
+		background: var(--grove-500);
+		color: var(--color-background);
 	}
 	.home-link:hover {
 		background: #4a9d4f;
@@ -64,7 +64,7 @@
 		box-shadow: 0 4px 12px rgba(44, 95, 45, 0.3);
 	}
 	:global(.dark) .home-link:hover {
-		background: var(--accent-success-light);
+		background: var(--grove-400);
 		box-shadow: 0 4px 12px rgba(92, 184, 95, 0.4);
 	}
 	@media (max-width: 768px) {

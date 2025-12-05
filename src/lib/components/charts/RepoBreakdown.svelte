@@ -90,7 +90,7 @@
     overflow: hidden;
   }
   :global(.dark) .breakdown-bar {
-    background: var(--light-border-secondary);
+    background: var(--color-border-strong);
   }
   .breakdown-segment {
     height: 100%;
@@ -119,7 +119,7 @@
     color: #666;
   }
   :global(.dark) .legend-item {
-    color: var(--light-text-muted);
+    color: var(--color-muted-foreground);
   }
   .legend-dot {
     width: 6px;

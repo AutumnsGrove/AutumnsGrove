@@ -29,7 +29,7 @@
 	}
 	.content {
 		line-height: 1.8;
-		color: var(--color-text);
+		color: var(--color-foreground);
 		transition: color 0.3s ease;
 	}
 	.content :global(h2) {
@@ -42,7 +42,7 @@
 		font-size: 1.25rem;
 		margin-top: 1.5rem;
 		margin-bottom: 0.75rem;
-		color: var(--color-text);
+		color: var(--color-foreground);
 	}
 	.content :global(p) {
 		margin-bottom: 1rem;

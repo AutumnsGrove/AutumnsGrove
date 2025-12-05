@@ -16,8 +16,8 @@
 <div class="max-w-screen-xl">
   <header class="flex justify-between items-start mb-8 max-md:flex-col max-md:items-stretch max-md:gap-4">
     <div>
-      <h1 class="m-0 mb-1 text-3xl text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-colors">Site Pages</h1>
-      <p class="m-0 text-[var(--color-text-muted)] dark:text-[var(--color-text-subtle-dark)] transition-colors">{data.pages.length} pages</p>
+      <h1 class="m-0 mb-1 text-3xl text-[var(--color-foreground)] dark:text-[var(--color-foreground)] transition-colors">Site Pages</h1>
+      <p class="m-0 text-[var(--color-muted-foreground)] dark:text-[var(--bark-400)] transition-colors">{data.pages.length} pages</p>
     </div>
   </header>
 
@@ -25,35 +25,35 @@
     <table class="w-full border-collapse">
       <thead>
         <tr>
-          <th class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-dark)] bg-[var(--color-bg-secondary)] dark:bg-[var(--color-border-dark)] font-semibold text-xs text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-[background-color,color,border-color] max-md:px-2 max-md:py-3">Page</th>
-          <th class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-dark)] bg-[var(--color-bg-secondary)] dark:bg-[var(--color-border-dark)] font-semibold text-xs text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-[background-color,color,border-color] max-md:hidden">Type</th>
-          <th class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-dark)] bg-[var(--color-bg-secondary)] dark:bg-[var(--color-border-dark)] font-semibold text-xs text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-[background-color,color,border-color] max-md:hidden">Updated</th>
-          <th class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-dark)] bg-[var(--color-bg-secondary)] dark:bg-[var(--color-border-dark)] font-semibold text-xs text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-[background-color,color,border-color] max-md:px-2 max-md:py-3">Actions</th>
+          <th class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-strong)] bg-[var(--cream-200)] dark:bg-[var(--color-border-strong)] font-semibold text-xs text-[var(--color-foreground)] dark:text-[var(--color-foreground)] transition-[background-color,color,border-color] max-md:px-2 max-md:py-3">Page</th>
+          <th class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-strong)] bg-[var(--cream-200)] dark:bg-[var(--color-border-strong)] font-semibold text-xs text-[var(--color-foreground)] dark:text-[var(--color-foreground)] transition-[background-color,color,border-color] max-md:hidden">Type</th>
+          <th class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-strong)] bg-[var(--cream-200)] dark:bg-[var(--color-border-strong)] font-semibold text-xs text-[var(--color-foreground)] dark:text-[var(--color-foreground)] transition-[background-color,color,border-color] max-md:hidden">Updated</th>
+          <th class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-strong)] bg-[var(--cream-200)] dark:bg-[var(--color-border-strong)] font-semibold text-xs text-[var(--color-foreground)] dark:text-[var(--color-foreground)] transition-[background-color,color,border-color] max-md:px-2 max-md:py-3">Actions</th>
         </tr>
       </thead>
       <tbody>
         {#each data.pages as page (page.slug)}
           <tr>
-            <td class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-dark)] transition-[border-color] max-md:px-2 max-md:py-3">
+            <td class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-strong)] transition-[border-color] max-md:px-2 max-md:py-3">
               <a href="/{page.slug === 'home' ? '' : page.slug}" target="_blank" class="font-medium text-[var(--color-primary)] dark:text-[var(--color-primary-light)] no-underline hover:underline transition-colors">
                 {page.title}
               </a>
               {#if page.description}
-                <p class="mt-1 mb-0 text-xs text-[var(--color-text-muted)] dark:text-[var(--color-text-subtle-dark)] transition-colors">{page.description}</p>
+                <p class="mt-1 mb-0 text-xs text-[var(--color-muted-foreground)] dark:text-[var(--bark-400)] transition-colors">{page.description}</p>
               {/if}
             </td>
-            <td class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-dark)] whitespace-nowrap transition-[border-color] max-md:hidden">
+            <td class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-strong)] whitespace-nowrap transition-[border-color] max-md:hidden">
               <Badge variant="tag">{page.type}</Badge>
             </td>
-            <td class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-dark)] whitespace-nowrap text-[var(--color-text-muted)] dark:text-[var(--color-text-subtle-dark)] text-sm transition-[border-color,color] max-md:hidden">{formatDate(page.updated_at)}</td>
-            <td class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-dark)] whitespace-nowrap transition-[border-color] max-md:px-2 max-md:py-3">
+            <td class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-strong)] whitespace-nowrap text-[var(--color-muted-foreground)] dark:text-[var(--bark-400)] text-sm transition-[border-color,color] max-md:hidden">{formatDate(page.updated_at)}</td>
+            <td class="p-4 text-left border-b border-[var(--color-border)] dark:border-[var(--color-border-strong)] whitespace-nowrap transition-[border-color] max-md:px-2 max-md:py-3">
               <a href="/{page.slug === 'home' ? '' : page.slug}" target="_blank" class="text-[var(--color-primary)] dark:text-[var(--color-primary-light)] no-underline text-sm mr-4 hover:underline transition-colors max-md:mr-2">View</a>
               <a href="/admin/pages/edit/{page.slug}" class="text-[var(--color-primary)] dark:text-[var(--color-primary-light)] no-underline text-sm mr-4 hover:underline transition-colors max-md:mr-2">Edit</a>
             </td>
           </tr>
         {:else}
           <tr>
-            <td colspan="4" class="text-center text-[var(--color-text-muted)] dark:text-[var(--color-text-subtle-dark)] py-12 px-4 transition-colors">
+            <td colspan="4" class="text-center text-[var(--color-muted-foreground)] dark:text-[var(--bark-400)] py-12 px-4 transition-colors">
               No pages yet. Run the sync script to import pages.
             </td>
           </tr>
@@ -79,7 +79,7 @@
 <style>
   .info-box {
     margin-top: 2rem;
-    background: var(--color-bg-secondary);
+    background: var(--cream-200);
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-standard);
     padding: 1.5rem;
@@ -89,38 +89,38 @@
   .info-box h3 {
     margin-top: 0;
     margin-bottom: 0.5rem;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
 
   :global(.dark) .info-box {
     background: var(--color-bg-tertiary-dark);
-    border-color: var(--color-border-dark);
+    border-color: var(--color-border-strong);
   }
 
   :global(.dark) .info-box h3 {
-    color: var(--color-text-dark);
+    color: var(--color-foreground);
   }
 
   .info-box p {
     margin: 0.5rem 0;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     transition: color 0.3s ease;
   }
 
   :global(.dark) .info-box p {
-    color: var(--color-text-subtle-dark);
+    color: var(--bark-400);
   }
 
   .info-box ul {
     margin: 0.5rem 0;
     padding-left: 1.5rem;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     transition: color 0.3s ease;
   }
 
   :global(.dark) .info-box ul {
-    color: var(--color-text-subtle-dark);
+    color: var(--bark-400);
   }
 
   .info-box code {

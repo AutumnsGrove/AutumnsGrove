@@ -25,8 +25,8 @@
 
 <div class="max-w-screen-xl">
   <header class="mb-8">
-    <h1 class="m-0 mb-2 text-3xl text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-colors">Dashboard</h1>
-    <p class="m-0 text-[var(--color-text-muted)] dark:text-[var(--color-text-subtle-dark)] text-lg transition-colors">Welcome back, Autumn!</p>
+    <h1 class="m-0 mb-2 text-3xl text-[var(--color-foreground)] dark:text-[var(--color-foreground)] transition-colors">Dashboard</h1>
+    <p class="m-0 text-[var(--color-muted-foreground)] dark:text-[var(--bark-400)] text-lg transition-colors">Welcome back, Autumn!</p>
   </header>
 
   <div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 mb-8">
@@ -72,7 +72,7 @@
   </div>
 
   <section class="mt-8">
-    <h2 class="m-0 mb-4 text-xl text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-colors">Quick Actions</h2>
+    <h2 class="m-0 mb-4 text-xl text-[var(--color-foreground)] dark:text-[var(--color-foreground)] transition-colors">Quick Actions</h2>
     <div class="grid grid-cols-[repeat(auto-fit,minmax(180px,1fr))] gap-4">
       <a href="/admin/blog" class="action-card">
         <span class="text-3xl">&#x1F4DD;</span>
@@ -117,10 +117,10 @@
     font-weight: 600;
   }
   .stat-value.healthy {
-    color: var(--accent-success);
+    color: var(--grove-500);
   }
   .stat-value.error {
-    color: var(--accent-danger);
+    color: var(--color-error);
   }
   .action-card {
     background: var(--mobile-menu-bg);
@@ -129,7 +129,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border: 1px solid var(--color-border);
     text-decoration: none;
-    color: var(--color-text);
+    color: var(--color-foreground);
     display: flex;
     flex-direction: column;
     align-items: center;

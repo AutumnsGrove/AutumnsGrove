@@ -421,35 +421,13 @@
 		font-style: normal;
 		font-display: swap;
 	}
-	/* CSS Custom Properties for theming */
+	/* CSS Custom Properties - Site-specific overrides */
 	:global(:root) {
 		/* Font family - dynamically set via JavaScript from database settings */
 		--font-family-main: 'Alagard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-		/* Primary colors */
-		--color-primary: #2c5f2d;
-		--color-primary-hover: #4a9d4f;
-		--color-primary-light: var(--accent-success);
-		--color-primary-light-hover: var(--accent-success-light);
-		/* Text colors */
-		--color-text: var(--light-border-secondary);
-		--color-text-muted: #666;
-		--color-text-subtle: var(--light-text-light);
-		/* Background colors */
-		--color-bg-secondary: var(--light-bg-tertiary);
-		--color-border: var(--light-border-primary);
-		/* Dark mode color values */
-		--color-text-dark: var(--light-text-primary);
-		--color-text-muted-dark: #d0d0d0;
-		--color-text-subtle-dark: #b8b8b8;
-		--color-bg-secondary-dark: var(--light-bg-primary);
-		--color-bg-tertiary-dark: var(--light-bg-tertiary);
-		--color-border-dark: var(--light-border-secondary);
-		/* Danger/Error colors */
-		--color-danger: var(--accent-danger);
-		--color-danger-hover: #cb2431;
 		/* Component-specific */
-		--mobile-menu-bg: white;
-		--mobile-menu-border: var(--light-border-primary);
+		--mobile-menu-bg: var(--cream);
+		--mobile-menu-border: var(--color-border);
 		--tag-bg: #7c4dab;
 		--tag-bg-hover: #6a3d9a;
 		/* Border radius standardization */
@@ -457,9 +435,7 @@
 		--border-radius-small: 4px;
 		--border-radius-button: 6px;
 	}
-	:global(.dark)  {
-		--mobile-menu-bg: #242424;
-		--mobile-menu-border: var(--light-border-secondary);
+	:global(.dark) {
 		--tag-bg: #6a3d9a;
 		--tag-bg-hover: #7c4dab;
 	}
@@ -467,13 +443,9 @@
 		margin: 0;
 		font-family: var(--font-family-main);
 		line-height: 1.6;
-		color: var(--light-border-secondary);
-		background: #fafafa;
+		color: var(--color-foreground);
+		background: var(--color-background);
 		transition: background-color 0.3s ease, color 0.3s ease;
-	}
-	:global(.dark body) {
-		color: var(--color-text-dark);
-		background: var(--light-bg-primary);
 	}
 	/* Global tag styles - shared across all pages */
 	:global(.tag) {
@@ -512,7 +484,7 @@
 	}
 	header {
 		background: white;
-		border-bottom: 1px solid var(--light-border-primary);
+		border-bottom: 1px solid var(--color-border);
 		padding: 1rem 2rem;
 		position: sticky;
 		top: 0;
@@ -521,7 +493,7 @@
 	}
 	:global(.dark) header {
 		background: #242424;
-		border-bottom: 1px solid var(--light-border-secondary);
+		border-bottom: 1px solid var(--color-border-strong);
 	}
 	nav {
 		max-width: 1200px;
@@ -541,13 +513,13 @@
 		transition: color 0.2s;
 	}
 	:global(.dark) .logo {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	.logo:hover {
 		color: #4a9d4f;
 	}
 	:global(.dark) .logo:hover {
-		color: var(--accent-success-light);
+		color: var(--grove-400);
 	}
 	.nav-links {
 		display: flex;
@@ -573,7 +545,7 @@
 		transition: transform 0.25s ease;
 	}
 	:global(.dark) .nav-links a::after {
-		background: var(--accent-success);
+		background: var(--grove-500);
 	}
 	.nav-links a:hover {
 		color: #2c5f2d;
@@ -582,7 +554,7 @@
 		transform: scaleX(1);
 	}
 	:global(.dark) .nav-links a:hover {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	.nav-links a.active {
 		color: #2c5f2d;
@@ -591,7 +563,7 @@
 		transform: scaleX(1);
 	}
 	:global(.dark) .nav-links a.active {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	/* Search styles */
 	.search-wrapper {
@@ -605,7 +577,7 @@
 	}
 	footer {
 		background: white;
-		border-top: 1px solid var(--light-border-primary);
+		border-top: 1px solid var(--color-border);
 		padding: 2rem;
 		display: flex;
 		justify-content: center;
@@ -619,8 +591,8 @@
 	}
 	:global(.dark) footer {
 		background: #242424;
-		border-top: 1px solid var(--color-border-dark);
-		color: var(--color-text-muted-dark);
+		border-top: 1px solid var(--color-border-strong);
+		color: var(--color-muted-foreground);
 	}
 	/* Footer margin on admin pages to avoid sidebar overlap */
 	footer.admin-page-footer {
@@ -654,17 +626,17 @@
 		transform: scale(1.1);
 	}
 	:global(.dark) .admin-link:hover {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	.logged-in-indicator {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: var(--accent-success);
+		color: var(--grove-500);
 		padding: 0.25rem;
 	}
 	:global(.dark) .logged-in-indicator {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	/* Mobile menu overlay */
 	.mobile-menu-overlay {
@@ -731,26 +703,26 @@
 			flex: 1;
 			padding: 0.6rem 0.75rem;
 			font-size: 0.9rem;
-			border: 1px solid var(--light-border-primary);
+			border: 1px solid var(--color-border);
 			border-radius: 6px;
 			background: white;
-			color: var(--light-border-secondary);
+			color: var(--color-border-strong);
 			transition: border-color 0.2s ease, background-color 0.3s ease, color 0.3s ease;
 		}
 		:global(.dark) .mobile-search-input {
-			background: var(--light-bg-primary);
-			border-color: var(--light-border-light);
-			color: var(--color-text-dark);
+			background: var(--color-background);
+			border-color: var(--cream-100);
+			color: var(--color-foreground);
 		}
 		.mobile-search-input:focus {
 			outline: none;
 			border-color: #2c5f2d;
 		}
 		:global(.dark) .mobile-search-input:focus {
-			border-color: var(--accent-success);
+			border-color: var(--grove-500);
 		}
 		.mobile-search-input::placeholder {
-			color: var(--light-text-muted);
+			color: var(--color-muted-foreground);
 		}
 		:global(.dark) .mobile-search-input::placeholder {
 			color: #777;
@@ -768,13 +740,13 @@
 			transition: background-color 0.2s;
 		}
 		:global(.dark) .mobile-search-btn {
-			background: var(--accent-success);
+			background: var(--grove-500);
 		}
 		.mobile-search-btn:hover {
 			background: #4a9d4f;
 		}
 		:global(.dark) .mobile-search-btn:hover {
-			background: var(--accent-success-light);
+			background: var(--grove-400);
 		}
 		.mobile-menu a {
 			text-decoration: none;
@@ -785,19 +757,19 @@
 			position: relative;
 		}
 		.mobile-menu a:hover {
-			background: var(--light-bg-tertiary);
+			background: var(--cream-300);
 			color: #2c5f2d;
 		}
 		:global(.dark) .mobile-menu a:hover {
-			background: var(--light-border-secondary);
-			color: var(--accent-success);
+			background: var(--color-border-strong);
+			color: var(--grove-500);
 		}
 		.mobile-menu a.active {
 			color: #2c5f2d;
 			background: #f0f9f0;
 		}
 		:global(.dark) .mobile-menu a.active {
-			color: var(--accent-success);
+			color: var(--grove-500);
 			background: #2a3a2a;
 		}
 		/* Active indicator bar for mobile */
@@ -811,7 +783,7 @@
 			background: #2c5f2d;
 		}
 		:global(.dark) .mobile-menu a.active::before {
-			background: var(--accent-success);
+			background: var(--grove-500);
 		}
 	}
 </style>

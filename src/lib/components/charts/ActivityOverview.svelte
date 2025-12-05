@@ -130,7 +130,7 @@
     margin-bottom: 1.5rem;
   }
   :global(.dark) .activity-overview {
-    background: var(--light-bg-tertiary);
+    background: var(--cream-300);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
   }
   .overview-header {
@@ -146,7 +146,7 @@
     font-weight: 600;
   }
   :global(.dark) .overview-header h3 {
-    color: var(--accent-success);
+    color: var(--grove-500);
   }
   .overview-stats {
     display: flex;
@@ -155,13 +155,13 @@
     color: #666;
   }
   :global(.dark) .overview-stats {
-    color: var(--light-text-muted);
+    color: var(--color-muted-foreground);
   }
   .overview-stats strong {
-    color: var(--light-border-secondary);
+    color: var(--color-border-strong);
   }
   :global(.dark) .overview-stats strong {
-    color: var(--light-text-very-light);
+    color: var(--bark-400);
   }
   .overview-content {
     display: flex;
@@ -195,7 +195,7 @@
     transform: scale(1.2);
   }
   .heatmap-cell.today {
-    outline: 1px solid var(--accent-success);
+    outline: 1px solid var(--grove-500);
     outline-offset: 1px;
   }
   .heatmap-cell.level-0 {
@@ -245,7 +245,7 @@
   }
   .sparkline-label {
     font-size: 0.7rem;
-    color: var(--light-text-light);
+    color: var(--bark-500);
     width: 45px;
     text-align: right;
   }
@@ -254,7 +254,7 @@
   }
   .sparkline-peak {
     font-size: 0.65rem;
-    color: var(--light-text-muted);
+    color: var(--color-muted-foreground);
     margin-left: 0.35rem;
     font-variant-numeric: tabular-nums;
   }
@@ -265,12 +265,12 @@
   .overview-footer {
     margin-top: 0.75rem;
     padding-top: 0.5rem;
-    border-top: 1px solid var(--light-text-very-light);
+    border-top: 1px solid var(--bark-400);
     display: flex;
     justify-content: flex-end;
   }
   :global(.dark) .overview-footer {
-    border-top-color: var(--light-border-secondary);
+    border-top-color: var(--color-border-strong);
   }
   .loc-summary {
     display: flex;
@@ -279,13 +279,13 @@
     font-weight: 500;
   }
   .loc-summary .add {
-    color: var(--accent-success);
+    color: var(--grove-500);
   }
   .loc-summary .del {
-    color: var(--accent-danger);
+    color: var(--color-error);
   }
   :global(.dark) .loc-summary .add {
-    color: var(--accent-success);
+    color: var(--grove-500);
   }
   :global(.dark) .loc-summary .del {
     color: #e57373;

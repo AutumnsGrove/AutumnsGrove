@@ -49,7 +49,7 @@
 		transition: border-color 0.3s ease;
 	}
 	.home-footer a {
-		color: var(--color-text-muted);
+		color: var(--color-muted-foreground);
 		text-decoration: none;
 		font-size: 0.9rem;
 		transition: color 0.2s ease;
@@ -67,7 +67,7 @@
 		transition: background 0.3s ease;
 	}
 	:global(.dark) .hero {
-		background: linear-gradient(145deg, var(--light-bg-secondary) 0%, #1a2f1a 50%, var(--status-success-bg) 100%);
+		background: linear-gradient(145deg, var(--cream-200) 0%, #1a2f1a 50%, var(--color-success-light) 100%);
 	}
 	h1 {
 		font-size: 3rem;
@@ -77,7 +77,7 @@
 	}
 	.subtitle {
 		font-size: 1.25rem;
-		color: var(--color-text-muted);
+		color: var(--color-muted-foreground);
 		margin: 0 0 2rem 0;
 		transition: color 0.3s ease;
 	}
@@ -89,13 +89,13 @@
 		margin: 0 auto;
 	}
 	.intro :global(h2) {
-		color: var(--color-text);
+		color: var(--color-foreground);
 		margin-bottom: 1rem;
 		transition: color 0.3s ease;
 	}
 	.intro :global(p) {
 		font-size: 1.1rem;
-		color: var(--color-text-muted);
+		color: var(--color-muted-foreground);
 		line-height: 1.8;
 		transition: color 0.3s ease;
 	}
@@ -108,12 +108,12 @@
 		color: var(--color-primary);
 		margin-bottom: 1.25rem;
 		padding-bottom: 0.5rem;
-		border-bottom: 2px solid var(--light-border-primary);
+		border-bottom: 2px solid var(--color-border);
 		transition: color 0.3s ease, border-color 0.3s ease;
 	}
 	:global(.dark) .section-title {
 		color: var(--color-primary-light);
-		border-bottom-color: var(--light-border-secondary);
+		border-bottom-color: var(--color-border-strong);
 	}
 	@media (max-width: 768px) {
 		h1 {

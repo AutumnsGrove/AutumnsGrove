@@ -136,7 +136,7 @@
 		margin-bottom: 1.5rem;
 	}
 	:global(.dark) .heatmap-container {
-		background: var(--light-bg-tertiary);
+		background: var(--cream-300);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 	}
 	.heatmap-header {
@@ -150,7 +150,7 @@
 		color: #2c5f2d;
 	}
 	:global(.dark) .heatmap-header h3 {
-		color: var(--accent-success);
+		color: var(--grove-500);
 	}
 	.total-commits {
 		font-size: 0.85rem;

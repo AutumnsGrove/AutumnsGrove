@@ -69,12 +69,12 @@
   .logs-header h1 {
     margin: 0 0 0.5rem 0;
     font-size: 2rem;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
   .logs-header p {
     margin: 0;
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     font-size: 1rem;
     transition: color 0.3s ease;
   }
@@ -92,7 +92,7 @@
   }
   .help-content {
     margin-top: 1rem;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
   .help-content h4 {

@@ -121,10 +121,10 @@
 <div class="max-w-screen-2xl mx-auto">
   <header class="flex justify-between items-start mb-6 max-md:flex-col max-md:items-stretch max-md:gap-4">
     <div>
-      <h1 class="m-0 mb-1 text-3xl text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-colors">
+      <h1 class="m-0 mb-1 text-3xl text-[var(--color-foreground)] dark:text-[var(--color-foreground)] transition-colors">
         Edit Page: {data.page.title}
       </h1>
-      <p class="m-0 text-sm text-[var(--color-text-muted)] dark:text-[var(--color-text-subtle-dark)] transition-colors">
+      <p class="m-0 text-sm text-[var(--color-muted-foreground)] dark:text-[var(--bark-400)] transition-colors">
         Slug: {slug}
         {#if hasUnsavedChanges}
           <span class="unsaved-indicator">• Unsaved changes</span>
@@ -145,7 +145,7 @@
     <!-- Page Details Section -->
     <div class="details-section">
       <button class="details-header" onclick={toggleDetailsCollapsed}>
-        <h2 class="m-0 text-xl text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-colors">
+        <h2 class="m-0 text-xl text-[var(--color-foreground)] dark:text-[var(--color-foreground)] transition-colors">
           Page Details
         </h2>
         <span class="collapse-icon">{detailsCollapsed ? '▼' : '▲'}</span>
@@ -233,7 +233,7 @@
 
     <!-- Markdown Editor -->
     <div class="editor-section">
-      <h2 class="m-0 mb-4 text-xl text-[var(--color-text)] dark:text-[var(--color-text-dark)] transition-colors">
+      <h2 class="m-0 mb-4 text-xl text-[var(--color-foreground)] dark:text-[var(--color-foreground)] transition-colors">
         Content
       </h2>
       <MarkdownEditor
@@ -254,7 +254,7 @@
   }
 
   .details-section {
-    background: var(--color-bg-secondary);
+    background: var(--cream-200);
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-standard);
     overflow: hidden;
@@ -263,7 +263,7 @@
 
   :global(.dark) .details-section {
     background: var(--color-bg-tertiary-dark);
-    border-color: var(--color-border-dark);
+    border-color: var(--color-border-strong);
   }
 
   .details-header {
@@ -287,13 +287,13 @@
   }
 
   .collapse-icon {
-    color: var(--color-text-muted);
+    color: var(--color-muted-foreground);
     font-size: 0.9rem;
     transition: color 0.3s ease;
   }
 
   :global(.dark) .collapse-icon {
-    color: var(--color-text-subtle-dark);
+    color: var(--bark-400);
   }
 
   .details-content {
@@ -312,12 +312,12 @@
     display: block;
     margin-bottom: 0.5rem;
     font-weight: 500;
-    color: var(--color-text);
+    color: var(--color-foreground);
     transition: color 0.3s ease;
   }
 
   :global(.dark) label {
-    color: var(--color-text-dark);
+    color: var(--color-foreground);
   }
 
   .hero-fields {
@@ -345,7 +345,7 @@
   }
 
   .editor-section {
-    background: var(--color-bg-secondary);
+    background: var(--cream-200);
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius-standard);
     padding: 1.5rem;
@@ -354,7 +354,7 @@
 
   :global(.dark) .editor-section {
     background: var(--color-bg-tertiary-dark);
-    border-color: var(--color-border-dark);
+    border-color: var(--color-border-strong);
   }
 
   .unsaved-indicator {
