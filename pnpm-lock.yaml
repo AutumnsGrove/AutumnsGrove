@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@autumnsgrove/groveengine':
-        specifier: ^0.4.0
-        version: 0.4.0(@sveltejs/kit@2.49.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(svelte@5.45.5)(tailwindcss@3.4.18)
+        specifier: ^0.4.1
+        version: 0.4.1(@sveltejs/kit@2.49.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte-sonner@1.0.7(svelte@5.45.5))(svelte@5.45.5)(tailwindcss@3.4.18)
       '@types/dompurify':
         specifier: ^3.0.5
         version: 3.2.0
@@ -115,11 +115,12 @@ packages:
   '@asamuzakjp/nwsapi@2.3.9':
     resolution: {integrity: sha512-n8GuYSrI9bF7FFZ/SjhwevlHc8xaVlb/7HmHelnc/PZXBD2ZR49NnN9sMMuDdEGPeeRQ5d0hqlSlEpgCX3Wl0Q==}
 
-  '@autumnsgrove/groveengine@0.4.0':
-    resolution: {integrity: sha512-7/tMzFPXzOJ9Z+Bw0MRjbu91+BTcShiVpme+P3sDRmD24LGuNEGYU7/thMAGXSB+T5nlFr7C2QJC4S+AGij04g==}
+  '@autumnsgrove/groveengine@0.4.1':
+    resolution: {integrity: sha512-kzVf0Kpyi1ENV2rFI/jv79RntWEHkkRs9uN5Qx/ES3GliBgNsILJiB7gVRIsrlQVfBgHnMaGYKwzfyZsY6sXRw==}
     peerDependencies:
       '@sveltejs/kit': ^2.0.0
       svelte: ^5.0.0
+      svelte-sonner: ^1.0.0
       tailwindcss: ^3.4.0
 
   '@babel/code-frame@7.27.1':
@@ -1684,17 +1685,8 @@ packages:
   queue-microtask@1.2.3:
     resolution: {integrity: sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A==}
 
-  react-dom@19.2.1:
-    resolution: {integrity: sha512-ibrK8llX2a4eOskq1mXKu/TGZj9qzomO+sNfO98M6d9zIPOEhlBkMkBUBLd1vgS0gQsLDBzA+8jJBVXDnfHmJg==}
-    peerDependencies:
-      react: ^19.2.1
-
   react-is@17.0.2:
     resolution: {integrity: sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==}
-
-  react@19.2.1:
-    resolution: {integrity: sha512-DGrYcCWK7tvYMnWh79yrPHt+vdx9tY+1gPZa7nJQtO/p8bLTDaHp4dzwEhQB7pZ4Xe3ok4XKuEPrVuc+wlpkmw==}
-    engines: {node: '>=0.10.0'}
 
   read-cache@1.0.0:
     resolution: {integrity: sha512-Owdv/Ft7IjOgm/i0xvNDZ1LrRANRfew4b2prF3OWMQLxLfu3bS8FVhCsrSCMK4lR56Y9ya+AThoTpDCTxCmpRA==}
@@ -1753,9 +1745,6 @@ packages:
     resolution: {integrity: sha512-xAg7SOnEhrm5zI3puOOKyy1OMcMlIJZYNJY7xLBwSze0UjhPLnWfj2GF2EpT0jmzaJKIWKHLsaSSajf35bcYnA==}
     engines: {node: '>=v12.22.7'}
 
-  scheduler@0.27.0:
-    resolution: {integrity: sha512-eNv+WrVbKu1f3vbYJT/xtiF5syA5HPIMtf9IgY/nKg0sWqzAUEvqY/xm7OcZc/qafLx/iO9FgOmeSAp4v5ti/Q==}
-
   section-matter@1.0.0:
     resolution: {integrity: sha512-vfD3pmTzGpufjScBh50YHKzEu2lxBWhVEHsNGoEXmCmn2hKGfeNLYMzCJpe8cD7gqX7TJluOVpBkAequ6dgMmA==}
     engines: {node: '>=4'}
@@ -1781,12 +1770,6 @@ packages:
   sirv@3.0.2:
     resolution: {integrity: sha512-2wcC/oGxHis/BoHkkPwldgiPSYcpZK3JU28WoMVv55yHJgcZ8rlXvuG9iZggz+sU1d4bRgIGASwyWqjxu3FM0g==}
     engines: {node: '>=18'}
-
-  sonner@2.0.7:
-    resolution: {integrity: sha512-W6ZN4p58k8aDKA4XPcx2hpIQXBRAgyiWVkYhT7CvK6D3iAu7xjvVyhQHg2/iaKJZ1XVJ4r7XuwGL+WGEK37i9w==}
-    peerDependencies:
-      react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
-      react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
 
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
@@ -2167,7 +2150,7 @@ snapshots:
 
   '@asamuzakjp/nwsapi@2.3.9': {}
 
-  '@autumnsgrove/groveengine@0.4.0(@sveltejs/kit@2.49.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(react-dom@19.2.1(react@19.2.1))(react@19.2.1)(svelte@5.45.5)(tailwindcss@3.4.18)':
+  '@autumnsgrove/groveengine@0.4.1(@sveltejs/kit@2.49.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte-sonner@1.0.7(svelte@5.45.5))(svelte@5.45.5)(tailwindcss@3.4.18)':
     dependencies:
       '@sveltejs/kit': 2.49.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25))
       '@types/dompurify': 3.2.0
@@ -2177,7 +2160,6 @@ snapshots:
       isomorphic-dompurify: 2.33.0
       lucide-svelte: 0.554.0(svelte@5.45.5)
       marked: 17.0.1
-      sonner: 2.0.7(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       svelte: 5.45.5
       svelte-sonner: 1.0.7(svelte@5.45.5)
       tailwind-merge: 3.4.0
@@ -2185,8 +2167,6 @@ snapshots:
     transitivePeerDependencies:
       - bufferutil
       - canvas
-      - react
-      - react-dom
       - supports-color
       - utf-8-validate
 
@@ -3460,14 +3440,7 @@ snapshots:
 
   queue-microtask@1.2.3: {}
 
-  react-dom@19.2.1(react@19.2.1):
-    dependencies:
-      react: 19.2.1
-      scheduler: 0.27.0
-
   react-is@17.0.2: {}
-
-  react@19.2.1: {}
 
   read-cache@1.0.0:
     dependencies:
@@ -3546,8 +3519,6 @@ snapshots:
     dependencies:
       xmlchars: 2.2.0
 
-  scheduler@0.27.0: {}
-
   section-matter@1.0.0:
     dependencies:
       extend-shallow: 2.0.1
@@ -3594,11 +3565,6 @@ snapshots:
       '@polka/url': 1.0.0-next.29
       mrmime: 2.0.1
       totalist: 3.0.1
-
-  sonner@2.0.7(react-dom@19.2.1(react@19.2.1))(react@19.2.1):
-    dependencies:
-      react: 19.2.1
-      react-dom: 19.2.1(react@19.2.1)
 
   source-map-js@1.2.1: {}
 
