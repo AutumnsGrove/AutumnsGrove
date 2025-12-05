@@ -32,6 +32,9 @@ importers:
       marked:
         specifier: ^17.0.1
         version: 17.0.1
+      sonner:
+        specifier: ^2.0.7
+        version: 2.0.7(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       svelte-sonner:
         specifier: ^1.0.7
         version: 1.0.7(svelte@5.45.5)
