@@ -18,8 +18,6 @@ jobs:
       
     - name: Setup pnpm
       uses: pnpm/action-setup@v4
-      with:
-        version: 9
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -28,9 +26,8 @@ jobs:
         cache: 'pnpm'
 
     - name: Install dependencies
-      run: |
-        pnpm add gray-matter marked
-        
+      run: pnpm install --frozen-lockfile
+
     - name: Read and process posts
       id: process-posts
       run: |
