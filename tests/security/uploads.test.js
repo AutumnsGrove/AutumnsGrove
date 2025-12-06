@@ -167,30 +167,38 @@ describe('File Upload Security', () => {
       const malicious = 'file<script>.jpg';
       const clean = sanitizeFilename(malicious);
 
+      // Special chars become dashes, timestamp added, converts to webp
       expect(clean).not.toContain('<');
       expect(clean).not.toContain('>');
-      expect(clean).not.toContain('script');
+      expect(clean).toMatch(/^file-script-[a-z0-9]+\.webp$/);
     });
 
     it('should allow valid filenames', () => {
       const valid = 'photo_2024-01-15.jpg';
       const clean = sanitizeFilename(valid);
 
-      expect(clean).toBe('photo_2024-01-15.jpg');
+      // Underscores become dashes, timestamp added, converts to webp
+      expect(clean).toMatch(/^photo-2024-01-15-[a-z0-9]+\.webp$/);
     });
 
-    it('should preserve file extension', () => {
-      const filename = 'document.pdf';
-      const clean = sanitizeFilename(filename);
+    it('should preserve file extension for GIF only', () => {
+      // Non-GIF files are converted to WebP
+      const pdfFile = 'document.pdf';
+      const pdfClean = sanitizeFilename(pdfFile);
+      expect(pdfClean).toMatch(/^document-[a-z0-9]+\.webp$/);
 
-      expect(clean).toContain('.pdf');
+      // GIF files preserve their extension
+      const gifFile = 'animation.gif';
+      const gifClean = sanitizeFilename(gifFile);
+      expect(gifClean).toMatch(/^animation-[a-z0-9]+\.gif$/);
     });
 
     it('should handle multiple dots', () => {
       const filename = 'my.file.name.jpg';
       const clean = sanitizeFilename(filename);
 
-      expect(clean).toContain('.jpg');
+      // Dots become dashes, timestamp added, converts to webp
+      expect(clean).toMatch(/^my-file-name-[a-z0-9]+\.webp$/);
     });
 
     it('should remove null bytes', () => {
