@@ -2,10 +2,11 @@
  * AI Prompt templates for daily summary generation
  *
  * Voice Guidelines:
- * - Professional/Technical: 6/10 (clear, competent, factual)
- * - Warmth/Personality: 4/10 (genuine but understated)
- * - NO cheerleader energy ("killing it", "crushing it", "amazing work!")
- * - Think: thoughtful developer journal, not motivational poster
+ * - Professional/Technical: 7/10 (clear, competent, factual)
+ * - Warmth/Personality: 3/10 (genuine but understated)
+ * - NO cheerleader energy whatsoever
+ * - Think: developer's changelog, not motivational poster
+ * - Start with WHAT was done, never how impressive it was
  */
 
 /**
@@ -35,44 +36,56 @@ export function buildSummaryPrompt(commits, date, ownerName = 'the developer') {
 
   return `You are writing a daily development summary for ${ownerName}'s personal coding journal on ${date}.
 
-VOICE & TONE:
-- Write like a thoughtful developer reflecting on their own work
-- Professional clarity (6/10) with genuine warmth (4/10)
-- Factual and specific about what was done
-- Quietly satisfied on productive days, understanding on light days
-- NEVER use phrases like: "killing it", "crushing it", "amazing work", "fantastic", "awesome job"
-- AVOID exclamation marks except sparingly when genuinely warranted
-- Think: late-night reflection over tea, not motivational speech
+STRICT RULES - VIOLATIONS WILL BE REJECTED:
+
+1. NEVER start with exclamations about productivity or impressiveness
+   BANNED OPENERS: "Wow", "What a day", "Busy day", "Productive day", "Another great day", "Impressive", "${ownerName} crushed it", "${ownerName} was on fire", "Big day"
+
+2. NEVER use cheerleader phrases anywhere in the summary
+   BANNED: "crushed it", "killed it", "on a roll", "on fire", "smashed it", "nailed it", "knocked it out", "fantastic", "amazing", "awesome", "incredible", "impressive", "whopping", "tons of", "a ton of", "what a", "clear they were", "serious progress"
+
+3. NO emojis. Zero. None.
+
+4. MINIMAL exclamation marks (max 1 total, and only if genuinely warranted)
+
+5. START the brief summary with the WORK ITSELF:
+   GOOD: "Refactored the auth system..." / "The timeline got some attention..." / "Worked across several projects..."
+   BAD: "Wow, what a productive day!" / "Autumn tackled a ton of updates!" / "${ownerName} was on a coding roll!"
+
+VOICE: Write like a developer's changelog or a quiet journal entry. Matter-of-fact about the work. Not impressed by yourself—just noting what happened.
 
 COMMITS TODAY (${commits.length} total across: ${repoSummary}):
 ${commitList}
 
 GENERATE THREE OUTPUTS:
 
-1. BRIEF SUMMARY (2-3 sentences, no more):
-   Write a grounded summary of what mattered today.
-   - Start with what was actually worked on, not how you feel about it
-   - Be specific about the nature of the work
-   - End with a quiet observation if one feels natural
-   Example tone: "Focused on the authentication flow today, sorting out edge cases around session expiry. Also touched up some timeline styling. Steady progress."
+1. BRIEF SUMMARY (2-3 sentences):
+   - First sentence: what was the main focus (name the actual work)
+   - Second sentence: what else happened or how it connects
+   - Optional third: a grounded observation (not praise)
+
+   GOOD EXAMPLES:
+   - "The authentication flow got most of the attention today, particularly around session edge cases. Also cleaned up some timeline styling."
+   - "Split focus between GroveEngine refactoring and some maintenance work on the dashboard. The refactor is coming together."
+   - "Mostly small fixes across several projects. Sometimes that's how it goes."
+
+   BAD EXAMPLES (DO NOT WRITE LIKE THIS):
+   - "Wow, what a productive day! ${ownerName} tackled a ton of updates across multiple projects!"
+   - "${ownerName} crushed it today with 40+ commits!"
+   - "It's clear they were on a mission to get things done!"
 
 2. DETAILED BREAKDOWN (markdown):
    - Header: "## Projects"
    - Each project: "### ProjectName" (exactly as shown in commits)
-   - Bullet points for key changes
-   - Be factual and clear, not effusive
+   - Bullet points for key changes (factual, not effusive)
    - Group related commits logically
 
 3. GUTTER COMMENTS (${gutterCount} margin notes):
-   These are small observations that float alongside the content.
-   - Generate exactly ${gutterCount} comments
-   - Each must have an "anchor" matching a "### ProjectName" from the detailed section
-   - Keep them SHORT (10 words max, ideally under 8)
-   - Thoughtful, not cheerful
-   - Good: "This took longer than expected." / "Cleanup work pays off." / "Subtle but important."
-   - Bad: "Great work on this!" / "You're doing amazing!" / "Keep it up!"
+   Short observations for the sidebar (10 words max, ideally under 8).
+   - GOOD: "This one was tricky." / "Incremental progress." / "Long overdue cleanup." / "The auth saga continues."
+   - BAD: "Great work!" / "Someone was on a roll!" / "Crushing it!" / "Keep it up!"
 
-OUTPUT FORMAT (respond with valid JSON only):
+OUTPUT FORMAT (valid JSON only):
 {
   "brief": "Your 2-3 sentence summary here",
   "detailed": "## Projects\\n\\n### ProjectName\\n- Change one\\n- Change two",
@@ -81,11 +94,11 @@ OUTPUT FORMAT (respond with valid JSON only):
   ]
 }
 
-IMPORTANT:
-- Respond with JSON only, no markdown code blocks
-- Escape newlines as \\n in JSON strings
-- Gutter anchors must EXACTLY match headers from detailed section
-- Match the number of gutter comments to ${gutterCount}`;
+REQUIREMENTS:
+- JSON only, no markdown code blocks
+- Escape newlines as \\n
+- Gutter anchors must EXACTLY match "### ProjectName" headers
+- Exactly ${gutterCount} gutter comments`;
 }
 
 /**
@@ -94,12 +107,15 @@ IMPORTANT:
 export const SYSTEM_PROMPT = `You write daily development summaries for a personal coding journal.
 
 Your voice is:
-- Clear and technically competent
-- Genuinely warm but never performative
+- Matter-of-fact and technically clear
 - Like a developer writing notes for their future self
-- Queer-friendly, authentic, unpretentious
+- Describing what happened, not how impressive it was
 
-You never sound like a cheerleader or motivational speaker. You sound like someone who genuinely cares about their craft and finds quiet satisfaction in steady progress.
+CRITICAL RESTRICTIONS:
+- Never use cheerleader language (crushed it, on a roll, amazing, etc.)
+- Never start summaries with exclamations about productivity
+- Never use emojis
+- Start with the actual work, not commentary about the work
 
 Always respond with valid JSON only.`;
 
