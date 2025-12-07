@@ -13,102 +13,102 @@
 
 export const AI_PROVIDERS = {
   anthropic: {
-    name: 'Anthropic',
+    name: "Anthropic",
     models: {
-      'claude-haiku-4-5-20250514': {
-        name: 'Claude 4.5 Haiku',
-        quality: 'high',
-        speed: 'fastest',
-        inputCostPer1M: 0.80,
-        outputCostPer1M: 4.00,
-        cacheWritePer1M: 1.00,  // Cache write cost
-        cacheReadPer1M: 0.08,   // Cache read cost (90% discount)
+      "claude-haiku-4-5-20250514": {
+        name: "Claude 4.5 Haiku",
+        quality: "high",
+        speed: "fastest",
+        inputCostPer1M: 0.8,
+        outputCostPer1M: 4.0,
+        cacheWritePer1M: 1.0, // Cache write cost
+        cacheReadPer1M: 0.08, // Cache read cost (90% discount)
       },
-      'claude-sonnet-4-20250514': {
-        name: 'Claude 4 Sonnet',
-        quality: 'highest',
-        speed: 'medium',
-        inputCostPer1M: 3.00,
-        outputCostPer1M: 15.00,
+      "claude-sonnet-4-20250514": {
+        name: "Claude 4 Sonnet",
+        quality: "highest",
+        speed: "medium",
+        inputCostPer1M: 3.0,
+        outputCostPer1M: 15.0,
         cacheWritePer1M: 3.75,
-        cacheReadPer1M: 0.30,
+        cacheReadPer1M: 0.3,
       },
-      'claude-sonnet-4-5-20250514': {
-        name: 'Claude 4.5 Sonnet',
-        quality: 'highest',
-        speed: 'fast',
-        inputCostPer1M: 3.00,
-        outputCostPer1M: 15.00,
+      "claude-sonnet-4-5-20250514": {
+        name: "Claude 4.5 Sonnet",
+        quality: "highest",
+        speed: "fast",
+        inputCostPer1M: 3.0,
+        outputCostPer1M: 15.0,
         cacheWritePer1M: 3.75,
-        cacheReadPer1M: 0.30,
+        cacheReadPer1M: 0.3,
       },
     },
-    defaultModel: 'claude-haiku-4-5-20250514',
+    defaultModel: "claude-haiku-4-5-20250514",
   },
 
   cloudflare: {
-    name: 'Cloudflare Workers AI',
+    name: "Cloudflare Workers AI",
     models: {
-      '@cf/meta/llama-3.3-70b-instruct-fp8-fast': {
-        name: 'Llama 3.3 70B (Fast)',
-        quality: 'highest',
-        speed: 'medium',
-        inputCostPer1M: 0,  // Free with Workers AI
+      "@cf/meta/llama-3.3-70b-instruct-fp8-fast": {
+        name: "Llama 3.3 70B (Fast)",
+        quality: "highest",
+        speed: "medium",
+        inputCostPer1M: 0, // Free with Workers AI
         outputCostPer1M: 0,
       },
-      '@cf/meta/llama-3.1-70b-instruct': {
-        name: 'Llama 3.1 70B',
-        quality: 'high',
-        speed: 'medium',
+      "@cf/meta/llama-3.1-70b-instruct": {
+        name: "Llama 3.1 70B",
+        quality: "high",
+        speed: "medium",
         inputCostPer1M: 0,
         outputCostPer1M: 0,
       },
-      '@cf/google/gemma-3-12b-it': {
-        name: 'Gemma 3 12B',
-        quality: 'high',
-        speed: 'fast',
+      "@cf/google/gemma-3-12b-it": {
+        name: "Gemma 3 12B",
+        quality: "high",
+        speed: "fast",
         inputCostPer1M: 0,
         outputCostPer1M: 0,
       },
-      '@cf/mistralai/mistral-small-3.1-24b-instruct': {
-        name: 'Mistral Small 24B',
-        quality: 'high',
-        speed: 'fast',
+      "@cf/mistralai/mistral-small-3.1-24b-instruct": {
+        name: "Mistral Small 24B",
+        quality: "high",
+        speed: "fast",
         inputCostPer1M: 0,
         outputCostPer1M: 0,
       },
-      '@cf/meta/llama-3.1-8b-instruct-fast': {
-        name: 'Llama 3.1 8B (Fast)',
-        quality: 'good',
-        speed: 'fastest',
+      "@cf/meta/llama-3.1-8b-instruct-fast": {
+        name: "Llama 3.1 8B (Fast)",
+        quality: "good",
+        speed: "fastest",
         inputCostPer1M: 0,
         outputCostPer1M: 0,
       },
     },
-    defaultModel: '@cf/meta/llama-3.1-70b-instruct',
+    defaultModel: "@cf/meta/llama-3.1-70b-instruct",
   },
 
   // Stub for future Moonshot AI integration
   moonshot: {
-    name: 'Moonshot AI',
+    name: "Moonshot AI",
     models: {
-      'kimi-k2': {
-        name: 'Kimi K2',
-        quality: 'high',
-        speed: 'medium',
-        inputCostPer1M: 0.60,   // Placeholder - update when known
-        outputCostPer1M: 2.40,  // Placeholder - update when known
+      "kimi-k2": {
+        name: "Kimi K2",
+        quality: "high",
+        speed: "medium",
+        inputCostPer1M: 0.6, // Placeholder - update when known
+        outputCostPer1M: 2.4, // Placeholder - update when known
       },
     },
-    defaultModel: 'kimi-k2',
+    defaultModel: "kimi-k2",
     // TODO: Implement when ready
     notImplemented: true,
   },
 };
 
-// Default provider and model
-export const DEFAULT_PROVIDER = 'anthropic';
-export const DEFAULT_MODEL = 'claude-haiku-4-5-20250514';
+// Default provider and model (Cloudflare is free, no API key needed)
+export const DEFAULT_PROVIDER = "cloudflare";
+export const DEFAULT_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
 
 // =============================================================================
 // Cost Calculation
@@ -123,7 +123,13 @@ export const DEFAULT_MODEL = 'claude-haiku-4-5-20250514';
  * @param {object} cacheStats - Optional cache statistics { cacheReadTokens, cacheWriteTokens }
  * @returns {number} Estimated cost in USD
  */
-export function calculateCost(provider, model, inputTokens, outputTokens, cacheStats = {}) {
+export function calculateCost(
+  provider,
+  model,
+  inputTokens,
+  outputTokens,
+  cacheStats = {},
+) {
   const providerConfig = AI_PROVIDERS[provider];
   if (!providerConfig) return 0;
 
@@ -137,10 +143,12 @@ export function calculateCost(provider, model, inputTokens, outputTokens, cacheS
   // Cache costs (if applicable)
   let cacheCost = 0;
   if (cacheStats.cacheReadTokens && modelConfig.cacheReadPer1M) {
-    cacheCost += (cacheStats.cacheReadTokens / 1_000_000) * modelConfig.cacheReadPer1M;
+    cacheCost +=
+      (cacheStats.cacheReadTokens / 1_000_000) * modelConfig.cacheReadPer1M;
   }
   if (cacheStats.cacheWriteTokens && modelConfig.cacheWritePer1M) {
-    cacheCost += (cacheStats.cacheWriteTokens / 1_000_000) * modelConfig.cacheWritePer1M;
+    cacheCost +=
+      (cacheStats.cacheWriteTokens / 1_000_000) * modelConfig.cacheWritePer1M;
   }
 
   return inputCost + outputCost + cacheCost;
@@ -171,21 +179,27 @@ async function callAnthropic(apiKey, model, systemPrompt, userPrompt) {
   // Calculate if system prompt is large enough to benefit from caching
   // Minimum: 1024 tokens for Sonnet/Opus, 2048 for Haiku
   const systemTokens = estimateTokens(systemPrompt);
-  const isHaiku = model.includes('haiku');
+  const isHaiku = model.includes("haiku");
   const minCacheTokens = isHaiku ? 2048 : 1024;
   const useCache = systemTokens >= minCacheTokens;
 
   // Build system content - use array format for cache control
   const systemContent = useCache
-    ? [{ type: 'text', text: systemPrompt, cache_control: { type: 'ephemeral' } }]
+    ? [
+        {
+          type: "text",
+          text: systemPrompt,
+          cache_control: { type: "ephemeral" },
+        },
+      ]
     : systemPrompt;
 
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
       // Prompt caching is now GA - no beta header needed
     },
     body: JSON.stringify({
@@ -193,9 +207,7 @@ async function callAnthropic(apiKey, model, systemPrompt, userPrompt) {
       max_tokens: 2048,
       temperature: 0.5,
       system: systemContent,
-      messages: [
-        { role: 'user', content: userPrompt }
-      ],
+      messages: [{ role: "user", content: userPrompt }],
     }),
   });
 
@@ -214,7 +226,9 @@ async function callAnthropic(apiKey, model, systemPrompt, userPrompt) {
 
   // Log cache performance
   if (useCache) {
-    console.log(`Anthropic cache stats: read=${cacheReadTokens}, write=${cacheWriteTokens}, uncached=${uncachedTokens}`);
+    console.log(
+      `Anthropic cache stats: read=${cacheReadTokens}, write=${cacheWriteTokens}, uncached=${uncachedTokens}`,
+    );
   }
 
   return {
@@ -234,8 +248,8 @@ async function callAnthropic(apiKey, model, systemPrompt, userPrompt) {
 async function callCloudflare(aiBinding, model, systemPrompt, userPrompt) {
   const response = await aiBinding.run(model, {
     messages: [
-      { role: 'system', content: systemPrompt },
-      { role: 'user', content: userPrompt },
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
     ],
     max_tokens: 2048,
     temperature: 0.5,
@@ -257,7 +271,9 @@ async function callCloudflare(aiBinding, model, systemPrompt, userPrompt) {
  * TODO: Implement when API access is available
  */
 async function callMoonshot(apiKey, model, systemPrompt, userPrompt) {
-  throw new Error('Moonshot AI integration not yet implemented. Please use Anthropic or Cloudflare.');
+  throw new Error(
+    "Moonshot AI integration not yet implemented. Please use Anthropic or Cloudflare.",
+  );
 
   // Future implementation will look something like:
   // const response = await fetch('https://api.moonshot.ai/v1/chat/completions', {
@@ -298,7 +314,13 @@ async function callMoonshot(apiKey, model, systemPrompt, userPrompt) {
  * @param {string} userPrompt - User prompt
  * @returns {Promise<object>} Response with content and token counts
  */
-export async function generateAIResponse(env, provider, model, systemPrompt, userPrompt) {
+export async function generateAIResponse(
+  env,
+  provider,
+  model,
+  systemPrompt,
+  userPrompt,
+) {
   const providerConfig = AI_PROVIDERS[provider];
 
   if (!providerConfig) {
@@ -317,25 +339,35 @@ export async function generateAIResponse(env, provider, model, systemPrompt, use
   let result;
 
   switch (provider) {
-    case 'anthropic':
+    case "anthropic":
       if (!env.ANTHROPIC_API_KEY) {
-        throw new Error('ANTHROPIC_API_KEY secret not configured');
+        throw new Error("ANTHROPIC_API_KEY secret not configured");
       }
-      result = await callAnthropic(env.ANTHROPIC_API_KEY, model, systemPrompt, userPrompt);
+      result = await callAnthropic(
+        env.ANTHROPIC_API_KEY,
+        model,
+        systemPrompt,
+        userPrompt,
+      );
       break;
 
-    case 'cloudflare':
+    case "cloudflare":
       if (!env.AI) {
-        throw new Error('Cloudflare AI binding not configured');
+        throw new Error("Cloudflare AI binding not configured");
       }
       result = await callCloudflare(env.AI, model, systemPrompt, userPrompt);
       break;
 
-    case 'moonshot':
+    case "moonshot":
       if (!env.MOONSHOT_API_KEY) {
-        throw new Error('MOONSHOT_API_KEY secret not configured');
+        throw new Error("MOONSHOT_API_KEY secret not configured");
       }
-      result = await callMoonshot(env.MOONSHOT_API_KEY, model, systemPrompt, userPrompt);
+      result = await callMoonshot(
+        env.MOONSHOT_API_KEY,
+        model,
+        systemPrompt,
+        userPrompt,
+      );
       break;
 
     default:
@@ -347,7 +379,13 @@ export async function generateAIResponse(env, provider, model, systemPrompt, use
     cacheReadTokens: result.cacheReadTokens || 0,
     cacheWriteTokens: result.cacheWriteTokens || 0,
   };
-  const cost = calculateCost(provider, model, result.inputTokens, result.outputTokens, cacheStats);
+  const cost = calculateCost(
+    provider,
+    model,
+    result.inputTokens,
+    result.outputTokens,
+    cacheStats,
+  );
 
   return {
     ...result,
@@ -396,8 +434,8 @@ export function parseModelString(modelString) {
   }
 
   // Check if it includes provider prefix
-  if (modelString.includes(':')) {
-    const [provider, model] = modelString.split(':');
+  if (modelString.includes(":")) {
+    const [provider, model] = modelString.split(":");
     return { provider, model };
   }
 
