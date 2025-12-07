@@ -200,6 +200,16 @@ Full feature set completed:
 - [bagerbach.com](https://bagerbach.com/) - Clean blog
 
 ---
+personal todos
+- knowledge base page
+    - recipes
+    - raindrop articles/shared links
+    - reference material (likely all markdown files)
+    - tools
+        - link all of the grove tools
+        - scout, domains, music, search, etc
+
+---
 
 ## 📝 Quick Reference
 
