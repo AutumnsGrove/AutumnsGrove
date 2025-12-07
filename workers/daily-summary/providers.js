@@ -15,14 +15,14 @@ export const AI_PROVIDERS = {
   anthropic: {
     name: "Anthropic",
     models: {
-      "claude-haiku-4-5-20250514": {
+      "claude-haiku-4-5-20251001": {
         name: "Claude 4.5 Haiku",
         quality: "high",
         speed: "fastest",
-        inputCostPer1M: 0.8,
-        outputCostPer1M: 4.0,
-        cacheWritePer1M: 1.0, // Cache write cost
-        cacheReadPer1M: 0.08, // Cache read cost (90% discount)
+        inputCostPer1M: 1.0,
+        outputCostPer1M: 5.0,
+        cacheWritePer1M: 1.25,
+        cacheReadPer1M: 0.1,
       },
       "claude-sonnet-4-20250514": {
         name: "Claude 4 Sonnet",
@@ -43,7 +43,7 @@ export const AI_PROVIDERS = {
         cacheReadPer1M: 0.3,
       },
     },
-    defaultModel: "claude-haiku-4-5-20250514",
+    defaultModel: "claude-haiku-4-5-20251001",
   },
 
   cloudflare: {
@@ -106,9 +106,9 @@ export const AI_PROVIDERS = {
   },
 };
 
-// Default provider and model (Cloudflare is free, no API key needed)
-export const DEFAULT_PROVIDER = "cloudflare";
-export const DEFAULT_MODEL = "@cf/meta/llama-3.3-70b-instruct-fp8-fast";
+// Default provider and model
+export const DEFAULT_PROVIDER = "anthropic";
+export const DEFAULT_MODEL = "claude-haiku-4-5-20251001";
 
 // =============================================================================
 // Cost Calculation
