@@ -189,8 +189,7 @@
         </button>
       </div>
 
-      {#if !detailsCollapsed}
-        <div class="panel-content">
+        <div class="panel-content" class:collapsed={detailsCollapsed}>
           <div class="form-group">
             <label for="title">Title</label>
             <input
@@ -297,7 +296,6 @@
             {/if}
           </div>
         </div>
-      {/if}
     </aside>
 
     <!-- Editor Panel -->
@@ -501,7 +499,15 @@
     color: var(--color-primary);
   }
   .panel-content {
-    /* Animation for content visibility */
+    opacity: 1;
+    max-height: 1000px;
+    overflow: hidden;
+    transition: opacity 0.3s ease, max-height 0.3s ease;
+  }
+  .panel-content.collapsed {
+    opacity: 0;
+    max-height: 0;
+    pointer-events: none;
   }
   .form-group {
     margin-bottom: 1.25rem;
@@ -654,6 +660,8 @@
     cursor: pointer;
     transition: all 0.15s ease;
     align-self: flex-end;
+    z-index: 10;
+    position: relative;
   }
   .toggle-gutter-btn:hover {
     background: var(--color-border);

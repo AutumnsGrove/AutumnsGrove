@@ -61,6 +61,14 @@ export async function handle({ event, resolve }) {
     // Skip CSRF validation for login endpoint (it has its own protection)
     if (!event.url.pathname.includes("/auth/")) {
       if (!validateCSRFToken(event.request, csrfToken)) {
+        console.error("[HOOKS] CSRF token validation failed", {
+          path: event.url.pathname,
+          method: event.request.method,
+          csrfToken: csrfToken ? `${csrfToken.substring(0, 8)}...` : "missing",
+          headerToken: event.request.headers.get("x-csrf-token"),
+          bodyToken: event.request.headers.get("csrf-token"),
+          cookie: cookieHeader?.includes("csrf_token=") ? "present" : "missing",
+        });
         throw error(403, "Invalid CSRF token");
       }
     }

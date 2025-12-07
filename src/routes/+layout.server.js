@@ -35,5 +35,6 @@ export async function load({ locals, platform }) {
   return {
     user: locals.user || null,
     siteSettings,
+    csrfToken: locals.csrfToken || null,
   };
 }

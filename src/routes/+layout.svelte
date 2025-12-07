@@ -1,5 +1,8 @@
 <svelte:head>
 	<link rel="alternate" type="application/rss+xml" title="AutumnsGrove Blog" href="/api/feed" />
+	{#if data.csrfToken}
+		<meta name="csrf-token" content={data.csrfToken} />
+	{/if}
 </svelte:head>
 
 <script>
