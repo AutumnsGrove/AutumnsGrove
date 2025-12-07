@@ -6,7 +6,8 @@ Building things, learning in public, and exploring ideas.
 - 🌱 [AutumnsGrove](https://github.com/AutumnsGrove/AutumnsGrove) - Personal blog built with SvelteKit
 - 🌱 [GroveEngine](https://github.com/AutumnsGrove/GroveEngine) - Multi-tenant blog platform built on Cloudflare with SvelteKit
 - 🌱 [GroveScout](https://github.com/AutumnsGrove/GroveScout) - Searching for deals. But fast.
-- 🌱 [grove-domain-tool](https://github.com/AutumnsGrove/grove-domain-tool) - Tool for aggressively finding domain names for clients
+- 🌱 [GroveDomainTool](https://github.com/AutumnsGrove/GroveDomainTool) - Tool for aggressively finding domain names for clients
+- 🌱 [GroveMusic](https://github.com/AutumnsGrove/GroveMusic) - Finding similar songs through agentic searches to curate playlists
 - 🌱 [epub2tts](https://github.com/AutumnsGrove/epub2tts) - Full pipeline to convert epub files into Audiobooks with Kokoro running locally
 - 🌱 [OmniParser](https://github.com/AutumnsGrove/OmniParser) - Universal parser, anything → markdown
 - 🌱 [ProjectReminder](https://github.com/AutumnsGrove/ProjectReminder) - A very personalized Reminders app
