@@ -506,12 +506,6 @@
 </svelte:head>
 
 <div class="max-w-[1000px] mx-auto">
-	<!-- Temporary Warning Notice -->
-	<div class="bg-[#fff3cd] dark:bg-[#3d3200] border border-[#ffc107] text-[#856404] dark:text-[#ffd54f] px-4 py-3 rounded-lg mb-6 text-sm leading-snug">
-		<strong>Note:</strong> This page has known interactivity issues. If buttons or navigation stop working,
-		please refresh the page. When returning to Home, you may need to refresh again.
-	</div>
-
 	<header class="text-center mb-8">
 		<h1 class="text-[#2c5f2d] dark:text-[#5cb85f] m-0">Git Dashboard</h1>
 		<p class="text-[#666] dark:text-[var(--color-muted-foreground)] mt-2 mb-0">My GitHub commit activity</p>
