@@ -85,7 +85,9 @@
         opendyslexic: "'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         lexend: "'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
         cormorant: "'Cormorant', Georgia, 'Times New Roman', serif",
-        quicksand: "'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+        quicksand: "'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+        ibmplexmono: "'IBM Plex Mono', 'Fira Code', 'Source Code Pro', monospace",
+        bodonimoda: "'Bodoni Moda', 'Didot', 'Bodoni MT', Georgia, serif"
       };
       document.documentElement.style.setProperty('--font-family-main', fontMap[currentFont]);
     } catch (error) {
@@ -319,6 +321,32 @@
           <div class="font-info">
             <span class="font-name" style="font-family: 'Quicksand', sans-serif;">Quicksand</span>
             <span class="font-description">Rounded, friendly geometric sans-serif</span>
+          </div>
+        </label>
+
+        <label class="font-option" class:selected={currentFont === 'ibmplexmono'}>
+          <input
+            type="radio"
+            name="font"
+            value="ibmplexmono"
+            bind:group={currentFont}
+          />
+          <div class="font-info">
+            <span class="font-name" style="font-family: 'IBM Plex Mono', monospace;">IBM Plex Mono</span>
+            <span class="font-description">Clean monospace for code and technical writing</span>
+          </div>
+        </label>
+
+        <label class="font-option" class:selected={currentFont === 'bodonimoda'}>
+          <input
+            type="radio"
+            name="font"
+            value="bodonimoda"
+            bind:group={currentFont}
+          />
+          <div class="font-info">
+            <span class="font-name" style="font-family: 'Bodoni Moda', serif;">Bodoni Moda</span>
+            <span class="font-description">High-contrast display serif with dramatic elegance</span>
           </div>
         </label>
       </div>
