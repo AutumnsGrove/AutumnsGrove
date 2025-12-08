@@ -149,6 +149,46 @@
         <dd>SIL Open Font License</dd>
       </dl>
     </article>
+
+    <article class="credit-item" style="font-family: 'IBM Plex Mono', monospace;">
+      <h3>IBM Plex Mono</h3>
+      <p class="credit-description">
+        IBM's open-source monospace typeface designed for technical content and coding.
+        Clean lines with excellent legibility at all sizes.
+      </p>
+      <dl class="credit-details">
+        <dt>Author</dt>
+        <dd>IBM Corp.</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://github.com/IBM/plex" target="_blank" rel="noopener noreferrer">
+            GitHub - IBM Plex
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>SIL Open Font License 1.1</dd>
+      </dl>
+    </article>
+
+    <article class="credit-item" style="font-family: 'Bodoni Moda', serif;">
+      <h3>Bodoni Moda</h3>
+      <p class="credit-description">
+        A high-contrast display serif inspired by Giambattista Bodoni's work. Features
+        dramatic thick-thin strokes for elegant, sophisticated headings.
+      </p>
+      <dl class="credit-details">
+        <dt>Author</dt>
+        <dd>Owen Earl</dd>
+        <dt>Source</dt>
+        <dd>
+          <a href="https://github.com/nicolo-giorgi/bodoni-moda" target="_blank" rel="noopener noreferrer">
+            GitHub - Bodoni Moda
+          </a>
+        </dd>
+        <dt>License</dt>
+        <dd>SIL Open Font License 1.1</dd>
+      </dl>
+    </article>
   </section>
 
   <section class="credits-section">

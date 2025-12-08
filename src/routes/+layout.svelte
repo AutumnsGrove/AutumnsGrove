@@ -25,7 +25,9 @@
 		opendyslexic: "'OpenDyslexic', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
 		lexend: "'Lexend', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
 		cormorant: "'Cormorant', Georgia, 'Times New Roman', serif",
-		quicksand: "'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif"
+		quicksand: "'Quicksand', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+		ibmplexmono: "'IBM Plex Mono', 'Fira Code', 'Source Code Pro', monospace",
+		bodonimoda: "'Bodoni Moda', 'Didot', 'Bodoni MT', Georgia, serif"
 	};
 
 	// Apply font from server-loaded settings
@@ -420,6 +422,20 @@
 	@font-face {
 		font-family: 'Quicksand';
 		src: url('/fonts/Quicksand-Regular.ttf') format('truetype');
+		font-weight: normal;
+		font-style: normal;
+		font-display: swap;
+	}
+	@font-face {
+		font-family: 'IBM Plex Mono';
+		src: url('/fonts/IBMPlexMono-Regular.ttf') format('truetype');
+		font-weight: normal;
+		font-style: normal;
+		font-display: swap;
+	}
+	@font-face {
+		font-family: 'Bodoni Moda';
+		src: url('/fonts/BodoniModa-Regular.ttf') format('truetype');
 		font-weight: normal;
 		font-style: normal;
 		font-display: swap;
