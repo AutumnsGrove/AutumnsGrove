@@ -1,6 +1,6 @@
 <script>
   import { Card, Skeleton } from "@autumnsgrove/groveengine/ui";
-  import { api } from "$lib/utils/api.js";
+  import { api } from "@autumnsgrove/groveengine/utils";
 
   let { data } = $props();
 

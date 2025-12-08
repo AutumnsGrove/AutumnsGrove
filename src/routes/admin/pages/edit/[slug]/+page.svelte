@@ -4,7 +4,7 @@
   import { browser } from "$app/environment";
   import { MarkdownEditor } from "$lib/components";
   import { Input, Textarea, Button, toast } from "@autumnsgrove/groveengine/ui";
-  import { api } from "$lib/utils/api.js";
+  import { api } from "@autumnsgrove/groveengine/utils";
 
   let { data } = $props();
 
