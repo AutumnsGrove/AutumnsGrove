@@ -1,217 +1,146 @@
 # TODOs for AutumnsGrove
 
-> **Last Updated:** December 8, 2025 - GroveAuth integration complete
+> **Last Updated:** December 9, 2025 - Reorganized with current priorities at top
 
 ---
 
-## ✅ COMPLETE: GroveAuth Integration
+## 🎯 Current Priorities
 
-**Status:** GroveAuth centralized authentication is now integrated!
+### 🔧 Immediate Fixes
 
-**What Changed:**
-- Upgraded GroveEngine from 0.4.12 to 0.5.0
-- Replaced local magic-code auth with GroveAuth OAuth2/PKCE flow
-- Users now authenticate via `auth.grove.place` (Google, GitHub, or Magic Code)
-- Tokens: access_token (1hr) + refresh_token (30d) with auto-refresh
+#### RSS Feed Fix
+- **Status**: Broken – feed not updating with full content
+- **Issue**: Currently only includes post description, not full content, making it useless for RSS readers.
+- **Location**: `src/routes/api/feed/+server.js`
+- **Solution**: Add `<content:encoded>` element with full HTML content from markdown. Need to import `content` property from `getAllPosts` and include with proper XML escaping.
+- **Reference**: RSS 2.0 with `xmlns:content="http://purl.org/rss/1.0/modules/content/"`.
+- **Action**: Update feed generation to include full post content and verify caching.
 
-**New Files:**
-- `src/lib/auth/groveauth.ts` - Auth utility library
-- `src/routes/auth/login/+server.ts` - Redirects to GroveAuth
-- `src/routes/auth/callback/+server.ts` - Handles OAuth callback
+#### Admin Page 500 Error
+- **Status**: Fixed (per user confirmation)
+- **Note**: Previously broken after GroveAuth integration; now resolved. Ensure authentication flow works correctly.
 
-**Deleted Files:**
-- `src/routes/auth/login/+page.svelte` - Old magic code UI
-- `src/routes/auth/send-code/+server.js` - Old code generation
-- `src/routes/auth/verify-code/+server.js` - Old code verification
+#### Deployment Secrets
+- **Status**: Handled (per user confirmation)
+- **Details**: ANTHROPIC_API_KEY and GroveAuth secrets have been configured via `wrangler secret put`.
+- **Verification**: Run `./scripts/deploy-commands.sh` to confirm all secrets are set.
 
-**Deployment Requirements:**
-```bash
-wrangler secret put GROVEAUTH_CLIENT_ID     # 'autumnsgrove'
-wrangler secret put GROVEAUTH_CLIENT_SECRET # from GroveAuth
-wrangler secret put GROVEAUTH_REDIRECT_URI  # https://autumnsgrove.com/auth/callback
-```
+### 📋 Ready for Implementation (Spec‑Ready)
 
----
+These features have complete specifications and can be picked up next:
 
-## 🔲 Remaining Active Tasks
+| Feature | Effort | Spec Location | Notes |
+|---------|--------|---------------|-------|
+| Live Document Modes | 6‑8 hours | `docs/plans/live-document-modes-spec.md` | Multi‑mode editing (preview toggle, block editing, Zen mode) |
+| Long‑Horizon Context | 4‑6 hours | `docs/plans/long-horizon-context-spec.md` | Daily summary AI with historical context |
 
-### Deploy Pending
-- [ ] Deploy worker with `wrangler secret put ANTHROPIC_API_KEY`
-- [ ] Set GroveAuth secrets (see above)
+### 🚀 Upcoming Enhancements (Lower Priority)
 
-### RSS Feed Fix
-- [ ] Include full post content in RSS feed (currently only sends description, making it not useful for readers who want to read in their RSS app)
+#### Dashboard Improvements
+- **Task C**: Paginate to fetch all repos using GraphQL cursor pagination (currently only first 100).
+- **Project comparison charts**: Bar chart, radar/spider, activity timeline.
+- **Mobile responsiveness**: Charts need media queries and resize listeners.
+- **Loading states & animations**: Add skeleton loaders for charts.
+- **Lazy‑load Chart.js**: Dynamic import to reduce initial bundle size.
+- **Error boundaries**: Wrap chart components for graceful failures.
 
-### Dashboard Enhancements (Low Priority)
-- [ ] Task C: Paginate to fetch all repos using GraphQL cursor pagination
-- [ ] Project comparison charts (bar chart, radar/spider, activity timeline)
-- [ ] Mobile responsiveness improvements for charts
-- [ ] Loading states and animations
-- [ ] Lazy-load Chart.js (reduce initial bundle)
-- [ ] Add error boundaries for graceful failures
-
----
-
-## 📋 READY: Features with Complete Specs
-
-These features have comprehensive specifications and are ready for implementation:
-
-| Feature | Effort | Spec Location |
-|---------|--------|---------------|
-| Live Document Modes | 6-8 hours | `docs/plans/live-document-modes-spec.md` |
-| Long-Horizon Context | 4-6 hours | `docs/plans/long-horizon-context-spec.md` |
-
-### Live Document Modes Summary
-Multi-mode editing experience with three modes:
-1. **Live Preview Toggle** (Cmd+Shift+P) - GitHub-style edit/preview switch
-2. **Notion-Style Block Editing** (Cmd+Shift+L) - Click-to-edit blocks
-3. **Enhanced Zen Mode** (P key in Zen) - Preview toggle in fullscreen
-
-### Long-Horizon Context Summary
-Enable daily summary AI to recognize multi-day tasks by providing historical context from previous summaries. Includes context brief generation, multi-day task detection, and Anthropic prompt caching.
+#### Personal Knowledge Base Page
+- **Goal**: Aggregate recipes, raindrop articles, reference material, and Grove tools (scout, domains, music, search).
+- **Implementation**: New route `/knowledge` with sub‑sections.
+- **Status**: Idea stage; needs design and content gathering.
 
 ---
 
 ## ✅ Recently Completed
 
-### AI Writing Assistant (Dec 3, 2025) - Complete
-- [x] Non-intrusive panel that sits on the side as a minimized tab
-- [x] Grammar, spelling, and style analysis via Claude AI
-- [x] Tone analysis with trait visualization
-- [x] Local readability scoring (Flesch-Kincaid grade level)
-- [x] ASCII art "vibes" - text landscapes that create atmosphere
-- [x] Apply grammar fixes directly from suggestions
-- [x] Rate limiting (20 requests/hour) and usage tracking
-- [x] Settings page integration with enable/disable toggle
-- [x] Model selection (Haiku for speed, Sonnet for depth)
-- [x] Command palette integration when enabled
-- [x] Database schema for `ai_writing_requests` tracking
-- Spec: `docs/plans/ai-writing-assistant-spec.md`
+### GroveAuth Integration (Dec 8, 2025)
+- Upgraded GroveEngine to 0.5.0, replaced magic‑code auth with OAuth2/PKCE flow.
+- Users authenticate via `auth.grove.place` (Google, GitHub, or Magic Code).
+- New files: `src/lib/auth/groveauth.ts`, login/callback routes.
+- Deployment secrets configured.
 
-### Admin Page 500 Error (Dec 3, 2025) - Partially Fixed
-- [x] Fixed `@autumnsgrove/groveengine` import resolution at Cloudflare Pages runtime
-- [x] Replaced all imports with direct `$lib/*` imports across 45+ files
-- [x] Commits: `6a13638`, `09635bf`
-- ⚠️ **Still broken** - admin page still not accessible, needs further investigation
+### AI Writing Assistant (Dec 3, 2025)
+- Non‑intrusive side panel with grammar, spelling, style analysis via Claude AI.
+- Tone analysis, readability scoring, ASCII art “vibes”.
+- Apply fixes directly, rate limiting, model selection, command‑palette integration.
 
-### RSS Feed (Dec 1, 2025)
-- [x] Created RSS endpoint at `/api/feed`
-- [x] Added autodiscovery link and `/rss.xml` redirect
-- [x] Proper XML escaping, CDATA handling, 1-hour cache
-
-### Recipes D1 Integration (Dec 1, 2025)
-- [x] Updated D1 schema with recipes table
-- [x] Added sync endpoints to sync-posts worker
-- [x] Created GitHub Actions workflow for recipe sync
-- [x] Updated admin recipes page with D1 fetch and fallback
+### RSS Feed & Recipes D1 Integration (Dec 1, 2025)
+- RSS endpoint at `/api/feed` with autodiscovery and `/rss.xml` redirect.
+- D1 schema updated with recipes table; sync endpoints and GitHub Actions workflow.
+- Admin recipes page uses D1 with fallback.
 
 ### Security & Polish Audit (Nov 29, 2025)
-All critical, high, medium, and low priority items completed:
-- [x] XSS protection with DOMPurify
-- [x] CSRF protection on all POST/PUT/DELETE endpoints
-- [x] Security headers (X-Frame-Options, CSP, etc.)
-- [x] Console-to-toast error migration
-- [x] Loading states and accessibility improvements
-- [x] Input validation and rate limiting improvements
-- [x] Dependabot and security documentation
+- XSS protection (DOMPurify), CSRF protection on all mutating endpoints.
+- Security headers, console‑to‑toast error migration, input validation, rate limiting.
+- Dependabot and security documentation.
 
 ### AI Timeline Enhancements (Nov 28, 2025)
-- [x] Multi-provider AI support (Anthropic Claude, Cloudflare Workers AI)
-- [x] Model selector with 8 models available
-- [x] Cost tracking with `ai_usage` and `ai_requests` tables
-- [x] Background job processing infrastructure
-- [x] Timeline visualizations (sparklines, LOC bars, heatmap)
-- [x] Improved prompt tone (6/10 professional, 4/10 fun)
+- Multi‑provider AI support (Anthropic Claude, Cloudflare Workers AI).
+- Model selector (8 models), cost tracking, background job processing.
+- Timeline visualizations (sparklines, LOC bars, heatmap).
 
-### Markdown Editor - Grove Writer (Nov 28, 2025)
-Full feature set completed:
-- [x] Slash commands, command palette (Cmd+K)
-- [x] Zen mode with typewriter scrolling
-- [x] Campfire sessions with timer and ember animation
-- [x] Mermaid diagram previews
-- [x] Custom markdown snippets
-- [x] Ambient sounds (forest, rain, campfire, night, café)
-- [x] Auto-save drafts, drag-and-drop images
-- [x] Writing goals and reading time estimates
+### Markdown Editor – Grove Writer (Nov 28, 2025)
+- Slash commands, command palette, Zen mode, campfire sessions.
+- Mermaid diagram previews, custom snippets, ambient sounds.
+- Auto‑save drafts, drag‑and‑drop images, writing goals.
 
 ### Admin Panel Improvements (Nov 26, 2025)
-- [x] Fixed sidebar extending into footer
-- [x] Standardized border-radius with CSS variables
-- [x] Image gallery sorting (newest, oldest, A-Z, size)
-- [x] Pages management system with D1 sync
-- [x] Bidirectional sync workflow (files ↔ D1 ↔ admin)
+- Fixed sidebar extending into footer, standardized border‑radius.
+- Image gallery sorting, pages management with D1 sync, bidirectional sync workflow.
 
-### shadcn-svelte Migration (Nov 2025)
-- [x] 12 wrapper components created (Button, Card, Badge, Input, Select, Tabs, Dialog, Accordion, Sheet, Toast, Skeleton, Table)
-- [x] All admin and public routes migrated
-- [x] Reduced CSS by ~900+ lines
-- [x] Documentation: `docs/shadcn-migration-complete.md`
+### shadcn‑svelte Migration (Nov 2025)
+- 12 wrapper components created; all admin and public routes migrated.
+- Reduced CSS by ~900+ lines.
 
 ---
 
-## ✅ Completed Archive
+## 📚 Completed Archive
 
-### Infrastructure & Core (Completed)
-- [x] Project initialized from BaseProject template
-- [x] SvelteKit with Cloudflare Pages adapter
-- [x] R2 bucket: `autumnsgrove-images` with custom domain `cdn.autumnsgrove.com`
-- [x] KV namespace: `CACHE_KV`
-- [x] D1 database: `autumnsgrove-git-stats`
-- [x] Wrangler.toml with all bindings
+### Infrastructure & Core
+- Project initialized from BaseProject template.
+- SvelteKit with Cloudflare Pages adapter.
+- R2 bucket `autumnsgrove‑images` with custom domain `cdn.autumnsgrove.com`.
+- KV namespace `CACHE_KV`, D1 database `autumnsgrove‑git‑stats`.
+- Wrangler.toml with all bindings.
 
-### Git Dashboard (Completed)
-- [x] Full API routes for user, repos, stats, todos, history, contributions
-- [x] Dashboard page with charts, heatmap, recent commits
-- [x] Time range selector (All Time / 6 Months / 30 Days)
-- [x] D1 database synced (10 repos, 342 commits)
-- [x] Triple-click avatar refresh with rate limiting
+### Git Dashboard
+- Full API routes for user, repos, stats, todos, history, contributions.
+- Dashboard with charts, heatmap, recent commits, time‑range selector.
+- D1 database synced (10 repos, 342 commits).
+- Triple‑click avatar refresh with rate limiting.
 
-### Daily Summary Timeline (Completed Nov 27, 2025)
-- [x] Cloudflare Worker for daily summary generation
-- [x] Llama 3.1 70B (Workers AI) + Claude Haiku 4.5 integration
-- [x] Cron trigger at 11:59 PM Eastern daily
-- [x] Admin controls for manual trigger and backfill
-- [x] Worker URL: `https://autumnsgrove-daily-summary.m7jv4v7npb.workers.dev`
+### Daily Summary Timeline (Nov 27, 2025)
+- Cloudflare Worker for daily summary generation.
+- Llama 3.1 70B (Workers AI) + Claude Haiku 4.5 integration.
+- Cron trigger at 11:59 PM Eastern daily; admin controls for manual trigger and backfill.
 
-### Admin Panel (Completed Nov 2025)
-- [x] Dashboard, blog, recipes, images, logs, analytics, settings pages
-- [x] Authentication with logged-in indicator
-- [x] Theme-responsive styling
+### Admin Panel
+- Dashboard, blog, recipes, images, logs, analytics, settings pages.
+- Authentication with logged‑in indicator, theme‑responsive styling.
 
-### Image & Gallery Systems (Completed)
-- [x] R2 upload helper script
-- [x] Multi-image gallery with navigation, keyboard/touch support
-- [x] Lightbox integration with ZoomableImage
-- [x] CDN image deletion with CSRF protection
+### Image & Gallery Systems
+- R2 upload helper script.
+- Multi‑image gallery with navigation, keyboard/touch support.
+- Lightbox integration with ZoomableImage, CDN image deletion with CSRF protection.
 
 ---
 
 ## 💡 Future Ideas
 
 ### UI & Styling
-- Custom themes (beyond dark/light)
-- Component library expansion (Alert, Popover, Dropdown wrappers)
-- Image optimization with `@sveltejs/enhanced-img`
+- Custom themes (beyond dark/light).
+- Component library expansion (Alert, Popover, Dropdown wrappers).
+- Image optimization with `@sveltejs/enhanced‑img`.
 
 ### User Features (Far Future)
-- Public commenting on posts
-- User likes/upvotes system
-- OAuth integration (GitHub, Google)
+- Public commenting on posts.
+- User likes/upvotes system.
+- OAuth integration (GitHub, Google).
 
 ### Inspiration
-- [マリウス.com](https://マリウス.com/collection/make/) - Hacker aesthetic
-- [joshtronic.com](https://joshtronic.com/) - Text-focused design
-- [bagerbach.com](https://bagerbach.com/) - Clean blog
-
----
-personal todos
-- knowledge base page
-    - recipes
-    - raindrop articles/shared links
-    - reference material (likely all markdown files)
-    - tools
-        - link all of the grove tools
-        - scout, domains, music, search, etc
+- [マリウス.com](https://マリウス.com/collection/make/) – Hacker aesthetic.
+- [joshtronic.com](https://joshtronic.com/) – Text‑focused design.
+- [bagerbach.com](https://bagerbach.com/) – Clean blog.
 
 ---
 
@@ -237,9 +166,9 @@ npx wrangler pages dev -- npm run dev
 ### Cloudflare Resources
 | Resource | ID/Name |
 |----------|---------|
-| R2 Bucket | `autumnsgrove-images` |
+| R2 Bucket | `autumnsgrove‑images` |
 | KV Namespace | `CACHE_KV` |
-| D1 Database | `autumnsgrove-git-stats` |
+| D1 Database | `autumnsgrove‑git‑stats` |
 
 ### API Endpoints
 | Endpoint | Description | Cache |
@@ -256,24 +185,11 @@ npx wrangler pages dev -- npm run dev
 
 ## 🚀 Next Session Checklist
 
-### 1. Deploy Recent Changes
-```bash
-./scripts/deploy-commands.sh
-```
-
-### 2. Verify Features
-- `/api/feed` - RSS XML
-- `/rss.xml` - Redirect works
-- `/admin/recipes` - D1 loading
-
-### 3. Next Implementation Options
-
-| Feature | Effort | Status |
-|---------|--------|--------|
-| Live Document Modes | 6-8 hours | Spec ready |
-| Long-Horizon Context | 4-6 hours | Spec ready |
-| Dashboard Pagination | 2-3 hours | Low priority |
+1. **Fix RSS feed** – implement full‑content inclusion.
+2. **Verify admin page** – ensure authentication works after GroveAuth.
+3. **Consider starting Live Document Modes or Long‑Horizon Context** (if RSS fix is quick).
+4. **Update deployment script** if any new secrets are needed.
 
 ---
 
-*Condensed December 3, 2025 - Reduced from 1,388 to ~300 lines while preserving all completed items for reference*
+*Condensed December 9, 2025 – Reorganized with current priorities at top, kept completed items for context.*
