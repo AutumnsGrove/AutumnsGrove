@@ -70,13 +70,17 @@ jobs:
       - name: Build
         run: pnpm run build
 
+      - name: Get commit title
+        id: commit
+        run: echo "title=$(git log -1 --format=%s | head -c 100)" >> $GITHUB_OUTPUT
+
       - name: Deploy to Cloudflare Pages (Production)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy .svelte-kit/cloudflare --project-name=autumns-grove
+          command: pages deploy .svelte-kit/cloudflare --project-name=autumns-grove --commit-dirty=true --commit-message="${{ steps.commit.outputs.title }}"
 
       - name: Deploy to Cloudflare Pages (Preview)
         if: github.event_name == 'pull_request'
@@ -84,4 +88,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy .svelte-kit/cloudflare --project-name=autumns-grove --branch=${{ github.head_ref }}
+          command: pages deploy .svelte-kit/cloudflare --project-name=autumns-grove --branch=${{ github.head_ref }} --commit-dirty=true --commit-message="${{ github.event.pull_request.title }}"
