@@ -34,4 +34,6 @@ I'd love to hear from you! Whether you have questions, feedback, or just want to
 
 Found a bug or have a suggestion for the site? You can open an issue on the [GitHub repository](https://github.com/AutumnsGrove/AutumnsGrove/issues).
 
+Learn how the site was made, and all the open source projects powering it [Credits](/credits)
+
 Thanks for visiting AutumnsGrove!
