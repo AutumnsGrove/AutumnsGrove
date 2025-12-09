@@ -29,6 +29,13 @@ import {
   DEFAULT_MODEL,
 } from "./providers.js";
 import { getJob, getRecentJobs, cleanupOldJobs } from "./jobs.js";
+import {
+  generateContextBrief,
+  detectTask,
+  getHistoricalContext,
+  detectContinuation,
+  buildDetectedFocus,
+} from "./context.js";
 
 // GraphQL query to fetch commits for a specific date range
 const COMMITS_QUERY = `
@@ -262,13 +269,32 @@ async function generateSummary(
 
 /**
  * Store daily summary in D1
+ * @param {D1Database} db - D1 database binding
+ * @param {string} date - Date in YYYY-MM-DD format
+ * @param {object} summary - Parsed summary from AI
+ * @param {Array} commits - Array of commit objects
+ * @param {object} contextData - Context data for long-horizon tracking
+ * @param {object|null} contextData.contextBrief - Condensed brief for future context
+ * @param {object|null} contextData.detectedFocus - Detected task focus
+ * @param {string|null} contextData.continuationOf - Start date if continuing multi-day task
+ * @param {number} contextData.focusStreak - Consecutive days on same task
  */
-async function storeSummary(db, date, summary, commits) {
+async function storeSummary(db, date, summary, commits, contextData = {}) {
   const reposActive = [...new Set(commits.map((c) => c.repo))];
   const totalAdditions = commits.reduce((sum, c) => sum + c.additions, 0);
   const totalDeletions = commits.reduce((sum, c) => sum + c.deletions, 0);
   const gutterJson = summary.gutter ? JSON.stringify(summary.gutter) : null;
   const modelString = `${summary.provider}:${summary.model}`;
+
+  // Context tracking data
+  const contextBriefJson = contextData.contextBrief
+    ? JSON.stringify(contextData.contextBrief)
+    : null;
+  const detectedFocusJson = contextData.detectedFocus
+    ? JSON.stringify(contextData.detectedFocus)
+    : null;
+  const continuationOf = contextData.continuationOf || null;
+  const focusStreak = contextData.focusStreak || 0;
 
   await db
     .prepare(
@@ -276,8 +302,9 @@ async function storeSummary(db, date, summary, commits) {
     INSERT INTO daily_summaries (
       summary_date, brief_summary, detailed_timeline, gutter_content,
       commit_count, repos_active, total_additions, total_deletions,
-      ai_model, updated_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
+      ai_model, context_brief, detected_focus, continuation_of, focus_streak,
+      updated_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))
     ON CONFLICT(summary_date) DO UPDATE SET
       brief_summary = excluded.brief_summary,
       detailed_timeline = excluded.detailed_timeline,
@@ -287,6 +314,10 @@ async function storeSummary(db, date, summary, commits) {
       total_additions = excluded.total_additions,
       total_deletions = excluded.total_deletions,
       ai_model = excluded.ai_model,
+      context_brief = excluded.context_brief,
+      detected_focus = excluded.detected_focus,
+      continuation_of = excluded.continuation_of,
+      focus_streak = excluded.focus_streak,
       updated_at = datetime('now')
   `,
     )
@@ -300,6 +331,10 @@ async function storeSummary(db, date, summary, commits) {
       totalAdditions,
       totalDeletions,
       modelString,
+      contextBriefJson,
+      detectedFocusJson,
+      continuationOf,
+      focusStreak,
     )
     .run();
 }
@@ -314,8 +349,9 @@ async function storeRestDay(db, date) {
     INSERT INTO daily_summaries (
       summary_date, brief_summary, detailed_timeline,
       commit_count, repos_active, total_additions, total_deletions,
-      ai_model, updated_at
-    ) VALUES (?, NULL, NULL, 0, '[]', 0, 0, NULL, datetime('now'))
+      ai_model, context_brief, detected_focus, continuation_of, focus_streak,
+      updated_at
+    ) VALUES (?, NULL, NULL, 0, '[]', 0, 0, NULL, NULL, NULL, NULL, 0, datetime('now'))
     ON CONFLICT(summary_date) DO UPDATE SET
       brief_summary = NULL,
       detailed_timeline = NULL,
@@ -324,6 +360,10 @@ async function storeRestDay(db, date) {
       total_additions = 0,
       total_deletions = 0,
       ai_model = NULL,
+      context_brief = NULL,
+      detected_focus = NULL,
+      continuation_of = NULL,
+      focus_streak = 0,
       updated_at = datetime('now')
   `,
     )
@@ -377,15 +417,48 @@ async function generateDailySummary(
     ownerName,
     providerModel,
   );
-  await storeSummary(env.DB, summaryDate, summary, commits);
+
+  // Generate context data for long-horizon tracking
+  // Phase 1: Just store context_brief, don't use historical context yet
+  const reposActive = [...new Set(commits.map((c) => c.repo))];
+  const contextBrief = generateContextBrief(summary, commits);
+  contextBrief.date = summaryDate;
+
+  const detectedTaskType = detectTask(summary, commits);
+  const detectedFocus = buildDetectedFocus(detectedTaskType, summaryDate, reposActive);
+
+  // Get historical context and detect continuation (for streak calculation)
+  // Note: Not yet using historical context in prompts - just collecting data
+  let continuation = null;
+  let focusStreak = 0;
+
+  try {
+    const historicalContext = await getHistoricalContext(env.DB, summaryDate);
+    continuation = detectContinuation(historicalContext, detectedTaskType);
+    focusStreak = continuation ? continuation.dayCount : (detectedTaskType ? 1 : 0);
+    console.log(`Context: detected=${detectedTaskType}, streak=${focusStreak}, continuation=${continuation?.startDate || 'none'}`);
+  } catch (error) {
+    console.error('Failed to get historical context (non-fatal):', error);
+  }
+
+  const contextData = {
+    contextBrief,
+    detectedFocus,
+    continuationOf: continuation?.startDate || null,
+    focusStreak,
+  };
+
+  await storeSummary(env.DB, summaryDate, summary, commits, contextData);
 
   return {
     success: true,
     date: summaryDate,
     type: "summary",
     commit_count: commits.length,
-    repos: [...new Set(commits.map((c) => c.repo))],
+    repos: reposActive,
     brief: summary.brief,
+    detectedFocus: detectedTaskType,
+    focusStreak,
     provider: summary.provider,
     model: summary.model,
     cost: summary.cost,
