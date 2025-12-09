@@ -32,7 +32,19 @@ These features have complete specifications and can be picked up next:
 | Feature | Effort | Spec Location | Notes |
 |---------|--------|---------------|-------|
 | Live Document Modes | 6‑8 hours | `docs/plans/live-document-modes-spec.md` | Multi‑mode editing (preview toggle, block editing, Zen mode) |
-| Long‑Horizon Context | 4‑6 hours | `docs/plans/long-horizon-context-spec.md` | Daily summary AI with historical context |
+| Long‑Horizon Context Phase 2 | 2‑3 hours | `docs/plans/long-horizon-context-spec.md` | Enable context‑aware prompts & timeline UI indicators |
+
+#### Long‑Horizon Context Status
+- **Phase 1 Complete (Dec 8, 2025):** Data collection infrastructure deployed
+  - `context.js` module with task detection patterns
+  - Schema migration adding `context_brief`, `detected_focus`, `continuation_of`, `focus_streak`
+  - Worker now stores context data with each summary
+- **Phase 2 Pending:** Enable AI to *use* historical context in prompts
+  - Modify `prompts.js` to include recent activity context
+  - Add continuation acknowledgment ("Day 3 of auth refactor...")
+  - Add timeline UI badge showing focus streak
+  - Create debug API endpoint `/api/timeline/context/[date]`
+- **Current state:** Context data is being collected but AI doesn't reference it yet
 
 ### 🚀 Upcoming Enhancements (Lower Priority)
 
@@ -186,10 +198,9 @@ npx wrangler pages dev -- npm run dev
 ## 🚀 Next Session Checklist
 
 1. **Fix RSS feed** – implement full‑content inclusion.
-2. **Verify admin page** – ensure authentication works after GroveAuth.
-3. **Consider starting Live Document Modes or Long‑Horizon Context** (if RSS fix is quick).
-4. **Update deployment script** if any new secrets are needed.
+2. **Long‑Horizon Context Phase 2** – Enable context‑aware AI prompts (after 2‑4 days of data collection).
+3. **Consider starting Live Document Modes** – Multi‑mode editing for Grove Writer.
 
 ---
 
-*Condensed December 9, 2025 – Reorganized with current priorities at top, kept completed items for context.*
+*Updated December 9, 2025 – Long‑Horizon Context Phase 1 complete, Phase 2 pending.*
