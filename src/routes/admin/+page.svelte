@@ -20,17 +20,17 @@
 
   let healthStatus = $state(null);
   let loading = $state(true);
-  let blogStats = $state(null);
+  let postCount = $state(null);
 
   async function fetchHealth() {
     loading = true;
     try {
-      const [health, stats] = await Promise.all([
+      const [health, postsData] = await Promise.all([
         api.get('/api/git/health'),
-        api.get('/api/blog/stats').catch(() => null)
+        api.get('/api/posts').catch(() => null)
       ]);
       healthStatus = health;
-      blogStats = stats;
+      postCount = postsData?.posts?.length ?? null;
     } catch (error) {
       console.error('Failed to fetch health:', error);
       healthStatus = { status: 'error', error: error.message };
@@ -122,7 +122,7 @@
           {#if loading}
             <Skeleton class="h-6 w-16" />
           {:else}
-            <span class="stat-value">{blogStats?.total_posts ?? '—'}</span>
+            <span class="stat-value">{postCount ?? '—'}</span>
           {/if}
         </div>
       </div>

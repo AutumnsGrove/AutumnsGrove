@@ -1,5 +1,15 @@
 <script>
   import { Toast } from "@autumnsgrove/groveengine/ui";
+  import {
+    LayoutDashboard,
+    FileText,
+    Files,
+    Image,
+    BarChart3,
+    Calendar,
+    Terminal,
+    Settings
+  } from 'lucide-svelte';
 
   let { data, children } = $props();
   let sidebarOpen = $state(false);
@@ -48,35 +58,35 @@
 
     <nav class="sidebar-nav">
       <a href="/admin" class="nav-item" onclick={closeSidebar}>
-        <span class="nav-icon">&#x1F3E0;</span>
+        <span class="nav-icon"><LayoutDashboard size={18} /></span>
         Dashboard
       </a>
       <a href="/admin/blog" class="nav-item" onclick={closeSidebar}>
-        <span class="nav-icon">&#x1F4DD;</span>
+        <span class="nav-icon"><FileText size={18} /></span>
         Blog Posts
       </a>
       <a href="/admin/pages" class="nav-item" onclick={closeSidebar}>
-        <span class="nav-icon">&#x1F4C4;</span>
+        <span class="nav-icon"><Files size={18} /></span>
         Pages
       </a>
       <a href="/admin/images" class="nav-item" onclick={closeSidebar}>
-        <span class="nav-icon">&#x1F4F7;</span>
+        <span class="nav-icon"><Image size={18} /></span>
         Images
       </a>
       <a href="/admin/analytics" class="nav-item" onclick={closeSidebar}>
-        <span class="nav-icon">&#x1F4CA;</span>
+        <span class="nav-icon"><BarChart3 size={18} /></span>
         Analytics
       </a>
       <a href="/admin/timeline" class="nav-item" onclick={closeSidebar}>
-        <span class="nav-icon">&#x1F4C5;</span>
+        <span class="nav-icon"><Calendar size={18} /></span>
         Timeline
       </a>
       <a href="/admin/logs" class="nav-item" onclick={closeSidebar}>
-        <span class="nav-icon">&#x1F5A5;</span>
+        <span class="nav-icon"><Terminal size={18} /></span>
         Console
       </a>
       <a href="/admin/settings" class="nav-item" onclick={closeSidebar}>
-        <span class="nav-icon">&#x2699;</span>
+        <span class="nav-icon"><Settings size={18} /></span>
         Settings
       </a>
     </nav>
@@ -225,7 +235,11 @@
     color: var(--color-primary);
   }
   .nav-icon {
-    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    color: var(--grove-500);
   }
   .sidebar-footer {
     padding: 1rem 1.5rem;
