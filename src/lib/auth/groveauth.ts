@@ -3,7 +3,7 @@
  * Centralized authentication for AutumnsGrove via auth.grove.place
  */
 
-const AUTH_BASE_URL = 'https://auth.grove.place';
+const AUTH_BASE_URL = 'https://auth-api.grove.place';
 
 // ==================== Types ====================
 
