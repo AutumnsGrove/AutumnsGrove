@@ -1,12 +1,20 @@
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
+
+import type { AuthTokens } from '$lib/auth/groveauth';
+
 declare global {
   namespace App {
     // interface Error {}
     interface Locals {
       user: {
+        id: string;
         email: string;
+        name: string | null;
       } | null;
+      csrfToken: string;
+      // Internal: used to pass refreshed tokens to response
+      _newTokens?: AuthTokens;
     }
     // interface PageData {}
     // interface PageState {}
@@ -21,10 +29,14 @@ declare global {
         // Secrets
         GITHUB_TOKEN: string;
         ANTHROPIC_API_KEY: string;
-        // Auth secrets
-        SESSION_SECRET: string;
-        RESEND_API_KEY: string;
-        ALLOWED_ADMIN_EMAILS: string;
+        // GroveAuth configuration
+        GROVEAUTH_CLIENT_ID: string;
+        GROVEAUTH_CLIENT_SECRET: string;
+        GROVEAUTH_REDIRECT_URI: string;
+        // Legacy auth secrets (keep for rollback, remove after stable)
+        SESSION_SECRET?: string;
+        RESEND_API_KEY?: string;
+        ALLOWED_ADMIN_EMAILS?: string;
       };
       context: {
         waitUntil(promise: Promise<unknown>): void;

@@ -1,29 +1,35 @@
 # TODOs for AutumnsGrove
 
-> **Last Updated:** December 3, 2025 - Condensed and synced with recent commits
+> **Last Updated:** December 8, 2025 - GroveAuth integration complete
 
 ---
 
-## ✅ READY: GroveEngine Package Migration
+## ✅ COMPLETE: GroveAuth Integration
 
-**Status:** `@autumnsgrove/groveengine` is now published on npm!
+**Status:** GroveAuth centralized authentication is now integrated!
 
-**npm package:** https://www.npmjs.com/package/@autumnsgrove/groveengine
+**What Changed:**
+- Upgraded GroveEngine from 0.4.12 to 0.5.0
+- Replaced local magic-code auth with GroveAuth OAuth2/PKCE flow
+- Users now authenticate via `auth.grove.place` (Google, GitHub, or Magic Code)
+- Tokens: access_token (1hr) + refresh_token (30d) with auto-refresh
 
-**Current State:**
-- AutumnsGrove uses direct `$lib/*` imports (works perfectly)
-- GroveEngine package is live on npm (`^0.1.0`)
-- Migration planning complete
+**New Files:**
+- `src/lib/auth/groveauth.ts` - Auth utility library
+- `src/routes/auth/login/+server.ts` - Redirects to GroveAuth
+- `src/routes/auth/callback/+server.ts` - Handles OAuth callback
 
-**Full Specification:** `docs/plans/MIGRATION-MASTER-PLAN.md`
+**Deleted Files:**
+- `src/routes/auth/login/+page.svelte` - Old magic code UI
+- `src/routes/auth/send-code/+server.js` - Old code generation
+- `src/routes/auth/verify-code/+server.js` - Old code verification
 
-**Quick Reference - Phases:**
-1. ~~Publish GroveEngine to npm~~ ✅ Done!
-2. Update AutumnsGrove dependencies (~15 min)
-3. Update import paths (~2-3 hours, see import mapping in spec)
-4. Delete redundant local code (~30 min)
-5. Final validation (~1 hour)
-6. Deploy & commit (~15 min)
+**Deployment Requirements:**
+```bash
+wrangler secret put GROVEAUTH_CLIENT_ID     # 'autumnsgrove'
+wrangler secret put GROVEAUTH_CLIENT_SECRET # from GroveAuth
+wrangler secret put GROVEAUTH_REDIRECT_URI  # https://autumnsgrove.com/auth/callback
+```
 
 ---
 
@@ -31,9 +37,7 @@
 
 ### Deploy Pending
 - [ ] Deploy worker with `wrangler secret put ANTHROPIC_API_KEY`
-
-### Admin Page Still Broken
-- [ ] Admin page (`/admin`) still not accessible after GroveEngine import fix - needs further investigation
+- [ ] Set GroveAuth secrets (see above)
 
 ### RSS Feed Fix
 - [ ] Include full post content in RSS feed (currently only sends description, making it not useful for readers who want to read in their RSS app)
