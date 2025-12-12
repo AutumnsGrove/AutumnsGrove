@@ -4,10 +4,10 @@ Building things, learning in public, and exploring ideas.
 
 ## Currently Working On
 - 🌱 [AutumnsGrove](https://github.com/AutumnsGrove/AutumnsGrove) - Personal blog built with SvelteKit
-- 🌱 [GroveEngine](https://github.com/AutumnsGrove/GroveEngine) - Multi-tenant blog platform built on Cloudflare with SvelteKit
+- 🌱 [Lattice](https://github.com/AutumnsGrove/GroveEngine) - Multi-tenant blog platform built on Cloudflare with SvelteKit
 - 🌱 [GroveScout](https://github.com/AutumnsGrove/GroveScout) - Searching for deals. But fast.
-- 🌱 [GroveDomainTool](https://github.com/AutumnsGrove/GroveDomainTool) - Tool for aggressively finding domain names for clients
-- 🌱 [GroveMusic](https://github.com/AutumnsGrove/GroveMusic) - Finding similar songs through agentic searches to curate playlists
+- 🌱 [Acorn](https://github.com/AutumnsGrove/GroveDomainTool) - AI-powered domain discovery tool
+- 🌱 [Aria](https://github.com/AutumnsGrove/GroveMusic) - Music curation through sonic DNA matching
 - 🌱 [epub2tts](https://github.com/AutumnsGrove/epub2tts) - Full pipeline to convert epub files into Audiobooks with Kokoro running locally
 - 🌱 [OmniParser](https://github.com/AutumnsGrove/OmniParser) - Universal parser, anything → markdown
 - 🌱 [ProjectReminder](https://github.com/AutumnsGrove/ProjectReminder) - A very personalized Reminders app
@@ -18,7 +18,7 @@ Building things, learning in public, and exploring ideas.
 
 ## Web Applications & Projects
 - [AutumnsGrove](https://github.com/AutumnsGrove/AutumnsGrove) - SvelteKit blog deployed to Cloudflare Pages ([docs](WEBSITE.md))
-- [GroveEngine](https://github.com/AutumnsGrove/GroveEngine) - Multi-tenant blog platform built on Cloudflare with SvelteKit
+- [Lattice](https://github.com/AutumnsGrove/GroveEngine) - Multi-tenant blog platform built on Cloudflare with SvelteKit
 - [GroveScout](https://github.com/AutumnsGrove/GroveScout) - Searching for deals. But fast.
 - [CommandCenter](https://github.com/AutumnsGrove/CommandCenter) - Job searching dashboard
 - [ClaudeLocal](https://github.com/AutumnsGrove/ClaudeLocal) - Local version of Claude Desktop app with API keys and Prisma DB
@@ -44,7 +44,7 @@ Building things, learning in public, and exploring ideas.
 - [Kimi-Coder-Mcp](https://github.com/AutumnsGrove/Kimi-Coder-Mcp) - MCP Server exposing the Kimi CLI agent for use with other agentic tools
 - [SchematronMCP](https://github.com/AutumnsGrove/SchematronMCP) - MCP server for HTML-to-JSON extraction using Schematron-3B model
 - [MermaidVisualizer](https://github.com/AutumnsGrove/MermaidVisualizer) - Tool to quickly generate PNG/SVG files based on Mermaid charts in Markdown files
-- [grove-domain-tool](https://github.com/AutumnsGrove/grove-domain-tool) - Tool for aggressively finding domain names for clients
+- [Acorn CLI](https://github.com/AutumnsGrove/grove-domain-tool) - Domain discovery command-line tool
 
 ## CLI Tools & Utilities
 - [ASCIIClock](https://github.com/AutumnsGrove/ASCIIClock) - Beautiful ASCII analog clock for terminal with color-coded hands and stopwatch
