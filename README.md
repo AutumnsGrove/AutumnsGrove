@@ -1,32 +1,44 @@
+```
+    *  .  *       .             *
+                         *
+ *   .        *       .       .       *
+    .     *                   .
+        .     .  *        *
+```
+
 # Hi, I'm Autumn 👋
 
 Building things, learning in public, and exploring ideas.
 
 ## Currently Working On
-- 🌱 [AutumnsGrove](https://github.com/AutumnsGrove/AutumnsGrove) - Personal blog built with SvelteKit
-- 🌱 [Lattice](https://github.com/AutumnsGrove/GroveEngine) - Multi-tenant blog platform built on Cloudflare with SvelteKit
-- 🌱 [GroveScout](https://github.com/AutumnsGrove/GroveScout) - Searching for deals. But fast.
-- 🌱 [Acorn](https://github.com/AutumnsGrove/GroveDomainTool) - AI-powered domain discovery tool
-- 🌱 [Aria](https://github.com/AutumnsGrove/GroveMusic) - Music curation through sonic DNA matching
-- 🌱 [epub2tts](https://github.com/AutumnsGrove/epub2tts) - Full pipeline to convert epub files into Audiobooks with Kokoro running locally
-- 🌱 [OmniParser](https://github.com/AutumnsGrove/OmniParser) - Universal parser, anything → markdown
-- 🌱 [ProjectReminder](https://github.com/AutumnsGrove/ProjectReminder) - A very personalized Reminders app
-- 🌱 [RecipeGrove](https://github.com/AutumnsGrove/RecipeGrove) - Smart Recipe documents with [EmojiKitchen](https://github.com/AutumnsGrove/EmojiKitchen)
+- 🌲 Building the [Grove Ecosystem](#grove-ecosystem)
 - 💭 Thinking about software simplicity and design
 - 📝 [Writing](https://autumnsgrove.com/blog) about tech, projects, and ideas
-- 📦 Building npm packages under [@groveengine](https://www.npmjs.com/org/groveengine)
+
+## Grove Ecosystem
+
+> *A forest of voices. Every user is a tree in the grove.*
+
+| Project | Description | Links |
+|---------|-------------|-------|
+| **[AutumnsGrove](https://github.com/AutumnsGrove/AutumnsGrove)** | Personal blog and digital home | [autumnsgrove.com](https://autumnsgrove.com) |
+| **[Lattice](https://github.com/AutumnsGrove/GroveEngine)** | Core platform powering every Grove site | npm package |
+| **[Meadow](https://github.com/AutumnsGrove/GroveSocial)** | Social media that remembers what "social" means | meadow.grove.place |
+| **[Acorn](https://github.com/AutumnsGrove/GroveDomainTool)** | AI-powered domain discovery | acorn.grove.place |
+| **[Heartwood](https://github.com/AutumnsGrove/GroveAuth)** | Centralized authentication for the Grove ecosystem | heartwood.grove.place |
+| **[Cache](https://github.com/AutumnsGrove/GroveBackups)** | Automated backup system | *internal* |
+| **[Trove](https://github.com/AutumnsGrove/TreasureTrove)** | Library book discovery with visual shelf markers | trove.grove.place |
+| **[Outpost](https://github.com/AutumnsGrove/GroveMC)** | On-demand Minecraft server for friends | mc.grove.place |
+| **[Aria](https://github.com/AutumnsGrove/GroveMusic)** | Music curation through sonic DNA matching | aria.grove.place |
+| **[Scout](https://github.com/AutumnsGrove/GroveScout)** | Searching for deals. But fast. | scout.grove.place |
+| **[EmojiGrove](https://github.com/AutumnsGrove/RecipeGrove)** | Smart Recipe documents with EmojiKitchen | *pending rebrand* |
 
 ## Web Applications & Projects
-- [AutumnsGrove](https://github.com/AutumnsGrove/AutumnsGrove) - SvelteKit blog deployed to Cloudflare Pages ([docs](WEBSITE.md))
-- [Lattice](https://github.com/AutumnsGrove/GroveEngine) - Multi-tenant blog platform built on Cloudflare with SvelteKit
-- [GroveScout](https://github.com/AutumnsGrove/GroveScout) - Searching for deals. But fast.
 - [CommandCenter](https://github.com/AutumnsGrove/CommandCenter) - Job searching dashboard
 - [ClaudeLocal](https://github.com/AutumnsGrove/ClaudeLocal) - Local version of Claude Desktop app with API keys and Prisma DB
 - [LibraryEnhancer](https://github.com/AutumnsGrove/LibraryEnhancer) - Browser extension for enhanced library features
 - [epub2tts](https://github.com/AutumnsGrove/epub2tts) - Full pipeline to convert epub files into Audiobooks with Kokoro running locally
 - [OmniParser](https://github.com/AutumnsGrove/OmniParser) - Universal parser, anything → markdown
-- [ProjectReminder](https://github.com/AutumnsGrove/ProjectReminder) - A very personalized Reminders app
-- [RecipeGrove](https://github.com/AutumnsGrove/RecipeGrove) - Smart Recipe documents with [EmojiKitchen](https://github.com/AutumnsGrove/EmojiKitchen)
 - [StyleAssistant](https://github.com/AutumnsGrove/StyleAssistant) - Firefox Extension to assist users in styling while shopping using AI and a simple quiz
 - [Video-Compressor](https://github.com/AutumnsGrove/Video-Compressor) - Gradio interface for compressing larger files in bulk
 - [AgenticNewspaper](https://github.com/AutumnsGrove/AgenticNewspaper) - AI-powered news aggregator using Claude Agent SDK
@@ -44,7 +56,6 @@ Building things, learning in public, and exploring ideas.
 - [Kimi-Coder-Mcp](https://github.com/AutumnsGrove/Kimi-Coder-Mcp) - MCP Server exposing the Kimi CLI agent for use with other agentic tools
 - [SchematronMCP](https://github.com/AutumnsGrove/SchematronMCP) - MCP server for HTML-to-JSON extraction using Schematron-3B model
 - [MermaidVisualizer](https://github.com/AutumnsGrove/MermaidVisualizer) - Tool to quickly generate PNG/SVG files based on Mermaid charts in Markdown files
-- [Acorn CLI](https://github.com/AutumnsGrove/grove-domain-tool) - Domain discovery command-line tool
 
 ## CLI Tools & Utilities
 - [ASCIIClock](https://github.com/AutumnsGrove/ASCIIClock) - Beautiful ASCII analog clock for terminal with color-coded hands and stopwatch
@@ -65,6 +76,24 @@ Building things, learning in public, and exploring ideas.
 - [OpenRouterChat](https://github.com/AutumnsGrove/OpenRouterChat) - OpenRouter chat interface with innovative memory cards system
 - [Pixelsorting](https://github.com/AutumnsGrove/Pixelsorting) - Pixel sorting image effects
 
+## Archived / For Later
+- [ProjectReminder](https://github.com/AutumnsGrove/ProjectReminder) - A very personalized Reminders app
+
 ---
+
+```
+              v .   ._, |_  .,
+           `-._\/  .  \ /    |/_
+               \\  _\, y | \//
+         _\_.___\\, \\/ -.\||
+           `7-,--.`._||  / / ,
+           /'     `-. `./ / |/_.'
+                     |    |//
+                     |_    /
+                     |-   |
+                     |   =|
+                     |    |
+--------------------/ ,  . \--------._
+```
 
 *More coming soon.*
