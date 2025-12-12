@@ -10,9 +10,22 @@
     Terminal,
     Settings
   } from 'lucide-svelte';
+  import { onMount } from "svelte";
+  import { browser } from "$app/environment";
 
   let { data, children } = $props();
   let sidebarOpen = $state(false);
+  let sidebarCollapsed = $state(false);
+
+  // Load collapsed state from localStorage
+  onMount(() => {
+    if (browser) {
+      const saved = localStorage.getItem("admin-sidebar-collapsed");
+      if (saved !== null) {
+        sidebarCollapsed = saved === "true";
+      }
+    }
+  });
 
   function toggleSidebar() {
     sidebarOpen = !sidebarOpen;
@@ -20,6 +33,13 @@
 
   function closeSidebar() {
     sidebarOpen = false;
+  }
+
+  function toggleCollapsed() {
+    sidebarCollapsed = !sidebarCollapsed;
+    if (browser) {
+      localStorage.setItem("admin-sidebar-collapsed", String(sidebarCollapsed));
+    }
   }
 </script>
 
@@ -48,9 +68,12 @@
     ></button>
   {/if}
 
-  <aside class="sidebar" class:open={sidebarOpen}>
+  <aside class="sidebar" class:open={sidebarOpen} class:collapsed={sidebarCollapsed}>
     <div class="sidebar-header">
-      <h2>Admin Panel</h2>
+      <h2 class="sidebar-title">{#if sidebarCollapsed}AP{:else}Admin Panel{/if}</h2>
+      <button class="collapse-btn desktop-only" onclick={toggleCollapsed} aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"} title={sidebarCollapsed ? "Expand" : "Collapse"}>
+        {#if sidebarCollapsed}»{:else}«{/if}
+      </button>
       <button class="close-sidebar" onclick={closeSidebar} aria-label="Close menu">
         &times;
       </button>
@@ -94,14 +117,14 @@
     <div class="sidebar-footer">
       {#if data?.user}
         <div class="user-info">
-          <span class="email">{data.user.email}</span>
+          <span class="email">{#if sidebarCollapsed}👤{:else}{data.user.email}{/if}</span>
         </div>
       {/if}
-      <a href="/auth/logout" class="logout-btn">Logout</a>
+      <a href="/auth/logout" class="logout-btn" title="Logout">{#if sidebarCollapsed}⏻{:else}Logout{/if}</a>
     </div>
   </aside>
 
-  <main class="content">
+  <main class="content" class:sidebar-collapsed={sidebarCollapsed}>
     {@render children()}
   </main>
 </div>
@@ -276,6 +299,91 @@
     margin-left: calc(250px + 0.75rem); /* Sidebar width + left margin */
     padding: 2rem;
     min-height: 100vh;
+    transition: margin-left 0.2s ease;
+  }
+
+  .content.sidebar-collapsed {
+    margin-left: calc(60px + 0.75rem); /* Collapsed sidebar width + margin */
+  }
+
+  /* Collapse button */
+  .collapse-btn {
+    background: transparent;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    color: var(--color-text-muted);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.25rem 0.5rem;
+    font-family: monospace;
+    transition: all 0.15s ease;
+  }
+
+  :global(.dark) .collapse-btn {
+    border-color: var(--color-border-dark);
+    color: var(--color-text-muted-dark);
+  }
+
+  .collapse-btn:hover {
+    background: var(--color-bg-secondary);
+    color: var(--color-primary);
+  }
+
+  :global(.dark) .collapse-btn:hover {
+    background: var(--color-border-dark);
+    color: var(--color-primary-light);
+  }
+
+  .desktop-only {
+    display: block;
+  }
+
+  /* Collapsed sidebar state */
+  .sidebar.collapsed {
+    width: 60px;
+  }
+
+  .sidebar.collapsed .sidebar-title {
+    font-size: 0.9rem;
+  }
+
+  .sidebar.collapsed .sidebar-header {
+    padding: 1rem 0.5rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .sidebar.collapsed .collapse-btn {
+    padding: 0.15rem 0.35rem;
+    font-size: 0.85rem;
+  }
+
+  .sidebar.collapsed .nav-item {
+    justify-content: center;
+    padding: 0.75rem 0.5rem;
+  }
+
+  .sidebar.collapsed .nav-label {
+    display: none;
+  }
+
+  .sidebar.collapsed .nav-icon {
+    font-size: 1.25rem;
+  }
+
+  .sidebar.collapsed .sidebar-footer {
+    padding: 0.75rem 0.5rem;
+    text-align: center;
+  }
+
+  .sidebar.collapsed .email {
+    font-size: 1.1rem;
+  }
+
+  .sidebar.collapsed .logout-btn {
+    padding: 0.4rem;
+    font-size: 1rem;
   }
   /* Mobile styles */
   @media (max-width: 768px) {
@@ -286,6 +394,7 @@
       transform: translateX(-100%);
       transition: transform 0.3s ease;
       z-index: 1002; /* Above sidebar-overlay (1001) on mobile */
+      width: 250px !important; /* Override collapsed state on mobile */
     }
     .sidebar.open {
       transform: translateX(0);
@@ -296,8 +405,23 @@
     .close-sidebar {
       display: block;
     }
+
+    .desktop-only {
+      display: none;
+    }
+
+    /* Show labels on mobile even if collapsed */
+    .sidebar .nav-label {
+      display: inline !important;
+    }
+
+    .sidebar .nav-item {
+      justify-content: flex-start !important;
+      padding: 0.75rem 1.5rem !important;
+    }
+
     .content {
-      margin-left: 0;
+      margin-left: 0 !important;
       padding: 1rem;
       padding-top: calc(56px + 1rem); /* Account for mobile header */
     }
