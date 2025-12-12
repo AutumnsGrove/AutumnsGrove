@@ -1,11 +1,27 @@
+```
+    *  .  *       .             *
+                         *
+ *   .        *       .       .       *
+    .     *                   .
+        .     .  *        *
+        ,@@@@@@@,
+   ,,,.   ,@@@@@@/@@,  .oo8888o.
+,&%%&%&&%,@@@@@/@@@@@@,8888\88/8o
+,%&\%&&%&&%,@@@\@@@/@@@88\88888/88'
+%&&%&%&/%&&%@@\@@/ /@@@88888\88888'
+%&&%/ %&%%&&@@\ V /@@' `88\8 `/88'
+`&%\ ` /%&'    |.|        \ '|8'
+    |o|        | |         | |
+    |.|        | |         | |
+ \\/ ._\//_/__/  ,\_//__\\/.  \_//__
+```
+
 # Hi, I'm Autumn 👋
 
 Building things, learning in public, and exploring ideas.
 
 ## Currently Working On
-- 🌲 Building the [Grove Ecosystem](#grove-ecosystem) - A forest of tools and platforms
-- 🌱 [epub2tts](https://github.com/AutumnsGrove/epub2tts) - Full pipeline to convert epub files into Audiobooks with Kokoro running locally
-- 🌱 [OmniParser](https://github.com/AutumnsGrove/OmniParser) - Universal parser, anything → markdown
+- 🌲 Building the [Grove Ecosystem](#grove-ecosystem)
 - 💭 Thinking about software simplicity and design
 - 📝 [Writing](https://autumnsgrove.com/blog) about tech, projects, and ideas
 
@@ -24,7 +40,7 @@ Building things, learning in public, and exploring ideas.
 | **[Trove](https://github.com/AutumnsGrove/TreasureTrove)** | Library book discovery with visual shelf markers | trove.grove.place |
 | **[Outpost](https://github.com/AutumnsGrove/GroveMC)** | On-demand Minecraft server for friends | mc.grove.place |
 | **[Aria](https://github.com/AutumnsGrove/GroveMusic)** | Music curation through sonic DNA matching | aria.grove.place |
-| **[Scout](https://github.com/AutumnsGrove/GroveScout)** | Searching for deals. But fast. | — |
+| **[Scout](https://github.com/AutumnsGrove/GroveScout)** | Searching for deals. But fast. | scout.grove.place |
 | **[EmojiGrove](https://github.com/AutumnsGrove/RecipeGrove)** | Smart Recipe documents with EmojiKitchen | *pending rebrand* |
 
 ## Web Applications & Projects
