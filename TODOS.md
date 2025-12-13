@@ -73,8 +73,9 @@ These features have complete specifications and can be picked up next:
 
 ### AI Writing Assistant (Dec 3, 2025)
 - Non‑intrusive side panel with grammar, spelling, style analysis via Claude AI.
-- Tone analysis, readability scoring, ASCII art “vibes”.
+- Tone analysis, readability scoring, ASCII art "vibes".
 - Apply fixes directly, rate limiting, model selection, command‑palette integration.
+- **⚠️ Note (Dec 13, 2025):** Feature is enabled in settings but not fully functional. The UI is present but the actual AI analysis doesn't work yet. Needs investigation - likely missing API integration or endpoint issues. Low priority fix for future session.
 
 ### RSS Feed & Recipes D1 Integration (Dec 1, 2025)
 - RSS endpoint at `/api/feed` with autodiscovery and `/rss.xml` redirect.
