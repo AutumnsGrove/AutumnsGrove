@@ -1,6 +1,6 @@
 # TODOs for AutumnsGrove
 
-> **Last Updated:** December 9, 2025 - Reorganized with current priorities at top
+> **Last Updated:** December 13, 2025 - Added gutter investigation notes
 
 ---
 
@@ -24,6 +24,26 @@
 - **Status**: Handled (per user confirmation)
 - **Details**: ANTHROPIC_API_KEY and GroveAuth secrets have been configured via `wrangler secret put`.
 - **Verification**: Run `./scripts/deploy-commands.sh` to confirm all secrets are set.
+
+#### Missing Gutters & Table of Contents on Blog Posts
+- **Status**: Investigating – likely GroveEngine or deployment issue
+- **Issue**: Left gutter (comments, photos) and right gutter (TOC) not displaying on blog posts in production, even on wide desktop screens.
+- **Investigation (Dec 13, 2025)**:
+  - ✅ Local build works correctly – gutters render with full content
+  - ✅ HTML is correct: `content-layout has-gutters has-left-gutter has-right-gutter has-both-gutters`
+  - ✅ CSS rules present: `.desktop-only{display:none}` + `@media (min-width: 769px){.desktop-only{display:block}}`
+  - ✅ Both gutter containers have content (gutter items, TOC headings)
+  - ✅ CSS chunks load correctly (`0.JYb_qwhH.css`, `AIWritingPanel.SApGsyCR.css`)
+- **Suspected causes**:
+  - Stale production deployment (code works locally)
+  - Browser/CDN caching old CSS
+  - Possible issue with `@autumnsgrove/groveengine` v0.5.0 in production environment
+- **Next steps**:
+  1. Trigger fresh deployment on Cloudflare Pages
+  2. Clear browser cache / test in incognito
+  3. Purge Cloudflare CDN cache
+  4. If still broken, investigate groveengine package differences between local and production
+- **Key files**: `ContentWithGutter.svelte` (groveengine), `content.css` (groveengine), `src/routes/blog/[slug]/+page.svelte`
 
 ### 📋 Ready for Implementation (Spec‑Ready)
 
