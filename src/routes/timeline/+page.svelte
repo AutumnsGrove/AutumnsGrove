@@ -2,7 +2,7 @@
 	import { marked } from 'marked';
 	import { sanitizeMarkdown } from '@autumnsgrove/groveengine/utils';
 	import { Calendar, GitCommit, Plus, Minus, FolderGit2, ChevronDown, ChevronUp, Cloud, Loader2, MessageCircle, TrendingUp } from 'lucide-svelte';
-	import { ActivityOverview, LOCBar, RepoBreakdown } from '$lib/components/charts';
+	import { ActivityOverview, LOCBar, RepoBreakdown } from '$lib/components';
 	import { toast } from '@autumnsgrove/groveengine/ui';
 
 	/** @type {{ summaries: any[], pagination: any, error?: string }} */

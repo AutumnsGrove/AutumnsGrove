@@ -26,8 +26,10 @@ export { default as InternalsPostViewer } from "./custom/InternalsPostViewer.sve
 export { default as LogViewer } from "./custom/LogViewer.svelte";
 export { default as AIWritingPanel } from "./custom/AIWritingPanel.svelte";
 
-// Chart components - keep local (site-specific GitDashboard feature)
-export { default as Sparkline } from "./charts/Sparkline.svelte";
-export { default as LOCBar } from "./charts/LOCBar.svelte";
-export { default as RepoBreakdown } from "./charts/RepoBreakdown.svelte";
-export { default as ActivityOverview } from "./charts/ActivityOverview.svelte";
+// Chart components - now from groveengine
+export {
+  Sparkline,
+  LOCBar,
+  RepoBreakdown,
+  ActivityOverview,
+} from "@autumnsgrove/groveengine/ui/charts";
