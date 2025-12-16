@@ -23,18 +23,20 @@ Building things, learning in public, and exploring ideas.
 |---------|-------------|-------|
 | **[AutumnsGrove](https://github.com/AutumnsGrove/AutumnsGrove)** | Personal blog and digital home | [autumnsgrove.com](https://autumnsgrove.com) |
 | **[Lattice](https://github.com/AutumnsGrove/GroveEngine)** | Core platform powering every Grove site | npm package |
-| **[Meadow](https://github.com/AutumnsGrove/GroveSocial)** | Social media that remembers what "social" means | meadow.grove.place |
-| **[Acorn](https://github.com/AutumnsGrove/GroveDomainTool)** | AI-powered domain discovery | acorn.grove.place |
 | **[Heartwood](https://github.com/AutumnsGrove/GroveAuth)** | Centralized authentication for the Grove ecosystem | heartwood.grove.place |
-| **[Cache](https://github.com/AutumnsGrove/GroveBackups)** | Automated backup system | *internal* |
-| **[Trove](https://github.com/AutumnsGrove/TreasureTrove)** | Library book discovery with visual shelf markers | trove.grove.place |
-| **[Outpost](https://github.com/AutumnsGrove/GroveMC)** | On-demand Minecraft server for friends | mc.grove.place |
+| **[Amber](https://github.com/AutumnsGrove/Amber)** | Unified storage management system | amber.grove.place |
+| **[Ivy](https://github.com/AutumnsGrove/Ivy)** | Zero-knowledge mail client for @grove.place | ivy.grove.place |
+| **[Rings](https://github.com/AutumnsGrove/GroveEngine/blob/main/docs/specs/analytics-spec.md)** | Analytics for writers, not marketers | *integrated* |
+| **[Meadow](https://github.com/AutumnsGrove/GroveEngine/blob/main/docs/specs/social-spec.md)** | Community feed, voting, and social discovery | meadow.grove.place |
+| **[Acorn](https://github.com/AutumnsGrove/GroveDomainTool)** | AI-powered domain discovery | acorn.grove.place |
+| **[Trove](https://github.com/AutumnsGrove/TreasureTrove)** | Library book discovery with visual shelf markers | *temporarily private* |
 | **[Aria](https://github.com/AutumnsGrove/GroveMusic)** | Music curation through sonic DNA matching | aria.grove.place |
 | **[Scout](https://github.com/AutumnsGrove/GroveScout)** | Searching for deals. But fast. | scout.grove.place |
+| **[Outpost](https://github.com/AutumnsGrove/GroveMC)** | On-demand Minecraft server for friends | mc.grove.place |
+| **[Cache](https://github.com/AutumnsGrove/GroveBackups)** | Automated backup system | *internal* |
 | **[EmojiGrove](https://github.com/AutumnsGrove/RecipeGrove)** | Smart Recipe documents with EmojiKitchen | *pending rebrand* |
 
 ## Web Applications & Projects
-- [CommandCenter](https://github.com/AutumnsGrove/CommandCenter) - Job searching dashboard
 - [ClaudeLocal](https://github.com/AutumnsGrove/ClaudeLocal) - Local version of Claude Desktop app with API keys and Prisma DB
 - [LibraryEnhancer](https://github.com/AutumnsGrove/LibraryEnhancer) - Browser extension for enhanced library features
 - [epub2tts](https://github.com/AutumnsGrove/epub2tts) - Full pipeline to convert epub files into Audiobooks with Kokoro running locally
@@ -44,7 +46,6 @@ Building things, learning in public, and exploring ideas.
 - [AgenticNewspaper](https://github.com/AutumnsGrove/AgenticNewspaper) - AI-powered news aggregator using Claude Agent SDK
 - [RaindropAgent](https://github.com/AutumnsGrove/RaindropAgent) - Autonomous bookmark cleaner using Claude AI agents
 - [ElementaryCAVisualizer](https://github.com/AutumnsGrove/ElementaryCAVisualizer) - Immersive browser-based cellular automata visualizer with cyberpunk aesthetic
-- [CodeRain](https://github.com/AutumnsGrove/CodeRain) - Real-time cyberpunk webcam filter with Matrix effects
 
 ## Developer Tools & Extensions
 - [BaseProject](https://github.com/AutumnsGrove/BaseProject) - Comprehensive Claude Code project template with best practices and 18 development guides
@@ -68,7 +69,6 @@ Building things, learning in public, and exploring ideas.
 - [AudioTools](https://github.com/AutumnsGrove/AudioTools) - Video transcription tool with triple LLM support
 - [NetworkMonitor](https://github.com/AutumnsGrove/NetworkMonitor) - Lightweight, privacy-focused network monitoring tool for macOS
 - [CodeQuest](https://github.com/AutumnsGrove/CodeQuest) - Terminal-based RPG that gamifies coding productivity
-- [ClaudeArt](https://github.com/AutumnsGrove/ClaudeArt) - Generative ASCII art system creating digital koans
 - [AgenticResearcher](https://github.com/AutumnsGrove/AgenticResearcher) - Production-grade multi-agent research system
 - [FableParser](https://github.com/AutumnsGrove/FableParser) - Convert Fable book screenshots to markdown using Claude vision AI
 - [ObsidianMusicSorter](https://github.com/AutumnsGrove/ObsidianMusicSorter) - Enrich Obsidian markdown files with MusicBrainz metadata
