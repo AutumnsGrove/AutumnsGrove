@@ -28,7 +28,7 @@ Building things, learning in public, and exploring ideas.
 | **[Ivy](https://github.com/AutumnsGrove/Ivy)** | Zero-knowledge mail client for @grove.place | ivy.grove.place |
 | **[Rings](https://github.com/AutumnsGrove/GroveEngine/blob/main/docs/specs/analytics-spec.md)** | Analytics for writers, not marketers | *integrated* |
 | **[Meadow](https://github.com/AutumnsGrove/GroveEngine/blob/main/docs/specs/social-spec.md)** | Community feed, voting, and social discovery | meadow.grove.place |
-| **[Acorn](https://github.com/AutumnsGrove/GroveDomainTool)** | AI-powered domain discovery | acorn.grove.place |
+| **[Forage](https://github.com/AutumnsGrove/Forage)** | AI-powered domain discovery | forage.grove.place |
 | **[Trove](https://github.com/AutumnsGrove/TreasureTrove)** | Library book discovery with visual shelf markers | *temporarily private* |
 | **[Aria](https://github.com/AutumnsGrove/GroveMusic)** | Music curation through sonic DNA matching | aria.grove.place |
 | **[Scout](https://github.com/AutumnsGrove/GroveScout)** | Searching for deals. But fast. | scout.grove.place |
