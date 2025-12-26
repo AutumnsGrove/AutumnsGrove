@@ -277,7 +277,7 @@
 
 			<!-- Mobile Hamburger Button with Sheet -->
 			<div class="mobile-menu-trigger">
-				<Sheet bind:open={mobileMenuOpen} side="left" title="Navigation">
+				<Sheet bind:open={mobileMenuOpen} side="right" title="Navigation">
 					{#snippet trigger()}
 						<Button
 							bind:ref={hamburgerBtnRef}
@@ -703,5 +703,12 @@
 			padding-bottom: 1rem;
 			border-bottom: 1px solid var(--color-border);
 		}
+	}
+
+	/* Sheet overlay backdrop blur - matches grove.place styling */
+	:global([data-dialog-overlay]) {
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
+		background: rgba(0, 0, 0, 0.6) !important;
 	}
 </style>
