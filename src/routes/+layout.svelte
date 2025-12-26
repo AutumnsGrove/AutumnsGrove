@@ -13,7 +13,7 @@
 	import { fade } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { Button, Input } from '@autumnsgrove/groveengine/ui';
+	import { Button, Input, Logo, Sheet } from '@autumnsgrove/groveengine/ui';
 
 	let { children, data } = $props();
 
@@ -224,7 +224,10 @@
 	<header>
 		<nav>
 			<!-- TITLE AREA -->
-			<a href="/" class="logo">The Grove</a>
+			<a href="/" class="logo">
+				<Logo class="w-6 h-6" color="#e67e22" />
+				<span>Autumns Grove</span>
+			</a>
 
 			<!-- Desktop Navigation -->
 			<div class="nav-links desktop-nav">
@@ -272,60 +275,52 @@
 				</div>
 			</div>
 
-			<!-- Mobile Hamburger Button -->
-			<Button
-				bind:ref={hamburgerBtnRef}
-				variant="ghost"
-				size="icon"
-				class={`hamburger-btn ${mobileMenuOpen ? 'open' : ''}`}
-				onclick={toggleMobileMenu}
-				aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-				aria-expanded={mobileMenuOpen}
-				aria-controls="mobile-menu"
-			>
-			<span class="hamburger-icon">
-				<span class="bar"></span>
-				<span class="bar"></span>
-				<span class="bar"></span>
-			</span>
-			</Button>
+			<!-- Mobile Hamburger Button with Sheet -->
+			<div class="mobile-menu-trigger">
+				<Sheet bind:open={mobileMenuOpen} side="left" title="Navigation">
+					{#snippet trigger()}
+						<Button
+							bind:ref={hamburgerBtnRef}
+							variant="ghost"
+							size="icon"
+							class={`hamburger-btn ${mobileMenuOpen ? 'open' : ''}`}
+							aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+							aria-expanded={mobileMenuOpen}
+						>
+							<span class="hamburger-icon">
+								<span class="bar"></span>
+								<span class="bar"></span>
+								<span class="bar"></span>
+							</span>
+						</Button>
+					{/snippet}
+
+					<!-- Mobile Navigation Menu Content -->
+					<nav class="mobile-nav-content" bind:this={mobileMenuRef}>
+						<form class="mobile-search-form" onsubmit={handleSearchSubmit}>
+							<Input
+								type="text"
+								placeholder="Search posts..."
+								bind:value={searchQuery}
+								class="mobile-search-input"
+								required
+							/>
+							<Button type="submit" variant="default" size="icon" class="mobile-search-btn" aria-label="Search">
+								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<circle cx="11" cy="11" r="8"></circle>
+									<path d="m21 21-4.3-4.3"></path>
+								</svg>
+							</Button>
+						</form>
+						<a href="/" class:active={$page.url.pathname === '/'} onclick={closeMobileMenu}>Home</a>
+						<a href="/blog" class:active={$page.url.pathname.startsWith('/blog')} onclick={closeMobileMenu}>Blog</a>
+						<a href="/gallery" class:active={$page.url.pathname.startsWith('/gallery')} onclick={closeMobileMenu}>Gallery</a>
+						<a href="/timeline" class:active={$page.url.pathname.startsWith('/timeline')} onclick={closeMobileMenu}>Timeline</a>
+						<a href="/about" class:active={$page.url.pathname.startsWith('/about')} onclick={closeMobileMenu}>About</a>
+					</nav>
+				</Sheet>
+			</div>
 		</nav>
-
-		<!-- Mobile Menu Overlay -->
-		{#if mobileMenuOpen}
-			<div class="mobile-menu-overlay" onclick={closeMobileMenu} role="presentation"></div>
-		{/if}
-
-		<!-- Mobile Navigation Menu -->
-		<div
-			bind:this={mobileMenuRef}
-			id="mobile-menu"
-			class="mobile-menu"
-			class:open={mobileMenuOpen}
-			role="navigation"
-			aria-label="Mobile navigation"
-		>
-			<form class="mobile-search-form" onsubmit={handleSearchSubmit}>
-				<Input
-					type="text"
-					placeholder="Search posts..."
-					bind:value={searchQuery}
-					class="mobile-search-input"
-					required
-				/>
-				<Button type="submit" variant="default" size="icon" class="mobile-search-btn" aria-label="Search">
-					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-						<circle cx="11" cy="11" r="8"></circle>
-						<path d="m21 21-4.3-4.3"></path>
-					</svg>
-				</Button>
-			</form>
-			<a href="/" class:active={$page.url.pathname === '/'} onclick={closeMobileMenu}>Home</a>
-			<a href="/blog" class:active={$page.url.pathname.startsWith('/blog')} onclick={closeMobileMenu}>Blog</a>
-			<a href="/gallery" class:active={$page.url.pathname.startsWith('/gallery')} onclick={closeMobileMenu}>Gallery</a>
-			<a href="/timeline" class:active={$page.url.pathname.startsWith('/timeline')} onclick={closeMobileMenu}>Timeline</a>
-			<a href="/about" class:active={$page.url.pathname.startsWith('/about')} onclick={closeMobileMenu}>About</a>
-		</div>
 	</header>
 
 	<main>
@@ -525,6 +520,9 @@
 		z-index: 101;
 	}
 	.logo {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 		font-size: 1.5rem;
 		font-weight: bold;
 		color: #2c5f2d;
@@ -657,13 +655,29 @@
 	:global(.dark) .logged-in-indicator {
 		color: var(--grove-500);
 	}
-	/* Mobile menu overlay */
-	.mobile-menu-overlay {
+	/* Mobile menu trigger - hidden on desktop */
+	.mobile-menu-trigger {
 		display: none;
 	}
-	/* Mobile menu - hidden on desktop */
-	.mobile-menu {
-		display: none;
+	/* Mobile nav content styles (inside Sheet) */
+	.mobile-nav-content {
+		display: flex;
+		flex-direction: column;
+	}
+	.mobile-nav-content a {
+		text-decoration: none;
+		color: var(--color-muted-foreground);
+		font-weight: 500;
+		padding: 1rem 0;
+		border-bottom: 1px solid var(--color-border);
+		transition: color 0.2s;
+	}
+	.mobile-nav-content a:hover {
+		color: var(--grove-500);
+	}
+	.mobile-nav-content a.active {
+		color: var(--grove-500);
+		font-weight: 600;
 	}
 	@media (max-width: 768px) {
 		header {
@@ -676,133 +690,18 @@
 		.desktop-nav {
 			display: none;
 		}
-		/* Mobile menu overlay */
-		.mobile-menu-overlay {
+		/* Show mobile menu trigger */
+		.mobile-menu-trigger {
 			display: block;
-			position: fixed;
-			top: 0;
-			left: 0;
-			right: 0;
-			bottom: 0;
-			background: rgba(0, 0, 0, 0.5);
-			z-index: 99;
-		}
-		/* Mobile menu */
-		.mobile-menu {
-			display: flex;
-			flex-direction: column;
-			position: absolute;
-			top: 100%;
-			left: 0;
-			right: 0;
-			background: var(--mobile-menu-bg);
-			border-bottom: 1px solid var(--mobile-menu-border);
-			padding: 0;
-			max-height: 0;
-			overflow: hidden;
-			opacity: 0;
-			transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
-			z-index: 100;
-		}
-		.mobile-menu.open {
-			max-height: 400px;
-			opacity: 1;
-			padding: 0.5rem 0;
 		}
 		/* Mobile search styles */
 		.mobile-search-form {
 			display: flex;
 			align-items: center;
-			padding: 0.75rem 1rem;
 			gap: 0.5rem;
-			border-bottom: 1px solid var(--mobile-menu-border);
-			margin-bottom: 0.5rem;
-		}
-		.mobile-search-input {
-			flex: 1;
-			padding: 0.6rem 0.75rem;
-			font-size: 0.9rem;
-			border: 1px solid var(--color-border);
-			border-radius: 6px;
-			background: white;
-			color: var(--color-border-strong);
-			transition: border-color 0.2s ease, background-color 0.3s ease, color 0.3s ease;
-		}
-		:global(.dark) .mobile-search-input {
-			background: var(--color-background);
-			border-color: var(--cream-100);
-			color: var(--color-foreground);
-		}
-		.mobile-search-input:focus {
-			outline: none;
-			border-color: #2c5f2d;
-		}
-		:global(.dark) .mobile-search-input:focus {
-			border-color: var(--grove-500);
-		}
-		.mobile-search-input::placeholder {
-			color: var(--color-muted-foreground);
-		}
-		:global(.dark) .mobile-search-input::placeholder {
-			color: #777;
-		}
-		.mobile-search-btn {
-			background: #2c5f2d;
-			border: none;
-			cursor: pointer;
-			padding: 0.6rem;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			color: white;
-			border-radius: 6px;
-			transition: background-color 0.2s;
-		}
-		:global(.dark) .mobile-search-btn {
-			background: var(--grove-500);
-		}
-		.mobile-search-btn:hover {
-			background: #4a9d4f;
-		}
-		:global(.dark) .mobile-search-btn:hover {
-			background: var(--grove-400);
-		}
-		.mobile-menu a {
-			text-decoration: none;
-			color: #666;
-			font-weight: 500;
-			padding: 1rem 1.5rem;
-			transition: background-color 0.2s, color 0.2s;
-			position: relative;
-		}
-		.mobile-menu a:hover {
-			background: var(--cream-300);
-			color: #2c5f2d;
-		}
-		:global(.dark) .mobile-menu a:hover {
-			background: var(--color-border-strong);
-			color: var(--grove-500);
-		}
-		.mobile-menu a.active {
-			color: #2c5f2d;
-			background: #f0f9f0;
-		}
-		:global(.dark) .mobile-menu a.active {
-			color: var(--grove-500);
-			background: #2a3a2a;
-		}
-		/* Active indicator bar for mobile */
-		.mobile-menu a.active::before {
-			content: '';
-			position: absolute;
-			left: 0;
-			top: 0;
-			bottom: 0;
-			width: 3px;
-			background: #2c5f2d;
-		}
-		:global(.dark) .mobile-menu a.active::before {
-			background: var(--grove-500);
+			margin-bottom: 1rem;
+			padding-bottom: 1rem;
+			border-bottom: 1px solid var(--color-border);
 		}
 	}
 </style>

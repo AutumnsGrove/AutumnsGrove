@@ -1,5 +1,5 @@
 <script>
-  import { Toast } from "@autumnsgrove/groveengine/ui";
+  import { Toast, Sheet, Logo, Button } from "@autumnsgrove/groveengine/ui";
   import {
     LayoutDashboard,
     FileText,
@@ -8,7 +8,8 @@
     BarChart3,
     Calendar,
     Terminal,
-    Settings
+    Settings,
+    Menu
   } from 'lucide-svelte';
   import { onMount } from "svelte";
   import { browser } from "$app/environment";
@@ -48,67 +49,105 @@
 </svelte:head>
 
 <div class="admin-layout">
-  <!-- Mobile header -->
+  <!-- Mobile header with Sheet trigger -->
   <header class="mobile-header">
-    <button class="hamburger" onclick={toggleSidebar} aria-label="Toggle menu">
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-      <span class="hamburger-line"></span>
-    </button>
-    <a href="/" class="mobile-home-link" aria-label="Go to home page">The Grove</a>
+    <Sheet bind:open={sidebarOpen} side="left" title="Admin Panel">
+      {#snippet trigger()}
+        <Button variant="ghost" size="icon" aria-label="Toggle menu">
+          <Menu size={20} />
+        </Button>
+      {/snippet}
+
+      <!-- Mobile sidebar content -->
+      <nav class="mobile-sidebar-nav">
+        <a href="/admin" class="nav-item" onclick={closeSidebar}>
+          <span class="nav-icon"><LayoutDashboard size={18} /></span>
+          Dashboard
+        </a>
+        <a href="/admin/blog" class="nav-item" onclick={closeSidebar}>
+          <span class="nav-icon"><FileText size={18} /></span>
+          Blog Posts
+        </a>
+        <a href="/admin/pages" class="nav-item" onclick={closeSidebar}>
+          <span class="nav-icon"><Files size={18} /></span>
+          Pages
+        </a>
+        <a href="/admin/images" class="nav-item" onclick={closeSidebar}>
+          <span class="nav-icon"><Image size={18} /></span>
+          Images
+        </a>
+        <a href="/admin/analytics" class="nav-item" onclick={closeSidebar}>
+          <span class="nav-icon"><BarChart3 size={18} /></span>
+          Analytics
+        </a>
+        <a href="/admin/timeline" class="nav-item" onclick={closeSidebar}>
+          <span class="nav-icon"><Calendar size={18} /></span>
+          Timeline
+        </a>
+        <a href="/admin/logs" class="nav-item" onclick={closeSidebar}>
+          <span class="nav-icon"><Terminal size={18} /></span>
+          Console
+        </a>
+        <a href="/admin/settings" class="nav-item" onclick={closeSidebar}>
+          <span class="nav-icon"><Settings size={18} /></span>
+          Settings
+        </a>
+
+        <div class="mobile-sidebar-footer">
+          {#if data?.user}
+            <div class="user-info">
+              <span class="email">{data.user.email}</span>
+            </div>
+          {/if}
+          <a href="/auth/logout" class="logout-btn">Logout</a>
+        </div>
+      </nav>
+    </Sheet>
+    <a href="/" class="mobile-home-link" aria-label="Go to home page">
+      <Logo class="w-5 h-5" color="#e67e22" />
+      <span>Autumns Grove</span>
+    </a>
     <span class="mobile-header-spacer"></span>
   </header>
 
-  <!-- Overlay for mobile -->
-  {#if sidebarOpen}
-    <button
-      class="sidebar-overlay"
-      onclick={closeSidebar}
-      aria-label="Close menu"
-    ></button>
-  {/if}
-
-  <aside class="sidebar" class:open={sidebarOpen} class:collapsed={sidebarCollapsed}>
+  <aside class="sidebar" class:collapsed={sidebarCollapsed}>
     <div class="sidebar-header">
       <h2 class="sidebar-title">{#if sidebarCollapsed}AP{:else}Admin Panel{/if}</h2>
       <button class="collapse-btn desktop-only" onclick={toggleCollapsed} aria-label={sidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"} title={sidebarCollapsed ? "Expand" : "Collapse"}>
         {#if sidebarCollapsed}»{:else}«{/if}
       </button>
-      <button class="close-sidebar" onclick={closeSidebar} aria-label="Close menu">
-        &times;
-      </button>
     </div>
 
     <nav class="sidebar-nav">
-      <a href="/admin" class="nav-item" onclick={closeSidebar}>
+      <a href="/admin" class="nav-item">
         <span class="nav-icon"><LayoutDashboard size={18} /></span>
         Dashboard
       </a>
-      <a href="/admin/blog" class="nav-item" onclick={closeSidebar}>
+      <a href="/admin/blog" class="nav-item">
         <span class="nav-icon"><FileText size={18} /></span>
         Blog Posts
       </a>
-      <a href="/admin/pages" class="nav-item" onclick={closeSidebar}>
+      <a href="/admin/pages" class="nav-item">
         <span class="nav-icon"><Files size={18} /></span>
         Pages
       </a>
-      <a href="/admin/images" class="nav-item" onclick={closeSidebar}>
+      <a href="/admin/images" class="nav-item">
         <span class="nav-icon"><Image size={18} /></span>
         Images
       </a>
-      <a href="/admin/analytics" class="nav-item" onclick={closeSidebar}>
+      <a href="/admin/analytics" class="nav-item">
         <span class="nav-icon"><BarChart3 size={18} /></span>
         Analytics
       </a>
-      <a href="/admin/timeline" class="nav-item" onclick={closeSidebar}>
+      <a href="/admin/timeline" class="nav-item">
         <span class="nav-icon"><Calendar size={18} /></span>
         Timeline
       </a>
-      <a href="/admin/logs" class="nav-item" onclick={closeSidebar}>
+      <a href="/admin/logs" class="nav-item">
         <span class="nav-icon"><Terminal size={18} /></span>
         Console
       </a>
-      <a href="/admin/settings" class="nav-item" onclick={closeSidebar}>
+      <a href="/admin/settings" class="nav-item">
         <span class="nav-icon"><Settings size={18} /></span>
         Settings
       </a>
@@ -156,6 +195,9 @@
     transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
   }
   .mobile-home-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
     font-size: 1.25rem;
     font-weight: bold;
     color: var(--color-primary);
@@ -165,46 +207,61 @@
   .mobile-home-link:hover {
     color: var(--color-primary-hover);
   }
-  .mobile-header-spacer {
-    width: 36px; /* Match hamburger button width for centering */
-  }
-  .hamburger {
+  /* Mobile sidebar nav styles (inside Sheet) */
+  .mobile-sidebar-nav {
     display: flex;
     flex-direction: column;
-    gap: 4px;
-    padding: 8px;
-    background: none;
-    border: none;
-    cursor: pointer;
+    gap: 0.25rem;
   }
-  .hamburger-line {
+  .mobile-sidebar-nav .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+    color: var(--color-muted-foreground);
+    text-decoration: none;
+    border-radius: var(--border-radius-button);
+    transition: color 0.2s;
+  }
+  .mobile-sidebar-nav .nav-item:hover {
+    color: var(--grove-500);
+  }
+  .mobile-sidebar-nav .nav-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 20px;
-    height: 2px;
-    background: var(--color-foreground);
-    border-radius: 1px;
-    transition: background-color 0.3s ease;
+    color: var(--grove-500);
   }
-  /* Sidebar overlay for mobile */
-  .sidebar-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1001;
-    border: none;
-    cursor: pointer;
+  .mobile-sidebar-footer {
+    margin-top: auto;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border);
   }
-  /* Close button in sidebar - hidden on desktop */
-  .close-sidebar {
-    display: none;
-    background: none;
-    border: none;
+  .mobile-sidebar-footer .user-info {
+    margin-bottom: 0.75rem;
+  }
+  .mobile-sidebar-footer .email {
+    font-size: 0.85rem;
+    color: var(--color-muted-foreground);
+  }
+  .mobile-sidebar-footer .logout-btn {
+    display: block;
+    text-align: center;
+    padding: 0.5rem;
+    background: var(--cream-200);
+    color: var(--color-muted-foreground);
+    text-decoration: none;
+    border-radius: var(--border-radius-button);
+    font-size: 0.85rem;
+    transition: background 0.2s, color 0.2s;
+  }
+  .mobile-sidebar-footer .logout-btn:hover {
+    background: var(--color-border);
     color: var(--color-foreground);
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 0.25rem;
-    line-height: 1;
-    transition: color 0.3s ease;
+  }
+  .mobile-header-spacer {
+    width: 40px; /* Match button width for centering */
   }
   .sidebar {
     width: 250px;
@@ -390,34 +447,13 @@
     .mobile-header {
       display: flex;
     }
+    /* Hide desktop sidebar on mobile - using Sheet instead */
     .sidebar {
-      transform: translateX(-100%);
-      transition: transform 0.3s ease;
-      z-index: 1002; /* Above sidebar-overlay (1001) on mobile */
-      width: 250px !important; /* Override collapsed state on mobile */
-    }
-    .sidebar.open {
-      transform: translateX(0);
-    }
-    .sidebar-overlay {
-      display: block;
-    }
-    .close-sidebar {
-      display: block;
+      display: none;
     }
 
     .desktop-only {
       display: none;
-    }
-
-    /* Show labels on mobile even if collapsed */
-    .sidebar .nav-label {
-      display: inline !important;
-    }
-
-    .sidebar .nav-item {
-      justify-content: flex-start !important;
-      padding: 0.75rem 1.5rem !important;
     }
 
     .content {
