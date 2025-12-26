@@ -10,7 +10,7 @@ importers:
     dependencies:
       '@autumnsgrove/groveengine':
         specifier: ^0.6.5
-        version: 0.6.5(@sveltejs/kit@2.49.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(tailwindcss@3.4.18)
+        version: 0.6.5(@sveltejs/kit@2.49.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(tailwindcss@3.4.19)
       '@types/dompurify':
         specifier: ^3.0.5
         version: 3.2.0
@@ -53,7 +53,7 @@ importers:
         version: 4.0.4(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25))
       '@tailwindcss/typography':
         specifier: ^0.5.19
-        version: 0.5.19(tailwindcss@3.4.18)
+        version: 0.5.19(tailwindcss@3.4.19)
       '@testing-library/jest-dom':
         specifier: ^6.9.1
         version: 6.9.1
@@ -83,10 +83,10 @@ importers:
         version: 5.45.5
       tailwind-variants:
         specifier: ^0.2.1
-        version: 0.2.1(tailwindcss@3.4.18)
+        version: 0.2.1(tailwindcss@3.4.19)
       tailwindcss:
-        specifier: ^3.4.18
-        version: 3.4.18
+        specifier: ^3.4.19
+        version: 3.4.19
       vite:
         specifier: ^5.4.10
         version: 5.4.21(@types/node@20.19.25)
@@ -1353,8 +1353,8 @@ packages:
     resolution: {integrity: sha512-7MptL8U0cqcFdzIzwOTHoilX9x5BrNqye7Z/LuC7kCMRio1EMSyqRK3BEAUD7sXRq4iT4AzTVuZdhgQ2TCvYLg==}
     engines: {node: '>=8.6.0'}
 
-  fastq@1.19.1:
-    resolution: {integrity: sha512-GwLTyxkCXjXbxqIhTsMI2Nui8huMPtnxg7krajPJAjnEG/iiOS7i+zCtWGZR9G0NBKbXKh6X9m9UIsYX/N6vvQ==}
+  fastq@1.20.1:
+    resolution: {integrity: sha512-GGToxJ/w1x32s/D2EKND7kTil4n8OVk/9mycTc4VDza13lOvpUZTGX3mFSCtV9ksdGBVzvsyAVLM6mHFThxXxw==}
 
   fdir@6.5.0:
     resolution: {integrity: sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==}
@@ -1847,8 +1847,8 @@ packages:
     peerDependencies:
       tailwindcss: '*'
 
-  tailwindcss@3.4.18:
-    resolution: {integrity: sha512-6A2rnmW5xZMdw11LYjhcI5846rt9pbLSabY5XPxo+XWdxwZaFEn47Go4NzFiHu9sNNmr/kXivP1vStfvMaK1GQ==}
+  tailwindcss@3.4.19:
+    resolution: {integrity: sha512-3ofp+LL8E+pK/JuPLPggVAIaEuhvIz4qNcf3nA1Xn2o/7fb7s/TYpHhwGDv1ZU3PkBluUVaF8PyCHcm48cKLWQ==}
     engines: {node: '>=14.0.0'}
     hasBin: true
 
@@ -2152,7 +2152,7 @@ snapshots:
 
   '@asamuzakjp/nwsapi@2.3.9': {}
 
-  '@autumnsgrove/groveengine@0.6.5(@sveltejs/kit@2.49.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(tailwindcss@3.4.18)':
+  '@autumnsgrove/groveengine@0.6.5(@sveltejs/kit@2.49.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(tailwindcss@3.4.19)':
     dependencies:
       '@sveltejs/kit': 2.49.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25))
       chart.js: 4.5.1
@@ -2165,7 +2165,7 @@ snapshots:
       svelte: 5.45.5
       svelte-sonner: 1.0.7(svelte@5.45.5)
       tailwind-merge: 3.4.0
-      tailwindcss: 3.4.18
+      tailwindcss: 3.4.19
 
   '@babel/code-frame@7.27.1':
     dependencies:
@@ -2590,7 +2590,7 @@ snapshots:
   '@nodelib/fs.walk@1.2.8':
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
-      fastq: 1.19.1
+      fastq: 1.20.1
 
   '@polka/url@1.0.0-next.29': {}
 
@@ -2734,10 +2734,10 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@tailwindcss/typography@0.5.19(tailwindcss@3.4.18)':
+  '@tailwindcss/typography@0.5.19(tailwindcss@3.4.19)':
     dependencies:
       postcss-selector-parser: 6.0.10
-      tailwindcss: 3.4.18
+      tailwindcss: 3.4.19
 
   '@testing-library/dom@10.4.1':
     dependencies:
@@ -3140,7 +3140,7 @@ snapshots:
       merge2: 1.4.1
       micromatch: 4.0.8
 
-  fastq@1.19.1:
+  fastq@1.20.1:
     dependencies:
       reusify: 1.1.0
 
@@ -3639,12 +3639,12 @@ snapshots:
 
   tailwind-merge@3.4.0: {}
 
-  tailwind-variants@0.2.1(tailwindcss@3.4.18):
+  tailwind-variants@0.2.1(tailwindcss@3.4.19):
     dependencies:
       tailwind-merge: 2.6.0
-      tailwindcss: 3.4.18
+      tailwindcss: 3.4.19
 
-  tailwindcss@3.4.18:
+  tailwindcss@3.4.19:
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
