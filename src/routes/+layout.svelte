@@ -9,6 +9,7 @@
 	import '../app.css';
 	import '@autumnsgrove/groveengine/ui/styles/tokens.css';
 	import '@autumnsgrove/groveengine/ui/styles/content.css';
+	import '$lib/styles/vine-pattern.css';
 	import { page } from '$app/stores';
 	import { fade } from 'svelte/transition';
 	import { onMount } from 'svelte';
@@ -215,7 +216,7 @@
 
 <svelte:window onkeydown={handleKeydown} />
 
-<div class="layout">
+<div class="layout leaf-pattern">
 	<header>
 		<nav>
 			<!-- TITLE AREA -->
