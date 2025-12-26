@@ -14,6 +14,11 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { Button, Input, Logo, Sheet } from '@autumnsgrove/groveengine/ui';
+	import Home from 'lucide-svelte/icons/home';
+	import BookOpen from 'lucide-svelte/icons/book-open';
+	import ImageIcon from 'lucide-svelte/icons/image';
+	import Clock from 'lucide-svelte/icons/clock';
+	import User from 'lucide-svelte/icons/user';
 
 	let { children, data } = $props();
 
@@ -66,16 +71,6 @@
 		};
 	});
 
-	// Focus management for mobile menu
-	$effect(() => {
-		if (mobileMenuOpen && mobileMenuRef) {
-			// Focus first link when menu opens
-			const firstLink = mobileMenuRef.querySelector('a');
-			if (firstLink) {
-				firstLink.focus();
-			}
-		}
-	});
 
 	// Handle keyboard shortcuts
 	function handleKeydown(event) {
@@ -277,7 +272,7 @@
 
 			<!-- Mobile Hamburger Button with Sheet -->
 			<div class="mobile-menu-trigger">
-				<Sheet bind:open={mobileMenuOpen} side="right" title="Navigation">
+				<Sheet bind:open={mobileMenuOpen} side="right" title="Menu">
 					{#snippet trigger()}
 						<Button
 							bind:ref={hamburgerBtnRef}
@@ -297,26 +292,26 @@
 
 					<!-- Mobile Navigation Menu Content -->
 					<nav class="mobile-nav-content" bind:this={mobileMenuRef}>
-						<form class="mobile-search-form" onsubmit={handleSearchSubmit}>
-							<Input
-								type="text"
-								placeholder="Search posts..."
-								bind:value={searchQuery}
-								class="mobile-search-input"
-								required
-							/>
-							<Button type="submit" variant="default" size="icon" class="mobile-search-btn" aria-label="Search">
-								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-									<circle cx="11" cy="11" r="8"></circle>
-									<path d="m21 21-4.3-4.3"></path>
-								</svg>
-							</Button>
-						</form>
-						<a href="/" class:active={$page.url.pathname === '/'} onclick={closeMobileMenu}>Home</a>
-						<a href="/blog" class:active={$page.url.pathname.startsWith('/blog')} onclick={closeMobileMenu}>Blog</a>
-						<a href="/gallery" class:active={$page.url.pathname.startsWith('/gallery')} onclick={closeMobileMenu}>Gallery</a>
-						<a href="/timeline" class:active={$page.url.pathname.startsWith('/timeline')} onclick={closeMobileMenu}>Timeline</a>
-						<a href="/about" class:active={$page.url.pathname.startsWith('/about')} onclick={closeMobileMenu}>About</a>
+						<a href="/" class:active={$page.url.pathname === '/'} onclick={closeMobileMenu}>
+							<Home size={18} />
+							<span>Home</span>
+						</a>
+						<a href="/blog" class:active={$page.url.pathname.startsWith('/blog')} onclick={closeMobileMenu}>
+							<BookOpen size={18} />
+							<span>Blog</span>
+						</a>
+						<a href="/gallery" class:active={$page.url.pathname.startsWith('/gallery')} onclick={closeMobileMenu}>
+							<ImageIcon size={18} />
+							<span>Gallery</span>
+						</a>
+						<a href="/timeline" class:active={$page.url.pathname.startsWith('/timeline')} onclick={closeMobileMenu}>
+							<Clock size={18} />
+							<span>Timeline</span>
+						</a>
+						<a href="/about" class:active={$page.url.pathname.startsWith('/about')} onclick={closeMobileMenu}>
+							<User size={18} />
+							<span>About</span>
+						</a>
 					</nav>
 				</Sheet>
 			</div>
@@ -663,13 +658,16 @@
 	.mobile-nav-content {
 		display: flex;
 		flex-direction: column;
+		gap: 0.25rem;
 	}
 	.mobile-nav-content a {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
 		text-decoration: none;
 		color: var(--color-muted-foreground);
 		font-weight: 500;
-		padding: 1rem 0;
-		border-bottom: 1px solid var(--color-border);
+		padding: 0.625rem 0;
 		transition: color 0.2s;
 	}
 	.mobile-nav-content a:hover {
@@ -694,21 +692,23 @@
 		.mobile-menu-trigger {
 			display: block;
 		}
-		/* Mobile search styles */
-		.mobile-search-form {
-			display: flex;
-			align-items: center;
-			gap: 0.5rem;
-			margin-bottom: 1rem;
-			padding-bottom: 1rem;
-			border-bottom: 1px solid var(--color-border);
-		}
 	}
 
-	/* Sheet overlay backdrop blur - matches grove.place styling */
+	/* Sheet overlay backdrop blur */
 	:global([data-dialog-overlay]) {
 		backdrop-filter: blur(8px);
 		-webkit-backdrop-filter: blur(8px);
-		background: rgba(0, 0, 0, 0.6) !important;
+		background: rgba(0, 0, 0, 0.5) !important;
+	}
+
+	/* Sheet content - narrower width and glassmorphism */
+	:global([data-dialog-content][data-state]) {
+		width: auto !important;
+		min-width: 200px !important;
+		max-width: 280px !important;
+		background: rgba(30, 30, 30, 0.85) !important;
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
 	}
 </style>
