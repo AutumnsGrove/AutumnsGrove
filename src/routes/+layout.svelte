@@ -705,12 +705,11 @@
 
 	/* Sheet content - matching grove.place styling */
 	:global([data-dialog-content][data-state]) {
-		width: auto !important;
-		min-width: 260px !important;
-		max-width: 340px !important;
-		background: rgba(24, 24, 24, 0.97) !important;
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
+		width: 60% !important;
+		max-width: 300px !important;
+		background: rgba(18, 18, 18, 0.75) !important;
+		backdrop-filter: blur(20px) saturate(1.2);
+		-webkit-backdrop-filter: blur(20px) saturate(1.2);
+		border-left: 1px solid rgba(255, 255, 255, 0.06) !important;
 	}
 </style>
