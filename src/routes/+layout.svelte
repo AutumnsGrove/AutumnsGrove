@@ -294,23 +294,23 @@
 					<!-- Mobile Navigation Menu Content -->
 					<nav class="mobile-nav-content" bind:this={mobileMenuRef}>
 						<a href="/" class:active={$page.url.pathname === '/'} onclick={closeMobileMenu}>
-							<Home size={18} />
+							<Home size={20} />
 							<span>Home</span>
 						</a>
 						<a href="/blog" class:active={$page.url.pathname.startsWith('/blog')} onclick={closeMobileMenu}>
-							<BookOpen size={18} />
+							<BookOpen size={20} />
 							<span>Blog</span>
 						</a>
 						<a href="/gallery" class:active={$page.url.pathname.startsWith('/gallery')} onclick={closeMobileMenu}>
-							<ImageIcon size={18} />
+							<ImageIcon size={20} />
 							<span>Gallery</span>
 						</a>
 						<a href="/timeline" class:active={$page.url.pathname.startsWith('/timeline')} onclick={closeMobileMenu}>
-							<Clock size={18} />
+							<Clock size={20} />
 							<span>Timeline</span>
 						</a>
 						<a href="/about" class:active={$page.url.pathname.startsWith('/about')} onclick={closeMobileMenu}>
-							<User size={18} />
+							<User size={20} />
 							<span>About</span>
 						</a>
 					</nav>
@@ -664,11 +664,12 @@
 	.mobile-nav-content a {
 		display: flex;
 		align-items: center;
-		gap: 0.75rem;
+		gap: 1rem;
 		text-decoration: none;
 		color: var(--color-muted-foreground);
 		font-weight: 500;
-		padding: 0.625rem 0;
+		padding: 0.875rem 0;
+		font-size: 1.05rem;
 		transition: color 0.2s;
 	}
 	.mobile-nav-content a:hover {
@@ -702,14 +703,14 @@
 		background: rgba(0, 0, 0, 0.5) !important;
 	}
 
-	/* Sheet content - narrower width and glassmorphism */
+	/* Sheet content - matching grove.place styling */
 	:global([data-dialog-content][data-state]) {
 		width: auto !important;
-		min-width: 200px !important;
-		max-width: 280px !important;
-		background: rgba(30, 30, 30, 0.85) !important;
-		backdrop-filter: blur(16px);
-		-webkit-backdrop-filter: blur(16px);
-		border-left: 1px solid rgba(255, 255, 255, 0.1) !important;
+		min-width: 260px !important;
+		max-width: 340px !important;
+		background: rgba(24, 24, 24, 0.97) !important;
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
 	}
 </style>
