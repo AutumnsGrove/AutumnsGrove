@@ -6,9 +6,20 @@
  */
 
 import { json, error } from "@sveltejs/kit";
-import { verifySession, isAllowedAdmin } from "@autumnsgrove/groveengine/auth";
 import { safeJsonParse } from "@autumnsgrove/groveengine/utils";
 import { sanitizeObject } from "@autumnsgrove/groveengine/utils";
+
+/**
+ * Check if an email is in the allowed admins list
+ * @param {string} email - User's email
+ * @param {string} allowedAdmins - Comma-separated list of allowed admin emails
+ * @returns {boolean}
+ */
+function isAllowedAdmin(email, allowedAdmins) {
+  if (!email || !allowedAdmins) return false;
+  const allowed = allowedAdmins.split(",").map((e) => e.trim().toLowerCase());
+  return allowed.includes(email.toLowerCase());
+}
 
 // Validation constants
 const MAX_BRIEF_SUMMARY_LENGTH = 500;
@@ -68,7 +79,7 @@ export async function GET({ params, platform }) {
   }
 }
 
-export async function PUT({ params, request, platform, cookies }) {
+export async function PUT({ params, request, platform, locals }) {
   const db = platform?.env?.GIT_STATS_DB;
   const kv = platform?.env?.CACHE_KV;
   const { date } = params;
@@ -77,20 +88,10 @@ export async function PUT({ params, request, platform, cookies }) {
     throw error(500, "Database not available");
   }
 
-  // Verify admin authentication with defense in depth
-  const sessionToken = cookies.get("session");
-  if (!sessionToken) {
+  // Verify admin authentication (session already verified in hooks)
+  const user = locals.user;
+  if (!user) {
     throw error(401, "Authentication required");
-  }
-
-  let user;
-  try {
-    user = await verifySession(sessionToken, platform.env.SESSION_SECRET);
-    if (!user) {
-      throw error(401, "Invalid session");
-    }
-  } catch (e) {
-    throw error(401, "Authentication failed");
   }
 
   // Explicit admin check for defense in depth

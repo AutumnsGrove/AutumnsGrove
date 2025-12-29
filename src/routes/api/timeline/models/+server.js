@@ -5,7 +5,18 @@
  */
 
 import { json, error } from "@sveltejs/kit";
-import { verifySession, isAllowedAdmin } from "@autumnsgrove/groveengine/auth";
+
+/**
+ * Check if an email is in the allowed admins list
+ * @param {string} email - User's email
+ * @param {string} allowedAdmins - Comma-separated list of allowed admin emails
+ * @returns {boolean}
+ */
+function isAllowedAdmin(email, allowedAdmins) {
+  if (!email || !allowedAdmins) return false;
+  const allowed = allowedAdmins.split(",").map((e) => e.trim().toLowerCase());
+  return allowed.includes(email.toLowerCase());
+}
 
 const WORKER_URL = "https://autumnsgrove-daily-summary.m7jv4v7npb.workers.dev";
 
@@ -119,22 +130,11 @@ function getFallbackModels() {
   return models;
 }
 
-export async function GET({ cookies, platform }) {
-  // Verify admin authentication
-  const sessionToken = cookies.get("session");
-  if (!sessionToken) {
+export async function GET({ locals, platform }) {
+  // Verify admin authentication (session already verified in hooks)
+  const user = locals.user;
+  if (!user) {
     throw error(401, "Authentication required");
-  }
-
-  let user;
-  try {
-    user = await verifySession(sessionToken, platform.env.SESSION_SECRET);
-    if (!user) {
-      throw error(401, "Invalid session");
-    }
-  } catch (e) {
-    if (e.status) throw e;
-    throw error(401, "Authentication failed");
   }
 
   // Verify admin access
