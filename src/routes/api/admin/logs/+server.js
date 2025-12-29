@@ -5,9 +5,20 @@ import {
   getLogStats,
   subscribe,
 } from "@autumnsgrove/groveengine/server";
-import { verifySession, isAllowedAdmin } from "@autumnsgrove/groveengine/auth";
 
 export const prerender = false;
+
+/**
+ * Check if an email is in the allowed admins list
+ * @param {string} email - User's email
+ * @param {string} allowedAdmins - Comma-separated list of allowed admin emails
+ * @returns {boolean}
+ */
+function isAllowedAdmin(email, allowedAdmins) {
+  if (!email || !allowedAdmins) return false;
+  const allowed = allowedAdmins.split(",").map((e) => e.trim().toLowerCase());
+  return allowed.includes(email.toLowerCase());
+}
 
 /**
  * GET /api/admin/logs
@@ -18,22 +29,11 @@ export const prerender = false;
  * - since: ISO timestamp to get logs after this time
  * - stream: 'true' for Server-Sent Events streaming
  */
-export async function GET({ url, request, cookies, platform }) {
-  // Verify admin authentication
-  const sessionToken = cookies.get("session");
-  if (!sessionToken) {
+export async function GET({ url, request, locals, platform }) {
+  // Verify admin authentication (session already verified in hooks)
+  const user = locals.user;
+  if (!user) {
     throw error(401, "Authentication required");
-  }
-
-  let user;
-  try {
-    user = await verifySession(sessionToken, platform.env.SESSION_SECRET);
-    if (!user) {
-      throw error(401, "Invalid session");
-    }
-  } catch (e) {
-    if (e.status) throw e;
-    throw error(401, "Authentication failed");
   }
 
   // Verify admin access
