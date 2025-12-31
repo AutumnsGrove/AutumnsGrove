@@ -36,9 +36,9 @@ Building things, learning in public, and exploring ideas.
 | **[Outpost](https://github.com/AutumnsGrove/GroveMC)** | On-demand Minecraft server for friends | mc.grove.place |
 | **[Shade](https://github.com/AutumnsGrove/GroveShade)** | AI crawler protection layer | grove.place/shade |
 | **[Trails](https://github.com/AutumnsGrove/GroveTrails)** | Personal project roadmaps | username.grove.place/trail |
-| **[Vineyard](https://github.com/AutumnsGrove/GroveVineyard)** | Tool documentation and demos | *.grove.place/vineyard |
+| **[Vineyard](https://github.com/AutumnsGrove/Vineyard)** | Tool documentation and demos | *.grove.place/vineyard |
 | **[Bloom](https://github.com/AutumnsGrove/GroveBloom)** | Serverless coding infrastructure | bloom.grove.place |
-| **[Mycelium](https://github.com/AutumnsGrove/GroveMCP)** | Model Context Protocol server | mycelium.grove.place |
+| **[Mycelium](https://github.com/AutumnsGrove/Mycelium)** | Model Context Protocol server | mycelium.grove.place |
 | **[Wisp](https://github.com/AutumnsGrove/GroveWisp)** | Writing assistant | *integrated* |
 | **[Cache](https://github.com/AutumnsGrove/GroveBackups)** | Automated backup system | *internal* |
 | **[EmojiGrove](https://github.com/AutumnsGrove/RecipeGrove)** | Smart Recipe documents with EmojiKitchen | *pending rebrand* |
