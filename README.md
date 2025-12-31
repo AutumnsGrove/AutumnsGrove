@@ -28,12 +28,18 @@ Building things, learning in public, and exploring ideas.
 | **[Amber](https://github.com/AutumnsGrove/Amber)** | Unified storage management system | amber.grove.place |
 | **[Ivy](https://github.com/AutumnsGrove/Ivy)** | Zero-knowledge mail client for @grove.place | ivy.grove.place |
 | **[Rings](https://github.com/AutumnsGrove/GroveEngine/blob/main/docs/specs/analytics-spec.md)** | Analytics for writers, not marketers | *integrated* |
-| **[Meadow](https://github.com/AutumnsGrove/GroveEngine/blob/main/docs/specs/social-spec.md)** | Community feed, voting, and social discovery | meadow.grove.place |
+| **[Meadow](https://github.com/AutumnsGrove/GroveEngine/blob/main/docs/specs/social-spec.md)** | Social networking without metrics | meadow.grove.place |
 | **[Forage](https://github.com/AutumnsGrove/Forage)** | AI-powered domain discovery | forage.grove.place |
-| **[Trove](https://github.com/AutumnsGrove/TreasureTrove)** | Library book discovery with visual shelf markers | *temporarily private* |
+| **[Trove](https://github.com/AutumnsGrove/TreasureTrove)** | Library book discovery via camera | trove.grove.place |
 | **[Aria](https://github.com/AutumnsGrove/GroveMusic)** | Music curation through sonic DNA matching | aria.grove.place |
 | **[Scout](https://github.com/AutumnsGrove/GroveScout)** | Searching for deals. But fast. | scout.grove.place |
 | **[Outpost](https://github.com/AutumnsGrove/GroveMC)** | On-demand Minecraft server for friends | mc.grove.place |
+| **[Shade](https://github.com/AutumnsGrove/GroveShade)** | AI crawler protection layer | grove.place/shade |
+| **[Trails](https://github.com/AutumnsGrove/GroveTrails)** | Personal project roadmaps | username.grove.place/trail |
+| **[Vineyard](https://github.com/AutumnsGrove/GroveVineyard)** | Tool documentation and demos | *.grove.place/vineyard |
+| **[Bloom](https://github.com/AutumnsGrove/GroveBloom)** | Serverless coding infrastructure | bloom.grove.place |
+| **[Mycelium](https://github.com/AutumnsGrove/GroveMCP)** | Model Context Protocol server | mycelium.grove.place |
+| **[Wisp](https://github.com/AutumnsGrove/GroveWisp)** | Writing assistant | *integrated* |
 | **[Cache](https://github.com/AutumnsGrove/GroveBackups)** | Automated backup system | *internal* |
 | **[EmojiGrove](https://github.com/AutumnsGrove/RecipeGrove)** | Smart Recipe documents with EmojiKitchen | *pending rebrand* |
 
