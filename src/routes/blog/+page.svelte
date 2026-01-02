@@ -1,6 +1,6 @@
 <script>
 	import { goto } from '$app/navigation';
-	import { Card, Badge } from '@autumnsgrove/groveengine/ui';
+	import { GlassCard, Badge } from '$lib/components';
 
 	let { data } = $props();
 
@@ -52,7 +52,8 @@
 {:else}
 	<div class="grid gap-8 max-w-3xl mx-auto">
 		{#each data.posts as post (post.slug)}
-			<Card
+			<GlassCard
+				variant="default"
 				hoverable
 				onclick={(e) => handleCardClick(e, post.slug)}
 				onkeydown={(e) => handleCardKeydown(e, post.slug)}
@@ -81,7 +82,7 @@
 				{#if post.description}
 					<p class="description">{post.description}</p>
 				{/if}
-			</Card>
+			</GlassCard>
 		{/each}
 	</div>
 {/if}

@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import { ZoomableImage } from '$lib/components';
+	import { ZoomableImage, Glass, GlassButton } from '$lib/components';
 	import { getImageTitle, getImageDate, debounce } from '@autumnsgrove/groveengine/utils';
 	import { Input, Button, Badge, Select } from '@autumnsgrove/groveengine/ui';
 
@@ -227,74 +227,76 @@
 
 	<!-- Filter Panel -->
 	<div class="filter-panel" class:expanded={filtersExpanded}>
-		<button class="filter-toggle" onclick={toggleFiltersPanel} aria-expanded={filtersExpanded}>
-			<span>Filters</span>
-			<svg
-				class="chevron"
-				class:rotated={filtersExpanded}
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="2"
-			>
-				<polyline points="6 9 12 15 18 9"></polyline>
-			</svg>
-		</button>
+		<Glass variant="card" intensity="medium" border shadow>
+			<button class="filter-toggle" onclick={toggleFiltersPanel} aria-expanded={filtersExpanded}>
+				<span>Filters</span>
+				<svg
+					class="chevron"
+					class:rotated={filtersExpanded}
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
+					<polyline points="6 9 12 15 18 9"></polyline>
+				</svg>
+			</button>
 
-		{#if filtersExpanded}
-			<div class="filter-controls">
-				<!-- Search input -->
-				<div class="filter-group">
-					<Input
-						type="search"
-						placeholder="Search photos..."
-						oninput={handleSearchInput}
-						class="search-input"
-					/>
-				</div>
-
-				<!-- Year and Category selects -->
-				<div class="filter-row">
+			{#if filtersExpanded}
+				<div class="filter-controls">
+					<!-- Search input -->
 					<div class="filter-group">
-						<Select options={yearOptions} bind:value={selectedYear} class="select-filter" />
-					</div>
-
-					<div class="filter-group">
-						<Select
-							options={categoryOptions}
-							bind:value={selectedCategory}
-							class="select-filter"
+						<Input
+							type="search"
+							placeholder="Search photos..."
+							oninput={handleSearchInput}
+							class="search-input"
 						/>
 					</div>
-				</div>
 
-				<!-- Tag badges -->
-				{#if data.filters.tags.length > 0}
-					<div class="filter-group">
-						<div class="tag-filters">
-							{#each data.filters.tags as tag}
-								<button
-									class="tag-badge"
-									class:active={selectedTags.includes(tag.slug)}
-									style="--tag-color: {tag.color || '#8b9467'}"
-									onclick={() => toggleTag(tag.slug)}
-									aria-pressed={selectedTags.includes(tag.slug)}
-								>
-									{tag.name}
-								</button>
-							{/each}
+					<!-- Year and Category selects -->
+					<div class="filter-row">
+						<div class="filter-group">
+							<Select options={yearOptions} bind:value={selectedYear} class="select-filter" />
+						</div>
+
+						<div class="filter-group">
+							<Select
+								options={categoryOptions}
+								bind:value={selectedCategory}
+								class="select-filter"
+							/>
 						</div>
 					</div>
-				{/if}
 
-				<!-- Clear filters button -->
-				{#if hasFilters}
-					<div class="filter-actions">
-						<Button variant="ghost" size="sm" onclick={resetFilters}>Clear Filters</Button>
-					</div>
-				{/if}
-			</div>
-		{/if}
+					<!-- Tag badges -->
+					{#if data.filters.tags.length > 0}
+						<div class="filter-group">
+							<div class="tag-filters">
+								{#each data.filters.tags as tag}
+									<button
+										class="tag-badge"
+										class:active={selectedTags.includes(tag.slug)}
+										style="--tag-color: {tag.color || '#8b9467'}"
+										onclick={() => toggleTag(tag.slug)}
+										aria-pressed={selectedTags.includes(tag.slug)}
+									>
+										{tag.name}
+									</button>
+								{/each}
+							</div>
+						</div>
+					{/if}
+
+					<!-- Clear filters button -->
+					{#if hasFilters}
+						<div class="filter-actions">
+							<Button variant="ghost" size="sm" onclick={resetFilters}>Clear Filters</Button>
+						</div>
+					{/if}
+				</div>
+			{/if}
+		</Glass>
 	</div>
 
 	<!-- Gallery Content -->
@@ -374,28 +376,28 @@
 		aria-modal="true"
 		aria-label="Image viewer"
 	>
-		<button class="lightbox-close" onclick={closeLightbox} aria-label="Close">
+		<GlassButton variant="ghost" onclick={closeLightbox} aria-label="Close" class="lightbox-close">
 			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 				<line x1="18" y1="6" x2="6" y2="18"></line>
 				<line x1="6" y1="6" x2="18" y2="18"></line>
 			</svg>
-		</button>
+		</GlassButton>
 
 		<!-- Navigation buttons -->
 		{#if currentIndex > 0}
-			<button class="lightbox-nav prev" onclick={goToPrevious} aria-label="Previous image">
+			<GlassButton variant="ghost" onclick={goToPrevious} aria-label="Previous image" class="lightbox-nav prev">
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<polyline points="15 18 9 12 15 6"></polyline>
 				</svg>
-			</button>
+			</GlassButton>
 		{/if}
 
 		{#if currentIndex < visibleImages.length - 1}
-			<button class="lightbox-nav next" onclick={goToNext} aria-label="Next image">
+			<GlassButton variant="ghost" onclick={goToNext} aria-label="Next image" class="lightbox-nav next">
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<polyline points="9 18 15 12 9 6"></polyline>
 				</svg>
-			</button>
+			</GlassButton>
 		{/if}
 
 		<div class="lightbox-content">
@@ -409,9 +411,9 @@
 			{/key}
 		</div>
 
-		<div class="lightbox-counter">
+		<Glass variant="overlay" intensity="medium" class="lightbox-counter">
 			{currentIndex + 1} / {visibleImages.length}
-		</div>
+		</Glass>
 	</div>
 {/if}
 

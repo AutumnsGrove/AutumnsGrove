@@ -2,7 +2,7 @@
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
   import { browser } from "$app/environment";
-  import { MarkdownEditor, GutterManager } from "$lib/components";
+  import { MarkdownEditor, GutterManager, Glass, GlassButton } from "$lib/components";
   import { api } from "@autumnsgrove/groveengine/utils";
 
   // Form state
@@ -115,13 +115,12 @@
       <a href="/admin/blog" class="back-link">&larr; Back to Posts</a>
       <h1>New Post</h1>
     </div>
-    <button
-      class="save-btn"
+    <GlassButton
       onclick={handleSave}
       disabled={saving}
     >
       {saving ? "Saving..." : "Save Post"}
-    </button>
+    </GlassButton>
   </header>
 
   {#if error}
@@ -134,8 +133,9 @@
 
   <div class="editor-layout">
     <!-- Metadata Panel -->
-    <aside class="metadata-panel" class:collapsed={detailsCollapsed}>
-      <div class="panel-header">
+    <div class="metadata-panel-wrapper" class:collapsed={detailsCollapsed}>
+      <Glass variant="surface" intensity="light" border class="metadata-panel-glass">
+        <div class="panel-header">
         <h2 class="panel-title">{#if detailsCollapsed}Details{:else}Post Details{/if}</h2>
         <button
           class="collapse-details-btn"
@@ -243,7 +243,8 @@
           </div>
         </div>
       {/if}
-    </aside>
+      </Glass>
+    </div>
 
     <!-- Editor Panel -->
     <main class="editor-main">
@@ -388,18 +389,20 @@
     min-height: 0;
   }
   /* Metadata Panel */
-  .metadata-panel {
+  .metadata-panel-wrapper {
     width: 280px;
     flex-shrink: 0;
-    background: var(--mobile-menu-bg);
-    border: 1px solid var(--color-border);
-    border-radius: var(--border-radius-standard);
+    transition: width 0.2s ease;
+  }
+  .metadata-panel-wrapper.collapsed {
+    width: 50px;
+  }
+  .metadata-panel-glass {
+    height: 100%;
     padding: 1.25rem;
     overflow-y: auto;
-    transition: width 0.2s ease, background-color 0.3s ease, border-color 0.3s ease;
   }
-  .metadata-panel.collapsed {
-    width: 50px;
+  .metadata-panel-wrapper.collapsed .metadata-panel-glass {
     padding: 0.75rem 0.5rem;
     overflow: hidden;
   }
@@ -412,7 +415,7 @@
     margin-bottom: 1.25rem;
     transition: border-color 0.3s ease;
   }
-  .metadata-panel.collapsed .panel-header {
+  .metadata-panel-wrapper.collapsed .panel-header {
     flex-direction: column;
     gap: 0.5rem;
     border-bottom: none;
@@ -426,7 +429,7 @@
     color: var(--color-foreground);
     transition: color 0.3s ease;
   }
-  .metadata-panel.collapsed .panel-title {
+  .metadata-panel-wrapper.collapsed .panel-title {
     font-size: 0.7rem;
     writing-mode: vertical-rl;
     text-orientation: mixed;
@@ -600,18 +603,20 @@
     .editor-layout {
       flex-direction: column;
     }
-    .metadata-panel {
+    .metadata-panel-wrapper {
       width: 100% !important;
       max-height: none;
     }
-    .metadata-panel.collapsed {
+    .metadata-panel-wrapper.collapsed {
       width: 100% !important;
+    }
+    .metadata-panel-wrapper.collapsed .metadata-panel-glass {
       padding: 1rem;
     }
-    .metadata-panel.collapsed .panel-header {
+    .metadata-panel-wrapper.collapsed .panel-header {
       flex-direction: row;
     }
-    .metadata-panel.collapsed .panel-title {
+    .metadata-panel-wrapper.collapsed .panel-title {
       writing-mode: horizontal-tb;
       transform: none;
       font-size: 1rem;

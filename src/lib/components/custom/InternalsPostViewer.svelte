@@ -1,6 +1,7 @@
 <script>
 	import { browser } from '$app/environment';
 	import { onMount } from 'svelte';
+	import { GlassCard, Badge, Glass } from '$lib/components';
 
 	let {
 		post = null,
@@ -68,89 +69,76 @@
 </script>
 
 <a
-	class="internals-post-viewer"
 	href={linkUrl}
 	aria-label="Read full post: {post?.title || 'Untitled'}"
+	style="text-decoration: none; display: block;"
 >
-	<header class="viewer-header">
-		<h3 class="viewer-title">{post?.title || 'Untitled Post'}</h3>
-		{#if post?.date}
-			<time class="viewer-date" datetime={post.date}>
-				{new Date(post.date).toLocaleDateString('en-US', {
-					year: 'numeric',
-					month: 'short',
-					day: 'numeric'
-				})}
-			</time>
-		{/if}
-	</header>
-
-	<div
-		class="viewer-content"
-		bind:this={contentRef}
-	>
-		{#if post?.content}
-			<div class="preview-text">{previewText}</div>
-		{:else}
-			<p class="no-content">No preview available</p>
-		{/if}
-	</div>
-
-	{#if isOverflowing || post?.content}
-		<div class="viewer-fade"></div>
-	{/if}
-
-	<footer class="viewer-footer">
-		<span class="read-more">
-			Click to read more
-			<svg class="arrow-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
-				<path d="M5 12h14M12 5l7 7-7 7"/>
-			</svg>
-		</span>
-		{#if post?.tags?.length > 0}
-			<div class="viewer-tags">
-				{#each post.tags.slice(0, 3) as tag (tag)}
-					<span class="tag">{tag}</span>
-				{/each}
+	<GlassCard variant="frosted" hoverable>
+		{#snippet header()}
+			<div class="viewer-header">
+				<h3 class="viewer-title">{post?.title || 'Untitled Post'}</h3>
+				{#if post?.date}
+					<time class="viewer-date" datetime={post.date}>
+						{new Date(post.date).toLocaleDateString('en-US', {
+							year: 'numeric',
+							month: 'short',
+							day: 'numeric'
+						})}
+					</time>
+				{/if}
 			</div>
-		{/if}
-	</footer>
+		{/snippet}
+
+		<div class="viewer-content-wrapper">
+			<div
+				class="viewer-content"
+				bind:this={contentRef}
+			>
+				{#if post?.content}
+					<div class="preview-text">{previewText}</div>
+				{:else}
+					<p class="no-content">No preview available</p>
+				{/if}
+			</div>
+
+			{#if isOverflowing || post?.content}
+				<div class="viewer-fade"></div>
+			{/if}
+		</div>
+
+		{#snippet footer()}
+			<div class="viewer-footer">
+				<span class="read-more">
+					Click to read more
+					<svg class="arrow-icon" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+						<path d="M5 12h14M12 5l7 7-7 7"/>
+					</svg>
+				</span>
+				{#if post?.tags?.length > 0}
+					<div class="viewer-tags">
+						{#each post.tags.slice(0, 3) as tag (tag)}
+							<Badge variant="secondary" size="sm">{tag}</Badge>
+						{/each}
+					</div>
+				{/if}
+			</div>
+		{/snippet}
+	</GlassCard>
 
 	{#if caption}
-		<div class="viewer-caption">{caption}</div>
+		<Glass variant="muted" intensity="light" class="viewer-caption-wrapper">
+			<div class="viewer-caption">{caption}</div>
+		</Glass>
 	{/if}
 </a>
 
 <style>
-	.internals-post-viewer {
-		position: relative;
-		display: block;
-		border: 1px solid var(--viewer-border);
-		border-radius: 12px;
-		padding: 1.25rem;
-		background: var(--viewer-bg);
-		text-decoration: none;
-		transition: all 0.2s ease;
-		overflow: hidden;
-	}
-
-	.internals-post-viewer:hover {
-		border-color: var(--color-primary);
-		box-shadow: 0 4px 12px var(--viewer-hover-shadow);
-		transform: translateY(-2px);
-	}
-
-	.internals-post-viewer:focus {
-		outline: 2px solid var(--color-primary);
-		outline-offset: 2px;
-	}
-
+	/* Header styling */
 	.viewer-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
 		gap: 1rem;
-		margin-bottom: 0.75rem;
 	}
 
 	.viewer-title {
@@ -162,15 +150,20 @@
 		transition: color 0.2s ease;
 	}
 
-	.internals-post-viewer:hover .viewer-title {
+	a:hover .viewer-title {
 		color: var(--color-primary-hover);
 	}
 
 	.viewer-date {
 		flex-shrink: 0;
 		font-size: 0.8rem;
-		color: var(--viewer-date-text);
+		color: var(--color-text-secondary, #999);
 		white-space: nowrap;
+	}
+
+	/* Content area with fade effect */
+	.viewer-content-wrapper {
+		position: relative;
 	}
 
 	.viewer-content {
@@ -178,14 +171,8 @@
 		max-height: 5.5rem;
 		overflow: hidden;
 		line-height: 1.6;
-		color: var(--viewer-content-text);
+		color: var(--color-text, #d4d4d4);
 		font-size: 0.95rem;
-		transition: max-height 0.3s ease;
-	}
-
-	.viewer-content.expanded {
-		max-height: 20rem;
-		overflow-y: auto;
 	}
 
 	.preview-text {
@@ -200,21 +187,20 @@
 
 	.viewer-fade {
 		position: absolute;
-		bottom: 4.5rem;
+		bottom: 0;
 		left: 0;
 		right: 0;
 		height: 2rem;
-		background: linear-gradient(transparent, var(--viewer-bg));
+		background: linear-gradient(transparent, var(--color-surface, rgba(255, 255, 255, 0.05)));
 		pointer-events: none;
 	}
 
+	/* Footer styling */
 	.viewer-footer {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-top: 1rem;
-		padding-top: 0.75rem;
-		border-top: 1px solid var(--viewer-footer-border);
+		gap: 1rem;
 	}
 
 	.read-more {
@@ -231,7 +217,7 @@
 		transition: transform 0.2s ease;
 	}
 
-	.internals-post-viewer:hover .arrow-icon {
+	a:hover .arrow-icon {
 		transform: translateX(3px);
 	}
 
@@ -241,30 +227,20 @@
 		flex-wrap: wrap;
 	}
 
-	.tag {
-		padding: 0.2rem 0.5rem;
-		font-size: 0.7rem;
-		background: var(--viewer-tag-bg);
-		color: var(--color-primary);
-		border-radius: 4px;
-		text-transform: lowercase;
+	/* Caption wrapper */
+	.viewer-caption-wrapper {
+		margin-top: 0.75rem;
 	}
 
 	.viewer-caption {
-		margin-top: 1.25rem;
-		padding-top: 0.75rem;
 		font-size: 0.8rem;
-		color: var(--viewer-caption-text);
+		color: var(--color-text-secondary, #999);
 		font-style: italic;
 		text-align: center;
-		border-top: 1px dashed var(--viewer-caption-border);
+		padding: 0.5rem 0;
 	}
 
 	@media (max-width: 480px) {
-		.internals-post-viewer {
-			padding: 1rem;
-		}
-
 		.viewer-header {
 			flex-direction: column;
 			gap: 0.25rem;
@@ -276,13 +252,8 @@
 
 		.viewer-footer {
 			flex-direction: column;
-			gap: 1rem;
+			gap: 0.75rem;
 			align-items: flex-start;
-		}
-
-		.viewer-caption {
-			margin-top: 1.5rem;
-			padding-top: 0.875rem;
 		}
 	}
 </style>

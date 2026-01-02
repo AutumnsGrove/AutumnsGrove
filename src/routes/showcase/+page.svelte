@@ -19,6 +19,7 @@
 		TableCell,
 		TableHead
 	} from '@autumnsgrove/groveengine/ui';
+	import { Glass } from '$lib/components';
 
 	// State for interactive examples
 	let sampleInput = $state('');
@@ -72,7 +73,7 @@
 	</header>
 
 	<!-- 1. Button -->
-	<section class="component-section">
+	<Glass variant="card" as="section" intensity="light" border class="component-section">
 		<h2>1. Button</h2>
 		<p class="description">Interactive button component with multiple variants and sizes</p>
 		<div class="examples">
@@ -87,12 +88,14 @@
 			<Button size="default">Default</Button>
 			<Button size="lg">Large</Button>
 		</div>
-		<pre><code>&lt;Button variant="primary"&gt;Click me&lt;/Button&gt;
+		<Glass variant="dark" intensity="medium" class="code-block">
+			<pre><code>&lt;Button variant="primary"&gt;Click me&lt;/Button&gt;
 &lt;Button variant="danger" size="lg"&gt;Delete&lt;/Button&gt;</code></pre>
-	</section>
+		</Glass>
+	</Glass>
 
 	<!-- 2. Card -->
-	<section class="component-section">
+	<Glass variant="card" as="section" intensity="light" border class="component-section">
 		<h2>2. Card</h2>
 		<p class="description">Container for content with optional title and description</p>
 		<div class="examples card-grid">
@@ -110,13 +113,15 @@
 				Hover over this card to see the effect.
 			</Card>
 		</div>
-		<pre><code>&lt;Card title="My Card" description="Subtitle"&gt;
+		<Glass variant="dark" intensity="medium" class="code-block">
+			<pre><code>&lt;Card title="My Card" description="Subtitle"&gt;
   Content goes here
 &lt;/Card&gt;</code></pre>
-	</section>
+		</Glass>
+	</Glass>
 
 	<!-- 3. Badge -->
-	<section class="component-section">
+	<Glass variant="card" as="section" intensity="light" border class="component-section">
 		<h2>3. Badge</h2>
 		<p class="description">Small labels for tags and status indicators</p>
 		<div class="examples">
@@ -126,12 +131,14 @@
 			<Badge variant="tag">TypeScript</Badge>
 			<Badge variant="tag">Cloudflare</Badge>
 		</div>
-		<pre><code>&lt;Badge&gt;Status&lt;/Badge&gt;
+		<Glass variant="dark" intensity="medium" class="code-block">
+			<pre><code>&lt;Badge&gt;Status&lt;/Badge&gt;
 &lt;Badge variant="tag"&gt;Category&lt;/Badge&gt;</code></pre>
-	</section>
+		</Glass>
+	</Glass>
 
 	<!-- 4. Input -->
-	<section class="component-section">
+	<Glass variant="card" as="section" intensity="light" border class="component-section">
 		<h2>4. Input</h2>
 		<p class="description">Text input fields with labels and validation</p>
 		<div class="input-grid">
@@ -151,15 +158,17 @@
 				error="This field is required"
 			/>
 		</div>
-		<pre><code>&lt;Input
+		<Glass variant="dark" intensity="medium" class="code-block">
+			<pre><code>&lt;Input
   bind:value={sampleInput}
   label="Username"
   placeholder="Enter username"
 /&gt;</code></pre>
-	</section>
+		</Glass>
+	</Glass>
 
 	<!-- 5. Select -->
-	<section class="component-section">
+	<Glass variant="card" as="section" intensity="light" border class="component-section">
 		<h2>5. Select</h2>
 		<p class="description">Dropdown selection component</p>
 		<div class="select-demo">
@@ -177,7 +186,8 @@
 				<p class="selected-value">Selected: <Badge variant="tag">{sampleSelect}</Badge></p>
 			{/if}
 		</div>
-		<pre><code>&lt;Select
+		<Glass variant="dark" intensity="medium" class="code-block">
+			<pre><code>&lt;Select
   bind:value={sampleSelect}
   label="Framework"
   options={[
@@ -185,10 +195,11 @@
     { value: 'react', label: 'React' }
   ]}
 /&gt;</code></pre>
-	</section>
+		</Glass>
+	</Glass>
 
 	<!-- 6. Tabs -->
-	<section class="component-section">
+	<Glass variant="card" as="section" intensity="light" border class="component-section">
 		<h2>6. Tabs</h2>
 		<p class="description">Tabbed interface for organizing content</p>
 		<Tabs tabs={tabsData}>
@@ -202,15 +213,17 @@
 				{/if}
 			{/snippet}
 		</Tabs>
-		<pre><code>&lt;Tabs tabs={tabsData}&gt;
+		<Glass variant="dark" intensity="medium" class="code-block">
+			<pre><code>&lt;Tabs tabs={tabsData}&gt;
   {#snippet content(tab)}
     Content for {tab.value}
   {/snippet}
 &lt;/Tabs&gt;</code></pre>
-	</section>
+		</Glass>
+	</Glass>
 
 	<!-- 7. Dialog -->
-	<section class="component-section">
+	<Glass variant="card" as="section" intensity="light" border class="component-section">
 		<h2>7. Dialog</h2>
 		<p class="description">Modal dialog for important interactions</p>
 		<Button variant="primary" onclick={() => (dialogOpen = true)}>Open Dialog</Button>
@@ -221,24 +234,28 @@
 				<Button variant="primary" onclick={() => (dialogOpen = false)}>Confirm</Button>
 			{/snippet}
 		</Dialog>
-		<pre><code>&lt;Dialog bind:open={dialogOpen} title="Confirm Action"&gt;
+		<Glass variant="dark" intensity="medium" class="code-block">
+			<pre><code>&lt;Dialog bind:open={dialogOpen} title="Confirm Action"&gt;
   Are you sure?
   {#snippet footer()}
     &lt;Button&gt;Confirm&lt;/Button&gt;
   {/snippet}
 &lt;/Dialog&gt;</code></pre>
-	</section>
+		</Glass>
+	</Glass>
 
 	<!-- 8. Accordion -->
-	<section class="component-section">
+	<Glass variant="card" as="section" intensity="light" border class="component-section">
 		<h2>8. Accordion</h2>
 		<p class="description">Collapsible sections for FAQ and content organization</p>
 		<Accordion items={accordionData} type="single" collapsible />
-		<pre><code>&lt;Accordion items={accordionData} type="single" collapsible /&gt;</code></pre>
-	</section>
+		<Glass variant="dark" intensity="medium" class="code-block">
+			<pre><code>&lt;Accordion items={accordionData} type="single" collapsible /&gt;</code></pre>
+		</Glass>
+	</Glass>
 
 	<!-- 9. Sheet -->
-	<section class="component-section">
+	<Glass variant="card" as="section" intensity="light" border class="component-section">
 		<h2>9. Sheet</h2>
 		<p class="description">Side panel for navigation or additional content</p>
 		<Button variant="primary" onclick={() => (sheetOpen = true)}>Open Sheet</Button>
@@ -265,17 +282,19 @@
 				<Button variant="primary" onclick={() => (sheetOpen = false)}>Save</Button>
 			{/snippet}
 		</Sheet>
-		<pre><code>&lt;Sheet
+		<Glass variant="dark" intensity="medium" class="code-block">
+			<pre><code>&lt;Sheet
   bind:open={sheetOpen}
   side="right"
   title="Panel"
 &gt;
   Content here
 &lt;/Sheet&gt;</code></pre>
-	</section>
+		</Glass>
+	</Glass>
 
 	<!-- 10. Toast -->
-	<section class="component-section">
+	<Glass variant="card" as="section" intensity="light" border class="component-section">
 		<h2>10. Toast</h2>
 		<p class="description">Notification system for feedback messages</p>
 		<div class="examples">
@@ -288,15 +307,17 @@
 				Show Warning
 			</Button>
 		</div>
-		<pre><code>&lt;Toast /&gt;
+		<Glass variant="dark" intensity="medium" class="code-block">
+			<pre><code>&lt;Toast /&gt;
 
 import { toast } from '$lib/components/ui';
 toast.success('Operation successful!');
 toast.error('Something went wrong');</code></pre>
-	</section>
+		</Glass>
+	</Glass>
 
 	<!-- 11. Skeleton -->
-	<section class="component-section">
+	<Glass variant="card" as="section" intensity="light" border class="component-section">
 		<h2>11. Skeleton</h2>
 		<p class="description">Loading placeholder for content</p>
 		<div class="skeleton-demo">
@@ -306,12 +327,14 @@ toast.error('Something went wrong');</code></pre>
 				<Skeleton class="h-4 w-1/2" />
 			</Card>
 		</div>
-		<pre><code>&lt;Skeleton class="h-4 w-full" /&gt;
+		<Glass variant="dark" intensity="medium" class="code-block">
+			<pre><code>&lt;Skeleton class="h-4 w-full" /&gt;
 &lt;Skeleton class="h-20 w-20 rounded-full" /&gt;</code></pre>
-	</section>
+		</Glass>
+	</Glass>
 
 	<!-- 12. Table -->
-	<section class="component-section">
+	<Glass variant="card" as="section" intensity="light" border class="component-section">
 		<h2>12. Table</h2>
 		<p class="description">Data table component for structured information</p>
 		<Table class="showcase-table">
@@ -332,7 +355,8 @@ toast.error('Something went wrong');</code></pre>
 				{/each}
 			</TableBody>
 		</Table>
-		<pre><code>&lt;Table&gt;
+		<Glass variant="dark" intensity="medium" class="code-block">
+			<pre><code>&lt;Table&gt;
   &lt;TableHeader&gt;
     &lt;TableRow&gt;
       &lt;TableHead&gt;Name&lt;/TableHead&gt;
@@ -346,7 +370,8 @@ toast.error('Something went wrong');</code></pre>
     {/each}
   &lt;/TableBody&gt;
 &lt;/Table&gt;</code></pre>
-	</section>
+		</Glass>
+	</Glass>
 
 	<!-- Footer -->
 	<footer class="showcase-footer">
@@ -393,15 +418,11 @@ toast.error('Something went wrong');</code></pre>
 	.component-section {
 		margin-bottom: 3rem;
 		padding: 2rem;
-		background: hsl(var(--card));
-		border: 1px solid hsl(var(--border));
-		border-radius: var(--radius);
 		transition: all 0.2s ease;
 	}
 
 	.component-section:hover {
-		border-color: hsl(var(--primary) / 0.5);
-		box-shadow: 0 4px 16px hsl(var(--primary) / 0.1);
+		transform: translateY(-2px);
 	}
 
 	.component-section h2 {
@@ -462,19 +483,24 @@ toast.error('Something went wrong');</code></pre>
 		margin: 1.5rem 0;
 	}
 
-	pre {
-		background: hsl(var(--muted));
+	.code-block {
+		margin-top: 1.5rem;
 		padding: 1rem;
 		border-radius: var(--radius);
+	}
+
+	.code-block pre {
+		margin: 0;
+		padding: 0;
+		background: transparent;
+		border: none;
 		overflow-x: auto;
-		margin-top: 1.5rem;
-		border: 1px solid hsl(var(--border));
 	}
 
 	code {
 		font-family: 'Courier New', monospace;
 		font-size: 0.9rem;
-		color: hsl(var(--foreground));
+		color: white;
 		line-height: 1.5;
 	}
 

@@ -1,5 +1,6 @@
 <script>
-  import { Button, Skeleton, toast } from "@autumnsgrove/groveengine/ui";
+  import { GlassCard, GlassButton, Skeleton } from "$lib/components";
+  import { toast } from "@autumnsgrove/groveengine/ui";
   import { api } from "@autumnsgrove/groveengine/utils";
 
   let clearingCache = $state(false);
@@ -170,8 +171,7 @@
     <p class="subtitle">Manage site configuration and maintenance</p>
   </header>
 
-  <section class="settings-section">
-    <h2>System Health</h2>
+  <GlassCard title="Health Check" variant="default">
     {#if loadingHealth}
       <div class="health-grid">
         <Skeleton class="h-12 w-full" />
@@ -218,13 +218,12 @@
       </div>
     {/if}
 
-    <Button onclick={fetchHealth} variant="secondary" disabled={loadingHealth}>
+    <GlassButton onclick={fetchHealth} variant="secondary" disabled={loadingHealth}>
       {loadingHealth ? 'Checking...' : 'Refresh Status'}
-    </Button>
-  </section>
+    </GlassButton>
+  </GlassCard>
 
-  <section class="settings-section">
-    <h2>Typography</h2>
+  <GlassCard title="Font Selection" variant="default">
     <p class="section-description">
       Choose the font family used across the entire site. Changes take effect immediately.
     </p>
@@ -358,19 +357,18 @@
       {/if}
 
       <div class="button-row">
-        <Button onclick={saveFont} variant="primary" disabled={savingFont}>
+        <GlassButton onclick={saveFont} variant="primary" disabled={savingFont}>
           {savingFont ? 'Saving...' : 'Save Font Setting'}
-        </Button>
+        </GlassButton>
       </div>
 
       <p class="note">
         See <a href="/credits">font credits and licenses</a> for attribution.
       </p>
     {/if}
-  </section>
+  </GlassCard>
 
-  <section class="settings-section">
-    <h2>AI Writing Assistant</h2>
+  <GlassCard title="AI Writing Assistant" variant="accent">
     <p class="section-description">
       Get grammar, tone, and readability feedback on your writing. Powered by Claude AI.
     </p>
@@ -453,10 +451,10 @@
         </div>
       {/if}
     {/if}
-  </section>
+  </GlassCard>
 
-  <section class="settings-section">
-    <h2>Cache Management</h2>
+  <GlassCard title="Cache Management" variant="default">
+
     <p class="section-description">
       The site uses KV for caching API responses. Clearing the cache will cause
       data to be refetched from the source on the next request.
@@ -468,17 +466,16 @@
       </div>
     {/if}
 
-    <Button onclick={clearCache} variant="danger" disabled={clearingCache}>
+    <GlassButton onclick={clearCache} variant="danger" disabled={clearingCache}>
       {clearingCache ? 'Clearing...' : 'Clear All Cache'}
-    </Button>
+    </GlassButton>
 
     <p class="note">
       Note: The cache clear endpoint needs to be implemented at <code>/api/admin/cache/clear</code>
     </p>
-  </section>
+  </GlassCard>
 
-  <section class="settings-section">
-    <h2>Environment</h2>
+  <GlassCard title="Environment" variant="default">
     <div class="env-info">
       <div class="env-item">
         <span class="env-label">Cache TTL</span>
@@ -489,10 +486,9 @@
         <span class="env-value">6 hours (21600 seconds)</span>
       </div>
     </div>
-  </section>
+  </GlassCard>
 
-  <section class="settings-section">
-    <h2>Links</h2>
+  <GlassCard title="Links" variant="default">
     <ul class="links-list">
       <li>
         <a href="https://dash.cloudflare.com" target="_blank">Cloudflare Dashboard</a>
@@ -504,7 +500,7 @@
         <a href="https://github.com/AutumnsGrove/AutumnsGrove/actions" target="_blank">GitHub Actions</a>
       </li>
     </ul>
-  </section>
+  </GlassCard>
 </div>
 
 <style>

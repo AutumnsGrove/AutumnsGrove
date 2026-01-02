@@ -1,6 +1,6 @@
 <script>
   import { slide, fade } from "svelte/transition";
-  import { Button } from "@autumnsgrove/groveengine/ui";
+  import { Glass, GlassButton, GlassCard } from '$lib/components';
   import { MAX_CONTENT_LENGTH } from "$lib/config/ai-models";
 
   // Props
@@ -285,25 +285,29 @@
 
   <!-- Main panel -->
   {#if isOpen && !isMinimized}
-    <aside
-      class="ai-panel"
-      role="complementary"
-      aria-label="AI Writing Assistant"
-      bind:this={panelRef}
-      transition:slide={{ axis: "x", duration: 200 }}
-    >
+    <div class="ai-panel-container" transition:slide={{ axis: "x", duration: 200 }}>
+      <Glass
+        variant="dark"
+        intensity="strong"
+        border
+        shadow
+        class="ai-panel"
+        bind:this={panelRef}
+      >
       <!-- Header -->
-      <header class="panel-header">
-        <h3>grove assistant</h3>
-        <div class="header-actions">
-          <button class="icon-btn" onclick={minimize} title="Minimize" aria-label="Minimize panel">
-            <span aria-hidden="true">−</span>
-          </button>
-          <button class="icon-btn" onclick={() => isOpen = false} title="Close (Esc)" aria-label="Close panel">
-            <span aria-hidden="true">×</span>
-          </button>
-        </div>
-      </header>
+      <Glass variant="overlay" intensity="light" border class="panel-header-wrapper">
+        <header class="panel-header">
+          <h3>grove assistant</h3>
+          <div class="header-actions">
+            <button class="icon-btn" onclick={minimize} title="Minimize" aria-label="Minimize panel">
+              <span aria-hidden="true">−</span>
+            </button>
+            <button class="icon-btn" onclick={() => isOpen = false} title="Close (Esc)" aria-label="Close panel">
+              <span aria-hidden="true">×</span>
+            </button>
+          </div>
+        </header>
+      </Glass>
 
       <!-- Content length indicator -->
       <div
@@ -321,9 +325,9 @@
       </div>
 
       <!-- Vibes section - the ASCII art atmosphere -->
-      <div class="vibes-section">
+      <GlassCard variant="accent" class="vibes-section">
         <pre class="ascii-vibe" aria-hidden="true">{displayVibe()}</pre>
-      </div>
+      </GlassCard>
 
       <!-- Model selector -->
       <div class="model-selector">
@@ -339,38 +343,43 @@
 
       <!-- Action buttons -->
       <div class="actions" role="group" aria-label="Analysis actions">
-        <button
-          class="action-btn"
+        <GlassButton
+          variant="accent"
+          size="sm"
           onclick={() => runAnalysis("grammar")}
           disabled={isAnalyzing || contentLengthStatus().status === "over"}
           aria-busy={isAnalyzing}
         >
           grammar
-        </button>
-        <button
-          class="action-btn"
+        </GlassButton>
+        <GlassButton
+          variant="accent"
+          size="sm"
           onclick={() => runAnalysis("tone")}
           disabled={isAnalyzing || contentLengthStatus().status === "over"}
           aria-busy={isAnalyzing}
         >
           tone
-        </button>
-        <button
-          class="action-btn"
+        </GlassButton>
+        <GlassButton
+          variant="accent"
+          size="sm"
           onclick={() => runAnalysis("readability")}
           disabled={isAnalyzing}
           aria-busy={isAnalyzing}
         >
           reading
-        </button>
-        <button
-          class="action-btn action-full"
+        </GlassButton>
+        <GlassButton
+          variant="accent"
+          size="sm"
+          class="action-full"
           onclick={() => runAnalysis("all")}
           disabled={isAnalyzing || contentLengthStatus().status === "over"}
           aria-busy={isAnalyzing}
         >
           {isAnalyzing ? "thinking..." : "full check"}
-        </button>
+        </GlassButton>
       </div>
 
       <!-- Error message -->
@@ -383,7 +392,9 @@
 
       <!-- Results -->
       {#if results}
-        <div class="results" transition:slide>
+        <div class="results-container" transition:slide>
+          <Glass variant="surface" intensity="light" border class="results-wrapper">
+            <div class="results">
           <!-- Tabs -->
           <div class="tabs">
             {#if results.grammar}
@@ -525,6 +536,8 @@
             {/if}
             <button class="clear-btn" onclick={clearResults}>clear</button>
           </div>
+            </div>
+          </Glass>
         </div>
       {/if}
 
@@ -532,7 +545,8 @@
       <footer class="panel-footer" aria-label="AI assistant philosophy: analyzes your writing but never generates content">
         <p>a helper, not a writer</p>
       </footer>
-    </aside>
+      </Glass>
+    </div>
   {/if}
 {/if}
 
@@ -577,20 +591,28 @@
     text-orientation: mixed;
   }
 
-  /* Main panel */
-  .ai-panel {
+  /* Main panel container */
+  .ai-panel-container {
     position: fixed;
     right: 0;
     top: 0;
     bottom: 0;
     width: 280px;
-    background: var(--color-bg, #1e1e1e);
-    border-left: 1px solid var(--color-border, #3a3a3a);
+    z-index: 100;
+  }
+
+  /* Main panel */
+  :global(.ai-panel) {
+    height: 100%;
     display: flex;
     flex-direction: column;
-    z-index: 100;
     font-size: 0.85rem;
     overflow: hidden;
+  }
+
+  /* Header wrapper */
+  .panel-header-wrapper {
+    flex-shrink: 0;
   }
 
   /* Header */
@@ -598,8 +620,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 1rem;
-    border-bottom: 1px solid var(--color-border, #3a3a3a);
   }
 
   .panel-header h3 {
@@ -683,11 +703,9 @@
   }
 
   /* Vibes section */
-  .vibes-section {
-    padding: 0.5rem;
+  :global(.vibes-section) {
     text-align: center;
-    border-bottom: 1px solid var(--color-border, #3a3a3a);
-    background: var(--cream-200);
+    margin: 0.5rem;
   }
 
   .ascii-vibe {
@@ -730,31 +748,8 @@
     padding: 0.75rem;
   }
 
-  .action-btn {
-    background: var(--cream-200);
-    border: 1px solid var(--color-border, #3a3a3a);
-    border-radius: 4px;
-    padding: 0.5rem;
-    color: var(--color-text, #d4d4d4);
-    cursor: pointer;
-    font-size: 0.75rem;
-    transition: background-color 0.15s, border-color 0.15s;
-  }
-
-  .action-btn:hover:not(:disabled) {
-    background: var(--color-primary, #2d5a2d);
-    border-color: var(--accent, #8bc48b);
-  }
-
-  .action-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  .action-full {
+  :global(.action-full) {
     grid-column: 1 / -1;
-    background: var(--color-primary, #2d5a2d);
-    border-color: var(--accent, #8bc48b);
   }
 
   /* Error message */
@@ -776,6 +771,15 @@
     cursor: pointer;
     padding: 0;
     margin-top: 0.25rem;
+  }
+
+  /* Results wrapper */
+  :global(.results-wrapper) {
+    flex: 1;
+    overflow: hidden;
+    margin: 0.5rem;
+    display: flex;
+    flex-direction: column;
   }
 
   /* Results */
@@ -1048,8 +1052,9 @@
   .panel-footer {
     padding: 0.5rem;
     text-align: center;
-    border-top: 1px solid var(--color-border, #3a3a3a);
-    background: var(--cream-200);
+    margin-top: auto;
+    background: rgba(0, 0, 0, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
   }
 
   .panel-footer p {
@@ -1079,7 +1084,7 @@
 
   /* Responsive */
   @media (max-width: 768px) {
-    .ai-panel {
+    .ai-panel-container {
       width: 100%;
       max-width: 320px;
     }

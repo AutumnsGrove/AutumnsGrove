@@ -2,7 +2,7 @@
 	import { untrack } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import Heatmap from './Heatmap.svelte';
-	import { CollapsibleSection } from '$lib/components';
+	import { CollapsibleSection, GlassCard } from '$lib/components';
 	import {
 		GitCommit,
 		Plus,
@@ -548,7 +548,7 @@
 	{#if userData && stats}
 		<div class="results">
 			<!-- User Info Card - Compact -->
-			<section class="user-card-compact">
+			<GlassCard variant="accent" class="user-card-compact">
 				<button
 					class="avatar-button"
 					onclick={handleAvatarClick}
@@ -576,7 +576,7 @@
 				{#if refreshMessage}
 					<span class="refresh-message">{refreshMessage}</span>
 				{/if}
-			</section>
+			</GlassCard>
 
 			<!-- Time Range Selector -->
 			<div class="time-range-selector">
@@ -610,51 +610,57 @@
 
 			<!-- Stats Cards -->
 			<div class="stats-grid">
-				<div class="stat-card">
+				<GlassCard variant="frosted" hoverable class="stat-card">
 					<div class="stat-icon"><GitCommit size={24} /></div>
 					<div class="stat-value">{formatNumber(stats.total_commits)}</div>
 					<div class="stat-label">Commits (Top {stats.repos_analyzed} Repos)</div>
-				</div>
-				<div class="stat-card">
+				</GlassCard>
+				<GlassCard variant="frosted" hoverable class="stat-card">
 					<div class="stat-icon additions"><Plus size={24} /></div>
 					<div class="stat-value additions">+{formatNumber(stats.total_additions)}</div>
 					<div class="stat-label">Lines Added</div>
-				</div>
-				<div class="stat-card">
+				</GlassCard>
+				<GlassCard variant="frosted" hoverable class="stat-card">
 					<div class="stat-icon deletions"><Minus size={24} /></div>
 					<div class="stat-value deletions">-{formatNumber(stats.total_deletions)}</div>
 					<div class="stat-label">Lines Deleted</div>
-				</div>
-				<div class="stat-card">
+				</GlassCard>
+				<GlassCard variant="frosted" hoverable class="stat-card">
 					<div class="stat-icon"><FolderGit2 size={24} /></div>
 					<div class="stat-value">{stats.repos_analyzed}</div>
 					<div class="stat-label">Repos Analyzed</div>
-				</div>
+				</GlassCard>
 			</div>
 
 			<!-- Charts -->
 			<div class="charts-grid">
-				<section class="card chart-card">
-					<h3><Clock size={20} /> When Do I Code?</h3>
+				<GlassCard title="When Do I Code?" class="chart-card">
+					<svelte:fragment slot="header-icon">
+						<Clock size={20} />
+					</svelte:fragment>
 					<div class="chart-container">
 						<canvas bind:this={hoursCanvas}></canvas>
 					</div>
-				</section>
+				</GlassCard>
 
-				<section class="card chart-card">
-					<h3><CalendarDays size={20} /> Most Active Days</h3>
+				<GlassCard title="Most Active Days" class="chart-card">
+					<svelte:fragment slot="header-icon">
+						<CalendarDays size={20} />
+					</svelte:fragment>
 					<div class="chart-container">
 						<canvas bind:this={daysCanvas}></canvas>
 					</div>
-				</section>
+				</GlassCard>
 			</div>
 
 			<!-- Heatmap -->
 			<Heatmap activity={activityData} days={365} />
 
 			<!-- Top Repos -->
-			<section class="card">
-				<h3><FolderGit2 size={20} /> Top Repositories</h3>
+			<GlassCard title="Top Repositories">
+				<svelte:fragment slot="header-icon">
+					<FolderGit2 size={20} />
+				</svelte:fragment>
 				{#if Object.keys(stats.commits_by_repo).length > 0}
 					<div class="repo-list">
 						{#each Object.entries(stats.commits_by_repo) as [repo, commitCount] (repo)}
@@ -672,11 +678,13 @@
 				{:else}
 					<p>No repository data available.</p>
 				{/if}
-			</section>
+			</GlassCard>
 
 			<!-- Recent Commits -->
-			<section class="card">
-				<h3><GitCommit size={20} /> Recent Commits</h3>
+			<GlassCard title="Recent Commits">
+				<svelte:fragment slot="header-icon">
+					<GitCommit size={20} />
+				</svelte:fragment>
 				{#if commits && commits.length > 0}
 					<div class="commits-list-container">
 						{#each commits as commit (commit.sha)}
@@ -720,7 +728,7 @@
 				{:else}
 					<div class="commits-loading">Loading commits...</div>
 				{/if}
-			</section>
+			</GlassCard>
 
 			<!-- Footer with Source Link and Attribution -->
 			<footer class="dashboard-footer">
