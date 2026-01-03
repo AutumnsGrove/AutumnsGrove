@@ -4,6 +4,10 @@ date: 2025-11-21
 description: "A little corner of the internet where I plant thoughts and watch them grow"
 ---
 
+<div style="text-align: center; margin-bottom: 2rem;">
+  <img src="https://cdn.grove.place/profile-mjxaqbpu.jpeg" alt="Photo of Autumn" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 3px solid hsl(142, 76%, 36%); box-shadow: 0 4px 12px rgba(0,0,0,0.1);" />
+</div>
+
 ## Hey, I'm Autumn
 
 This is my little grove on the internet—a quiet space where I plant thoughts and watch them grow. Not for algorithms. Not for metrics. Just for the quiet joy of making something that feels like home.
