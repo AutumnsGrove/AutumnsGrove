@@ -1,5 +1,6 @@
 <script>
 	import InternalsPostViewer from '$lib/components/custom/InternalsPostViewer.svelte';
+	import LeafDivider from '$lib/components/custom/LeafDivider.svelte';
 	import { Button } from '@autumnsgrove/groveengine/ui';
 	import { GlassCard } from '$lib/components';
 
@@ -32,6 +33,8 @@
 {/if}
 
 {#if data.latestPost}
+	<LeafDivider variant="leaf" />
+
 	<section class="latest-post-section">
 		<h2 class="section-title">Latest Post</h2>
 		<InternalsPostViewer
@@ -41,6 +44,8 @@
 	</section>
 {/if}
 
+<LeafDivider variant="dot" />
+
 <footer class="home-footer">
 	<a href="/credits">Font Credits & Attribution</a>
 </footer>
@@ -48,19 +53,17 @@
 <style>
 	.home-footer {
 		text-align: center;
-		padding: 2rem 0;
-		margin-top: 3rem;
-		border-top: 1px solid var(--color-border);
-		transition: border-color 0.3s ease;
+		padding: 1rem 0 2rem;
+		margin-top: 0;
 	}
 	.home-footer a {
-		color: var(--color-muted-foreground);
+		color: var(--color-foreground-subtle);
 		text-decoration: none;
 		font-size: 0.9rem;
 		transition: color 0.2s ease;
 	}
 	.home-footer a:hover {
-		color: var(--color-primary);
+		color: var(--color-accent-muted);
 		text-decoration: underline;
 	}
 	.hero-section {
@@ -84,8 +87,9 @@
 	}
 	.subtitle {
 		font-size: 1.15rem;
-		color: var(--color-muted-foreground);
+		color: var(--color-foreground-muted);
 		margin: 0 0 1.5rem 0;
+		font-style: italic;
 		transition: color 0.3s ease;
 	}
 	.cta-button {
@@ -102,9 +106,13 @@
 	}
 	.intro :global(p) {
 		font-size: 1.1rem;
-		color: var(--color-muted-foreground);
+		color: var(--color-foreground-muted);
 		line-height: 1.8;
 		transition: color 0.3s ease;
+	}
+	.intro :global(em) {
+		color: var(--color-foreground-subtle);
+		font-style: italic;
 	}
 	.latest-post-section {
 		max-width: 700px;
@@ -112,15 +120,11 @@
 	}
 	.section-title {
 		font-size: 1.5rem;
-		color: var(--color-primary);
+		color: hsl(var(--primary));
 		margin-bottom: 1.25rem;
 		padding-bottom: 0.5rem;
-		border-bottom: 2px solid var(--color-border);
+		border-bottom: 2px solid var(--color-divider);
 		transition: color 0.3s ease, border-color 0.3s ease;
-	}
-	:global(.dark) .section-title {
-		color: var(--color-primary-light);
-		border-bottom-color: var(--color-border-strong);
 	}
 	@media (max-width: 768px) {
 		.hero-section {
