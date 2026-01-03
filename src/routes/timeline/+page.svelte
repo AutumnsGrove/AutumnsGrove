@@ -1,8 +1,8 @@
 <script>
 	import { marked } from 'marked';
 	import { sanitizeMarkdown } from '@autumnsgrove/groveengine/utils';
-	import { Calendar, GitCommit, Plus, Minus, FolderGit2, ChevronDown, ChevronUp, Cloud, Loader2, MessageCircle, TrendingUp } from 'lucide-svelte';
-	import { ActivityOverview, LOCBar, RepoBreakdown, GlassCard, GlassButton, Badge } from '$lib/components';
+	import { Calendar, GitCommit, Plus, Minus, FolderGit2, ChevronDown, ChevronUp, Cloud, Loader2 } from 'lucide-svelte';
+	import { ActivityOverview, LOCBar, GlassCard, GlassButton, Badge } from '$lib/components';
 	import { toast } from '@autumnsgrove/groveengine/ui';
 
 	/** @type {{ summaries: any[], pagination: any, error?: string }} */
@@ -330,13 +330,6 @@
 									maxWidth={120}
 									height={6}
 								/>
-								{#if summary.repos_active?.length > 1}
-									<RepoBreakdown
-										repos={summary.repos_active.map(name => ({ name }))}
-										maxWidth={120}
-										showLegend={false}
-									/>
-								{/if}
 							</div>
 
 							{#if summary.detailed_timeline && isExpanded}
@@ -347,27 +340,27 @@
 									</div>
 								</div>
 							{/if}
+
+							{#if summary.detailed_timeline}
+								<div class="expand-btn-container">
+									<GlassButton
+										variant="ghost"
+										size="sm"
+										onclick={() => toggleCard(summary.id)}
+										class="expand-btn w-full"
+									>
+										{#if isExpanded}
+											<ChevronUp size={16} />
+											<span>Hide Details</span>
+										{:else}
+											<ChevronDown size={16} />
+											<span>Show Details</span>
+										{/if}
+									</GlassButton>
+								</div>
+							{/if}
 						{/if}
 					</div>
-
-					{#if !isRestDay && summary.detailed_timeline}
-						{#snippet footer()}
-							<GlassButton
-								variant="ghost"
-								size="sm"
-								onclick={() => toggleCard(summary.id)}
-								class="expand-btn w-full"
-							>
-								{#if isExpanded}
-									<ChevronUp size={16} />
-									<span>Hide Details</span>
-								{:else}
-									<ChevronDown size={16} />
-									<span>Show Details</span>
-								{/if}
-							</GlassButton>
-						{/snippet}
-					{/if}
 				</GlassCard>
 			{/each}
 		</div>
@@ -597,6 +590,14 @@
 		border-top-color: var(--color-border-strong);
 	}
 	/* Expand Button - using GlassButton now */
+	.expand-btn-container {
+		margin-top: 0.75rem;
+		padding-top: 0.75rem;
+		border-top: 1px dashed var(--bark-400);
+	}
+	:global(.dark) .expand-btn-container {
+		border-top-color: var(--color-border-strong);
+	}
 	:global(.expand-btn) {
 		justify-content: center;
 	}
