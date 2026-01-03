@@ -1,6 +1,7 @@
 <script>
 	import InternalsPostViewer from '$lib/components/custom/InternalsPostViewer.svelte';
 	import { Button } from '@autumnsgrove/groveengine/ui';
+	import { Glass, GlassCard, Badge } from '$lib/components';
 
 	let { data } = $props();
 </script>
@@ -11,13 +12,13 @@
 </svelte:head>
 
 {#if data.hero}
-	<div class="hero">
+	<Glass variant="card" intensity="light" border shadow class="hero">
 		<h1>{data.hero.title}</h1>
 		<p class="subtitle">{data.hero.subtitle}</p>
 		{#if data.hero.cta}
 			<Button href={data.hero.cta.link} variant="default" size="lg" class="cta-button">{data.hero.cta.text}</Button>
 		{/if}
-	</div>
+	</Glass>
 {/if}
 
 {#if data.content}

@@ -1,5 +1,6 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
+  import { Glass, GlassButton, Input } from '$lib/components';
 
   const props = $props();
   let category = $derived(props.category || 'all');
@@ -141,61 +142,65 @@
 </script>
 
 <div class="log-viewer">
-  <div class="log-controls">
-    <div class="status">
-      <span class="status-indicator" class:connected={connected}></span>
-      <span class="status-text">{connected ? 'Live' : 'Disconnected'}</span>
-      <span class="log-count">{filteredLogs.length} logs</span>
-    </div>
-
-    <div class="controls-right">
-      <input
-        type="text"
-        placeholder="Search logs..."
-        bind:value={searchQuery}
-        class="search-input"
-      />
-
-      <label class="autoscroll-toggle">
-        <input type="checkbox" bind:checked={autoscroll} />
-        Auto-scroll
-      </label>
-
-      <button class="btn-clear" onclick={clearLogs}>Clear</button>
-
-      <button class="btn-reconnect" onclick={() => { disconnect(); connect(); }}>
-        Reconnect
-      </button>
-    </div>
-  </div>
-
-  <div class="log-container" bind:this={logContainer}>
-    {#if filteredLogs.length === 0}
-      <div class="no-logs">
-        <p>No logs yet. {connected ? 'Waiting for activity...' : 'Connecting...'}</p>
+  <Glass variant="dark" intensity="medium" border class="log-controls-wrapper">
+    <div class="log-controls">
+      <div class="status">
+        <span class="status-indicator" class:connected={connected}></span>
+        <span class="status-text">{connected ? 'Live' : 'Disconnected'}</span>
+        <span class="log-count">{filteredLogs.length} logs</span>
       </div>
-    {:else}
-      {#each filteredLogs as log (log.id)}
-        <div class="log-entry {getLevelClass(log.level)}">
-          <div class="log-header">
-            <span class="log-icon">{getLevelIcon(log.level)}</span>
-            <span class="log-timestamp">{formatTimestamp(log.timestamp)}</span>
-            <span class="log-category">{log.category}</span>
-            <button class="btn-copy" onclick={() => copyLog(log)} title="Copy log entry">
-              📋
-            </button>
-          </div>
-          <div class="log-message">{log.message}</div>
-          {#if log.metadata && Object.keys(log.metadata).length > 0}
-            <details class="log-metadata">
-              <summary>Metadata ({Object.keys(log.metadata).length} fields)</summary>
-              <pre>{JSON.stringify(log.metadata, null, 2)}</pre>
-            </details>
-          {/if}
+
+      <div class="controls-right">
+        <Input
+          type="text"
+          placeholder="Search logs..."
+          bind:value={searchQuery}
+          class="search-input"
+        />
+
+        <label class="autoscroll-toggle">
+          <input type="checkbox" bind:checked={autoscroll} />
+          Auto-scroll
+        </label>
+
+        <GlassButton variant="ghost" size="sm" onclick={clearLogs}>Clear</GlassButton>
+
+        <GlassButton variant="ghost" size="sm" onclick={() => { disconnect(); connect(); }}>
+          Reconnect
+        </GlassButton>
+      </div>
+    </div>
+  </Glass>
+
+  <Glass variant="dark" intensity="strong" border class="log-container-wrapper">
+    <div class="log-container" bind:this={logContainer}>
+      {#if filteredLogs.length === 0}
+        <div class="no-logs">
+          <p>No logs yet. {connected ? 'Waiting for activity...' : 'Connecting...'}</p>
         </div>
-      {/each}
-    {/if}
-  </div>
+      {:else}
+        {#each filteredLogs as log (log.id)}
+          <Glass variant="overlay" intensity="light" border class="log-entry {getLevelClass(log.level)}">
+            <div class="log-header">
+              <span class="log-icon">{getLevelIcon(log.level)}</span>
+              <span class="log-timestamp">{formatTimestamp(log.timestamp)}</span>
+              <span class="log-category">{log.category}</span>
+              <button class="btn-copy" onclick={() => copyLog(log)} title="Copy log entry">
+                📋
+              </button>
+            </div>
+            <div class="log-message">{log.message}</div>
+            {#if log.metadata && Object.keys(log.metadata).length > 0}
+              <details class="log-metadata">
+                <summary>Metadata ({Object.keys(log.metadata).length} fields)</summary>
+                <pre>{JSON.stringify(log.metadata, null, 2)}</pre>
+              </details>
+            {/if}
+          </Glass>
+        {/each}
+      {/if}
+    </div>
+  </Glass>
 </div>
 
 <style>
@@ -203,18 +208,17 @@
     display: flex;
     flex-direction: column;
     height: 100%;
-    background: #1e1e1e;
-    border-radius: 8px;
-    overflow: hidden;
+    gap: 0;
+  }
+
+  .log-controls-wrapper {
+    flex-shrink: 0;
   }
 
   .log-controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0.75rem 1rem;
-    background: #2d2d2d;
-    border-bottom: 1px solid #3d3d3d;
     gap: 1rem;
     flex-wrap: wrap;
   }
@@ -261,18 +265,7 @@
   }
 
   .search-input {
-    padding: 0.4rem 0.75rem;
-    border: 1px solid #3d3d3d;
-    border-radius: 4px;
-    background: #1e1e1e;
-    color: #e0e0e0;
-    font-size: 0.85rem;
     min-width: 200px;
-  }
-
-  .search-input:focus {
-    outline: none;
-    border-color: #5cb85f;
   }
 
   .autoscroll-toggle {
@@ -284,30 +277,13 @@
     cursor: pointer;
   }
 
-  .btn-clear,
-  .btn-reconnect {
-    padding: 0.4rem 0.75rem;
-    border: 1px solid #3d3d3d;
-    border-radius: 4px;
-    background: #2d2d2d;
-    color: #e0e0e0;
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s;
-  }
-
-  .btn-clear:hover {
-    background: #dc3545;
-    border-color: #dc3545;
-  }
-
-  .btn-reconnect:hover {
-    background: #5cb85f;
-    border-color: #5cb85f;
+  .log-container-wrapper {
+    flex: 1;
+    overflow: hidden;
   }
 
   .log-container {
-    flex: 1;
+    height: 100%;
     overflow-y: auto;
     padding: 0.5rem;
     display: flex;
@@ -319,11 +295,11 @@
   }
 
   .log-container::-webkit-scrollbar-track {
-    background: #1e1e1e;
+    background: transparent;
   }
 
   .log-container::-webkit-scrollbar-thumb {
-    background: #3d3d3d;
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 4px;
   }
 
@@ -337,32 +313,25 @@
   }
 
   .log-entry {
-    padding: 0.75rem;
     margin-bottom: 0.5rem;
-    border-radius: 4px;
-    border-left: 3px solid;
     font-family: 'Monaco', 'Courier New', monospace;
     font-size: 0.85rem;
   }
 
   .level-info {
-    background: #1a2332;
-    border-left-color: #3b82f6;
+    border-left: 3px solid #3b82f6;
   }
 
   .level-success {
-    background: #1a2e1a;
-    border-left-color: #28a745;
+    border-left: 3px solid #28a745;
   }
 
   .level-warn {
-    background: #332a1a;
-    border-left-color: #ffc107;
+    border-left: 3px solid #ffc107;
   }
 
   .level-error {
-    background: #331a1a;
-    border-left-color: #dc3545;
+    border-left: 3px solid #dc3545;
   }
 
   .log-header {
@@ -428,7 +397,7 @@
   .log-metadata pre {
     margin: 0.5rem 0 0 0;
     padding: 0.5rem;
-    background: #2d2d2d;
+    background: rgba(0, 0, 0, 0.2);
     border-radius: 4px;
     color: #e0e0e0;
     font-size: 0.75rem;

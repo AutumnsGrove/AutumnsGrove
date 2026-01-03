@@ -1,5 +1,5 @@
 <script>
-  import { Card, Skeleton } from "@autumnsgrove/groveengine/ui";
+  import { GlassCard, Skeleton } from '$lib/components';
   import { api } from "@autumnsgrove/groveengine/utils";
   import {
     FileText,
@@ -50,7 +50,7 @@
   </header>
 
   <div class="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4 mb-8">
-    <Card>
+    <GlassCard variant="frosted" hoverable>
       <div class="stat-card-content">
         <div class="stat-icon"><Activity size={24} /></div>
         <div class="stat-info">
@@ -64,9 +64,9 @@
           {/if}
         </div>
       </div>
-    </Card>
+    </GlassCard>
 
-    <Card>
+    <GlassCard variant="frosted" hoverable>
       <div class="stat-card-content">
         <div class="stat-icon"><Key size={24} /></div>
         <div class="stat-info">
@@ -80,9 +80,9 @@
           {/if}
         </div>
       </div>
-    </Card>
+    </GlassCard>
 
-    <Card>
+    <GlassCard variant="frosted" hoverable>
       <div class="stat-card-content">
         <div class="stat-icon"><HardDrive size={24} /></div>
         <div class="stat-info">
@@ -96,9 +96,9 @@
           {/if}
         </div>
       </div>
-    </Card>
+    </GlassCard>
 
-    <Card>
+    <GlassCard variant="frosted" hoverable>
       <div class="stat-card-content">
         <div class="stat-icon"><Database size={24} /></div>
         <div class="stat-info">
@@ -112,9 +112,9 @@
           {/if}
         </div>
       </div>
-    </Card>
+    </GlassCard>
 
-    <Card>
+    <GlassCard variant="frosted" hoverable>
       <div class="stat-card-content">
         <div class="stat-icon"><FileText size={24} /></div>
         <div class="stat-info">
@@ -126,7 +126,7 @@
           {/if}
         </div>
       </div>
-    </Card>
+    </GlassCard>
   </div>
 
   <section class="mt-8">

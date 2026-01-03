@@ -2,7 +2,7 @@
 	import { marked } from 'marked';
 	import { sanitizeMarkdown } from '@autumnsgrove/groveengine/utils';
 	import { Calendar, GitCommit, Plus, Minus, FolderGit2, ChevronDown, ChevronUp, Cloud, Loader2, MessageCircle, TrendingUp } from 'lucide-svelte';
-	import { ActivityOverview, LOCBar, RepoBreakdown } from '$lib/components';
+	import { ActivityOverview, LOCBar, RepoBreakdown, GlassCard, GlassButton, Badge } from '$lib/components';
 	import { toast } from '@autumnsgrove/groveengine/ui';
 
 	/** @type {{ summaries: any[], pagination: any, error?: string }} */
@@ -257,7 +257,9 @@
 	{:else}
 		<!-- Activity Overview Chart -->
 		{#if !loadingActivity && contributionData.length > 0}
-			<ActivityOverview data={contributionData} {locData} days={14} />
+			<GlassCard variant="accent" title="Activity Overview" hoverable>
+				<ActivityOverview data={contributionData} {locData} days={14} />
+			</GlassCard>
 		{:else if loadingActivity}
 			<div class="activity-loading">
 				<Loader2 size={16} class="spinner" />
@@ -271,25 +273,35 @@
 				{@const isExpanded = expandedCards.has(summary.id)}
 				{@const gutterItems = summary.gutter_content || []}
 
-				<article class="timeline-card" class:rest-day={isRestDay} class:today={isToday(summary.summary_date)}>
-					<header class="card-header">
-						<div class="date-info">
-							<span class="date-full">{formatDate(summary.summary_date)}</span>
-							<span class="date-short">{formatShortDate(summary.summary_date)}</span>
-							{#if isToday(summary.summary_date)}
-								<span class="today-badge">Today</span>
-							{/if}
+				<GlassCard
+					variant={isRestDay ? "muted" : "default"}
+					hoverable
+					class="timeline-card {isRestDay ? 'rest-day' : ''} {isToday(summary.summary_date) ? 'today' : ''}"
+				>
+					{#snippet header()}
+						<div class="card-header">
+							<div class="date-info">
+								<span class="date-full">{formatDate(summary.summary_date)}</span>
+								<span class="date-short">{formatShortDate(summary.summary_date)}</span>
+								{#if isToday(summary.summary_date)}
+									<Badge variant="tag" class="today-badge">Today</Badge>
+								{/if}
+							</div>
+							<div class="commit-badge-wrapper">
+								{#if isRestDay}
+									<Badge class="commit-badge rest-badge">
+										<Cloud size={14} />
+										<span>Rest Day</span>
+									</Badge>
+								{:else}
+									<Badge class="commit-badge">
+										<GitCommit size={14} />
+										<span>{summary.commit_count} commit{summary.commit_count !== 1 ? 's' : ''}</span>
+									</Badge>
+								{/if}
+							</div>
 						</div>
-						<div class="commit-badge" class:rest-badge={isRestDay}>
-							{#if isRestDay}
-								<Cloud size={14} />
-								<span>Rest Day</span>
-							{:else}
-								<GitCommit size={14} />
-								<span>{summary.commit_count} commit{summary.commit_count !== 1 ? 's' : ''}</span>
-							{/if}
-						</div>
-					</header>
+					{/snippet}
 
 					<div class="card-content">
 						{#if isRestDay}
@@ -327,46 +339,55 @@
 								{/if}
 							</div>
 
-							{#if summary.detailed_timeline}
-								<button
-									class="expand-btn"
-									onclick={() => toggleCard(summary.id)}
-									aria-expanded={isExpanded}
-								>
-									{#if isExpanded}
-										<ChevronUp size={16} />
-										<span>Hide Details</span>
-									{:else}
-										<ChevronDown size={16} />
-										<span>Show Details</span>
-									{/if}
-								</button>
-
-								{#if isExpanded}
-									<div class="detailed-section">
-										<!-- Rendered markdown with inline gutter comments -->
-										<div class="detailed-timeline markdown-content">
-											{@html renderMarkdownWithGutter(summary.detailed_timeline, gutterItems)}
-										</div>
+							{#if summary.detailed_timeline && isExpanded}
+								<div class="detailed-section">
+									<!-- Rendered markdown with inline gutter comments -->
+									<div class="detailed-timeline markdown-content">
+										{@html renderMarkdownWithGutter(summary.detailed_timeline, gutterItems)}
 									</div>
-								{/if}
+								</div>
 							{/if}
 						{/if}
 					</div>
-				</article>
+
+					{#if !isRestDay && summary.detailed_timeline}
+						{#snippet footer()}
+							<GlassButton
+								variant="ghost"
+								size="sm"
+								onclick={() => toggleCard(summary.id)}
+								class="expand-btn w-full"
+							>
+								{#if isExpanded}
+									<ChevronUp size={16} />
+									<span>Hide Details</span>
+								{:else}
+									<ChevronDown size={16} />
+									<span>Show Details</span>
+								{/if}
+							</GlassButton>
+						{/snippet}
+					{/if}
+				</GlassCard>
 			{/each}
 		</div>
 
 		{#if pagination.hasMore}
 			<div class="load-more-container">
-				<button class="load-more-btn" onclick={loadMore} disabled={loadingMore}>
+				<GlassButton
+					variant="accent"
+					size="lg"
+					onclick={loadMore}
+					disabled={loadingMore}
+					class="load-more-btn"
+				>
 					{#if loadingMore}
 						<Loader2 size={16} class="spinner" />
 						<span>Loading...</span>
 					{:else}
 						<span>Load More</span>
 					{/if}
-				</button>
+				</GlassButton>
 			</div>
 		{/if}
 
@@ -458,47 +479,25 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
+		margin-top: 1.5rem;
 	}
+	/* GlassCard overrides for timeline cards */
 	.timeline-card {
-		background: white;
-		border-radius: 12px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-		overflow: hidden;
-		transition: transform 0.15s ease, box-shadow 0.15s ease;
+		transition: transform 0.15s ease;
 	}
 	.timeline-card:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 	}
-	:global(.dark) .timeline-card {
-		background: var(--cream-300);
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-	}
-	:global(.dark) .timeline-card:hover {
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-	}
-	/* Rest day styling */
-	.timeline-card.rest-day {
-		background: #f8f9fa;
-		opacity: 0.85;
-	}
-	:global(.dark) .timeline-card.rest-day {
-		background: var(--cream-200);
-	}
-	/* Today styling */
-	.timeline-card.today {
-		border: 2px solid var(--grove-500);
+	/* Today styling - add a special border glow */
+	:global(.timeline-card.today) {
+		box-shadow: 0 0 0 2px var(--grove-500) !important;
 	}
 	/* Card Header */
 	.card-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 1rem;
-		border-bottom: 1px solid var(--bark-400);
-	}
-	:global(.dark) .card-header {
-		border-bottom-color: var(--color-border-strong);
+		width: 100%;
 	}
 	.date-info {
 		display: flex;
@@ -548,7 +547,7 @@
 	}
 	/* Card Content */
 	.card-content {
-		padding: 1rem;
+		/* Padding removed - handled by GlassCard */
 	}
 	.rest-message {
 		font-style: italic;
@@ -597,31 +596,9 @@
 	:global(.dark) .day-charts {
 		border-top-color: var(--color-border-strong);
 	}
-	/* Expand Button */
-	.expand-btn {
-		display: flex;
-		align-items: center;
-		gap: 0.35rem;
-		background: none;
-		border: 1px solid var(--cream-100);
-		border-radius: 6px;
-		padding: 0.4rem 0.75rem;
-		font-size: 0.85rem;
-		color: #666;
-		cursor: pointer;
-		transition: all 0.15s ease;
-	}
-	.expand-btn:hover {
-		background: var(--cream-300);
-		border-color: var(--color-muted-foreground);
-	}
-	:global(.dark) .expand-btn {
-		border-color: var(--cream-100);
-		color: var(--color-muted-foreground);
-	}
-	:global(.dark) .expand-btn:hover {
-		background: var(--color-border-strong);
-		border-color: var(--color-muted-foreground);
+	/* Expand Button - using GlassButton now */
+	:global(.expand-btn) {
+		justify-content: center;
 	}
 	/* Detailed Section */
 	.detailed-section {
@@ -732,28 +709,7 @@
 		text-align: center;
 		margin-top: 2rem;
 	}
-	.load-more-btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		background: var(--grove-500);
-		color: white;
-		border: none;
-		padding: 0.75rem 1.5rem;
-		border-radius: 8px;
-		font-size: 1rem;
-		font-weight: 500;
-		cursor: pointer;
-		transition: background 0.15s ease;
-	}
-	.load-more-btn:hover:not(:disabled) {
-		background: var(--grove-700);
-	}
-	.load-more-btn:disabled {
-		opacity: 0.7;
-		cursor: not-allowed;
-	}
-	.load-more-btn :global(.spinner) {
+	:global(.load-more-btn .spinner) {
 		animation: spin 1s linear infinite;
 	}
 	@keyframes spin {

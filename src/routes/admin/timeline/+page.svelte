@@ -1,6 +1,7 @@
 <script>
   import { Calendar, Play, RefreshCw, Clock, CheckCircle, XCircle, Loader2, AlertTriangle, DollarSign, Cpu, TrendingUp, ChevronDown, Edit3, X, Save, List } from 'lucide-svelte';
   import { Button, Input, Select, toast } from '@autumnsgrove/groveengine/ui';
+  import { GlassCard, GlassButton, Glass } from '$lib/components';
   import { apiRequest } from '@autumnsgrove/groveengine/utils';
 
   let triggerLoading = $state(false);
@@ -289,7 +290,7 @@
   </header>
 
   <!-- AI Usage Stats -->
-  <section class="usage-section">
+  <GlassCard title="Usage & Limits" variant="accent">
     <div class="usage-header">
       <h2><TrendingUp size={18} /> AI Usage & Costs</h2>
       <Select
@@ -375,7 +376,7 @@
     {:else}
       <div class="no-usage">No usage data yet</div>
     {/if}
-  </section>
+  </GlassCard>
 
   <!-- Latest Summary Status -->
   <section class="status-section">
@@ -436,7 +437,7 @@
       />
     </div>
 
-    <Button
+    <GlassButton
       variant="primary"
       onclick={triggerSummary}
       disabled={triggerLoading}
@@ -448,7 +449,7 @@
         <Play size={16} />
         <span>Generate Summary</span>
       {/if}
-    </Button>
+    </GlassButton>
   </section>
 
   <!-- Backfill Summaries -->
@@ -473,7 +474,7 @@
       />
     </div>
 
-    <Button
+    <GlassButton
       variant="secondary"
       onclick={backfillSummaries}
       disabled={backfillLoading || !backfillStart}
@@ -485,7 +486,7 @@
         <RefreshCw size={16} />
         <span>Backfill Summaries</span>
       {/if}
-    </Button>
+    </GlassButton>
   </section>
 
   <!-- Result Display -->
@@ -529,8 +530,7 @@
   {/if}
 
   <!-- Browse & Edit Entries -->
-  <section class="entries-section">
-    <h2><List size={18} /> Browse & Edit Entries</h2>
+  <GlassCard title="Browse & Edit Entries" variant="surface">
     <p class="section-desc">View and edit existing timeline summaries</p>
 
     {#if loadingEntries}
@@ -539,7 +539,8 @@
         <span>Loading entries...</span>
       </div>
     {:else if entries.length > 0}
-      <div class="entries-list">
+      <Glass variant="surface" intensity="light" border>
+        <div class="entries-list">
         {#each entries as entry}
           <div class="entry-item" class:rest-day={entry.is_rest_day}>
             <div class="entry-info">
@@ -555,39 +556,40 @@
             {#if entry.brief_summary}
               <p class="entry-brief">{entry.brief_summary.slice(0, 100)}{entry.brief_summary.length > 100 ? '...' : ''}</p>
             {/if}
-            <Button variant="primary" size="sm" onclick={() => openEditModal(entry)} disabled={entry.is_rest_day}>
+            <GlassButton variant="primary" size="sm" onclick={() => openEditModal(entry)} disabled={entry.is_rest_day}>
               <Edit3 size={14} />
               <span>Edit</span>
-            </Button>
+            </GlassButton>
           </div>
         {/each}
-      </div>
+        </div>
+      </Glass>
 
       <div class="pagination">
-        <Button
+        <GlassButton
           variant="secondary"
           size="sm"
           onclick={() => entriesPage = Math.max(0, entriesPage - 1)}
           disabled={entriesPage === 0}
         >
           Previous
-        </Button>
+        </GlassButton>
         <span class="page-info">
           Page {entriesPage + 1} of {Math.ceil(entriesTotal / entriesLimit)}
         </span>
-        <Button
+        <GlassButton
           variant="secondary"
           size="sm"
           onclick={() => entriesPage = entriesPage + 1}
           disabled={(entriesPage + 1) * entriesLimit >= entriesTotal}
         >
           Next
-        </Button>
+        </GlassButton>
       </div>
     {:else}
       <div class="no-entries">No timeline entries yet</div>
     {/if}
-  </section>
+  </GlassCard>
 
   <footer class="page-footer">
     <a href="/timeline" target="_blank" class="view-link">View Public Timeline</a>
@@ -682,10 +684,10 @@
       </div>
 
       <div class="modal-footer">
-        <Button variant="secondary" onclick={closeEditModal}>
+        <GlassButton variant="secondary" onclick={closeEditModal}>
           Cancel
-        </Button>
-        <Button variant="primary" onclick={saveEntry} disabled={saving || gutterJsonError}>
+        </GlassButton>
+        <GlassButton variant="primary" onclick={saveEntry} disabled={saving || gutterJsonError}>
           {#if saving}
             <Loader2 size={16} class="spinner" />
             <span>Saving...</span>
@@ -693,7 +695,7 @@
             <Save size={16} />
             <span>Save Changes</span>
           {/if}
-        </Button>
+        </GlassButton>
       </div>
     </div>
   </div>

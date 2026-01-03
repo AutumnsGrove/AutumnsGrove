@@ -1,6 +1,7 @@
 <script>
   import { onMount } from 'svelte';
   import { Button, Dialog, Select, Tabs, Badge, Input, toast } from "@autumnsgrove/groveengine/ui";
+  import { GlassCard, GlassButton, Glass } from '$lib/components';
   import { api, apiRequest } from "@autumnsgrove/groveengine/utils";
 
   let folder = $state('blog');
@@ -361,71 +362,73 @@
     {#snippet content(tab)}
       {#if tab.value === 'upload'}
         <!-- Upload Tab -->
-        <div class="upload-config">
-          <label class="folder-select">
-            <span>Upload to:</span>
-            <select bind:value={folder}>
-              {#each folderOptions as opt (opt.value)}
-                <option value={opt.value}>{opt.label}</option>
-              {/each}
-            </select>
-          </label>
+        <GlassCard variant="accent">
+          <div class="upload-config">
+            <label class="folder-select">
+              <span>Upload to:</span>
+              <select bind:value={folder}>
+                {#each folderOptions as opt (opt.value)}
+                  <option value={opt.value}>{opt.label}</option>
+                {/each}
+              </select>
+            </label>
 
-          {#if folder === 'custom'}
-            <input
-              type="text"
-              class="custom-folder"
-              placeholder="e.g., blog/my-post-slug"
-              bind:value={customFolder}
-            />
-          {/if}
-        </div>
-
-        <div
-          class="drop-zone"
-          class:dragging={isDragging}
-          role="button"
-          tabindex="0"
-          aria-label="Drag and drop zone for image uploads"
-          ondragover={handleDragOver}
-          ondragleave={handleDragLeave}
-          ondrop={handleDrop}
-          onclick={() => document.getElementById('file-input').click()}
-          onkeydown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault();
-              document.getElementById('file-input').click();
-            }
-          }}
-        >
-          <input
-            type="file"
-            id="file-input"
-            accept="image/*"
-            multiple
-            onchange={handleFileSelect}
-            hidden
-          />
-
-          <div class="drop-content">
-            <span class="drop-icon">&#x1F4F7;</span>
-            <p class="drop-text">
-              {#if isDragging}
-                Drop images here
-              {:else}
-                Drag & drop images here
-              {/if}
-            </p>
-            <p class="drop-hint">or click to browse</p>
-            <p class="drop-formats">JPG, PNG, GIF, WebP, SVG (max 10MB)</p>
+            {#if folder === 'custom'}
+              <input
+                type="text"
+                class="custom-folder"
+                placeholder="e.g., blog/my-post-slug"
+                bind:value={customFolder}
+              />
+            {/if}
           </div>
-        </div>
+
+          <div
+            class="drop-zone"
+            class:dragging={isDragging}
+            role="button"
+            tabindex="0"
+            aria-label="Drag and drop zone for image uploads"
+            ondragover={handleDragOver}
+            ondragleave={handleDragLeave}
+            ondrop={handleDrop}
+            onclick={() => document.getElementById('file-input').click()}
+            onkeydown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                document.getElementById('file-input').click();
+              }
+            }}
+          >
+            <input
+              type="file"
+              id="file-input"
+              accept="image/*"
+              multiple
+              onchange={handleFileSelect}
+              hidden
+            />
+
+            <div class="drop-content">
+              <span class="drop-icon">&#x1F4F7;</span>
+              <p class="drop-text">
+                {#if isDragging}
+                  Drop images here
+                {:else}
+                  Drag & drop images here
+                {/if}
+              </p>
+              <p class="drop-hint">or click to browse</p>
+              <p class="drop-formats">JPG, PNG, GIF, WebP, SVG (max 10MB)</p>
+            </div>
+          </div>
+        </GlassCard>
 
         {#if uploads.length > 0}
           <div class="uploads-section">
             <div class="uploads-header">
               <h2>Uploads</h2>
-              <Button variant="secondary" size="sm" onclick={clearCompleted}>Clear completed</Button>
+              <GlassButton variant="secondary" size="sm" onclick={clearCompleted}>Clear completed</GlassButton>
             </div>
 
             <div class="uploads-list">
@@ -448,15 +451,15 @@
                         <code>{upload.url}</code>
                       </div>
                       <div class="copy-buttons">
-                        <Button variant="primary" size="sm" onclick={() => copyToClipboard(upload.url, 'url', upload.id)}>
+                        <GlassButton variant="primary" size="sm" onclick={() => copyToClipboard(upload.url, 'url', upload.id)}>
                           {copiedItem === `${upload.id}-url` ? 'Copied!' : 'Copy URL'}
-                        </Button>
-                        <Button variant="primary" size="sm" onclick={() => copyToClipboard(upload.markdown, 'markdown', upload.id)}>
+                        </GlassButton>
+                        <GlassButton variant="primary" size="sm" onclick={() => copyToClipboard(upload.markdown, 'markdown', upload.id)}>
                           {copiedItem === `${upload.id}-markdown` ? 'Copied!' : 'Copy Markdown'}
-                        </Button>
-                        <Button variant="primary" size="sm" onclick={() => copyToClipboard(upload.svelte, 'svelte', upload.id)}>
+                        </GlassButton>
+                        <GlassButton variant="primary" size="sm" onclick={() => copyToClipboard(upload.svelte, 'svelte', upload.id)}>
                           {copiedItem === `${upload.id}-svelte` ? 'Copied!' : 'Copy Svelte'}
-                        </Button>
+                        </GlassButton>
                       </div>
                     </div>
                   {/if}
@@ -496,9 +499,9 @@
                   bind:value={galleryFilter}
                   onkeydown={(e) => e.key === 'Enter' && filterGallery()}
                 />
-                <Button variant="secondary" size="sm" onclick={filterGallery}>Filter</Button>
+                <GlassButton variant="secondary" size="sm" onclick={filterGallery}>Filter</GlassButton>
               </div>
-              <Button variant="secondary" size="sm" onclick={() => loadGallery()}>Refresh</Button>
+              <GlassButton variant="secondary" size="sm" onclick={() => loadGallery()}>Refresh</GlassButton>
             </div>
           </div>
 
@@ -511,40 +514,42 @@
           {:else if galleryImages.length === 0}
             <div class="gallery-empty">No images found</div>
           {:else}
-            <div class="gallery-grid">
-              {#each galleryImages as image (image.key)}
-                <div class="gallery-item">
-                  <div class="gallery-image-container">
-                    <img src={image.url} alt={getFileName(image.key)} loading="lazy" />
-                  </div>
-                  <div class="gallery-item-info">
-                    <span class="gallery-item-name" title={image.key}>{getFileName(image.key)}</span>
-                    <span class="gallery-item-size">{formatFileSize(image.size)}</span>
-                  </div>
-                  <div class="gallery-item-actions">
-                    <Button variant="primary" size="sm" onclick={() => copyToClipboard(image.url, 'url', image.key)}>
-                      {copiedItem === `${image.key}-url` ? '✓' : 'URL'}
-                    </Button>
-                    <Button variant="primary" size="sm" onclick={() => copyToClipboard(`![](${image.url})`, 'markdown', image.key)}>
-                      {copiedItem === `${image.key}-markdown` ? '✓' : 'MD'}
-                    </Button>
-                    <Button variant="danger" size="sm" onclick={() => confirmDelete(image)} aria-label="Delete image" title="Delete image">
-                      X
-                    </Button>
-                  </div>
-                </div>
-              {/each}
-            </div>
+            <Glass variant="surface" intensity="light" border>
+              <div class="gallery-grid">
+                {#each galleryImages as image (image.key)}
+                  <GlassCard variant="frosted" hoverable>
+                    <div class="gallery-image-container">
+                      <img src={image.url} alt={getFileName(image.key)} loading="lazy" />
+                    </div>
+                    <div class="gallery-item-info">
+                      <span class="gallery-item-name" title={image.key}>{getFileName(image.key)}</span>
+                      <span class="gallery-item-size">{formatFileSize(image.size)}</span>
+                    </div>
+                    <div class="gallery-item-actions">
+                      <GlassButton variant="primary" size="sm" onclick={() => copyToClipboard(image.url, 'url', image.key)}>
+                        {copiedItem === `${image.key}-url` ? '✓' : 'URL'}
+                      </GlassButton>
+                      <GlassButton variant="primary" size="sm" onclick={() => copyToClipboard(`![](${image.url})`, 'markdown', image.key)}>
+                        {copiedItem === `${image.key}-markdown` ? '✓' : 'MD'}
+                      </GlassButton>
+                      <GlassButton variant="danger" size="sm" onclick={() => confirmDelete(image)} aria-label="Delete image" title="Delete image">
+                        X
+                      </GlassButton>
+                    </div>
+                  </GlassCard>
+                {/each}
+              </div>
+            </Glass>
 
             {#if galleryHasMore}
               <div class="gallery-load-more">
-                <Button
+                <GlassButton
                   variant="primary"
                   onclick={() => loadGallery(true)}
                   disabled={galleryLoading}
                 >
                   {galleryLoading ? 'Loading...' : 'Load More'}
-                </Button>
+                </GlassButton>
               </div>
             {/if}
           {/if}
@@ -561,7 +566,7 @@
             <form class="create-tag-form" onsubmit={handleCreateTag}>
               <Input placeholder="Tag name (e.g., 'minecraft')" bind:value={newTagName} />
               <input type="color" class="color-picker" bind:value={newTagColor} />
-              <Button type="submit">Create Tag</Button>
+              <GlassButton type="submit">Create Tag</GlassButton>
             </form>
 
             <!-- Tag List -->
@@ -570,9 +575,9 @@
                 <div class="tag-item">
                   <Badge style="background-color: {tag.color}; color: white;">{tag.name}</Badge>
                   <span class="tag-slug">{tag.slug}</span>
-                  <Button variant="ghost" size="sm" onclick={() => deleteTag(tag.id)}>
+                  <GlassButton variant="ghost" size="sm" onclick={() => deleteTag(tag.id)}>
                     Delete
-                  </Button>
+                  </GlassButton>
                 </div>
               {:else}
                 <p class="empty-state">No tags yet. Create one above to get started.</p>
@@ -624,8 +629,8 @@
                     <option value={tag.id}>{tag.name}</option>
                   {/each}
                 </select>
-                <Button onclick={applyBulkTag} disabled={!selectedTagId}>Apply Tag</Button>
-                <Button variant="ghost" onclick={() => selectedImages = []}>Clear Selection</Button>
+                <GlassButton onclick={applyBulkTag} disabled={!selectedTagId}>Apply Tag</GlassButton>
+                <GlassButton variant="ghost" onclick={() => selectedImages = []}>Clear Selection</GlassButton>
               </div>
             {/if}
           </div>
@@ -653,9 +658,9 @@
             </div>
           </div>
 
-          <Button onclick={handleSync} disabled={syncing}>
+          <GlassButton onclick={handleSync} disabled={syncing}>
             {syncing ? 'Syncing...' : 'Sync Now'}
-          </Button>
+          </GlassButton>
 
           {#if syncResult}
             <div class="sync-result">
