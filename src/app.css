@@ -2,90 +2,125 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ═══════════════════════════════════════════════════════════════
+   AUTUMNSGROVE DESIGN SYSTEM
+   Midnight Bloom + Grove Green palette
+   A late-night tea café meets forest aesthetic
+   ═══════════════════════════════════════════════════════════════ */
+
 @layer base {
 	:root {
-		/* shadcn HSL color system - AutumnsGrove color mapping */
+		/* ─── Core Palette ─── */
+		/* Grove Green: life, growth, the forest */
+		--grove-500: #22c55e;
+		--grove-600: #16a34a;
+		--grove-700: #15803d;
 
-		/* Primary: Forest Green (#2c5f2d) */
-		--primary: 121 37% 27%;
+		/* Midnight Bloom: deep plums, warm amber, soft gold */
+		--plum-900: #581c87;
+		--violet-500: #8b5cf6;
+		--amber-500: #f59e0b;
+		--gold-300: #fcd34d;
+		--cream: #fef3c7;
+
+		/* ─── Semantic Colors (Light Mode) ─── */
+		/* Primary: Grove Green - the heart of the grove */
+		--primary: 142 76% 36%;
 		--primary-foreground: 0 0% 100%;
 
-		/* Secondary: Light Gray (#f5f5f5) */
-		--secondary: 0 0% 96%;
-		--secondary-foreground: 0 0% 20%;
+		/* Secondary: Warm cream tones */
+		--secondary: 48 96% 89%;
+		--secondary-foreground: 271 65% 20%;
 
-		/* Muted: Medium Gray */
-		--muted: 0 0% 96%;
-		--muted-foreground: 0 0% 40%;
+		/* Muted: Soft warm grays */
+		--muted: 48 40% 94%;
+		--muted-foreground: 271 20% 40%;
 
-		/* Accent: Purple for tags (#7c4dab) */
-		--accent: 270 38% 49%;
+		/* Accent: Violet from Midnight Bloom */
+		--accent: 258 90% 66%;
 		--accent-foreground: 0 0% 100%;
 
-		/* Destructive: Red (#d73a49) */
-		--destructive: 354 66% 54%;
+		/* Destructive: Warm red */
+		--destructive: 0 84% 60%;
 		--destructive-foreground: 0 0% 100%;
 
-		/* Background & Foreground */
-		--background: 0 0% 98%;
-		--foreground: 0 0% 20%;
+		/* Background: Warm cream (#fefdfb inspired) */
+		--background: 40 33% 98%;
+		--foreground: 271 30% 18%;
 
-		/* Card */
-		--card: 0 0% 100%;
-		--card-foreground: 0 0% 20%;
+		/* Card: Pure white with warmth */
+		--card: 40 40% 99%;
+		--card-foreground: 271 30% 18%;
 
 		/* Popover */
-		--popover: 0 0% 100%;
-		--popover-foreground: 0 0% 20%;
+		--popover: 40 40% 99%;
+		--popover-foreground: 271 30% 18%;
 
-		/* Border & Input */
-		--border: 0 0% 88%;
-		--input: 0 0% 88%;
-		--ring: 121 37% 27%;
+		/* Border & Input: Soft green-tinted */
+		--border: 142 30% 85%;
+		--input: 142 30% 85%;
+		--ring: 142 76% 36%;
 
 		/* Border Radius */
 		--radius: 0.5rem;
+
+		/* ─── Extended Semantic Colors ─── */
+		--color-divider: hsl(142, 30%, 75%);
+		--color-foreground-muted: hsl(271, 20%, 40%);
+		--color-foreground-subtle: hsl(271, 15%, 55%);
+		--color-foreground-faint: hsl(271, 10%, 65%);
+		--color-accent-muted: hsl(258, 70%, 55%);
+		--color-accent-subtle: hsl(258, 50%, 65%);
 	}
 
 	.dark {
-		/* Dark mode HSL values */
+		/* ─── Dark Mode: Midnight Bloom aesthetic ─── */
+		/* Deep plum-tinted darkness, like a late-night café */
 
-		/* Primary: Lighter Forest Green */
-		--primary: 121 37% 45%;
+		/* Primary: Brighter grove green for dark mode */
+		--primary: 142 71% 45%;
 		--primary-foreground: 0 0% 100%;
 
-		/* Secondary: Dark Gray */
-		--secondary: 0 0% 10%;
-		--secondary-foreground: 0 0% 90%;
+		/* Secondary: Deep plum undertones */
+		--secondary: 271 40% 12%;
+		--secondary-foreground: 48 80% 90%;
 
-		/* Muted: Darker Gray */
-		--muted: 0 0% 15%;
-		--muted-foreground: 0 0% 65%;
+		/* Muted: Plum-gray */
+		--muted: 271 30% 15%;
+		--muted-foreground: 271 15% 65%;
 
-		/* Accent: Lighter Purple for tags */
-		--accent: 270 38% 60%;
-		--accent-foreground: 0 0% 100%;
+		/* Accent: Lighter violet glow */
+		--accent: 258 80% 70%;
+		--accent-foreground: 271 90% 10%;
 
-		/* Destructive: Same red */
-		--destructive: 354 66% 54%;
+		/* Destructive */
+		--destructive: 0 62% 55%;
 		--destructive-foreground: 0 0% 100%;
 
-		/* Background & Foreground */
-		--background: 0 0% 10%;
-		--foreground: 0 0% 94%;
+		/* Background: Deep with purple undertone */
+		--background: 271 25% 10%;
+		--foreground: 48 60% 92%;
 
-		/* Card */
-		--card: 0 0% 14%;
-		--card-foreground: 0 0% 94%;
+		/* Card: Slightly elevated dark */
+		--card: 271 25% 13%;
+		--card-foreground: 48 60% 92%;
 
 		/* Popover */
-		--popover: 0 0% 14%;
-		--popover-foreground: 0 0% 94%;
+		--popover: 271 25% 13%;
+		--popover-foreground: 48 60% 92%;
 
-		/* Border & Input */
-		--border: 0 0% 20%;
-		--input: 0 0% 20%;
-		--ring: 121 37% 45%;
+		/* Border & Input: Subtle plum borders */
+		--border: 271 20% 22%;
+		--input: 271 20% 22%;
+		--ring: 142 71% 45%;
+
+		/* ─── Extended Semantic Colors (Dark) ─── */
+		--color-divider: hsl(271, 20%, 25%);
+		--color-foreground-muted: hsl(48, 30%, 75%);
+		--color-foreground-subtle: hsl(48, 20%, 60%);
+		--color-foreground-faint: hsl(48, 15%, 50%);
+		--color-accent-muted: hsl(258, 75%, 70%);
+		--color-accent-subtle: hsl(258, 60%, 60%);
 	}
 }
 
@@ -95,5 +130,80 @@
 	}
 	body {
 		@apply bg-background text-foreground;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   UTILITY CLASSES
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Text color utilities */
+.text-foreground-muted { color: var(--color-foreground-muted); }
+.text-foreground-subtle { color: var(--color-foreground-subtle); }
+.text-foreground-faint { color: var(--color-foreground-faint); }
+.text-accent-muted { color: var(--color-accent-muted); }
+.text-accent-subtle { color: var(--color-accent-subtle); }
+.text-divider { color: var(--color-divider); }
+
+/* Background utilities */
+.bg-divider { background-color: var(--color-divider); }
+
+/* ═══════════════════════════════════════════════════════════════
+   DECORATIVE LEAF DIVIDER
+   The signature Grove section break
+   ═══════════════════════════════════════════════════════════════ */
+
+.leaf-divider {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+	padding: 1.5rem 0;
+}
+
+.leaf-divider::before,
+.leaf-divider::after {
+	content: '';
+	width: 3rem;
+	height: 1px;
+	background-color: var(--color-divider);
+}
+
+.leaf-divider svg {
+	width: 1.25rem;
+	height: 1.25rem;
+	color: var(--color-accent-subtle);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   GLASS MORPHISM
+   Frosted glass effect for special sections
+   ═══════════════════════════════════════════════════════════════ */
+
+.glass-grove {
+	background: rgba(255, 255, 255, 0.6);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border: 1px solid var(--color-divider);
+	border-radius: 0.75rem;
+}
+
+.dark .glass-grove {
+	background: rgba(88, 28, 135, 0.15);
+	border-color: hsl(271, 30%, 25%);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ACCESSIBILITY - Reduced Motion
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation: none !important;
+		transition: none !important;
 	}
 }

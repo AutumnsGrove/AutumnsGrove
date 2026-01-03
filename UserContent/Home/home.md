@@ -1,22 +1,23 @@
 ---
 title: "Home"
-description: "A personal website for blogging, demonstrating projects, and sharing articles."
+description: "A quiet corner of the internet where thoughts grow slowly."
 hero:
-  title: "Welcome to AutumnsGrove"
-  subtitle: "A space for thoughts, projects, and ideas."
+  title: "AutumnsGrove"
+  subtitle: "A quiet corner of the internet where thoughts grow slowly."
   cta:
     text: "Read the Blog"
     link: "/blog"
 ---
 
-## About This Space
+## A Place to Be
 
-AutumnsGrove is a personal blog where I share my thoughts, projects, and articles. This is a place for exploration, learning, and sharing knowledge with the world.
+This is my personal grove—a space for sharing thoughts, projects, and the occasional recipe. No algorithms. No engagement metrics. Just a place where ideas can grow at their own pace.
 
-## What You'll Find Here
+## What's Growing Here
 
-- **Blog Posts** - Thoughts on technology, development, and more
-- **Recipes** - A collection of favorite recipes
-- **Gallery** - Photos and visual collections
+- **Blog** - Thoughts on code, creativity, and life
+- **Recipes** - Food is love made tangible
+- **Gallery** - Visual snapshots and collections
+- **[The Workshop](https://grove.place/roadmap/workshop)** - The larger ecosystem I'm building
 
-*More content coming soon...*
+*Pull up a chair. Stay a while.*

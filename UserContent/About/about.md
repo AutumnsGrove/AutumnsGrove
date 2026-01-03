@@ -1,39 +1,55 @@
 ---
 title: "About"
 date: 2025-11-21
-description: "Learn more about AutumnsGrove and the person behind it"
+description: "A little corner of the internet where I plant thoughts and watch them grow"
 ---
 
-## Welcome to AutumnsGrove
+## Hey, I'm Autumn
 
-AutumnsGrove is a personal space for sharing thoughts, projects, and creative endeavors. This site serves as a digital portfolio and content hub where I document my journey through technology, creativity, and life.
+This is my little grove on the internet—a quiet space where I plant thoughts and watch them grow. Not for algorithms. Not for metrics. Just for the quiet joy of making something that feels like home.
+
+I write code, cook elaborate meals, and believe the web should still have spaces that feel personal and warm. The kind of place where conversations happen in the margins of borrowed books, where the tea is always steeping, and where you don't have to perform for anyone.
+
+---
+
+## Why I Built This
+
+Remember when the internet felt personal? When you had your little corner of it. When you weren't performing for an algorithm.
+
+I got tired of watching friends get trapped in dopamine slot machines designed to exploit neurodivergent minds. I got tired of platforms that treat your words as training data. So I started building differently.
+
+This site—and the [larger Grove ecosystem](https://grove.place) I'm creating—is my attempt to carve out something better. A forest of voices where people can just... write. Exist. Be.
+
+AutumnsGrove is the personal tree in that forest. The one I tend myself.
+
+---
 
 ## What You'll Find Here
 
 ### Blog Posts
 
-The blog section features articles on various topics including technology, programming, and personal reflections. Each post is carefully crafted to share knowledge and insights.
+Thoughts on technology, programming, and life. Sometimes technical, sometimes introspective, always honest. I write because processing in public helps me think, and maybe it'll help someone else too.
 
 ### Recipes
 
-A collection of recipes that I've developed and tested. These range from everyday meals to special occasion dishes, all with detailed instructions.
+Food is love made tangible. I've collected recipes I actually cook—from weeknight dinners to elaborate projects. Everything tested, everything real.
 
-### Projects
+### The Bigger Picture
 
-Various projects I've worked on, showcasing different technologies and creative solutions.
+I'm building [Grove](https://grove.place)—a platform for writers who want a home on the internet without the surveillance. If you want to see what's in the workshop, there's a [whole ecosystem of tools](https://grove.place/roadmap/workshop) being crafted: Ivy for privacy-first email, Meadow for community, Forage for domain discovery, and about two dozen more.
 
-## Site Statistics
+Check out the [GitHub Dashboard](/dashboard) to see what I've been working on lately.
 
-Curious about the activity on this site? Check out the [GitHub Dashboard](/dashboard) to see contribution statistics, recent activity, and more.
+---
 
-## Contact
+## Let's Connect
 
-I'd love to hear from you! Whether you have questions, feedback, or just want to connect, head over to the [Contact page](/contact) to get in touch.
+I'd genuinely love to hear from you—questions, feedback, or just to say hi. The [Contact page](/contact) is there whenever you're ready.
 
-### Feedback
+Found a bug? Have an idea? [Open an issue](https://github.com/AutumnsGrove/AutumnsGrove/issues) and let's fix it together.
 
-Found a bug or have a suggestion for the site? You can open an issue on the [GitHub repository](https://github.com/AutumnsGrove/AutumnsGrove/issues).
+Curious how this site was made? The [Credits page](/credits) has all the open source magic behind it.
 
-Learn how the site was made, and all the open source projects powering it [Credits](/credits)
+---
 
-Thanks for visiting AutumnsGrove!
+*Thanks for visiting. Pull up a chair, stay a while.*
