@@ -2,7 +2,7 @@
 	import { marked } from 'marked';
 	import { sanitizeMarkdown } from '@autumnsgrove/groveengine/utils';
 	import { Calendar, GitCommit, Plus, Minus, FolderGit2, ChevronDown, ChevronUp, Cloud, Loader2 } from 'lucide-svelte';
-	import { ActivityOverview, LOCBar, RepoBreakdown, GlassCard, GlassButton, Badge } from '$lib/components';
+	import { ActivityOverview, LOCBar, GlassCard, GlassButton, Badge } from '$lib/components';
 	import { toast } from '@autumnsgrove/groveengine/ui';
 
 	/** @type {{ summaries: any[], pagination: any, error?: string }} */
@@ -330,13 +330,6 @@
 									maxWidth={120}
 									height={6}
 								/>
-								{#if summary.repos_active?.length > 1}
-									<RepoBreakdown
-										repos={summary.repos_active.map(name => ({ name }))}
-										maxWidth={120}
-										showLegend={false}
-									/>
-								{/if}
 							</div>
 
 							{#if summary.detailed_timeline && isExpanded}

@@ -1,7 +1,7 @@
 <script>
 	import InternalsPostViewer from '$lib/components/custom/InternalsPostViewer.svelte';
 	import { Button } from '@autumnsgrove/groveengine/ui';
-	import { Glass, GlassCard, Badge } from '$lib/components';
+	import { GlassCard } from '$lib/components';
 
 	let { data } = $props();
 </script>
@@ -12,13 +12,17 @@
 </svelte:head>
 
 {#if data.hero}
-	<Glass variant="card" intensity="light" border shadow class="hero">
-		<h1>{data.hero.title}</h1>
-		<p class="subtitle">{data.hero.subtitle}</p>
-		{#if data.hero.cta}
-			<Button href={data.hero.cta.link} variant="default" size="lg" class="cta-button">{data.hero.cta.text}</Button>
-		{/if}
-	</Glass>
+	<section class="hero-section">
+		<GlassCard variant="accent" hoverable class="hero-card">
+			<div class="hero-content">
+				<h1>{data.hero.title}</h1>
+				<p class="subtitle">{data.hero.subtitle}</p>
+				{#if data.hero.cta}
+					<Button href={data.hero.cta.link} variant="default" size="lg" class="cta-button">{data.hero.cta.text}</Button>
+				{/if}
+			</div>
+		</GlassCard>
+	</section>
 {/if}
 
 {#if data.content}
@@ -59,27 +63,29 @@
 		color: var(--color-primary);
 		text-decoration: underline;
 	}
-	.hero {
-		text-align: center;
-		padding: 4rem 2rem;
-		background: linear-gradient(145deg, #f8f9fa 0%, #e8f5e9 50%, #c8e6c9 100%);
-		border-radius: 12px;
-		margin-bottom: 3rem;
-		transition: background 0.3s ease;
+	.hero-section {
+		max-width: 700px;
+		margin: 0 auto 3rem;
 	}
-	:global(.dark) .hero {
-		background: linear-gradient(145deg, var(--cream-200) 0%, #1a2f1a 50%, var(--color-success-light) 100%);
+	:global(.hero-card) {
+		text-align: center;
+	}
+	.hero-content {
+		padding: 2rem 1rem;
 	}
 	h1 {
-		font-size: 3rem;
+		font-size: 2.5rem;
 		margin: 0 0 1rem 0;
 		color: var(--color-primary);
 		transition: color 0.3s ease;
 	}
+	:global(.dark) h1 {
+		color: var(--grove-500);
+	}
 	.subtitle {
-		font-size: 1.25rem;
+		font-size: 1.15rem;
 		color: var(--color-muted-foreground);
-		margin: 0 0 2rem 0;
+		margin: 0 0 1.5rem 0;
 		transition: color 0.3s ease;
 	}
 	.cta-button {
@@ -117,11 +123,14 @@
 		border-bottom-color: var(--color-border-strong);
 	}
 	@media (max-width: 768px) {
-		h1 {
-			font-size: 2rem;
+		.hero-section {
+			margin: 0 1rem 2rem;
 		}
-		.hero {
-			padding: 2rem 1rem;
+		h1 {
+			font-size: 1.75rem;
+		}
+		.hero-content {
+			padding: 1.5rem 0.5rem;
 		}
 		.subtitle {
 			font-size: 1rem;
