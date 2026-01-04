@@ -561,11 +561,11 @@
 		flex-wrap: wrap;
 		gap: 1rem;
 		font-size: 0.85rem;
-		color: #666;
+		color: var(--color-foreground);
 		margin-bottom: 0.75rem;
 	}
 	:global(.dark) .meta-info {
-		color: var(--color-muted-foreground);
+		color: var(--color-foreground);
 	}
 	.repos, .changes {
 		display: flex;
@@ -620,15 +620,15 @@
 		background: linear-gradient(135deg, #f0f7f0 0%, #e8f5e9 100%);
 		border-left: 2px solid var(--grove-500);
 		border-radius: 0 4px 4px 0;
-		font-size: 0.78rem;
-		color: var(--color-muted-foreground);
+		font-size: 0.8rem;
+		color: #2c5f2d;
 		line-height: 1.35;
 		font-style: italic;
 	}
 	:global(.dark) .markdown-content :global(.inline-gutter-comment) {
 		background: linear-gradient(135deg, var(--cream-200) 0%, var(--cream-200) 100%);
 		border-left-color: var(--grove-500);
-		color: var(--color-muted-foreground);
+		color: var(--grove-600);
 	}
 	.markdown-content :global(.inline-gutter-comment svg) {
 		flex-shrink: 0;
@@ -642,7 +642,7 @@
 		background: var(--cream-200);
 		border-radius: 8px;
 		font-size: 0.9rem;
-		color: var(--color-muted-foreground);
+		color: var(--color-foreground);
 		line-height: 1.6;
 	}
 	/* Markdown Styling */
@@ -659,8 +659,9 @@
 	}
 	.markdown-content :global(h3) {
 		font-size: 1rem;
-		color: var(--color-muted-foreground);
+		color: var(--color-foreground);
 		margin: 1rem 0 0.5rem;
+		font-weight: 600;
 	}
 	.markdown-content :global(h3 a) {
 		color: #2c5f2d;
@@ -692,9 +693,11 @@
 	}
 	.markdown-content :global(li) {
 		margin-bottom: 0.25rem;
+		color: var(--color-foreground);
 	}
 	.markdown-content :global(p) {
 		margin: 0.5rem 0;
+		color: var(--color-foreground);
 	}
 	.markdown-content :global(code) {
 		background: var(--color-border-strong);
