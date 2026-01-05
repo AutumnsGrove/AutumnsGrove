@@ -1,6 +1,66 @@
 # TODOs for AutumnsGrove
 
-> **Last Updated:** December 13, 2025 - Added gutter investigation notes
+> **Last Updated:** January 5, 2026 - GroveEngine 0.8.6 upgrade completed
+
+---
+
+## ✅ Recently Completed
+
+### GroveEngine 0.8.6 Upgrade (Jan 5, 2026)
+- **Status**: ✅ COMPLETE
+- **Migration**: GroveEngine 0.6.5 → 0.8.6
+- **Package**: `@autumnsgrove/groveengine@0.8.6`
+- **Admin Dashboard**: Fully migrated to latest engine capabilities
+- **Breaking Changes**: None detected - 100% backward compatible
+- **Tests**: All 184 tests passing
+- **Build**: Successful with no critical errors
+- **Documentation**:
+  - Migration plan: `docs/GROVEENGINE-UPGRADE-PLAN.md`
+  - Test results: `docs/MIGRATION-TEST-RESULTS.md`
+  - Rollback procedures: `docs/ROLLBACK-PROCEDURES.md`
+- **Files Created**: 3 documentation files
+- **Backup**: `backup/pre-groveengine-upgrade-086` branch created
+- **Rollback Ready**: Full rollback procedures documented
+
+### GroveAuth Integration (Dec 8, 2025)
+- Upgraded GroveEngine to 0.5.0, replaced magic‑code auth with OAuth2/PKCE flow.
+- Users authenticate via `auth.grove.place` (Google, GitHub, or Magic Code).
+- New files: `src/lib/auth/groveauth.ts`, login/callback routes.
+- Deployment secrets configured.
+
+### AI Writing Assistant (Dec 3, 2025)
+- Non‑intrusive side panel with grammar, spelling, style analysis via Claude AI.
+- Tone analysis, readability scoring, ASCII art "vibes".
+- Apply fixes directly, rate limiting, model selection, command‑palette integration.
+- **⚠️ Note (Dec 13, 2025):** Feature is enabled in settings but not fully functional. The UI is present but the actual AI analysis doesn't work yet. Needs investigation - likely missing API integration or endpoint issues. Low priority fix for future session.
+
+### RSS Feed & Recipes D1 Integration (Dec 1, 2025)
+- RSS endpoint at `/api/feed` with autodiscovery and `/rss.xml` redirect.
+- D1 schema updated with recipes table; sync endpoints and GitHub Actions workflow.
+- Admin recipes page uses D1 with fallback.
+
+### Security & Polish Audit (Nov 29, 2025)
+- XSS protection (DOMPurify), CSRF protection on all mutating endpoints.
+- Security headers, console‑to‑toast error migration, input validation, rate limiting.
+- Dependabot and security documentation.
+
+### AI Timeline Enhancements (Nov 28, 2025)
+- Multi‑provider AI support (Anthropic Claude, Cloudflare Workers AI).
+- Model selector (8 models), cost tracking, background job processing.
+- Timeline visualizations (sparklines, LOC bars, heatmap).
+
+### Markdown Editor – Grove Writer (Nov 28, 2025)
+- Slash commands, command palette, Zen mode, campfire sessions.
+- Mermaid diagram previews, custom snippets, ambient sounds.
+- Auto‑save drafts, drag‑and‑drop images, writing goals.
+
+### Admin Panel Improvements (Nov 26, 2025)
+- Fixed sidebar extending into footer, standardized border‑radius.
+- Image gallery sorting, pages management with D1 sync, bidirectional sync workflow.
+
+### shadcn‑svelte Migration (Nov 2025)
+- 12 wrapper components created; all admin and public routes migrated.
+- Reduced CSS by ~900+ lines.
 
 ---
 

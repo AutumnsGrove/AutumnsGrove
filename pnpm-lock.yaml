@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@autumnsgrove/groveengine':
-        specifier: ^0.8.0
-        version: 0.8.0(@sveltejs/kit@2.49.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(tailwindcss@3.4.18)
+        specifier: ^0.8.6
+        version: 0.8.6(@sveltejs/kit@2.49.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(tailwindcss@3.4.18)
       '@types/dompurify':
         specifier: ^3.0.5
         version: 3.2.0
@@ -115,8 +115,8 @@ packages:
   '@asamuzakjp/nwsapi@2.3.9':
     resolution: {integrity: sha512-n8GuYSrI9bF7FFZ/SjhwevlHc8xaVlb/7HmHelnc/PZXBD2ZR49NnN9sMMuDdEGPeeRQ5d0hqlSlEpgCX3Wl0Q==}
 
-  '@autumnsgrove/groveengine@0.8.0':
-    resolution: {integrity: sha512-qg5ZpiZN6/22EVKE/qAde+UWnm4GjetV9Lm2Vg7d/aO5bCxyi5JG3XrWNPCh8a8KfLlW3KZU0DXX3XBN1ShATA==}
+  '@autumnsgrove/groveengine@0.8.6':
+    resolution: {integrity: sha512-b6stVvOebtJU4RaYF72G+ufs67RYJJOzIrLmJW/D5aLImuwIJFhHdMNX6KWLIBgXSoh+Frh2coo/WkJ8/DUgug==}
     peerDependencies:
       '@sveltejs/kit': ^2.0.0
       svelte: ^5.0.0
@@ -2152,8 +2152,9 @@ snapshots:
 
   '@asamuzakjp/nwsapi@2.3.9': {}
 
-  '@autumnsgrove/groveengine@0.8.0(@sveltejs/kit@2.49.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(tailwindcss@3.4.18)':
+  '@autumnsgrove/groveengine@0.8.6(@sveltejs/kit@2.49.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(tailwindcss@3.4.18)':
     dependencies:
+      '@autumnsgrove/vineyard': link:../../../Vineyard
       '@sveltejs/kit': 2.49.1(@sveltejs/vite-plugin-svelte@4.0.4(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25)))(svelte@5.45.5)(vite@5.4.21(@types/node@20.19.25))
       chart.js: 4.5.1
       clsx: 2.1.1
