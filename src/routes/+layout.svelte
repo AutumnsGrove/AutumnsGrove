@@ -492,6 +492,9 @@
 		display: flex;
 		flex-direction: column;
 	}
+	main {
+		margin-top: 2rem;
+	}
 	header {
 		background: white;
 		border-bottom: 1px solid var(--color-border);
@@ -685,6 +688,7 @@
 		}
 		main {
 			padding: 1rem;
+			margin-top: 1rem;
 		}
 		/* Hide desktop nav on mobile */
 		.desktop-nav {
