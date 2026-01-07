@@ -1,32 +1,24 @@
-import { logout, clearTokenCookies, parseTokenCookies } from '$lib/auth/groveauth';
+import { redirect } from '@sveltejs/kit';
+import { signOut } from '$lib/auth/groveauth';
 
-export async function GET({ request, url }) {
+/**
+ * Logout Handler
+ *
+ * Uses GET-only to avoid CSRF complexity (logout is idempotent and safe).
+ * Better Auth clears the session cookie server-side.
+ */
+export async function GET({ request }) {
   const cookieHeader = request.headers.get('cookie');
-  const { accessToken } = parseTokenCookies(cookieHeader);
 
-  // Call GroveAuth logout (best effort - don't fail if it errors)
-  if (accessToken) {
-    try {
-      await logout(accessToken);
-    } catch (err) {
-      console.warn('[LOGOUT] GroveAuth logout failed:', err.message);
-    }
+  // Sign out via Better Auth (best effort)
+  try {
+    await signOut(cookieHeader);
+  } catch (err) {
+    // Even if Better Auth fails, we still redirect home
+    // The session cookie will expire naturally or be cleared on next login
+    console.warn('[LOGOUT] Better Auth sign out failed (non-fatal):', err.message);
   }
 
-  // Clear local token cookies
-  const isProduction = url.hostname !== 'localhost' && url.hostname !== '127.0.0.1';
-  const clearCookies = clearTokenCookies(isProduction);
-
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: '/',
-      'Set-Cookie': clearCookies.join(', '),
-    },
-  });
-}
-
-// Also support POST for CSRF-protected logout
-export async function POST({ request, url }) {
-  return GET({ request, url });
+  // Redirect to home page
+  redirect(302, '/');
 }

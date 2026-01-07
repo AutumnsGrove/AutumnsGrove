@@ -1,31 +1,29 @@
 import { json } from '@sveltejs/kit';
-import { verifyToken, parseTokenCookies } from '$lib/auth/groveauth';
+import { getSession } from '$lib/auth/groveauth';
 
 export async function GET({ request }) {
   const cookieHeader = request.headers.get('cookie');
-  const { accessToken } = parseTokenCookies(cookieHeader);
-
-  if (!accessToken) {
-    return json({ authenticated: false }, { status: 401 });
-  }
 
   try {
-    const tokenInfo = await verifyToken(accessToken);
+    const sessionData = await getSession(cookieHeader);
 
-    if (!tokenInfo.active) {
+    if (!sessionData?.user) {
       return json({ authenticated: false }, { status: 401 });
     }
 
     return json({
       authenticated: true,
       user: {
-        id: tokenInfo.sub,
-        email: tokenInfo.email,
-        name: tokenInfo.name || null,
+        id: sessionData.user.id,
+        email: sessionData.user.email,
+        name: sessionData.user.name || null,
       },
     });
   } catch (err) {
-    console.error('[AUTH ME] Token verification failed:', err.message);
-    return json({ authenticated: false, error: 'Token verification failed' }, { status: 500 });
+    console.error('[AUTH ME] Session verification failed:', err.message);
+    return json(
+      { authenticated: false, error: 'Session verification failed' },
+      { status: 500 }
+    );
   }
 }
