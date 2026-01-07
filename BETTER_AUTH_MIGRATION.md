@@ -242,6 +242,25 @@ User → /auth/login → auth-api.grove.place/api/auth/sign-in/{provider}
   → No refresh needed (long-lived sessions)
 ```
 
+## Session Behavior
+
+### Session Lifetime
+- **Default duration**: 30 days (Better Auth default)
+- **Type**: Sliding sessions (extend on each request)
+- **Cookie name**: `better-auth.session_token`
+- **Cookie attributes**: `HttpOnly`, `Secure` (production), `SameSite=Lax`, `Domain=.grove.place`
+
+### Session Management
+- **Automatic refresh**: Sessions extend on each verified request
+- **Manual check**: Use `/api/auth/session` endpoint to verify current session
+- **Logout**: Call `/api/auth/sign-out` to immediately invalidate session
+- **Cross-subdomain**: Session works across all `*.grove.place` subdomains
+
+### Session Security
+- **Token rotation**: Better Auth rotates tokens periodically
+- **IP validation**: Optional (configure server-side in Better Auth)
+- **User agent validation**: Optional (configure server-side in Better Auth)
+
 ## API Reference
 
 ### Better Auth Endpoints (auth-api.grove.place)

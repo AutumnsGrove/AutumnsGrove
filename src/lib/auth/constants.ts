@@ -33,13 +33,20 @@ export function validateRedirect(path: string): string {
     return '/admin'; // Default to safe location
   }
 
-  // Normalize path
-  const normalized = path.startsWith('/') ? path : `/${path}`;
+  // Normalize path to handle . and .. components
+  // Use URL constructor to properly resolve path traversal
+  try {
+    const url = new URL(path, 'http://dummy.local');
+    const normalized = url.pathname;
 
-  // Check if path is in whitelist or is a sub-path of allowed location
-  const isAllowed = ALLOWED_REDIRECTS.some(allowed =>
-    normalized === allowed || normalized.startsWith(`${allowed}/`)
-  );
+    // Check if path is in whitelist or is a sub-path of allowed location
+    const isAllowed = ALLOWED_REDIRECTS.some(allowed =>
+      normalized === allowed || normalized.startsWith(`${allowed}/`)
+    );
 
-  return isAllowed ? normalized : '/admin';
+    return isAllowed ? normalized : '/admin';
+  } catch {
+    // Invalid path format
+    return '/admin';
+  }
 }
