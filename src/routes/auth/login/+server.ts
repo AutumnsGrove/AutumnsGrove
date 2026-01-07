@@ -1,49 +1,20 @@
 import { redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import {
-  generateCodeVerifier,
-  generateCodeChallenge,
-  getLoginUrl,
-} from '$lib/auth/groveauth';
 
-export const GET: RequestHandler = async ({ url, platform, cookies }) => {
-  const env = platform?.env;
+export const GET: RequestHandler = async ({ url }) => {
+  // Get redirect destination and provider (default to Google)
+  const redirectTo = url.searchParams.get('redirect') || '/admin';
+  const provider = url.searchParams.get('provider') || 'google';
 
-  if (!env?.GROVEAUTH_CLIENT_ID || !env?.GROVEAUTH_REDIRECT_URI) {
-    throw new Error('GroveAuth not configured - missing GROVEAUTH_CLIENT_ID or GROVEAUTH_REDIRECT_URI');
+  // Validate provider
+  if (provider !== 'google' && provider !== 'github') {
+    throw new Error('Invalid OAuth provider. Must be "google" or "github".');
   }
 
-  // Generate PKCE challenge
-  const state = crypto.randomUUID();
-  const codeVerifier = generateCodeVerifier();
-  const codeChallenge = await generateCodeChallenge(codeVerifier);
+  // Build Better Auth OAuth URL
+  const callbackURL = encodeURIComponent(`${url.origin}${redirectTo}`);
+  const authUrl = `https://auth-api.grove.place/api/auth/sign-in/${provider}?callbackURL=${callbackURL}`;
 
-  // Preserve the original redirect destination
-  const redirectTo = url.searchParams.get('redirect') || '/admin';
-
-  // Determine if production for cookie security
-  const isProduction = url.hostname !== 'localhost' && url.hostname !== '127.0.0.1';
-
-  // Store state and verifier in cookies (short-lived for auth flow)
-  const cookieOptions = {
-    path: '/',
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: 'lax' as const,
-    maxAge: 600, // 10 minutes - auth flow should complete quickly
-  };
-
-  cookies.set('auth_state', state, cookieOptions);
-  cookies.set('code_verifier', codeVerifier, cookieOptions);
-  cookies.set('auth_redirect', redirectTo, cookieOptions);
-
-  // Redirect to GroveAuth
-  const loginUrl = getLoginUrl({
-    clientId: env.GROVEAUTH_CLIENT_ID,
-    redirectUri: env.GROVEAUTH_REDIRECT_URI,
-    state,
-    codeChallenge,
-  });
-
-  redirect(302, loginUrl);
+  // Redirect to Better Auth
+  redirect(302, authUrl);
 };

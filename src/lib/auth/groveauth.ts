@@ -1,207 +1,109 @@
 /**
- * GroveAuth Integration Utilities
- * Centralized authentication for AutumnsGrove via auth.grove.place
+ * Better Auth Integration Utilities
+ * Session-based authentication for AutumnsGrove via auth-api.grove.place
  */
 
 const AUTH_BASE_URL = 'https://auth-api.grove.place';
 
 // ==================== Types ====================
 
-export interface AuthTokens {
-  access_token: string;
-  refresh_token: string;
-  expires_in: number;
-  token_type: 'Bearer';
-}
-
-export interface AuthUser {
-  sub: string;
+export interface BetterAuthUser {
+  id: string;
   email: string;
   name: string | null;
-  picture: string | null;
-  provider: 'google' | 'github' | 'magic_code';
+  image: string | null;
+  emailVerified: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
-export interface TokenInfo {
-  active: boolean;
-  sub?: string;
-  email?: string;
-  name?: string;
-  exp?: number;
-  client_id?: string;
-}
-
-// ==================== PKCE Helpers ====================
-
-export function generateCodeVerifier(): string {
-  const array = new Uint8Array(32);
-  crypto.getRandomValues(array);
-  return base64UrlEncode(array);
-}
-
-export async function generateCodeChallenge(verifier: string): Promise<string> {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(verifier);
-  const hash = await crypto.subtle.digest('SHA-256', data);
-  return base64UrlEncode(new Uint8Array(hash));
-}
-
-function base64UrlEncode(buffer: Uint8Array): string {
-  let binary = '';
-  for (let i = 0; i < buffer.length; i++) {
-    binary += String.fromCharCode(buffer[i]);
-  }
-  return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-}
-
-// ==================== Auth URL Generation ====================
-
-export function getLoginUrl(config: {
-  clientId: string;
-  redirectUri: string;
-  state: string;
-  codeChallenge: string;
-}): string {
-  const params = new URLSearchParams({
-    client_id: config.clientId,
-    redirect_uri: config.redirectUri,
-    state: config.state,
-    code_challenge: config.codeChallenge,
-    code_challenge_method: 'S256',
-  });
-  return `${AUTH_BASE_URL}/login?${params}`;
-}
-
-// ==================== Token Operations ====================
-
-export async function exchangeCode(config: {
-  code: string;
-  codeVerifier: string;
-  clientId: string;
-  clientSecret: string;
-  redirectUri: string;
-}): Promise<AuthTokens> {
-  const response = await fetch(`${AUTH_BASE_URL}/token`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'authorization_code',
-      code: config.code,
-      redirect_uri: config.redirectUri,
-      client_id: config.clientId,
-      client_secret: config.clientSecret,
-      code_verifier: config.codeVerifier,
-    }),
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({ error_description: 'Unknown error' }));
-    throw new Error(error.error_description || 'Token exchange failed');
-  }
-
-  return response.json();
-}
-
-export async function verifyToken(accessToken: string): Promise<TokenInfo> {
-  const response = await fetch(`${AUTH_BASE_URL}/verify`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
-  return response.json();
-}
-
-export async function refreshTokens(config: {
-  refreshToken: string;
-  clientId: string;
-  clientSecret: string;
-}): Promise<AuthTokens | null> {
-  const response = await fetch(`${AUTH_BASE_URL}/token/refresh`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      grant_type: 'refresh_token',
-      refresh_token: config.refreshToken,
-      client_id: config.clientId,
-      client_secret: config.clientSecret,
-    }),
-  });
-
-  if (!response.ok) return null;
-  return response.json();
-}
-
-export async function logout(accessToken: string): Promise<void> {
-  await fetch(`${AUTH_BASE_URL}/logout`, {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
-}
-
-// ==================== Cookie Helpers ====================
-
-export function createTokenCookies(
-  tokens: AuthTokens,
-  isProduction: boolean
-): string[] {
-  const cookieOptions = [
-    'Path=/',
-    'HttpOnly',
-    'SameSite=Lax',
-  ];
-
-  if (isProduction) {
-    cookieOptions.push('Secure');
-  }
-
-  const accessCookie = [
-    `access_token=${tokens.access_token}`,
-    ...cookieOptions,
-    `Max-Age=${tokens.expires_in}`,
-  ].join('; ');
-
-  const refreshCookie = [
-    `refresh_token=${tokens.refresh_token}`,
-    ...cookieOptions,
-    `Max-Age=${30 * 24 * 60 * 60}`, // 30 days
-  ].join('; ');
-
-  return [accessCookie, refreshCookie];
-}
-
-export function clearTokenCookies(isProduction: boolean): string[] {
-  const cookieOptions = [
-    'Path=/',
-    'HttpOnly',
-    'SameSite=Lax',
-    'Max-Age=0',
-  ];
-
-  if (isProduction) {
-    cookieOptions.push('Secure');
-  }
-
-  return [
-    `access_token=; ${cookieOptions.join('; ')}`,
-    `refresh_token=; ${cookieOptions.join('; ')}`,
-  ];
-}
-
-export function parseTokenCookies(cookieHeader: string | null): {
-  accessToken: string | null;
-  refreshToken: string | null;
-} {
-  if (!cookieHeader) {
-    return { accessToken: null, refreshToken: null };
-  }
-
-  const cookies = Object.fromEntries(
-    cookieHeader.split(';').map(c => {
-      const [key, ...val] = c.trim().split('=');
-      return [key, val.join('=')];
-    })
-  );
-
-  return {
-    accessToken: cookies['access_token'] || null,
-    refreshToken: cookies['refresh_token'] || null,
+export interface BetterAuthSession {
+  user: BetterAuthUser;
+  session: {
+    id: string;
+    userId: string;
+    expiresAt: Date;
+    token: string;
+    ipAddress?: string;
+    userAgent?: string;
   };
+}
+
+// ==================== Auth Operations ====================
+
+/**
+ * Start OAuth login flow by redirecting to Better Auth
+ * @param provider - OAuth provider ('google' or 'github')
+ * @param callbackURL - URL to redirect back to after login
+ */
+export function signIn(provider: 'google' | 'github', callbackURL?: string): void {
+  const redirectUrl = callbackURL || window.location.href;
+  const url = `${AUTH_BASE_URL}/api/auth/sign-in/${provider}?callbackURL=${encodeURIComponent(redirectUrl)}`;
+  window.location.href = url;
+}
+
+/**
+ * Get the current session (works both server-side and client-side)
+ * @param cookieHeader - Optional cookie header for server-side requests
+ * @returns Session data or null if not authenticated
+ */
+export async function getSession(cookieHeader?: string): Promise<BetterAuthSession | null> {
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  };
+
+  // Server-side: pass cookie header
+  if (cookieHeader) {
+    headers['cookie'] = cookieHeader;
+  }
+
+  const res = await fetch(`${AUTH_BASE_URL}/api/auth/session`, {
+    credentials: 'include', // Required for cross-origin cookies
+    headers,
+  });
+
+  if (!res.ok) {
+    return null;
+  }
+
+  return res.json();
+}
+
+/**
+ * Sign out the current user
+ * @param cookieHeader - Optional cookie header for server-side requests
+ */
+export async function signOut(cookieHeader?: string): Promise<void> {
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+  };
+
+  if (cookieHeader) {
+    headers['cookie'] = cookieHeader;
+  }
+
+  await fetch(`${AUTH_BASE_URL}/api/auth/sign-out`, {
+    method: 'POST',
+    credentials: 'include',
+    headers,
+  });
+}
+
+// ==================== CSRF Token Helpers ====================
+
+/**
+ * Get CSRF token from Better Auth
+ * This is used for additional security on state-changing operations
+ */
+export async function getCSRFToken(): Promise<string | null> {
+  try {
+    const res = await fetch(`${AUTH_BASE_URL}/api/auth/csrf`, {
+      credentials: 'include',
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.csrfToken || null;
+  } catch {
+    return null;
+  }
 }
