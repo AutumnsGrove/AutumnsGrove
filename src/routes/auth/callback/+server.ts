@@ -1,36 +1,7 @@
 import { redirect, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { getSession } from '$lib/auth/groveauth';
-
-// Whitelist of allowed redirect paths (must match login whitelist)
-const ALLOWED_REDIRECTS = [
-  '/admin',
-  '/admin/blog',
-  '/admin/pages',
-  '/admin/images',
-  '/admin/analytics',
-  '/admin/timeline',
-  '/admin/logs',
-  '/admin/settings',
-  '/dashboard',
-];
-
-function validateRedirect(path: string): string {
-  // Only allow internal paths (no external URLs)
-  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('//')) {
-    return '/admin';
-  }
-
-  // Normalize path
-  const normalized = path.startsWith('/') ? path : `/${path}`;
-
-  // Check if path is in whitelist or is a sub-path of allowed location
-  const isAllowed = ALLOWED_REDIRECTS.some(allowed =>
-    normalized === allowed || normalized.startsWith(`${allowed}/`)
-  );
-
-  return isAllowed ? normalized : '/admin';
-}
+import { validateRedirect } from '$lib/auth/constants';
 
 /**
  * OAuth Callback Handler for Better Auth

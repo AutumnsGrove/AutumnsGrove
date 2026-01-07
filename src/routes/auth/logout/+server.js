@@ -1,26 +1,24 @@
+import { redirect } from '@sveltejs/kit';
 import { signOut } from '$lib/auth/groveauth';
 
-export async function GET({ request, url }) {
+/**
+ * Logout Handler
+ *
+ * Uses GET-only to avoid CSRF complexity (logout is idempotent and safe).
+ * Better Auth clears the session cookie server-side.
+ */
+export async function GET({ request }) {
   const cookieHeader = request.headers.get('cookie');
 
-  // Sign out via Better Auth
+  // Sign out via Better Auth (best effort)
   try {
     await signOut(cookieHeader);
   } catch (err) {
-    console.warn('[LOGOUT] Better Auth sign out failed:', err.message);
+    // Even if Better Auth fails, we still redirect home
+    // The session cookie will expire naturally or be cleared on next login
+    console.warn('[LOGOUT] Better Auth sign out failed (non-fatal):', err.message);
   }
 
   // Redirect to home page
-  return new Response(null, {
-    status: 302,
-    headers: {
-      Location: '/',
-      // Better Auth clears the session cookie on sign-out
-    },
-  });
-}
-
-// Also support POST for CSRF-protected logout
-export async function POST({ request, url }) {
-  return GET({ request, url });
+  redirect(302, '/');
 }

@@ -13,8 +13,8 @@ export interface BetterAuthUser {
   name: string | null;
   image: string | null;
   emailVerified: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;  // ISO 8601 date string from API
+  updatedAt: string;  // ISO 8601 date string from API
 }
 
 export interface BetterAuthSession {
@@ -22,7 +22,7 @@ export interface BetterAuthSession {
   session: {
     id: string;
     userId: string;
-    expiresAt: Date;
+    expiresAt: string;  // ISO 8601 date string from API
     token: string;
     ipAddress?: string;
     userAgent?: string;
@@ -45,48 +45,65 @@ export function signIn(provider: 'google' | 'github', callbackURL?: string): voi
 /**
  * Get the current session (works both server-side and client-side)
  * @param cookieHeader - Optional cookie header for server-side requests
- * @returns Session data or null if not authenticated
+ * @returns Session data or null if not authenticated or on error
  */
 export async function getSession(cookieHeader?: string): Promise<BetterAuthSession | null> {
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-  };
+  try {
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
 
-  // Server-side: pass cookie header
-  if (cookieHeader) {
-    headers['cookie'] = cookieHeader;
-  }
+    // Server-side: pass cookie header
+    if (cookieHeader) {
+      headers['cookie'] = cookieHeader;
+    }
 
-  const res = await fetch(`${AUTH_BASE_URL}/api/auth/session`, {
-    credentials: 'include', // Required for cross-origin cookies
-    headers,
-  });
+    const res = await fetch(`${AUTH_BASE_URL}/api/auth/session`, {
+      credentials: 'include', // Required for cross-origin cookies
+      headers,
+    });
 
-  if (!res.ok) {
+    if (!res.ok) {
+      return null;
+    }
+
+    return res.json();
+  } catch (error) {
+    // Network error or Better Auth unavailable
+    console.error('[AUTH] Failed to fetch session:', error);
     return null;
   }
-
-  return res.json();
 }
 
 /**
  * Sign out the current user
  * @param cookieHeader - Optional cookie header for server-side requests
+ * @throws Error if sign-out fails (caller should handle gracefully)
  */
 export async function signOut(cookieHeader?: string): Promise<void> {
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-  };
+  try {
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
 
-  if (cookieHeader) {
-    headers['cookie'] = cookieHeader;
+    if (cookieHeader) {
+      headers['cookie'] = cookieHeader;
+    }
+
+    const res = await fetch(`${AUTH_BASE_URL}/api/auth/sign-out`, {
+      method: 'POST',
+      credentials: 'include',
+      headers,
+    });
+
+    if (!res.ok) {
+      throw new Error(`Sign-out failed: ${res.status} ${res.statusText}`);
+    }
+  } catch (error) {
+    // Network error or Better Auth unavailable
+    console.error('[AUTH] Sign-out request failed:', error);
+    throw error; // Re-throw so caller can decide how to handle
   }
-
-  await fetch(`${AUTH_BASE_URL}/api/auth/sign-out`, {
-    method: 'POST',
-    credentials: 'include',
-    headers,
-  });
 }
 
 // ==================== CSRF Token Helpers ====================

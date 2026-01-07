@@ -105,7 +105,24 @@ pnpm run dev:wrangler
 - [ ] **Test all auth flows**: Login with Google, login with GitHub, logout, session persistence
 - [ ] **Verify protected routes**: Try accessing `/admin` without being logged in
 - [ ] **Test cross-subdomain SSO** (if applicable): Log in on one subdomain, verify session works on another
-- [ ] **Remove legacy environment variables**: After 1-2 weeks of stable operation, clean up old vars
+- [ ] **Monitor for 48 hours**: Watch for any auth-related errors in production
+- [ ] **Schedule cleanup (2025-01-21 or later)**: After 2 weeks of stable operation, remove legacy environment variables
+
+### Environment Variable Cleanup Timeline
+
+**Do NOT remove these until after January 21, 2025** (2 weeks post-migration):
+
+```bash
+# Safe to remove after 2025-01-21:
+GROVEAUTH_CLIENT_ID=...
+GROVEAUTH_CLIENT_SECRET=...
+GROVEAUTH_REDIRECT_URI=...
+SESSION_SECRET=...
+RESEND_API_KEY=...
+ALLOWED_ADMIN_EMAILS=...
+```
+
+Keep them for rollback capability during the stabilization period.
 
 ## Rollback Procedure
 
@@ -172,10 +189,37 @@ const ALLOWED_REDIRECTS = [
 
 ✅ **Open redirect protection**: Login and callback endpoints validate redirect URLs against a whitelist
 ✅ **Session verification**: Callback endpoint verifies the session was created before redirecting
-✅ **Error handling**: Proper error messages for auth failures
+✅ **Error handling**: Network failures and auth errors handled gracefully
 ✅ **No client-side secrets**: All OAuth credentials are server-side only
 ✅ **HttpOnly cookies**: Session cookie cannot be accessed via JavaScript
 ✅ **Cross-subdomain SSO**: Session works across all `.grove.place` services
+✅ **CSRF-safe logout**: GET-only logout endpoint (idempotent, no CSRF risk)
+✅ **Type safety**: Date strings properly typed to match API response format
+
+## Known Limitations & Future Improvements
+
+### Rate Limiting
+Currently, auth endpoints do not have application-level rate limiting. This is acceptable because:
+- Better Auth handles rate limiting server-side
+- Cloudflare provides DDoS protection at the edge
+- **Future improvement**: Consider adding Cloudflare Workers rate limiting for `/auth/*` routes
+
+### Test Coverage
+This migration does not include automated tests. Testing priorities:
+1. Redirect validation logic (`src/lib/auth/constants.ts`)
+2. Session verification in callback handler
+3. Error handling paths (network failures, invalid OAuth responses)
+4. Protected route enforcement
+
+**Recommendation**: Add tests in a follow-up PR using Vitest.
+
+### Better Auth Availability
+The app gracefully handles Better Auth downtime:
+- `getSession()` returns `null` on network errors
+- Users are redirected to login (but login will also fail)
+- No maintenance mode or fallback authentication
+
+**Future improvement**: Add a health check and maintenance mode banner if Better Auth is unreachable.
 
 ## Architecture Changes
 

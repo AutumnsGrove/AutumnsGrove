@@ -1,35 +1,6 @@
 import { redirect, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-
-// Whitelist of allowed redirect paths (prevent open redirect vulnerability)
-const ALLOWED_REDIRECTS = [
-  '/admin',
-  '/admin/blog',
-  '/admin/pages',
-  '/admin/images',
-  '/admin/analytics',
-  '/admin/timeline',
-  '/admin/logs',
-  '/admin/settings',
-  '/dashboard',
-];
-
-function validateRedirect(path: string): string {
-  // Only allow internal paths (no external URLs)
-  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('//')) {
-    return '/admin'; // Default to safe location
-  }
-
-  // Normalize path
-  const normalized = path.startsWith('/') ? path : `/${path}`;
-
-  // Check if path is in whitelist or is a sub-path of allowed location
-  const isAllowed = ALLOWED_REDIRECTS.some(allowed =>
-    normalized === allowed || normalized.startsWith(`${allowed}/`)
-  );
-
-  return isAllowed ? normalized : '/admin';
-}
+import { validateRedirect } from '$lib/auth/constants';
 
 export const GET: RequestHandler = async ({ url }) => {
   // Get redirect destination and provider (default to Google)
