@@ -77,7 +77,10 @@ export async function GET({ url, platform }) {
         total_additions,
         total_deletions,
         ai_model,
-        created_at
+        created_at,
+        detected_focus,
+        continuation_of,
+        focus_streak
       FROM daily_summaries
     `;
 
@@ -134,6 +137,7 @@ export async function GET({ url, platform }) {
       ...s,
       repos_active: safeJsonParse(s.repos_active, []),
       gutter_content: safeJsonParse(s.gutter_content, []),
+      detected_focus: safeJsonParse(s.detected_focus, null),
       is_rest_day: s.commit_count === 0,
     }));
 

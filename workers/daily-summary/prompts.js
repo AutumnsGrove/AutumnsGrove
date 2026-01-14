@@ -10,26 +10,54 @@
  */
 
 /**
+ * Format continuation note for the AI prompt
+ * @param {object} continuation - Continuation detection result
+ * @returns {string} Formatted continuation instruction
+ */
+function formatContinuationNote(continuation) {
+  if (!continuation) return "";
+
+  return `ONGOING TASK DETECTED:
+This appears to be day ${continuation.dayCount} of "${continuation.task}" (started ${continuation.startDate}).
+
+When appropriate, acknowledge this multi-day effort naturally in the summary—without being cheerleader-y.
+GOOD: "Day 3 of the auth refactor. Session handling is coming together."
+GOOD: "Still working through the migration—today focused on the API layer."
+BAD: "Amazing progress on the streak!" / "Keep it up!"`;
+}
+
+/**
  * Generate the prompt for summarizing daily commits
  * @param {Array} commits - Array of commit objects
  * @param {string} date - Date in YYYY-MM-DD format
  * @param {string} ownerName - Name of the developer (e.g., "Autumn")
+ * @param {object} context - Historical context for long-horizon awareness
+ * @param {string} context.historicalContext - Formatted string of recent days' activity
+ * @param {object|null} context.continuation - Multi-day task continuation info
  * @returns {string} The formatted prompt
  */
-export function buildSummaryPrompt(commits, date, ownerName = 'the developer') {
-  const commitList = commits.map((c, i) =>
-    `${i + 1}. [${c.repo}] ${c.message} (+${c.additions}/-${c.deletions})`
-  ).join('\n');
+export function buildSummaryPrompt(
+  commits,
+  date,
+  ownerName = "the developer",
+  context = {},
+) {
+  const commitList = commits
+    .map(
+      (c, i) =>
+        `${i + 1}. [${c.repo}] ${c.message} (+${c.additions}/-${c.deletions})`,
+    )
+    .join("\n");
 
   // Group commits by repo for context
   const repoGroups = {};
-  commits.forEach(c => {
+  commits.forEach((c) => {
     if (!repoGroups[c.repo]) repoGroups[c.repo] = [];
     repoGroups[c.repo].push(c.message);
   });
   const repoSummary = Object.entries(repoGroups)
     .map(([repo, msgs]) => `${repo}: ${msgs.length} commits`)
-    .join(', ');
+    .join(", ");
 
   // Determine gutter comment count based on activity (1-5)
   const gutterCount = Math.min(5, Math.max(1, Math.ceil(commits.length / 3)));
@@ -53,7 +81,20 @@ STRICT RULES - VIOLATIONS WILL BE REJECTED:
    BAD: "Wow, what a productive day!" / "Autumn tackled a ton of updates!" / "${ownerName} was on a coding roll!"
 
 VOICE: Write like a developer's changelog or a quiet journal entry. Matter-of-fact about the work. Not impressed by yourself—just noting what happened.
-
+${
+  context.historicalContext
+    ? `
+RECENT CONTEXT (for awareness, not recapping):
+${context.historicalContext}
+`
+    : ""
+}${
+    context.continuation
+      ? `
+${formatContinuationNote(context.continuation)}
+`
+      : ""
+  }
 COMMITS TODAY (${commits.length} total across: ${repoSummary}):
 ${commitList}
 
@@ -131,37 +172,41 @@ export function parseAIResponse(response) {
     let jsonStr = response.trim();
 
     // Remove markdown code block if present
-    if (jsonStr.startsWith('```')) {
-      jsonStr = jsonStr.replace(/^```(?:json)?\n?/, '').replace(/\n?```$/, '');
+    if (jsonStr.startsWith("```")) {
+      jsonStr = jsonStr.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
     }
 
     const parsed = JSON.parse(jsonStr);
 
     // Validate gutter items have required fields
-    const validGutter = (parsed.gutter || []).filter(item =>
-      item.anchor && item.content && typeof item.content === 'string'
-    ).map(item => ({
-      anchor: item.anchor,
-      type: item.type || 'comment',
-      content: item.content.trim()
-    }));
+    const validGutter = (parsed.gutter || [])
+      .filter(
+        (item) =>
+          item.anchor && item.content && typeof item.content === "string",
+      )
+      .map((item) => ({
+        anchor: item.anchor,
+        type: item.type || "comment",
+        content: item.content.trim(),
+      }));
 
     return {
       success: true,
-      brief: parsed.brief || 'Worked on a few things today.',
-      detailed: parsed.detailed || '## Projects\n\nSome progress was made.',
-      gutter: validGutter
+      brief: parsed.brief || "Worked on a few things today.",
+      detailed: parsed.detailed || "## Projects\n\nSome progress was made.",
+      gutter: validGutter,
     };
   } catch (error) {
-    console.error('Failed to parse AI response:', error);
-    console.error('Raw response:', response);
+    console.error("Failed to parse AI response:", error);
+    console.error("Raw response:", response);
 
     // Fallback - keep it simple and authentic
     return {
       success: false,
-      brief: 'Some work happened today. The summary got a bit tangled, but the commits tell the story.',
-      detailed: '## Projects\n\nWork continued across various projects.',
-      gutter: []
+      brief:
+        "Some work happened today. The summary got a bit tangled, but the commits tell the story.",
+      detailed: "## Projects\n\nWork continued across various projects.",
+      gutter: [],
     };
   }
 }

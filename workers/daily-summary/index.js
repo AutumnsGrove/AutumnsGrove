@@ -32,9 +32,11 @@ import { getJob, getRecentJobs, cleanupOldJobs } from "./jobs.js";
 import {
   generateContextBrief,
   detectTask,
+  detectTaskFromText,
   getHistoricalContext,
   detectContinuation,
   buildDetectedFocus,
+  formatHistoricalContextForPrompt,
 } from "./context.js";
 
 // GraphQL query to fetch commits for a specific date range
@@ -206,6 +208,12 @@ async function trackAIUsage(
 
 /**
  * Generate summary using configured AI provider
+ * @param {object} env - Environment bindings
+ * @param {Array} commits - Commits for the day
+ * @param {string} date - Date in YYYY-MM-DD format
+ * @param {string} ownerName - Name of the developer
+ * @param {string|null} providerModel - Optional provider:model override
+ * @param {object} context - Historical context for long-horizon awareness
  */
 async function generateSummary(
   env,
@@ -213,11 +221,12 @@ async function generateSummary(
   date,
   ownerName,
   providerModel = null,
+  context = {},
 ) {
   const { provider, model } = parseModelString(
     providerModel || env.AI_MODEL || `${DEFAULT_PROVIDER}:${DEFAULT_MODEL}`,
   );
-  const prompt = buildSummaryPrompt(commits, date, ownerName);
+  const prompt = buildSummaryPrompt(commits, date, ownerName, context);
 
   console.log(`Generating AI summary using ${provider}:${model}...`);
 
@@ -409,6 +418,35 @@ async function generateDailySummary(
     };
   }
 
+  // Get historical context BEFORE generating summary (for AI awareness)
+  const reposActive = [...new Set(commits.map((c) => c.repo))];
+  let historicalContext = [];
+  let preDetectedTask = null;
+  let continuation = null;
+  let focusStreak = 0;
+
+  try {
+    historicalContext = await getHistoricalContext(env.DB, summaryDate);
+
+    // Pre-detect task type from commits for continuation detection
+    // We'll refine this after the summary is generated
+    const commitText = commits.map((c) => c.message).join(" ");
+    preDetectedTask = detectTaskFromText(commitText);
+
+    continuation = detectContinuation(historicalContext, preDetectedTask);
+    console.log(
+      `Pre-summary context: task=${preDetectedTask}, continuation=${continuation?.startDate || "none"}`,
+    );
+  } catch (error) {
+    console.error("Failed to get historical context (non-fatal):", error);
+  }
+
+  // Build context object for the AI prompt
+  const promptContext = {
+    historicalContext: formatHistoricalContextForPrompt(historicalContext),
+    continuation: continuation,
+  };
+
   const providerModel = modelOverride || env.AI_MODEL;
   const summary = await generateSummary(
     env,
@@ -416,30 +454,29 @@ async function generateDailySummary(
     summaryDate,
     ownerName,
     providerModel,
+    promptContext,
   );
 
-  // Generate context data for long-horizon tracking
-  // Phase 1: Just store context_brief, don't use historical context yet
-  const reposActive = [...new Set(commits.map((c) => c.repo))];
+  // Generate context data for storage (with full summary now available)
   const contextBrief = generateContextBrief(summary, commits);
   contextBrief.date = summaryDate;
 
+  // Refine task detection with full summary content
   const detectedTaskType = detectTask(summary, commits);
-  const detectedFocus = buildDetectedFocus(detectedTaskType, summaryDate, reposActive);
+  const detectedFocus = buildDetectedFocus(
+    detectedTaskType,
+    summaryDate,
+    reposActive,
+  );
 
-  // Get historical context and detect continuation (for streak calculation)
-  // Note: Not yet using historical context in prompts - just collecting data
-  let continuation = null;
-  let focusStreak = 0;
-
-  try {
-    const historicalContext = await getHistoricalContext(env.DB, summaryDate);
+  // Update streak calculation with refined task type
+  if (detectedTaskType && detectedTaskType !== preDetectedTask) {
     continuation = detectContinuation(historicalContext, detectedTaskType);
-    focusStreak = continuation ? continuation.dayCount : (detectedTaskType ? 1 : 0);
-    console.log(`Context: detected=${detectedTaskType}, streak=${focusStreak}, continuation=${continuation?.startDate || 'none'}`);
-  } catch (error) {
-    console.error('Failed to get historical context (non-fatal):', error);
   }
+  focusStreak = continuation ? continuation.dayCount : detectedTaskType ? 1 : 0;
+  console.log(
+    `Final context: detected=${detectedTaskType}, streak=${focusStreak}, continuation=${continuation?.startDate || "none"}`,
+  );
 
   const contextData = {
     contextBrief,

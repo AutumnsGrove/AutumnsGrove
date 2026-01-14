@@ -16,18 +16,27 @@
  * Each pattern maps keywords to a human-readable task type
  */
 const TASK_PATTERNS = [
-  { pattern: /security|audit|vulnerab|xss|csrf|auth.*fix/i, task: 'security work' },
-  { pattern: /migration?|migrate|upgrade/i, task: 'migration' },
-  { pattern: /refactor|cleanup|reorganize|restructur/i, task: 'refactoring' },
-  { pattern: /test|coverage|spec|jest|vitest/i, task: 'testing improvements' },
-  { pattern: /docs?|documentation|readme|comment/i, task: 'documentation' },
-  { pattern: /ui|design|style|css|tailwind|layout/i, task: 'UI/UX work' },
-  { pattern: /api|endpoint|route|graphql|rest/i, task: 'API development' },
-  { pattern: /auth|login|session|oauth|jwt/i, task: 'authentication' },
-  { pattern: /perf|performance|optimiz|speed|cache/i, task: 'performance optimization' },
-  { pattern: /deploy|ci|cd|pipeline|docker|build/i, task: 'deployment/CI work' },
-  { pattern: /database|schema|sql|d1|migration/i, task: 'database work' },
-  { pattern: /bug|fix|patch|issue|error/i, task: 'bug fixes' },
+  {
+    pattern: /security|audit|vulnerab|xss|csrf|auth.*fix/i,
+    task: "security work",
+  },
+  { pattern: /migration?|migrate|upgrade/i, task: "migration" },
+  { pattern: /refactor|cleanup|reorganize|restructur/i, task: "refactoring" },
+  { pattern: /test|coverage|spec|jest|vitest/i, task: "testing improvements" },
+  { pattern: /docs?|documentation|readme|comment/i, task: "documentation" },
+  { pattern: /ui|design|style|css|tailwind|layout/i, task: "UI/UX work" },
+  { pattern: /api|endpoint|route|graphql|rest/i, task: "API development" },
+  { pattern: /auth|login|session|oauth|jwt/i, task: "authentication" },
+  {
+    pattern: /perf|performance|optimiz|speed|cache/i,
+    task: "performance optimization",
+  },
+  {
+    pattern: /deploy|ci|cd|pipeline|docker|build/i,
+    task: "deployment/CI work",
+  },
+  { pattern: /database|schema|sql|d1|migration/i, task: "database work" },
+  { pattern: /bug|fix|patch|issue|error/i, task: "bug fixes" },
 ];
 
 /**
@@ -39,9 +48,10 @@ const TASK_PATTERNS = [
  * @returns {object} Context brief for storage
  */
 export function generateContextBrief(summary, commits) {
-  const repos = [...new Set(commits.map(c => c.repo))];
-  const linesChanged = commits.reduce((sum, c) =>
-    sum + (c.additions || 0) + (c.deletions || 0), 0
+  const repos = [...new Set(commits.map((c) => c.repo))];
+  const linesChanged = commits.reduce(
+    (sum, c) => sum + (c.additions || 0) + (c.deletions || 0),
+    0,
   );
 
   // Extract main focus from summary content
@@ -56,7 +66,7 @@ export function generateContextBrief(summary, commits) {
     repos: repos.slice(0, 3), // Top 3 repos
     linesChanged,
     commitCount: commits.length,
-    detectedTask
+    detectedTask,
   };
 }
 
@@ -81,21 +91,43 @@ function extractMainFocus(summary) {
 
   // Fallback: try to extract from detailed content
   if (summary.detailed) {
-    const lines = summary.detailed.split('\n').filter(l => l.trim());
+    const lines = summary.detailed.split("\n").filter((l) => l.trim());
 
     for (const line of lines) {
       // Skip headers
-      if (line.startsWith('#')) continue;
+      if (line.startsWith("#")) continue;
       // Skip list markers alone
       if (line.match(/^[-*+]\s*$/)) continue;
       // Find first substantial line
       if (line.length > 20 && line.length < 200) {
-        return line.replace(/^[-*+]\s*/, '').replace(/\*\*/g, '').trim();
+        return line
+          .replace(/^[-*+]\s*/, "")
+          .replace(/\*\*/g, "")
+          .trim();
       }
     }
   }
 
-  return 'Various development tasks';
+  return "Various development tasks";
+}
+
+/**
+ * Quick task detection from text only (for pre-summary detection)
+ *
+ * @param {string} text - Text to analyze (e.g., commit messages)
+ * @returns {string|null} Detected task type or null
+ */
+export function detectTaskFromText(text) {
+  if (!text) return null;
+
+  const scores = TASK_PATTERNS.map(({ pattern, task }) => {
+    const matches = text.match(new RegExp(pattern, "gi")) || [];
+    return { task, score: matches.length };
+  }).filter((s) => s.score > 0);
+
+  if (scores.length === 0) return null;
+  scores.sort((a, b) => b.score - a.score);
+  return scores[0].task;
 }
 
 /**
@@ -107,18 +139,15 @@ function extractMainFocus(summary) {
  */
 export function detectTask(summary, commits) {
   // Combine all text for pattern matching
-  const allMessages = commits.map(c => c.message).join(' ');
-  const summaryText = [
-    summary.brief || '',
-    summary.detailed || ''
-  ].join(' ');
-  const combinedText = allMessages + ' ' + summaryText;
+  const allMessages = commits.map((c) => c.message).join(" ");
+  const summaryText = [summary.brief || "", summary.detailed || ""].join(" ");
+  const combinedText = allMessages + " " + summaryText;
 
   // Score each pattern
   const scores = TASK_PATTERNS.map(({ pattern, task }) => {
-    const matches = combinedText.match(new RegExp(pattern, 'gi')) || [];
+    const matches = combinedText.match(new RegExp(pattern, "gi")) || [];
     return { task, score: matches.length };
-  }).filter(s => s.score > 0);
+  }).filter((s) => s.score > 0);
 
   // Return highest scoring task, or null if no matches
   if (scores.length === 0) return null;
@@ -144,10 +173,10 @@ export async function getHistoricalContext(db, targetDate) {
   for (let i = 1; i <= 7; i++) {
     const d = new Date(dateObj);
     d.setDate(d.getDate() - i);
-    dates.push(d.toISOString().split('T')[0]);
+    dates.push(d.toISOString().split("T")[0]);
   }
 
-  const placeholders = dates.map(() => '?').join(',');
+  const placeholders = dates.map(() => "?").join(",");
   const query = `
     SELECT summary_date, context_brief, detected_focus, brief_summary, commit_count
     FROM daily_summaries
@@ -158,19 +187,22 @@ export async function getHistoricalContext(db, targetDate) {
   `;
 
   try {
-    const { results } = await db.prepare(query)
+    const { results } = await db
+      .prepare(query)
       .bind(...dates)
       .all();
 
-    return results.map(row => ({
-      date: row.summary_date,
-      brief: row.context_brief ? JSON.parse(row.context_brief) : null,
-      focus: row.detected_focus ? JSON.parse(row.detected_focus) : null,
-      // Fallback to brief_summary if no context_brief yet (for transition period)
-      briefSummary: row.brief_summary
-    })).filter(r => r.brief || r.briefSummary);
+    return results
+      .map((row) => ({
+        date: row.summary_date,
+        brief: row.context_brief ? JSON.parse(row.context_brief) : null,
+        focus: row.detected_focus ? JSON.parse(row.detected_focus) : null,
+        // Fallback to brief_summary if no context_brief yet (for transition period)
+        briefSummary: row.brief_summary,
+      }))
+      .filter((r) => r.brief || r.briefSummary);
   } catch (error) {
-    console.error('Failed to get historical context:', error);
+    console.error("Failed to get historical context:", error);
     return [];
   }
 }
@@ -205,7 +237,7 @@ export function detectContinuation(historicalContext, currentFocus) {
     return {
       task: currentFocus,
       startDate,
-      dayCount: streak + 1 // +1 for current day
+      dayCount: streak + 1, // +1 for current day
     };
   }
 
@@ -226,7 +258,7 @@ export function buildDetectedFocus(task, date, repos) {
   return {
     task,
     startDate: date,
-    repos: repos.slice(0, 3)
+    repos: repos.slice(0, 3),
   };
 }
 
@@ -239,23 +271,23 @@ export function buildDetectedFocus(task, date, repos) {
  */
 export function formatHistoricalContextForPrompt(historicalContext) {
   if (!historicalContext || historicalContext.length === 0) {
-    return '';
+    return "";
   }
 
-  const lines = historicalContext.map(ctx => {
+  const lines = historicalContext.map((ctx) => {
     const brief = ctx.brief;
-    const focus = brief?.mainFocus || ctx.briefSummary || 'Various work';
-    const repos = brief?.repos?.join(', ') || 'multiple repos';
+    const focus = brief?.mainFocus || ctx.briefSummary || "Various work";
+    const repos = brief?.repos?.join(", ") || "multiple repos";
     const loc = brief?.linesChanged || 0;
     const task = ctx.focus?.task || brief?.detectedTask;
 
     return `**${ctx.date}:**
 - Focus: ${focus}
 - Repos: ${repos}
-- Lines changed: ~${loc}${task ? `\n- Detected task: ${task}` : ''}`;
+- Lines changed: ~${loc}${task ? `\n- Detected task: ${task}` : ""}`;
   });
 
-  return lines.join('\n\n');
+  return lines.join("\n\n");
 }
 
 /**
@@ -265,7 +297,7 @@ export function formatHistoricalContextForPrompt(historicalContext) {
  * @returns {string} Formatted continuation note for prompt
  */
 export function formatContinuationForPrompt(continuation) {
-  if (!continuation) return '';
+  if (!continuation) return "";
 
   return `## Ongoing Task Detected
 

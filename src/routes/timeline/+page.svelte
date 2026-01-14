@@ -1,7 +1,7 @@
 <script>
 	import { marked } from 'marked';
 	import { sanitizeMarkdown } from '@autumnsgrove/groveengine/utils';
-	import { Calendar, GitCommit, Plus, Minus, FolderGit2, ChevronDown, ChevronUp, Cloud, Loader2 } from 'lucide-svelte';
+	import { Calendar, GitCommit, Plus, Minus, FolderGit2, ChevronDown, ChevronUp, Cloud, Loader2, Flame } from 'lucide-svelte';
 	import { ActivityOverview, LOCBar, GlassCard, GlassButton, Badge } from '$lib/components';
 	import { toast } from '@autumnsgrove/groveengine/ui';
 
@@ -108,6 +108,13 @@
 	function isToday(dateStr) {
 		const today = new Date().toISOString().split('T')[0];
 		return dateStr === today;
+	}
+
+	// Format focus streak for display
+	function formatFocusStreak(summary) {
+		if (!summary.focus_streak || summary.focus_streak < 2) return null;
+		const task = summary.detected_focus?.task || 'focused work';
+		return `Day ${summary.focus_streak} of ${task}`;
 	}
 
 	// GitHub username for repo links
@@ -272,6 +279,7 @@
 				{@const isRestDay = summary.commit_count === 0}
 				{@const isExpanded = expandedCards.has(summary.id)}
 				{@const gutterItems = summary.gutter_content || []}
+				{@const focusStreak = formatFocusStreak(summary)}
 
 				<GlassCard
 					variant={isRestDay ? "muted" : "default"}
@@ -294,6 +302,12 @@
 										<span>Rest Day</span>
 									</Badge>
 								{:else}
+									{#if focusStreak}
+										<Badge class="focus-badge">
+											<Flame size={14} />
+											<span>{focusStreak}</span>
+										</Badge>
+									{/if}
 									<Badge class="commit-badge">
 										<GitCommit size={14} />
 										<span>{summary.commit_count} commit{summary.commit_count !== 1 ? 's' : ''}</span>
@@ -515,6 +529,12 @@
 		font-weight: 600;
 		text-transform: uppercase;
 	}
+	.commit-badge-wrapper {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+	}
 	.commit-badge {
 		display: flex;
 		align-items: center;
@@ -537,6 +557,30 @@
 	:global(.dark) .commit-badge.rest-badge {
 		background: var(--color-border-strong);
 		color: var(--bark-500);
+	}
+	/* Focus streak badge */
+	:global(.focus-badge) {
+		display: flex;
+		align-items: center;
+		gap: 0.35rem;
+		background: linear-gradient(135deg, #fff5e6 0%, #ffe4c4 100%);
+		color: #b35900;
+		padding: 0.35rem 0.65rem;
+		border-radius: 16px;
+		font-size: 0.8rem;
+		font-weight: 500;
+		border: 1px solid #ffcc80;
+	}
+	:global(.dark) :global(.focus-badge) {
+		background: linear-gradient(135deg, #3d2800 0%, #4d3200 100%);
+		color: #ffb74d;
+		border-color: #5c4000;
+	}
+	:global(.focus-badge svg) {
+		color: #ff9800;
+	}
+	:global(.dark) :global(.focus-badge svg) {
+		color: #ffb74d;
 	}
 	/* Card Content */
 	.card-content {
