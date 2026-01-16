@@ -19,6 +19,15 @@ Building things, learning in public, and exploring ideas.
 
 > *A forest of voices. Every user is a tree in the grove.*
 
+Grove eschews transactional terminology in favor of language reflecting how people genuinely move through the platform:
+
+- **Wanderers** explore and discover—no account required, no commitment expected. The paths wind on.
+- **Rooted** users have planted a tree in the grove, tending their own corner while never abandoning discovery.
+- **Pathfinders** help orient newcomers, appointed by trust and contribution, not tenure.
+- **The Wayfinder** (that's me) tends the grove and illuminates direction. Where wanderers seek paths, the Wayfinder creates them.
+
+*Welcome, Wanderer. Stay as long as you like.*
+
 ### Core Infrastructure
 | Project | Description | Links |
 |---------|-------------|-------|
