@@ -23,19 +23,11 @@ Building things, learning in public, and exploring ideas.
 | Project | Description | Links |
 |---------|-------------|-------|
 | **[AutumnsGrove](https://github.com/AutumnsGrove/AutumnsGrove)** | Personal blog and digital home | [autumnsgrove.com](https://autumnsgrove.com) |
-| **[Lattice](https://github.com/AutumnsGrove/GroveEngine)** | Core platform powering every Grove site. Includes Curios, Terrarium, Weave, and more | npm package |
+| **[Lattice](https://github.com/AutumnsGrove/GroveEngine)** | Core platform powering every Grove site. Includes Clearing, Rings, Wisp, Trails, Meadow, Curios, Terrarium, Weave | npm package |
 | **[Heartwood](https://github.com/AutumnsGrove/GroveAuth)** | Centralized authentication for the Grove ecosystem | heartwood.grove.place |
 | **[Amber](https://github.com/AutumnsGrove/Amber)** | Unified storage management system | amber.grove.place |
 | **[Foliage](https://github.com/AutumnsGrove/Foliage)** | Visual customization and theming system | foliage.grove.place |
-| **[Rings](https://github.com/AutumnsGrove/GroveEngine/blob/main/docs/specs/analytics-spec.md)** | Analytics for writers, not marketers | *integrated* |
-| **[Clearing](https://github.com/AutumnsGrove/GroveEngine/tree/main/clearing)** | Public status page for Grove services | clearing.grove.place |
-
-### Content & Community
-| Project | Description | Links |
-|---------|-------------|-------|
-| **[Wisp](https://github.com/AutumnsGrove/GroveWisp)** | Writing assistant | *integrated* |
-| **[Meadow](https://github.com/AutumnsGrove/GroveEngine/blob/main/docs/specs/social-spec.md)** | Social networking without metrics | meadow.grove.place |
-| **[Trails](https://github.com/AutumnsGrove/GroveTrails)** | Personal project roadmaps | username.grove.place/trail |
+| **[Patina](https://github.com/AutumnsGrove/Patina)** | Automated backup system | *internal* |
 
 ### Standalone Tools
 | Project | Description | Links |
@@ -55,7 +47,6 @@ Building things, learning in public, and exploring ideas.
 | **[Shade](https://github.com/AutumnsGrove/GroveShade)** | AI crawler protection layer | grove.place/shade |
 | **[Shutter](https://github.com/AutumnsGrove/Shutter)** | Web content distillation with prompt injection defense | PyPI / npm |
 | **[Mycelium](https://github.com/AutumnsGrove/Mycelium)** | Model Context Protocol server | mycelium.grove.place |
-| **[Cache](https://github.com/AutumnsGrove/GroveBackups)** | Automated backup system | *internal* |
 
 ### Patterns & Docs
 | Project | Description | Links |
