@@ -19,29 +19,47 @@ Building things, learning in public, and exploring ideas.
 
 > *A forest of voices. Every user is a tree in the grove.*
 
+### Core Infrastructure
 | Project | Description | Links |
 |---------|-------------|-------|
 | **[AutumnsGrove](https://github.com/AutumnsGrove/AutumnsGrove)** | Personal blog and digital home | [autumnsgrove.com](https://autumnsgrove.com) |
 | **[Lattice](https://github.com/AutumnsGrove/GroveEngine)** | Core platform powering every Grove site | npm package |
-| **[Foliage](https://github.com/AutumnsGrove/Foliage)** | Visual customization and theming system | foliage.grove.place |
 | **[Heartwood](https://github.com/AutumnsGrove/GroveAuth)** | Centralized authentication for the Grove ecosystem | heartwood.grove.place |
 | **[Amber](https://github.com/AutumnsGrove/Amber)** | Unified storage management system | amber.grove.place |
-| **[Ivy](https://github.com/AutumnsGrove/Ivy)** | Zero-knowledge mail client for @grove.place | ivy.grove.place |
+| **[Foliage](https://github.com/AutumnsGrove/Foliage)** | Visual customization and theming system | foliage.grove.place |
 | **[Rings](https://github.com/AutumnsGrove/GroveEngine/blob/main/docs/specs/analytics-spec.md)** | Analytics for writers, not marketers | *integrated* |
-| **[Meadow](https://github.com/AutumnsGrove/GroveEngine/blob/main/docs/specs/social-spec.md)** | Social networking without metrics | meadow.grove.place |
-| **[Forage](https://github.com/AutumnsGrove/Forage)** | AI-powered domain discovery | forage.grove.place |
-| **[Trove](https://github.com/AutumnsGrove/TreasureTrove)** | Library book discovery via camera | trove.grove.place |
-| **[Aria](https://github.com/AutumnsGrove/GroveMusic)** | Music curation through sonic DNA matching | *on hold* |
 | **[Clearing](https://github.com/AutumnsGrove/GroveEngine/tree/main/clearing)** | Public status page for Grove services | clearing.grove.place |
-| **[Scout](https://github.com/AutumnsGrove/GroveScout)** | Searching for deals. But fast. | scout.grove.place |
-| **[Outpost](https://github.com/AutumnsGrove/GroveMC)** | On-demand Minecraft server for friends | mc.grove.place |
-| **[Shade](https://github.com/AutumnsGrove/GroveShade)** | AI crawler protection layer | grove.place/shade |
-| **[Trails](https://github.com/AutumnsGrove/GroveTrails)** | Personal project roadmaps | username.grove.place/trail |
-| **[Vineyard](https://github.com/AutumnsGrove/Vineyard)** | Tool documentation and demos | *.grove.place/vineyard |
-| **[Bloom](https://github.com/AutumnsGrove/GroveBloom)** | Serverless coding infrastructure | bloom.grove.place |
-| **[Mycelium](https://github.com/AutumnsGrove/Mycelium)** | Model Context Protocol server | mycelium.grove.place |
+
+### Content & Community
+| Project | Description | Links |
+|---------|-------------|-------|
 | **[Wisp](https://github.com/AutumnsGrove/GroveWisp)** | Writing assistant | *integrated* |
+| **[Meadow](https://github.com/AutumnsGrove/GroveEngine/blob/main/docs/specs/social-spec.md)** | Social networking without metrics | meadow.grove.place |
+| **[Trails](https://github.com/AutumnsGrove/GroveTrails)** | Personal project roadmaps | username.grove.place/trail |
+
+### Standalone Tools
+| Project | Description | Links |
+|---------|-------------|-------|
+| **[Ivy](https://github.com/AutumnsGrove/Ivy)** | Zero-knowledge mail client for @grove.place | ivy.grove.place |
+| **[Bloom](https://github.com/AutumnsGrove/GroveBloom)** | Serverless coding infrastructure | bloom.grove.place |
+| **[Forage](https://github.com/AutumnsGrove/Forage)** | AI-powered domain discovery | forage.grove.place |
+| **[Outpost](https://github.com/AutumnsGrove/GroveMC)** | On-demand Minecraft server for friends | mc.grove.place |
+| **[Gossamer](https://github.com/AutumnsGrove/Gossamer)** | ASCII visual effects for the web | npm package |
+| **[Trove](https://github.com/AutumnsGrove/TreasureTrove)** | Library book discovery via camera | trove.grove.place |
+| **[Scout](https://github.com/AutumnsGrove/GroveScout)** | Searching for deals. But fast. | scout.grove.place |
+| **[Aria](https://github.com/AutumnsGrove/GroveMusic)** | Music curation through sonic DNA matching | *on hold* |
+
+### Operations
+| Project | Description | Links |
+|---------|-------------|-------|
+| **[Shade](https://github.com/AutumnsGrove/GroveShade)** | AI crawler protection layer | grove.place/shade |
+| **[Mycelium](https://github.com/AutumnsGrove/Mycelium)** | Model Context Protocol server | mycelium.grove.place |
 | **[Cache](https://github.com/AutumnsGrove/GroveBackups)** | Automated backup system | *internal* |
+
+### Patterns & Docs
+| Project | Description | Links |
+|---------|-------------|-------|
+| **[Vineyard](https://github.com/AutumnsGrove/Vineyard)** | Tool documentation and demos | *.grove.place/vineyard |
 | **[EmojiGrove](https://github.com/AutumnsGrove/RecipeGrove)** | Smart Recipe documents with EmojiKitchen | *pending rebrand* |
 
 ## Libraries & Packages
