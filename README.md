@@ -31,7 +31,8 @@ Building things, learning in public, and exploring ideas.
 | **[Meadow](https://github.com/AutumnsGrove/GroveEngine/blob/main/docs/specs/social-spec.md)** | Social networking without metrics | meadow.grove.place |
 | **[Forage](https://github.com/AutumnsGrove/Forage)** | AI-powered domain discovery | forage.grove.place |
 | **[Trove](https://github.com/AutumnsGrove/TreasureTrove)** | Library book discovery via camera | trove.grove.place |
-| **[Aria](https://github.com/AutumnsGrove/GroveMusic)** | Music curation through sonic DNA matching | aria.grove.place |
+| **[Aria](https://github.com/AutumnsGrove/GroveMusic)** | Music curation through sonic DNA matching | *on hold* |
+| **[Clearing](https://github.com/AutumnsGrove/GroveEngine/tree/main/clearing)** | Public status page for Grove services | clearing.grove.place |
 | **[Scout](https://github.com/AutumnsGrove/GroveScout)** | Searching for deals. But fast. | scout.grove.place |
 | **[Outpost](https://github.com/AutumnsGrove/GroveMC)** | On-demand Minecraft server for friends | mc.grove.place |
 | **[Shade](https://github.com/AutumnsGrove/GroveShade)** | AI crawler protection layer | grove.place/shade |
@@ -42,6 +43,14 @@ Building things, learning in public, and exploring ideas.
 | **[Wisp](https://github.com/AutumnsGrove/GroveWisp)** | Writing assistant | *integrated* |
 | **[Cache](https://github.com/AutumnsGrove/GroveBackups)** | Automated backup system | *internal* |
 | **[EmojiGrove](https://github.com/AutumnsGrove/RecipeGrove)** | Smart Recipe documents with EmojiKitchen | *pending rebrand* |
+
+## Libraries & Packages
+- [Gossamer](https://github.com/AutumnsGrove/Gossamer) - ASCII visual effects for the web. Character-based animations, ambient backgrounds, and image-to-ASCII transformations. Framework-agnostic core with Svelte, React, and Vue adapters. [![npm](https://img.shields.io/npm/v/gossamer)](https://www.npmjs.com/package/gossamer)
+- [Shutter](https://github.com/AutumnsGrove/Shutter) - Web content distillation for LLM agents. Extracts relevant content from URLs, returning 200 tokens instead of 20k. Includes prompt injection defense. [![PyPI](https://badge.fury.io/py/grove-shutter.svg)](https://badge.fury.io/py/grove-shutter)
+
+## Personal Tools
+- [YearlyReview](https://github.com/AutumnsGrove/YearlyReview) - "Reflections" - Privacy-centric pipeline for extracting insights from personal journal entries using Cloudflare Workers and DeepSeek
+- **re:verie** *(private)* - Local-first personal knowledge base from video recordings. Query past thoughts with natural language using transcription, embeddings, and RAG on Apple Silicon
 
 ## Web Applications & Projects
 - [ClaudeLocal](https://github.com/AutumnsGrove/ClaudeLocal) - Local version of Claude Desktop app with API keys and Prisma DB
@@ -58,6 +67,7 @@ Building things, learning in public, and exploring ideas.
 - [BaseProject](https://github.com/AutumnsGrove/BaseProject) - Comprehensive Claude Code project template with best practices and 18 development guides
 - [ClaudeCodeSounds](https://github.com/AutumnsGrove/ClaudeCodeSounds) - Sounds for Claude Code with easy installer
 - [Hooks](https://github.com/AutumnsGrove/Hooks) - Hooks for use in Claude Code
+- [house-agents](https://github.com/AutumnsGrove/house-agents) - Specialized Claude Code sub-agents (research, git, bash, coder, planner) that run heavy operations in separate context windows
 - [ClaudeSkills](https://github.com/AutumnsGrove/ClaudeSkills) - Collection of skills for Claude.ai, Claude Code, and Claude Desktop App
 - [ClaudeGistLoader](https://github.com/AutumnsGrove/ClaudeGistLoader) - UV-based CLI tool that fetches GitHub gists for use in Claude Code sessions
 - [ClaudeCodeContainer](https://github.com/AutumnsGrove/ClaudeCodeContainer) - Run Claude Code in a secure Docker container
