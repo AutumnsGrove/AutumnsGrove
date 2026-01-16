@@ -19,29 +19,57 @@ Building things, learning in public, and exploring ideas.
 
 > *A forest of voices. Every user is a tree in the grove.*
 
+Grove eschews transactional terminology in favor of language reflecting how people genuinely move through the platform:
+
+- **Wanderers** explore and discover—no account required, no commitment expected. The paths wind on.
+- **Rooted** users have planted a tree in the grove, tending their own corner while never abandoning discovery.
+- **Pathfinders** help orient newcomers, appointed by trust and contribution, not tenure.
+- **The Wayfinder** (that's me) tends the grove and illuminates direction. Where wanderers seek paths, the Wayfinder creates them.
+
+*Welcome, Wanderer. Stay as long as you like.*
+
+### Core Infrastructure
 | Project | Description | Links |
 |---------|-------------|-------|
 | **[AutumnsGrove](https://github.com/AutumnsGrove/AutumnsGrove)** | Personal blog and digital home | [autumnsgrove.com](https://autumnsgrove.com) |
-| **[Lattice](https://github.com/AutumnsGrove/GroveEngine)** | Core platform powering every Grove site | npm package |
-| **[Foliage](https://github.com/AutumnsGrove/Foliage)** | Visual customization and theming system | foliage.grove.place |
+| **[Lattice](https://github.com/AutumnsGrove/GroveEngine)** | Core platform powering every Grove site. Includes Clearing, Rings, Wisp, Trails, Meadow, Curios, Terrarium, Weave | npm package |
 | **[Heartwood](https://github.com/AutumnsGrove/GroveAuth)** | Centralized authentication for the Grove ecosystem | heartwood.grove.place |
 | **[Amber](https://github.com/AutumnsGrove/Amber)** | Unified storage management system | amber.grove.place |
+| **[Foliage](https://github.com/AutumnsGrove/Foliage)** | Visual customization and theming system | foliage.grove.place |
+| **[Patina](https://github.com/AutumnsGrove/Patina)** | Automated backup system | *internal* |
+
+### Standalone Tools
+| Project | Description | Links |
+|---------|-------------|-------|
 | **[Ivy](https://github.com/AutumnsGrove/Ivy)** | Zero-knowledge mail client for @grove.place | ivy.grove.place |
-| **[Rings](https://github.com/AutumnsGrove/GroveEngine/blob/main/docs/specs/analytics-spec.md)** | Analytics for writers, not marketers | *integrated* |
-| **[Meadow](https://github.com/AutumnsGrove/GroveEngine/blob/main/docs/specs/social-spec.md)** | Social networking without metrics | meadow.grove.place |
-| **[Forage](https://github.com/AutumnsGrove/Forage)** | AI-powered domain discovery | forage.grove.place |
-| **[Trove](https://github.com/AutumnsGrove/TreasureTrove)** | Library book discovery via camera | trove.grove.place |
-| **[Aria](https://github.com/AutumnsGrove/GroveMusic)** | Music curation through sonic DNA matching | aria.grove.place |
-| **[Scout](https://github.com/AutumnsGrove/GroveScout)** | Searching for deals. But fast. | scout.grove.place |
-| **[Outpost](https://github.com/AutumnsGrove/GroveMC)** | On-demand Minecraft server for friends | mc.grove.place |
-| **[Shade](https://github.com/AutumnsGrove/GroveShade)** | AI crawler protection layer | grove.place/shade |
-| **[Trails](https://github.com/AutumnsGrove/GroveTrails)** | Personal project roadmaps | username.grove.place/trail |
-| **[Vineyard](https://github.com/AutumnsGrove/Vineyard)** | Tool documentation and demos | *.grove.place/vineyard |
 | **[Bloom](https://github.com/AutumnsGrove/GroveBloom)** | Serverless coding infrastructure | bloom.grove.place |
+| **[Forage](https://github.com/AutumnsGrove/Forage)** | AI-powered domain discovery | forage.grove.place |
+| **[Outpost](https://github.com/AutumnsGrove/GroveMC)** | On-demand Minecraft server for friends | mc.grove.place |
+| **[Gossamer](https://github.com/AutumnsGrove/Gossamer)** | ASCII visual effects for the web. Clouds, image transforms, borders | npm package |
+| **[Trove](https://github.com/AutumnsGrove/TreasureTrove)** | Library book discovery via camera | trove.grove.place |
+| **[Scout](https://github.com/AutumnsGrove/GroveScout)** | Searching for deals. But fast. | scout.grove.place |
+| **[Aria](https://github.com/AutumnsGrove/GroveMusic)** | Music curation through sonic DNA matching | *on hold* |
+
+### Operations
+| Project | Description | Links |
+|---------|-------------|-------|
+| **[Shade](https://github.com/AutumnsGrove/GroveShade)** | AI crawler protection layer | grove.place/shade |
+| **[Shutter](https://github.com/AutumnsGrove/Shutter)** | Web content distillation with prompt injection defense | PyPI / npm |
 | **[Mycelium](https://github.com/AutumnsGrove/Mycelium)** | Model Context Protocol server | mycelium.grove.place |
-| **[Wisp](https://github.com/AutumnsGrove/GroveWisp)** | Writing assistant | *integrated* |
-| **[Cache](https://github.com/AutumnsGrove/GroveBackups)** | Automated backup system | *internal* |
+
+### Patterns & Docs
+| Project | Description | Links |
+|---------|-------------|-------|
+| **[Vineyard](https://github.com/AutumnsGrove/Vineyard)** | Tool documentation and demos | *.grove.place/vineyard |
 | **[EmojiGrove](https://github.com/AutumnsGrove/RecipeGrove)** | Smart Recipe documents with EmojiKitchen | *pending rebrand* |
+
+## Libraries & Packages
+- [Gossamer](https://github.com/AutumnsGrove/Gossamer) - ASCII visual effects for the web. Character-based animations, ambient backgrounds, and image-to-ASCII transformations. Framework-agnostic core with Svelte, React, and Vue adapters. [![npm](https://img.shields.io/npm/v/gossamer)](https://www.npmjs.com/package/gossamer)
+- [Shutter](https://github.com/AutumnsGrove/Shutter) - Web content distillation for LLM agents. Extracts relevant content from URLs, returning 200 tokens instead of 20k. Includes prompt injection defense. [![PyPI](https://badge.fury.io/py/grove-shutter.svg)](https://badge.fury.io/py/grove-shutter)
+
+## Personal Tools
+- [YearlyReview](https://github.com/AutumnsGrove/YearlyReview) - "Reflections" - Privacy-centric pipeline for extracting insights from personal journal entries using Cloudflare Workers and DeepSeek
+- **re:verie** *(private)* - Local-first personal knowledge base from video recordings. Query past thoughts with natural language using transcription, embeddings, and RAG on Apple Silicon
 
 ## Web Applications & Projects
 - [ClaudeLocal](https://github.com/AutumnsGrove/ClaudeLocal) - Local version of Claude Desktop app with API keys and Prisma DB
@@ -58,6 +86,7 @@ Building things, learning in public, and exploring ideas.
 - [BaseProject](https://github.com/AutumnsGrove/BaseProject) - Comprehensive Claude Code project template with best practices and 18 development guides
 - [ClaudeCodeSounds](https://github.com/AutumnsGrove/ClaudeCodeSounds) - Sounds for Claude Code with easy installer
 - [Hooks](https://github.com/AutumnsGrove/Hooks) - Hooks for use in Claude Code
+- [house-agents](https://github.com/AutumnsGrove/house-agents) - Specialized Claude Code sub-agents (research, git, bash, coder, planner) that run heavy operations in separate context windows
 - [ClaudeSkills](https://github.com/AutumnsGrove/ClaudeSkills) - Collection of skills for Claude.ai, Claude Code, and Claude Desktop App
 - [ClaudeGistLoader](https://github.com/AutumnsGrove/ClaudeGistLoader) - UV-based CLI tool that fetches GitHub gists for use in Claude Code sessions
 - [ClaudeCodeContainer](https://github.com/AutumnsGrove/ClaudeCodeContainer) - Run Claude Code in a secure Docker container
