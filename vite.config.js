@@ -15,6 +15,14 @@ export default defineConfig({
     // Dedupe shared dependencies to prevent resolution issues with linked packages
     dedupe: ["svelte", "sonner", "bits-ui"],
   },
+  optimizeDeps: {
+    // Exclude JXL codec from optimization - it uses IIFE workers that conflict with code-splitting
+    exclude: ["@jsquash/jxl"],
+  },
+  worker: {
+    // Use ES format for workers to support code-splitting
+    format: "es",
+  },
   server: {
     fs: {
       // Allow serving files from project root directories (dev only)

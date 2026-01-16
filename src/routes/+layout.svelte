@@ -221,7 +221,7 @@
 		<nav>
 			<!-- TITLE AREA -->
 			<a href="/" class="logo">
-				<Logo class="w-6 h-6" color="#e67e22" />
+				<Logo season="midnight" size="sm" />
 				<span>Autumns Grove</span>
 			</a>
 

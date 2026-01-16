@@ -1,10 +1,23 @@
 # TODOs for AutumnsGrove
 
-> **Last Updated:** January 5, 2026 - GroveEngine 0.8.6 upgrade completed
+> **Last Updated:** January 15, 2026 - GroveEngine 0.9.7 upgrade completed
 
 ---
 
 ## ✅ Recently Completed
+
+### GroveEngine 0.9.7 Upgrade (Jan 15, 2026)
+- **Status**: ✅ COMPLETE
+- **Migration**: GroveEngine 0.8.6 → 0.9.7
+- **Package**: `@autumnsgrove/groveengine@0.9.7`
+- **Logo Update**: Switched to new "midnight" season variant (the queer fifth season 🌙)
+  - Updated `src/routes/+layout.svelte` - main site logo
+  - Updated `src/routes/admin/+layout.svelte` - admin panel logo
+- **New Features Available**:
+  - Logo: `season`, `monochrome`, `shadow`, `interactive`, `size` props
+  - Curios module: Timeline Curio with Heatmap component
+  - Voice presets for AI summaries
+- **Breaking Changes**: None - 100% backward compatible
 
 ### GroveEngine 0.8.6 Upgrade (Jan 5, 2026)
 - **Status**: ✅ COMPLETE
@@ -111,8 +124,28 @@ These features have complete specifications and can be picked up next:
 
 | Feature | Effort | Spec Location | Notes |
 |---------|--------|---------------|-------|
+| Timeline Curio Migration | 3‑4 hours | GroveEngine `/lib/curios/timeline/` | Migrate custom timeline to engine's Timeline Curio |
 | Live Document Modes | 6‑8 hours | `docs/plans/live-document-modes-spec.md` | Multi‑mode editing (preview toggle, block editing, Zen mode) |
 | Long‑Horizon Context Phase 2 | 2‑3 hours | `docs/plans/long-horizon-context-spec.md` | Enable context‑aware prompts & timeline UI indicators |
+
+#### Timeline Curio Migration (Future)
+- **Status**: Ready when needed - current custom implementation works fine
+- **What's Available in GroveEngine 0.9.7**:
+  - `Timeline` component - Full-featured timeline display with built-in styling
+  - `Heatmap` component - GitHub-style contribution heatmap (365-day view)
+  - Voice presets for AI summaries: `professional`, `quest`, `casual`, `poetic`, `minimal`
+  - OpenRouter integration for BYOK AI summaries
+  - Built-in gutter comments, focus streaks, and rest day handling
+- **Migration Benefits**:
+  - Reduce ~800 lines of custom code in `src/routes/timeline/+page.svelte`
+  - Get automatic updates from engine improvements
+  - Consistent styling with other GroveEngine sites
+- **Current Custom Features to Preserve**:
+  - Inline gutter comments anchored to headers
+  - Custom rest day messages
+  - LOCBar and ActivityOverview charts
+  - GitHub repo linking in markdown
+- **Import Path**: `import { Timeline, Heatmap } from '@autumnsgrove/groveengine';`
 
 #### Long‑Horizon Context Status
 - **Phase 1 Complete (Dec 8, 2025):** Data collection infrastructure deployed

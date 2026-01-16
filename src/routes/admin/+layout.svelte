@@ -104,7 +104,7 @@
       </nav>
     </Sheet>
     <a href="/" class="mobile-home-link" aria-label="Go to home page">
-      <Logo class="w-5 h-5" color="#e67e22" />
+      <Logo season="midnight" size="xs" />
       <span>Autumns Grove</span>
     </a>
     <span class="mobile-header-spacer"></span>
