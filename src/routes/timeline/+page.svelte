@@ -207,6 +207,12 @@
 		return renderMarkdownWithGutter(text, []);
 	}
 
+	// Render inline markdown (for brief summaries - no block elements)
+	function renderInlineMarkdown(text) {
+		if (!text) return '';
+		return sanitizeMarkdown(marked.parseInline(text));
+	}
+
 	// Toggle card expansion
 	function toggleCard(id) {
 		if (expandedCards.has(id)) {
@@ -321,7 +327,7 @@
 						{#if isRestDay}
 							<p class="rest-message">{getRestDayMessage(summary.summary_date)}</p>
 						{:else}
-							<p class="brief-summary">{summary.brief_summary}</p>
+							<p class="brief-summary">{@html renderInlineMarkdown(summary.brief_summary)}</p>
 
 							<div class="meta-info">
 								<span class="repos">
@@ -599,6 +605,23 @@
 		margin: 0 0 0.75rem;
 		color: var(--color-foreground);
 		line-height: 1.5;
+	}
+	.brief-summary :global(a) {
+		color: #2c5f2d;
+		text-decoration: none;
+		border-bottom: 1px dashed #2c5f2d;
+		transition: all 0.15s ease;
+	}
+	.brief-summary :global(a:hover) {
+		color: var(--grove-700);
+		border-bottom-style: solid;
+	}
+	:global(.dark) .brief-summary :global(a) {
+		color: var(--grove-500);
+		border-bottom-color: var(--grove-500);
+	}
+	:global(.dark) .brief-summary :global(a:hover) {
+		color: var(--grove-400);
 	}
 	.meta-info {
 		display: flex;
