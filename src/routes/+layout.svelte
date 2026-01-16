@@ -221,7 +221,7 @@
 		<nav>
 			<!-- TITLE AREA -->
 			<a href="/" class="logo">
-				<Logo season="midnight" size="sm" />
+				<Logo season="autumn" size="sm" />
 				<span>Autumns Grove</span>
 			</a>
 
