@@ -23,7 +23,7 @@ Building things, learning in public, and exploring ideas.
 | Project | Description | Links |
 |---------|-------------|-------|
 | **[AutumnsGrove](https://github.com/AutumnsGrove/AutumnsGrove)** | Personal blog and digital home | [autumnsgrove.com](https://autumnsgrove.com) |
-| **[Lattice](https://github.com/AutumnsGrove/GroveEngine)** | Core platform powering every Grove site | npm package |
+| **[Lattice](https://github.com/AutumnsGrove/GroveEngine)** | Core platform powering every Grove site. Includes Curios, Terrarium, Weave, and more | npm package |
 | **[Heartwood](https://github.com/AutumnsGrove/GroveAuth)** | Centralized authentication for the Grove ecosystem | heartwood.grove.place |
 | **[Amber](https://github.com/AutumnsGrove/Amber)** | Unified storage management system | amber.grove.place |
 | **[Foliage](https://github.com/AutumnsGrove/Foliage)** | Visual customization and theming system | foliage.grove.place |
@@ -44,7 +44,7 @@ Building things, learning in public, and exploring ideas.
 | **[Bloom](https://github.com/AutumnsGrove/GroveBloom)** | Serverless coding infrastructure | bloom.grove.place |
 | **[Forage](https://github.com/AutumnsGrove/Forage)** | AI-powered domain discovery | forage.grove.place |
 | **[Outpost](https://github.com/AutumnsGrove/GroveMC)** | On-demand Minecraft server for friends | mc.grove.place |
-| **[Gossamer](https://github.com/AutumnsGrove/Gossamer)** | ASCII visual effects for the web | npm package |
+| **[Gossamer](https://github.com/AutumnsGrove/Gossamer)** | ASCII visual effects for the web. Clouds, image transforms, borders | npm package |
 | **[Trove](https://github.com/AutumnsGrove/TreasureTrove)** | Library book discovery via camera | trove.grove.place |
 | **[Scout](https://github.com/AutumnsGrove/GroveScout)** | Searching for deals. But fast. | scout.grove.place |
 | **[Aria](https://github.com/AutumnsGrove/GroveMusic)** | Music curation through sonic DNA matching | *on hold* |
@@ -53,6 +53,7 @@ Building things, learning in public, and exploring ideas.
 | Project | Description | Links |
 |---------|-------------|-------|
 | **[Shade](https://github.com/AutumnsGrove/GroveShade)** | AI crawler protection layer | grove.place/shade |
+| **[Shutter](https://github.com/AutumnsGrove/Shutter)** | Web content distillation with prompt injection defense | PyPI / npm |
 | **[Mycelium](https://github.com/AutumnsGrove/Mycelium)** | Model Context Protocol server | mycelium.grove.place |
 | **[Cache](https://github.com/AutumnsGrove/GroveBackups)** | Automated backup system | *internal* |
 
