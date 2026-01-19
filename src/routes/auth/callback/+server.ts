@@ -35,9 +35,33 @@ export const GET: RequestHandler = async ({ url, cookies, platform }) => {
   const state = url.searchParams.get("state");
   const errorParam = url.searchParams.get("error");
 
+  // Determine production mode early for cookie operations
+  const isProduction =
+    url.hostname !== "localhost" && url.hostname !== "127.0.0.1";
+
+  // Helper to clear all auth state cookies (prevents reuse on errors)
+  const clearAuthCookies = () => {
+    cookies.delete("auth_state", {
+      path: "/",
+      httpOnly: true,
+      secure: isProduction,
+    });
+    cookies.delete("auth_code_verifier", {
+      path: "/",
+      httpOnly: true,
+      secure: isProduction,
+    });
+    cookies.delete("auth_return_to", {
+      path: "/",
+      httpOnly: true,
+      secure: isProduction,
+    });
+  };
+
   // Check for error from Heartwood
   if (errorParam) {
     console.error("[Auth Callback] Error from Heartwood:", errorParam);
+    clearAuthCookies();
     const friendlyMessage = getFriendlyErrorMessage(errorParam);
     redirect(302, `/?error=${encodeURIComponent(friendlyMessage)}`);
   }
@@ -46,9 +70,10 @@ export const GET: RequestHandler = async ({ url, cookies, platform }) => {
   const savedState = cookies.get("auth_state");
   if (!state || state !== savedState) {
     console.error("[Auth Callback] State mismatch - CSRF check failed");
+    clearAuthCookies();
     redirect(
       302,
-      `/?error=${encodeURIComponent(getFriendlyErrorMessage("invalid_state"))}`
+      `/?error=${encodeURIComponent(getFriendlyErrorMessage("invalid_state"))}`,
     );
   }
 
@@ -56,29 +81,26 @@ export const GET: RequestHandler = async ({ url, cookies, platform }) => {
   const codeVerifier = cookies.get("auth_code_verifier");
   if (!codeVerifier) {
     console.error("[Auth Callback] Missing code verifier");
+    clearAuthCookies();
     redirect(
       302,
-      `/?error=${encodeURIComponent(getFriendlyErrorMessage("missing_verifier"))}`
+      `/?error=${encodeURIComponent(getFriendlyErrorMessage("missing_verifier"))}`,
     );
   }
 
   if (!code) {
+    clearAuthCookies();
     redirect(
       302,
-      `/?error=${encodeURIComponent(getFriendlyErrorMessage("missing_code"))}`
+      `/?error=${encodeURIComponent(getFriendlyErrorMessage("missing_code"))}`,
     );
   }
 
   // Get return URL
   const returnTo = cookies.get("auth_return_to") || "/admin";
 
-  // Clear auth state cookies immediately
-  const isProduction =
-    url.hostname !== "localhost" && url.hostname !== "127.0.0.1";
-
-  cookies.delete("auth_state", { path: "/", httpOnly: true, secure: isProduction });
-  cookies.delete("auth_code_verifier", { path: "/", httpOnly: true, secure: isProduction });
-  cookies.delete("auth_return_to", { path: "/", httpOnly: true, secure: isProduction });
+  // Clear auth state cookies before token exchange
+  clearAuthCookies();
 
   try {
     // Create GroveAuth client
@@ -132,7 +154,7 @@ export const GET: RequestHandler = async ({ url, cookies, platform }) => {
     console.error("[Auth Callback] Token exchange error:", err);
     redirect(
       302,
-      `/?error=${encodeURIComponent(getFriendlyErrorMessage("token_exchange_failed"))}`
+      `/?error=${encodeURIComponent(getFriendlyErrorMessage("token_exchange_failed"))}`,
     );
   }
 };

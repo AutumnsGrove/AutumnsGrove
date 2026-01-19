@@ -6,15 +6,7 @@
 
 import { redirect } from "@sveltejs/kit";
 import { createClientFromEnv } from "$lib/auth/groveauth";
-
-/**
- * Extract a cookie value from a cookie header string
- */
-function getCookie(cookieHeader, name) {
-  if (!cookieHeader) return null;
-  const match = cookieHeader.match(new RegExp(`${name}=([^;]+)`));
-  return match ? match[1] : null;
-}
+import { getCookie } from "$lib/utils/cookies";
 
 export async function GET({ request, cookies, url, platform }) {
   const cookieHeader = request.headers.get("cookie");
@@ -27,7 +19,10 @@ export async function GET({ request, cookies, url, platform }) {
       await auth.logout(accessToken);
     } catch (err) {
       // Even if Heartwood fails, we still clear local cookies
-      console.warn("[LOGOUT] Heartwood logout failed (non-fatal):", err.message);
+      console.warn(
+        "[LOGOUT] Heartwood logout failed (non-fatal):",
+        err.message,
+      );
     }
   }
 

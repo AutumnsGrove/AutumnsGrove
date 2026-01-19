@@ -4,21 +4,13 @@ import {
   validateCSRFToken,
 } from "@autumnsgrove/groveengine/utils";
 import { createClientFromEnv } from "$lib/auth/groveauth";
+import { getCookie } from "$lib/utils/cookies";
 
 /** Session cookie duration: 30 days */
 const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 30;
 
 /** Default access token duration: 1 hour */
 const DEFAULT_ACCESS_TOKEN_DURATION = 3600;
-
-/**
- * Extract a cookie value from a cookie header string
- */
-function getCookie(cookieHeader, name) {
-  if (!cookieHeader) return null;
-  const match = cookieHeader.match(new RegExp(`${name}=([^;]+)`));
-  return match ? match[1] : null;
-}
 
 export async function handle({ event, resolve }) {
   // Initialize user as null
@@ -119,8 +111,8 @@ export async function handle({ event, resolve }) {
       cookieParts(
         "access_token",
         event.locals.newTokens.access_token,
-        event.locals.newTokens.expires_in || DEFAULT_ACCESS_TOKEN_DURATION
-      )
+        event.locals.newTokens.expires_in || DEFAULT_ACCESS_TOKEN_DURATION,
+      ),
     );
 
     if (event.locals.newTokens.refresh_token) {
@@ -129,8 +121,8 @@ export async function handle({ event, resolve }) {
         cookieParts(
           "refresh_token",
           event.locals.newTokens.refresh_token,
-          SESSION_DURATION_SECONDS
-        )
+          SESSION_DURATION_SECONDS,
+        ),
       );
     }
   }
@@ -159,7 +151,7 @@ export async function handle({ event, resolve }) {
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
   response.headers.set(
     "Permissions-Policy",
-    "geolocation=(), microphone=(), camera=()"
+    "geolocation=(), microphone=(), camera=()",
   );
 
   // Content-Security-Policy - include Heartwood for OAuth

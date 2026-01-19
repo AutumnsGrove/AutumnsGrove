@@ -84,7 +84,7 @@ function generateRandomString(length: number): string {
   crypto.getRandomValues(randomValues);
   return Array.from(
     randomValues,
-    (byte) => charset[byte % charset.length]
+    (byte) => charset[byte % charset.length],
   ).join("");
 }
 
@@ -155,7 +155,7 @@ export class GroveAuthClient {
    */
   async exchangeCode(
     code: string,
-    codeVerifier: string
+    codeVerifier: string,
   ): Promise<TokenResponse> {
     const response = await fetch(`${GROVEAUTH_API_URL}/token`, {
       method: "POST",
@@ -178,7 +178,7 @@ export class GroveAuthClient {
       throw new GroveAuthError(
         data.error || "token_error",
         data.error_description || data.message || "Failed to exchange code",
-        response.status
+        response.status,
       );
     }
 
@@ -197,12 +197,23 @@ export class GroveAuthClient {
       });
 
       if (!response.ok) {
+        console.debug(
+          "[GroveAuth] Token verification failed:",
+          response.status,
+        );
         return null;
       }
 
       const data = (await response.json()) as TokenInfo;
+      if (!data.active) {
+        console.debug("[GroveAuth] Token is inactive");
+      }
       return data.active ? data : null;
-    } catch {
+    } catch (error) {
+      console.error(
+        "[GroveAuth] Token verification error:",
+        error instanceof Error ? error.message : "Unknown error",
+      );
       return null;
     }
   }
@@ -251,7 +262,7 @@ export class GroveAuthClient {
       throw new GroveAuthError(
         data.error || "refresh_error",
         data.error_description || data.message || "Failed to refresh token",
-        response.status
+        response.status,
       );
     }
 
@@ -280,7 +291,7 @@ export class GroveAuthClient {
       throw new GroveAuthError(
         data.error || "revoke_error",
         data.error_description || data.message || "Failed to revoke token",
-        response.status
+        response.status,
       );
     }
   }
@@ -309,7 +320,9 @@ export class GroveAuthClient {
 /**
  * Create a GroveAuth client instance
  */
-export function createGroveAuthClient(config: GroveAuthConfig): GroveAuthClient {
+export function createGroveAuthClient(
+  config: GroveAuthConfig,
+): GroveAuthClient {
   return new GroveAuthClient(config);
 }
 
@@ -322,7 +335,7 @@ export function createGroveAuthClient(config: GroveAuthConfig): GroveAuthClient 
  */
 export function createClientFromEnv(
   platform: App.Platform | undefined,
-  origin: string
+  origin: string,
 ): GroveAuthClient {
   return new GroveAuthClient({
     clientId: platform?.env?.GROVEAUTH_CLIENT_ID || "autumnsgrove",
