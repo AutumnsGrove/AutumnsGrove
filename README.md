@@ -35,7 +35,7 @@ Grove eschews transactional terminology in favor of language reflecting how peop
 | **[Lattice](https://github.com/AutumnsGrove/GroveEngine)** | Core platform powering every Grove site. Includes Clearing, Rings, Wisp, Trails, Meadow, Curios, Terrarium, Weave | [![npm](https://img.shields.io/npm/v/@autumnsgrove/groveengine)](https://www.npmjs.com/package/@autumnsgrove/groveengine) |
 | **[Heartwood](https://github.com/AutumnsGrove/GroveAuth)** | Centralized authentication for the Grove ecosystem | heartwood.grove.place |
 | **[Amber](https://github.com/AutumnsGrove/Amber)** | Unified storage management system | amber.grove.place |
-| **[Foliage](https://github.com/AutumnsGrove/Foliage)** | Visual customization and theming system | foliage.grove.place |
+| **[Foliage](https://github.com/AutumnsGrove/Foliage)** | Visual customization and theming system | [![npm](https://img.shields.io/npm/v/@groveengine/foliage)](https://www.npmjs.com/package/@groveengine/foliage) |
 | **[Patina](https://github.com/AutumnsGrove/Patina)** | Automated backup system | *internal* |
 
 ### Standalone Tools
@@ -64,6 +64,7 @@ Grove eschews transactional terminology in favor of language reflecting how peop
 | **[EmojiGrove](https://github.com/AutumnsGrove/RecipeGrove)** | Smart Recipe documents with EmojiKitchen | *pending rebrand* |
 
 ## Libraries & Packages
+- [Foliage](https://github.com/AutumnsGrove/Foliage) - Theme system for Grove with 13 Svelte 5 components, 10 WCAG-compliant themes, and Cloudflare D1/R2 integration. Personal expression with modern guardrails. [![npm](https://img.shields.io/npm/v/@groveengine/foliage)](https://www.npmjs.com/package/@groveengine/foliage)
 - [Gossamer](https://github.com/AutumnsGrove/Gossamer) - ASCII visual effects for the web. Character-based animations, ambient backgrounds, and image-to-ASCII transformations. Framework-agnostic core with Svelte, React, and Vue adapters. [![npm](https://img.shields.io/npm/v/@autumnsgrove/gossamer)](https://www.npmjs.com/package/@autumnsgrove/gossamer)
 - [Shutter](https://github.com/AutumnsGrove/Shutter) - Web content distillation for LLM agents. Extracts relevant content from URLs, returning 200 tokens instead of 20k. Includes prompt injection defense. [![PyPI](https://badge.fury.io/py/grove-shutter.svg)](https://pypi.org/project/grove-shutter/)
 - [YTThumbs](https://github.com/AutumnsGrove/yt-thumbs) - YouTube thumbnail extractor with zero dependencies. [![PyPI](https://badge.fury.io/py/yt-thumbs.svg)](https://pypi.org/project/yt-thumbs/)
