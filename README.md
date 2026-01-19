@@ -64,6 +64,7 @@ Grove eschews transactional terminology in favor of language reflecting how peop
 | **[EmojiGrove](https://github.com/AutumnsGrove/RecipeGrove)** | Smart Recipe documents with EmojiKitchen | *pending rebrand* |
 
 ## Libraries & Packages
+- [Lattice (GroveEngine)](https://github.com/AutumnsGrove/GroveEngine) - Core platform powering every Grove site. SvelteKit-based blog engine with Clearing, Rings, Wisp, Trails, Meadow, Curios, Terrarium, and Weave subsystems. [![npm](https://img.shields.io/npm/v/@autumnsgrove/groveengine)](https://www.npmjs.com/package/@autumnsgrove/groveengine)
 - [Foliage](https://github.com/AutumnsGrove/Foliage) - Theme system for Grove with 13 Svelte 5 components, 10 WCAG-compliant themes, and Cloudflare D1/R2 integration. Personal expression with modern guardrails. [![npm](https://img.shields.io/npm/v/@groveengine/foliage)](https://www.npmjs.com/package/@groveengine/foliage)
 - [Gossamer](https://github.com/AutumnsGrove/Gossamer) - ASCII visual effects for the web. Character-based animations, ambient backgrounds, and image-to-ASCII transformations. Framework-agnostic core with Svelte, React, and Vue adapters. [![npm](https://img.shields.io/npm/v/@autumnsgrove/gossamer)](https://www.npmjs.com/package/@autumnsgrove/gossamer)
 - [Shutter](https://github.com/AutumnsGrove/Shutter) - Web content distillation for LLM agents. Extracts relevant content from URLs, returning 200 tokens instead of 20k. Includes prompt injection defense. [![PyPI](https://badge.fury.io/py/grove-shutter.svg)](https://pypi.org/project/grove-shutter/)
