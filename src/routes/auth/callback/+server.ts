@@ -15,6 +15,9 @@ const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 30;
 /** Default access token duration: 1 hour */
 const DEFAULT_ACCESS_TOKEN_DURATION = 3600;
 
+/** Buffer to subtract from token expiry to account for network latency (60 seconds) */
+const TOKEN_EXPIRY_BUFFER_SECONDS = 60;
+
 /** Map error codes to user-friendly messages */
 const ERROR_MESSAGES: Record<string, string> = {
   access_denied: "You cancelled the login process",
@@ -118,9 +121,15 @@ export const GET: RequestHandler = async ({ url, cookies, platform }) => {
     };
 
     // Set access token (used for API calls and session verification)
+    // Subtract buffer from expiry to prevent edge cases where cookie outlives token
+    const accessTokenMaxAge = Math.max(
+      (tokens.expires_in || DEFAULT_ACCESS_TOKEN_DURATION) -
+        TOKEN_EXPIRY_BUFFER_SECONDS,
+      60, // Minimum 60 seconds
+    );
     cookies.set("access_token", tokens.access_token, {
       ...cookieOptions,
-      maxAge: tokens.expires_in || DEFAULT_ACCESS_TOKEN_DURATION,
+      maxAge: accessTokenMaxAge,
     });
 
     // Set refresh token

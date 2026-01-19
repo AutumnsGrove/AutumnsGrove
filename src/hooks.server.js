@@ -12,6 +12,18 @@ const SESSION_DURATION_SECONDS = 60 * 60 * 24 * 30;
 /** Default access token duration: 1 hour */
 const DEFAULT_ACCESS_TOKEN_DURATION = 3600;
 
+/** Buffer to subtract from token expiry to account for network latency (60 seconds) */
+const TOKEN_EXPIRY_BUFFER_SECONDS = 60;
+
+/**
+ * In-flight token refresh promises.
+ * Deduplicates concurrent refresh attempts for the same refresh token to prevent race conditions
+ * where multiple requests with an expired access token all try to refresh simultaneously.
+ * Note: This only works within a single isolate; cross-isolate deduplication requires external state.
+ * @type {Map<string, Promise<import('$lib/auth/groveauth').TokenResponse>>}
+ */
+const refreshPromises = new Map();
+
 export async function handle({ event, resolve }) {
   // Initialize user as null
   event.locals.user = null;
@@ -35,8 +47,20 @@ export async function handle({ event, resolve }) {
         };
       } else if (refreshToken) {
         // Access token expired, try to refresh
+        // Use deduplication to prevent race conditions with concurrent requests
         try {
-          const newTokens = await auth.refreshToken(refreshToken);
+          let refreshPromise = refreshPromises.get(refreshToken);
+
+          if (!refreshPromise) {
+            // No in-flight refresh for this token, start one
+            refreshPromise = auth.refreshToken(refreshToken);
+            refreshPromises.set(refreshToken, refreshPromise);
+          }
+
+          const newTokens = await refreshPromise;
+
+          // Clean up the promise after it resolves
+          refreshPromises.delete(refreshToken);
 
           // Get user info from new token
           const userInfo = await auth.getUserInfo(newTokens.access_token);
@@ -52,6 +76,8 @@ export async function handle({ event, resolve }) {
             event.locals.newTokens = newTokens;
           }
         } catch (refreshErr) {
+          // Clean up on error too
+          refreshPromises.delete(refreshToken);
           // Refresh failed - user needs to re-login
           console.warn("[HOOKS] Token refresh failed:", refreshErr.message);
         }
@@ -106,12 +132,19 @@ export async function handle({ event, resolve }) {
       return parts.join("; ");
     };
 
+    // Subtract buffer from expiry to prevent edge cases where cookie outlives token
+    const accessTokenMaxAge = Math.max(
+      (event.locals.newTokens.expires_in || DEFAULT_ACCESS_TOKEN_DURATION) -
+        TOKEN_EXPIRY_BUFFER_SECONDS,
+      60, // Minimum 60 seconds
+    );
+
     response.headers.append(
       "Set-Cookie",
       cookieParts(
         "access_token",
         event.locals.newTokens.access_token,
-        event.locals.newTokens.expires_in || DEFAULT_ACCESS_TOKEN_DURATION,
+        accessTokenMaxAge,
       ),
     );
 
