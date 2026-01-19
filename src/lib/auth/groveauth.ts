@@ -30,7 +30,7 @@ export interface TokenResponse {
   access_token: string;
   token_type: "Bearer";
   expires_in: number;
-  refresh_token: string;
+  refresh_token?: string; // Optional on token refresh
   scope: string;
 }
 
@@ -332,14 +332,24 @@ export function createGroveAuthClient(
 
 /**
  * Create a GroveAuth client from Cloudflare platform environment
+ *
+ * @throws Error if GROVEAUTH_CLIENT_SECRET is not configured
  */
 export function createClientFromEnv(
   platform: App.Platform | undefined,
   origin: string,
 ): GroveAuthClient {
+  const clientSecret = platform?.env?.GROVEAUTH_CLIENT_SECRET;
+
+  if (!clientSecret) {
+    throw new Error(
+      "GROVEAUTH_CLIENT_SECRET is required. Configure it in your Cloudflare Pages environment.",
+    );
+  }
+
   return new GroveAuthClient({
     clientId: platform?.env?.GROVEAUTH_CLIENT_ID || "autumnsgrove",
-    clientSecret: platform?.env?.GROVEAUTH_CLIENT_SECRET || "",
+    clientSecret,
     redirectUri: `${origin}/auth/callback`,
   });
 }
