@@ -11,6 +11,12 @@ declare global {
         name: string | null;
       } | null;
       csrfToken: string;
+      /** Set by hooks when tokens are refreshed, to update cookies in response */
+      newTokens?: {
+        access_token: string;
+        refresh_token?: string;
+        expires_in?: number;
+      };
     }
     // interface PageData {}
     // interface PageState {}
@@ -25,6 +31,11 @@ declare global {
         // Secrets
         GITHUB_TOKEN: string;
         ANTHROPIC_API_KEY: string;
+        // GroveAuth (Heartwood) credentials
+        GROVEAUTH_CLIENT_ID?: string;
+        GROVEAUTH_CLIENT_SECRET?: string;
+        // D1 Database for posts/pages
+        POSTS_DB?: D1Database;
         // Legacy auth secrets (can be removed after migration is stable)
         SESSION_SECRET?: string;
         RESEND_API_KEY?: string;

@@ -1,29 +1,23 @@
-import { json } from '@sveltejs/kit';
-import { getSession } from '$lib/auth/groveauth';
+/**
+ * Current User Endpoint
+ *
+ * Returns the authenticated user's information from the token.
+ * User is populated by hooks.server.js via token verification.
+ */
 
-export async function GET({ request }) {
-  const cookieHeader = request.headers.get('cookie');
+import { json } from "@sveltejs/kit";
 
-  try {
-    const sessionData = await getSession(cookieHeader);
-
-    if (!sessionData?.user) {
-      return json({ authenticated: false }, { status: 401 });
-    }
-
-    return json({
-      authenticated: true,
-      user: {
-        id: sessionData.user.id,
-        email: sessionData.user.email,
-        name: sessionData.user.name || null,
-      },
-    });
-  } catch (err) {
-    console.error('[AUTH ME] Session verification failed:', err.message);
-    return json(
-      { authenticated: false, error: 'Session verification failed' },
-      { status: 500 }
-    );
+export async function GET({ locals }) {
+  if (!locals.user) {
+    return json({ authenticated: false }, { status: 401 });
   }
+
+  return json({
+    authenticated: true,
+    user: {
+      id: locals.user.id,
+      email: locals.user.email,
+      name: locals.user.name || null,
+    },
+  });
 }

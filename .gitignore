@@ -31,3 +31,4 @@ node_modules/
 # BaseProject updates
 .baseproject-backup-*/
 baseproject-update-summary.md
+package-lock.json

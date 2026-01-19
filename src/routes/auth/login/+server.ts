@@ -1,25 +1,43 @@
-import { redirect, error } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { validateRedirect } from '$lib/auth/constants';
+/**
+ * OAuth Login - Initiate PKCE authentication flow via Heartwood
+ *
+ * Flow: /auth/login -> Heartwood login page -> /auth/callback
+ */
 
-export const GET: RequestHandler = async ({ url }) => {
-  // Get redirect destination and provider (default to Google)
-  const redirectParam = url.searchParams.get('redirect') || '/admin';
-  const provider = url.searchParams.get('provider') || 'google';
+import { redirect } from "@sveltejs/kit";
+import type { RequestHandler } from "./$types";
+import { createClientFromEnv } from "$lib/auth/groveauth";
+import { validateRedirect } from "$lib/auth/constants";
 
-  // Validate provider
-  if (provider !== 'google' && provider !== 'github') {
-    throw error(400, 'Invalid OAuth provider. Must be "google" or "github".');
-  }
-
-  // Validate and sanitize redirect destination
+export const GET: RequestHandler = async ({ url, cookies, platform }) => {
+  // Get redirect destination (default to admin panel)
+  const redirectParam = url.searchParams.get("redirect") || "/admin";
   const safeRedirect = validateRedirect(redirectParam);
 
-  // Build Better Auth OAuth URL with proper callback flow
-  // Better Auth will redirect back to our callback endpoint with the redirect parameter
-  const callbackURL = encodeURIComponent(`${url.origin}/auth/callback?redirect=${encodeURIComponent(safeRedirect)}`);
-  const authUrl = `https://auth-api.grove.place/api/auth/sign-in/${provider}?callbackURL=${callbackURL}`;
+  // Create GroveAuth client
+  const auth = createClientFromEnv(platform, url.origin);
 
-  // Redirect to Better Auth
-  redirect(302, authUrl);
+  // Generate login URL with PKCE
+  const { url: loginUrl, state, codeVerifier } = await auth.getLoginUrl();
+
+  // Determine if we're in production
+  const isProduction =
+    url.hostname !== "localhost" && url.hostname !== "127.0.0.1";
+
+  // Cookie options for auth state (short-lived, 10 minutes)
+  const cookieOptions = {
+    path: "/",
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: "lax" as const,
+    maxAge: 60 * 10, // 10 minutes
+  };
+
+  // Store PKCE state in secure cookies
+  cookies.set("auth_state", state, cookieOptions);
+  cookies.set("auth_code_verifier", codeVerifier, cookieOptions);
+  cookies.set("auth_return_to", safeRedirect, cookieOptions);
+
+  // Redirect to Heartwood login
+  redirect(302, loginUrl);
 };
