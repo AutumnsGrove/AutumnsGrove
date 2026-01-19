@@ -1,10 +1,8 @@
-import { error, redirect } from "@sveltejs/kit";
+import { error } from "@sveltejs/kit";
 
-export async function load({ params, platform, locals }) {
-  // Auth check happens in admin layout
-  if (!locals.user) {
-    throw redirect(302, "/auth/login");
-  }
+export async function load({ params, platform }) {
+  // Auth check happens in parent layout (/admin/+layout.server.js)
+  // which correctly includes the redirect parameter
 
   const { slug } = params;
 

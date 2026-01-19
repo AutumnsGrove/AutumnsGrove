@@ -1,10 +1,6 @@
-import { redirect } from "@sveltejs/kit";
-
-export async function load({ platform, locals }) {
-  // Check if user is authenticated
-  if (!locals.user) {
-    throw redirect(302, "/auth/login");
-  }
+export async function load({ platform }) {
+  // Auth check happens in parent layout (/admin/+layout.server.js)
+  // which correctly includes the redirect parameter
 
   let pages = [];
 
