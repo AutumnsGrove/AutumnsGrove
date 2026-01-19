@@ -1,24 +1,51 @@
-import { redirect } from '@sveltejs/kit';
-import { signOut } from '$lib/auth/groveauth';
-
 /**
  * Logout Handler
  *
- * Uses GET-only to avoid CSRF complexity (logout is idempotent and safe).
- * Better Auth clears the session cookie server-side.
+ * Revokes tokens on Heartwood and clears local session cookies.
  */
-export async function GET({ request }) {
-  const cookieHeader = request.headers.get('cookie');
 
-  // Sign out via Better Auth (best effort)
-  try {
-    await signOut(cookieHeader);
-  } catch (err) {
-    // Even if Better Auth fails, we still redirect home
-    // The session cookie will expire naturally or be cleared on next login
-    console.warn('[LOGOUT] Better Auth sign out failed (non-fatal):', err.message);
+import { redirect } from "@sveltejs/kit";
+import { createClientFromEnv } from "$lib/auth/groveauth";
+
+/**
+ * Extract a cookie value from a cookie header string
+ */
+function getCookie(cookieHeader, name) {
+  if (!cookieHeader) return null;
+  const match = cookieHeader.match(new RegExp(`${name}=([^;]+)`));
+  return match ? match[1] : null;
+}
+
+export async function GET({ request, cookies, url, platform }) {
+  const cookieHeader = request.headers.get("cookie");
+  const accessToken = getCookie(cookieHeader, "access_token");
+
+  // Revoke tokens on Heartwood (best effort)
+  if (accessToken) {
+    try {
+      const auth = createClientFromEnv(platform, url.origin);
+      await auth.logout(accessToken);
+    } catch (err) {
+      // Even if Heartwood fails, we still clear local cookies
+      console.warn("[LOGOUT] Heartwood logout failed (non-fatal):", err.message);
+    }
   }
 
+  // Determine if we're in production
+  const isProduction =
+    url.hostname !== "localhost" && url.hostname !== "127.0.0.1";
+
+  // Clear all auth cookies
+  const cookieOptions = {
+    path: "/",
+    httpOnly: true,
+    secure: isProduction,
+  };
+
+  cookies.delete("access_token", cookieOptions);
+  cookies.delete("refresh_token", cookieOptions);
+  cookies.delete("session", cookieOptions);
+
   // Redirect to home page
-  redirect(302, '/');
+  redirect(302, "/");
 }
