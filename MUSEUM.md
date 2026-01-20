@@ -23,7 +23,7 @@ When I built AutumnsGrove, I learned by reading other people's code. Open source
 Now it's my turn to give back.
 
 This museum is for:
-- **Imani**, who wants to build her own site and needs to see how the pieces fit together
+- **Ariana**, who wants to build her own site and needs to see how the pieces fit together
 - **The curious developer** who learns better from real code than tutorials
 - **Future me**, who will forget why I made these choices
 - **Anyone** who believes personal websites matter
