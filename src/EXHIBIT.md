@@ -297,4 +297,24 @@ src/
 
 ---
 
+## Continue Your Tour
+
+**Explore deeper into specific areas:**
+
+- **[The Visitor Experience](/src/routes/EXHIBIT.md)** — Public-facing pages and routing
+- **[The Control Room](/src/routes/admin/EXHIBIT.md)** — The admin panel CMS
+- **[The Engine Room](/src/routes/api/EXHIBIT.md)** — REST API architecture
+- **[The Workshop](/src/lib/EXHIBIT.md)** — Shared utilities and building blocks
+
+**Related exhibits:**
+
+- **[The Content Gallery](/UserContent/EXHIBIT.md)** — Where content files live
+- **[Edge Computing](/workers/EXHIBIT.md)** — Cloudflare Workers patterns
+- **[The Foundation](/migrations/EXHIBIT.md)** — Database schema
+- **[The Security Lab](/tests/EXHIBIT.md)** — Security testing
+
+**[← Back to the Museum Entrance](/MUSEUM.md)**
+
+---
+
 *This exhibit was written for Ariana, who wants to learn how websites actually work.*

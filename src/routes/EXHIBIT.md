@@ -424,3 +424,17 @@ The site demonstrates several professional patterns:
 If you're building your own site, steal these patterns. They're battle-tested and solve real problems.
 
 This is home. Make it yours.
+
+---
+
+## Continue Your Tour
+
+**Related exhibits:**
+
+- **[The Architecture](/src/EXHIBIT.md)** — The high-level overview
+- **[The Control Room](/src/routes/admin/EXHIBIT.md)** — The admin panel CMS
+- **[The Engine Room](/src/routes/api/EXHIBIT.md)** — REST API endpoints
+- **[The Content Gallery](/UserContent/EXHIBIT.md)** — Where content files originate
+- **[The Workshop](/src/lib/EXHIBIT.md)** — Content processing utilities
+
+**[← Back to the Museum Entrance](/MUSEUM.md)**

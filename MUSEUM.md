@@ -59,6 +59,11 @@ REST endpoints for everything. How the admin panel talks to the database. CRUD o
 
 Authentication helpers, content processing, utility functions. The code that gets imported everywhere.
 
+### [The Content Gallery](/UserContent/EXHIBIT.md)
+*Where words begin*
+
+UserContent/ is where every post, page, and gutter note starts its journey. Markdown files, frontmatter, the gutter system—the creative heart of the site.
+
 ### [Edge Computing](/workers/EXHIBIT.md)
 *Cloudflare Workers*
 
@@ -68,6 +73,11 @@ The redirect worker that sends autumnsgrove.com to its new home. A tiny example 
 *Database schema*
 
 D1 (SQLite) migrations that define the data model. Posts, pages, images, sessions, timeline entries.
+
+### [The Security Lab](/tests/EXHIBIT.md)
+*Testing the castle walls*
+
+Security test suite with Vitest. CSRF protection, XSS prevention, input validation—proving the defenses work.
 
 ---
 
@@ -135,6 +145,24 @@ Pick a wing. Read an exhibit. Trace the code.
 Welcome to the museum.
 
 *— Autumn, January 2026*
+
+---
+
+## All Exhibits
+
+*Navigate the museum at your own pace:*
+
+| Wing | Path | Description |
+|------|------|-------------|
+| [The Architecture](/src/EXHIBIT.md) | `src/` | How everything connects |
+| [The Visitor Experience](/src/routes/EXHIBIT.md) | `src/routes/` | Public-facing pages |
+| [The Control Room](/src/routes/admin/EXHIBIT.md) | `src/routes/admin/` | The admin panel |
+| [The Engine Room](/src/routes/api/EXHIBIT.md) | `src/routes/api/` | API architecture |
+| [The Workshop](/src/lib/EXHIBIT.md) | `src/lib/` | Shared utilities |
+| [The Content Gallery](/UserContent/EXHIBIT.md) | `UserContent/` | Where words begin |
+| [Edge Computing](/workers/EXHIBIT.md) | `workers/` | Cloudflare Workers |
+| [The Foundation](/migrations/EXHIBIT.md) | `migrations/` | Database schema |
+| [The Security Lab](/tests/EXHIBIT.md) | `tests/` | Security tests |
 
 ---
 

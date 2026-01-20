@@ -458,4 +458,18 @@ The workshop isn't just a place to find things—it's a set of proven approaches
 
 ---
 
+## Continue Your Tour
+
+**Related exhibits:**
+
+- **[The Architecture](/src/EXHIBIT.md)** — The high-level system overview
+- **[The Content Gallery](/UserContent/EXHIBIT.md)** — Source content that these utilities process
+- **[The Visitor Experience](/src/routes/EXHIBIT.md)** — Routes that import from lib/
+- **[The Engine Room](/src/routes/api/EXHIBIT.md)** — APIs that use these utilities
+- **[The Control Room](/src/routes/admin/EXHIBIT.md)** — Admin panel using these components
+
+**[← Back to the Museum Entrance](/MUSEUM.md)**
+
+---
+
 *This is your space. Make it feel like home by understanding how the pieces fit together.*

@@ -347,3 +347,17 @@ That's The Control Room. Welcome to the machinery. Now go build something.
 - Authentication pattern: `src/routes/admin/+layout.server.js`
 - Real-time state management: `src/routes/admin/settings/+page.svelte`
 - Database fallback pattern: `src/routes/admin/blog/edit/[slug]/+page.server.js`
+
+---
+
+## Continue Your Tour
+
+**Related exhibits:**
+
+- **[The Architecture](/src/EXHIBIT.md)** — The high-level overview of the system
+- **[The Engine Room](/src/routes/api/EXHIBIT.md)** — API endpoints that the admin panel calls
+- **[The Visitor Experience](/src/routes/EXHIBIT.md)** — The public pages this panel manages
+- **[The Content Gallery](/UserContent/EXHIBIT.md)** — File-based content that syncs here
+- **[The Foundation](/migrations/EXHIBIT.md)** — Database schema for posts and settings
+
+**[← Back to the Museum Entrance](/MUSEUM.md)**
