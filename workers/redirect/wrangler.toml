@@ -5,9 +5,8 @@ name = "autumnsgrove-redirect"
 main = "index.ts"
 compatibility_date = "2025-01-01"
 
-# Routes - add your domain here
-# Uncomment after deploying:
-# routes = [
-#   { pattern = "autumnsgrove.com/*", zone_name = "autumnsgrove.com" },
-#   { pattern = "www.autumnsgrove.com/*", zone_name = "autumnsgrove.com" }
-# ]
+# Routes - redirect autumnsgrove.com to autumn.grove.place
+routes = [
+  { pattern = "autumnsgrove.com/*", zone_name = "autumnsgrove.com" },
+  { pattern = "www.autumnsgrove.com/*", zone_name = "autumnsgrove.com" }
+]
