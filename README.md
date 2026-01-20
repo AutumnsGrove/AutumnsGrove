@@ -10,6 +10,8 @@
 
 Building things, learning in public, and exploring ideas.
 
+> **[Enter the Museum](/MUSEUM.md)** — This codebase is now a living archive. Explore exhibits on architecture, content flow, API design, and more.
+
 ## Currently Working On
 - 🌲 Building the [Grove Ecosystem](#grove-ecosystem)
 - 💭 Thinking about software simplicity and design
