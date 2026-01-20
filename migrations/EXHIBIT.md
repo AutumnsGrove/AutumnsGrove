@@ -250,6 +250,7 @@ This is the foundation. Everything else is just application logic running on top
 - **[The Control Room](/src/routes/admin/EXHIBIT.md)** — Admin panel that reads/writes data
 - **[The Content Gallery](/UserContent/EXHIBIT.md)** — Source content before database sync
 - **[Edge Computing](/workers/EXHIBIT.md)** — Workers that write to D1
+- **[The Automation Wing](/.github/EXHIBIT.md)** — GitHub Actions that sync content to D1
 
 **[← Back to the Museum Entrance](/MUSEUM.md)**
 

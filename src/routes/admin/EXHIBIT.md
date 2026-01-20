@@ -359,5 +359,6 @@ That's The Control Room. Welcome to the machinery. Now go build something.
 - **[The Visitor Experience](/src/routes/EXHIBIT.md)** — The public pages this panel manages
 - **[The Content Gallery](/UserContent/EXHIBIT.md)** — File-based content that syncs here
 - **[The Foundation](/migrations/EXHIBIT.md)** — Database schema for posts and settings
+- **[The Automation Wing](/.github/EXHIBIT.md)** — CI/CD and automated code review
 
 **[← Back to the Museum Entrance](/MUSEUM.md)**

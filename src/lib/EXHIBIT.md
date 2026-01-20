@@ -467,6 +467,7 @@ The workshop isn't just a place to find things—it's a set of proven approaches
 - **[The Visitor Experience](/src/routes/EXHIBIT.md)** — Routes that import from lib/
 - **[The Engine Room](/src/routes/api/EXHIBIT.md)** — APIs that use these utilities
 - **[The Control Room](/src/routes/admin/EXHIBIT.md)** — Admin panel using these components
+- **[The Automation Wing](/.github/EXHIBIT.md)** — CI/CD that deploys code using these utilities
 
 **[← Back to the Museum Entrance](/MUSEUM.md)**
 

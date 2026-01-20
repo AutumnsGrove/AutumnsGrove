@@ -436,5 +436,6 @@ This is home. Make it yours.
 - **[The Engine Room](/src/routes/api/EXHIBIT.md)** — REST API endpoints
 - **[The Content Gallery](/UserContent/EXHIBIT.md)** — Where content files originate
 - **[The Workshop](/src/lib/EXHIBIT.md)** — Content processing utilities
+- **[The Automation Wing](/.github/EXHIBIT.md)** — How these pages get deployed
 
 **[← Back to the Museum Entrance](/MUSEUM.md)**

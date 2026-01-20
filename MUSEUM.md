@@ -79,6 +79,11 @@ D1 (SQLite) migrations that define the data model. Posts, pages, images, session
 
 Security test suite with Vitest. CSRF protection, XSS prevention, input validation—proving the defenses work.
 
+### [The Automation Wing](/.github/EXHIBIT.md)
+*GitHub Actions and CI/CD*
+
+Workflows that test, deploy, review, and sync. Your invisible teammates who never sleep.
+
 ---
 
 ## The Stack
@@ -163,6 +168,7 @@ Welcome to the museum.
 | [Edge Computing](/workers/EXHIBIT.md) | `workers/` | Cloudflare Workers |
 | [The Foundation](/migrations/EXHIBIT.md) | `migrations/` | Database schema |
 | [The Security Lab](/tests/EXHIBIT.md) | `tests/` | Security tests |
+| [The Automation Wing](/.github/EXHIBIT.md) | `.github/` | GitHub Actions and CI/CD |
 
 ---
 

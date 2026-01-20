@@ -45,34 +45,34 @@ This is the journey of your words from markdown file to browser:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                         1. WRITE                                     │
+│                         1. WRITE                                    │
 │  You create `Posts/my-story.md` with frontmatter and markdown       │
 └─────────────────────────────────────────────────────────────────────┘
                                 │
                                 ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│                      2. BUILD TIME                                   │
-│  import.meta.glob loads all markdown files at build                  │
+│                      2. BUILD TIME                                  │
+│  import.meta.glob loads all markdown files at build                 │
 │  gray-matter extracts frontmatter (title, date, tags)               │
-│  marked converts markdown → HTML                                     │
-│  Content is bundled into the application                             │
+│  marked converts markdown → HTML                                    │
+│  Content is bundled into the application                            │
 └─────────────────────────────────────────────────────────────────────┘
                                 │
                                 ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│                      3. REQUEST TIME                                 │
-│  Visitor requests /blog/my-story                                     │
+│                      3. REQUEST TIME                                │
+│  Visitor requests /blog/my-story                                    │
 │  +page.server.js checks D1 database first (production content)      │
-│  Falls back to bundled UserContent (local/dev)                       │
-│  Processes gutter content, extracts headers for TOC                  │
+│  Falls back to bundled UserContent (local/dev)                      │
+│  Processes gutter content, extracts headers for TOC                 │
 └─────────────────────────────────────────────────────────────────────┘
                                 │
                                 ▼
 ┌─────────────────────────────────────────────────────────────────────┐
-│                       4. RENDER                                      │
-│  +page.svelte receives processed content                             │
-│  Renders HTML with gutter items positioned                           │
-│  Browser hydrates for interactivity                                  │
+│                       4. RENDER                                     │
+│  +page.svelte receives processed content                            │
+│  Renders HTML with gutter items positioned                          │
+│  Browser hydrates for interactivity                                 │
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -341,6 +341,7 @@ This is intentional. The gutter system, the frontmatter, the folder structure—
 - **[The Workshop](/src/lib/EXHIBIT.md)** — See how content gets processed
 - **[The Visitor Experience](/src/routes/EXHIBIT.md)** — See how content gets rendered
 - **[The Architecture](/src/EXHIBIT.md)** — The big picture
+- **[The Automation Wing](/.github/EXHIBIT.md)** — How content syncs to production
 
 ---
 

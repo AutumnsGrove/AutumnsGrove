@@ -312,6 +312,7 @@ src/
 - **[Edge Computing](/workers/EXHIBIT.md)** — Cloudflare Workers patterns
 - **[The Foundation](/migrations/EXHIBIT.md)** — Database schema
 - **[The Security Lab](/tests/EXHIBIT.md)** — Security testing
+- **[The Automation Wing](/.github/EXHIBIT.md)** — How code gets deployed
 
 **[← Back to the Museum Entrance](/MUSEUM.md)**
 

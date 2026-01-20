@@ -265,5 +265,6 @@ Welcome to the edge.
 - **[The Content Gallery](/UserContent/EXHIBIT.md)** — Source content that gets synced
 - **[The Foundation](/migrations/EXHIBIT.md)** — Database schema that workers write to
 - **[The Control Room](/src/routes/admin/EXHIBIT.md)** — Admin panel that triggers syncs
+- **[The Automation Wing](/.github/EXHIBIT.md)** — GitHub Actions that trigger syncs
 
 **[← Back to the Museum Entrance](/MUSEUM.md)**

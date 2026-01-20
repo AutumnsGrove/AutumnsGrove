@@ -439,6 +439,7 @@ That's the engine room. That's where the magic happens.
 - **[The Foundation](/migrations/EXHIBIT.md)** — Database schema behind the endpoints
 - **[Edge Computing](/workers/EXHIBIT.md)** — Cloudflare Workers that sync content
 - **[The Security Lab](/tests/EXHIBIT.md)** — Tests that verify API security
+- **[The Automation Wing](/.github/EXHIBIT.md)** — CI/CD that deploys the API
 
 **[← Back to the Museum Entrance](/MUSEUM.md)**
 

@@ -483,6 +483,7 @@ This isn't bureaucracy—it's protection. Every passing test is a verified promi
 - **[The Workshop](/src/lib/EXHIBIT.md)** — Utilities being tested
 - **[The Foundation](/migrations/EXHIBIT.md)** — Database security patterns
 - **[The Control Room](/src/routes/admin/EXHIBIT.md)** — Protected routes
+- **[The Automation Wing](/.github/EXHIBIT.md)** — How tests run in CI/CD
 
 **[← Back to the Museum Entrance](/MUSEUM.md)**
 
