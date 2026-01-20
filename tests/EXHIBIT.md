@@ -474,4 +474,18 @@ This isn't bureaucracy—it's protection. Every passing test is a verified promi
 
 ---
 
+## Continue Your Tour
+
+**Related exhibits:**
+
+- **[The Architecture](/src/EXHIBIT.md)** — Security patterns in the main app
+- **[The Engine Room](/src/routes/api/EXHIBIT.md)** — APIs that these tests verify
+- **[The Workshop](/src/lib/EXHIBIT.md)** — Utilities being tested
+- **[The Foundation](/migrations/EXHIBIT.md)** — Database security patterns
+- **[The Control Room](/src/routes/admin/EXHIBIT.md)** — Protected routes
+
+**[← Back to the Museum Entrance](/MUSEUM.md)**
+
+---
+
 *Security isn't a feature. It's a foundation. These tests make sure the foundation holds.*

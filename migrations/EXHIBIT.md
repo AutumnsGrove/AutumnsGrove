@@ -241,4 +241,18 @@ This is the foundation. Everything else is just application logic running on top
 
 ---
 
+## Continue Your Tour
+
+**Related exhibits:**
+
+- **[The Architecture](/src/EXHIBIT.md)** — How the system uses this database
+- **[The Engine Room](/src/routes/api/EXHIBIT.md)** — APIs that query these tables
+- **[The Control Room](/src/routes/admin/EXHIBIT.md)** — Admin panel that reads/writes data
+- **[The Content Gallery](/UserContent/EXHIBIT.md)** — Source content before database sync
+- **[Edge Computing](/workers/EXHIBIT.md)** — Workers that write to D1
+
+**[← Back to the Museum Entrance](/MUSEUM.md)**
+
+---
+
 *Written as a guide for learning web development. The AutumnsGrove database is a real, functioning example of these principles in practice.*

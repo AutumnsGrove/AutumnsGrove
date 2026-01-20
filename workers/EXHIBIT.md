@@ -253,3 +253,17 @@ This museum exhibit represents three years of learning. The redirect worker is a
 When you're designing your next feature, ask yourself: "Should this run at the edge or in the origin?" The answer is usually "yes, at least the first 80% of it." Let the edge servers do what they're meant to do—respond instantly to users, everywhere.
 
 Welcome to the edge.
+
+---
+
+## Continue Your Tour
+
+**Related exhibits:**
+
+- **[The Architecture](/src/EXHIBIT.md)** — The high-level system overview
+- **[The Engine Room](/src/routes/api/EXHIBIT.md)** — REST API that workers sync to
+- **[The Content Gallery](/UserContent/EXHIBIT.md)** — Source content that gets synced
+- **[The Foundation](/migrations/EXHIBIT.md)** — Database schema that workers write to
+- **[The Control Room](/src/routes/admin/EXHIBIT.md)** — Admin panel that triggers syncs
+
+**[← Back to the Museum Entrance](/MUSEUM.md)**

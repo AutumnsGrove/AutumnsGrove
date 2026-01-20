@@ -428,5 +428,21 @@ That's the engine room. That's where the magic happens.
 
 ---
 
+## Continue Your Tour
+
+**Related exhibits:**
+
+- **[The Architecture](/src/EXHIBIT.md)** — The high-level system overview
+- **[The Control Room](/src/routes/admin/EXHIBIT.md)** — The admin panel that calls these APIs
+- **[The Visitor Experience](/src/routes/EXHIBIT.md)** — Public pages that consume this data
+- **[The Content Gallery](/UserContent/EXHIBIT.md)** — Source content before it reaches the API
+- **[The Foundation](/migrations/EXHIBIT.md)** — Database schema behind the endpoints
+- **[Edge Computing](/workers/EXHIBIT.md)** — Cloudflare Workers that sync content
+- **[The Security Lab](/tests/EXHIBIT.md)** — Tests that verify API security
+
+**[← Back to the Museum Entrance](/MUSEUM.md)**
+
+---
+
 *Last updated: January 2025*
 *Written with the warmth of a midnight tea shop and the clarity of good documentation.*
