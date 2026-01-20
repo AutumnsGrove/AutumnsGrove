@@ -1,0 +1,13 @@
+# AutumnsGrove Redirect Worker
+# Redirects autumnsgrove.com → autumn.grove.place
+
+name = "autumnsgrove-redirect"
+main = "index.ts"
+compatibility_date = "2025-01-01"
+
+# Routes - add your domain here
+# Uncomment after deploying:
+# routes = [
+#   { pattern = "autumnsgrove.com/*", zone_name = "autumnsgrove.com" },
+#   { pattern = "www.autumnsgrove.com/*", zone_name = "autumnsgrove.com" }
+# ]
