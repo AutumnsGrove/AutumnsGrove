@@ -8,6 +8,8 @@
 
 # Hi, I'm Autumn 👋
 
+[![Support me on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/autumnsgrove)
+
 Building things, learning in public, and exploring ideas.
 
 > **[Enter the Museum](/MUSEUM.md)** — This codebase is now a living archive. Explore exhibits on architecture, content flow, API design, and more.
