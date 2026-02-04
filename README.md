@@ -15,7 +15,9 @@ Building things, learning in public, and exploring ideas.
 > **[Enter the Museum](/MUSEUM.md)** — This codebase is now a living archive. Explore exhibits on architecture, content flow, API design, and more.
 
 ## Currently Working On
-- 🌲 Building the [Grove Ecosystem](#grove-ecosystem)
+- 🌲 Preparing [Grove](https://grove.place) v1 launch — multi-tenant blogging platform with 185 UI components
+- 🔧 [Lattice](https://github.com/AutumnsGrove/GroveEngine) — polishing the core engine for v1 public release
+- 🎨 Glass design system expansion across all Grove properties
 - 💭 Thinking about software simplicity and design
 - 📝 [Writing](https://autumnsgrove.com/blog) about tech, projects, and ideas
 
@@ -36,8 +38,8 @@ Grove eschews transactional terminology in favor of language reflecting how peop
 | Project | Description | Links |
 |---------|-------------|-------|
 | **[AutumnsGrove](https://github.com/AutumnsGrove/AutumnsGrove)** | Personal blog and digital home | [autumnsgrove.com](https://autumnsgrove.com) |
-| **[Lattice](https://github.com/AutumnsGrove/GroveEngine)** | Core platform powering every Grove site. [Explore the workshop →](https://grove.place/workshop) | [![npm](https://img.shields.io/npm/v/@autumnsgrove/groveengine)](https://www.npmjs.com/package/@autumnsgrove/groveengine) |
-| **[Heartwood](https://github.com/AutumnsGrove/GroveAuth)** | Centralized authentication for the Grove ecosystem | heartwood.grove.place |
+| **[Lattice](https://github.com/AutumnsGrove/GroveEngine)** | Core platform powering every Grove site. 185 UI components • Glass design system | [![npm](https://img.shields.io/npm/v/@autumnsgrove/groveengine)](https://www.npmjs.com/package/@autumnsgrove/groveengine) |
+| **[Heartwood](https://github.com/AutumnsGrove/GroveAuth)** | Centralized authentication for the Grove ecosystem • OAuth 2.0 + PKCE | heartwood.grove.place |
 | **[Amber](https://github.com/AutumnsGrove/Amber)** | Unified storage management system | amber.grove.place |
 | **[Foliage](https://github.com/AutumnsGrove/Foliage)** | Visual customization and theming system | [![npm](https://img.shields.io/npm/v/@groveengine/foliage)](https://www.npmjs.com/package/@groveengine/foliage) |
 | **[Patina](https://github.com/AutumnsGrove/Patina)** | Automated backup system | *internal* |
