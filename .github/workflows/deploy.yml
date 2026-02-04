@@ -1,3 +1,7 @@
+# NOTE: This workflow is DISABLED - AutumnsGrove repo is a personal profile only
+# and doesn't actually deploy anything. Keeping the file for reference.
+# To re-enable deployment: remove all "if: false" conditions from jobs below
+
 name: Deploy to Cloudflare Pages
 
 on:
@@ -16,7 +20,10 @@ permissions:
   deployments: write
 
 jobs:
+  # NOTE: Deployment disabled - this repo doesn't deploy (personal profile only)
+  # To re-enable: remove the "if: false" condition below
   test:
+    if: false
     runs-on: ubuntu-latest
     name: Run Tests
     steps:

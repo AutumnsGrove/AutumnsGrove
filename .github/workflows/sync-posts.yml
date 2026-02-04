@@ -1,3 +1,6 @@
+# NOTE: This workflow is DISABLED - AutumnsGrove repo doesn't deploy to Cloudflare
+# Keeping the file for reference. To re-enable: remove both `if: false` lines below.
+
 name: Sync Posts to CloudFlare D1
 
 on:
@@ -10,6 +13,7 @@ on:
 
 jobs:
   sync-posts:
+    if: false  # DISABLED - this repo doesn't deploy
     runs-on: ubuntu-latest
     
     steps:
