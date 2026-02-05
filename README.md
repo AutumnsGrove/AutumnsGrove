@@ -6,7 +6,7 @@
         .     .  *        *
 ```
 
-# Hi, I'm Autumn 👋
+# Hi, I'm Autumn
 
 [![Support me on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/autumnsgrove)
 
@@ -14,12 +14,35 @@ Building things, learning in public, and exploring ideas.
 
 > **[Enter the Museum](/MUSEUM.md)** — This codebase is now a living archive. Explore exhibits on architecture, content flow, API design, and more.
 
+---
+
+<p align="center">
+  <img height="500" src="./profile-3d.svg" />
+</p>
+
+<p align="center">
+  <img height="195" src="https://readme-stats.grove.place/stats?username=AutumnsGrove" />
+  <img height="195" src="https://readme-stats.grove.place/languages?username=AutumnsGrove" />
+</p>
+
+<p align="center">
+  <img height="195" src="https://readme-stats.grove.place/streak?username=AutumnsGrove" />
+</p>
+
+---
+
 ## Currently Working On
 - 🌲 Preparing [Grove](https://grove.place) v1 launch — multi-tenant blogging platform with 185 UI components
 - 🔧 [Lattice](https://github.com/AutumnsGrove/GroveEngine) — polishing the core engine for v1 public release
 - 🎨 Glass design system expansion across all Grove properties
 - 💭 Thinking about software simplicity and design
 - 📝 [Writing](https://autumnsgrove.com/blog) about tech, projects, and ideas
+
+## Recent Activity
+
+<!-- BEGIN:recent_activity -->
+*Updated daily by GitHub Actions*
+<!-- END:recent_activity -->
 
 ## Grove Ecosystem
 
@@ -38,8 +61,8 @@ Grove eschews transactional terminology in favor of language reflecting how peop
 | Project | Description | Links |
 |---------|-------------|-------|
 | **[AutumnsGrove](https://github.com/AutumnsGrove/AutumnsGrove)** | Personal blog and digital home | [autumnsgrove.com](https://autumnsgrove.com) |
-| **[Lattice](https://github.com/AutumnsGrove/GroveEngine)** | Core platform powering every Grove site. 185 UI components • Glass design system | [![npm](https://img.shields.io/npm/v/@autumnsgrove/groveengine)](https://www.npmjs.com/package/@autumnsgrove/groveengine) |
-| **[Heartwood](https://github.com/AutumnsGrove/GroveAuth)** | Centralized authentication for the Grove ecosystem • OAuth 2.0 + PKCE | heartwood.grove.place |
+| **[Lattice](https://github.com/AutumnsGrove/GroveEngine)** | Core platform powering every Grove site. 185 UI components · Glass design system | [![npm](https://img.shields.io/npm/v/@autumnsgrove/groveengine)](https://www.npmjs.com/package/@autumnsgrove/groveengine) |
+| **[Heartwood](https://github.com/AutumnsGrove/GroveAuth)** | Centralized authentication for the Grove ecosystem · OAuth 2.0 + PKCE | heartwood.grove.place |
 | **[Amber](https://github.com/AutumnsGrove/Amber)** | Unified storage management system | amber.grove.place |
 | **[Foliage](https://github.com/AutumnsGrove/Foliage)** | Visual customization and theming system | [![npm](https://img.shields.io/npm/v/@groveengine/foliage)](https://www.npmjs.com/package/@groveengine/foliage) |
 | **[Patina](https://github.com/AutumnsGrove/Patina)** | Automated backup system | *internal* |
@@ -68,6 +91,12 @@ Grove eschews transactional terminology in favor of language reflecting how peop
 |---------|-------------|-------|
 | **[Vineyard](https://github.com/AutumnsGrove/Vineyard)** | Tool documentation and demos | *.grove.place/vineyard |
 | **[EmojiGrove](https://github.com/AutumnsGrove/RecipeGrove)** | Smart Recipe documents with EmojiKitchen | *pending rebrand* |
+
+## At a Glance
+
+<!-- BEGIN:repo_stats -->
+*Updated daily by GitHub Actions*
+<!-- END:repo_stats -->
 
 ## Libraries & Packages
 - [Lattice (GroveEngine)](https://github.com/AutumnsGrove/GroveEngine) - Core platform powering every Grove site. [See the workshop](https://grove.place/workshop) for subsystems and docs. [![npm](https://img.shields.io/npm/v/@autumnsgrove/groveengine)](https://www.npmjs.com/package/@autumnsgrove/groveengine)

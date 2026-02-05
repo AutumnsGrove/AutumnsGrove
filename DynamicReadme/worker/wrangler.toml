@@ -1,0 +1,10 @@
+name = "grove-readme-stats"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+GITHUB_USERNAME = "AutumnsGrove"
+CACHE_TTL = "1800"
+
+# Secrets (set using: wrangler secret put GITHUB_TOKEN)
+# GITHUB_TOKEN - GitHub Personal Access Token with read:user scope
