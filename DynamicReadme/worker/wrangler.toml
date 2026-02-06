@@ -2,6 +2,12 @@ name = "grove-readme-stats"
 main = "src/index.js"
 compatibility_date = "2025-01-01"
 
+# Custom domain: readme-stats.autumnsgrove.com
+# Set up via Cloudflare dashboard after first deploy:
+#   Workers & Pages → grove-readme-stats → Settings → Domains & Routes
+[routes]
+# route = { pattern = "readme-stats.autumnsgrove.com/*", zone_name = "autumnsgrove.com" }
+
 [vars]
 GITHUB_USERNAME = "AutumnsGrove"
 CACHE_TTL = "1800"

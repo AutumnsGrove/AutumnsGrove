@@ -21,12 +21,12 @@ Building things, learning in public, and exploring ideas.
 </p>
 
 <p align="center">
-  <img height="195" src="https://readme-stats.grove.place/stats?username=AutumnsGrove" />
-  <img height="195" src="https://readme-stats.grove.place/languages?username=AutumnsGrove" />
+  <img height="195" src="https://readme-stats.autumnsgrove.com/stats?username=AutumnsGrove" />
+  <img height="195" src="https://readme-stats.autumnsgrove.com/languages?username=AutumnsGrove" />
 </p>
 
 <p align="center">
-  <img height="195" src="https://readme-stats.grove.place/streak?username=AutumnsGrove" />
+  <img height="195" src="https://readme-stats.autumnsgrove.com/streak?username=AutumnsGrove" />
 </p>
 
 ---
