@@ -31,11 +31,10 @@ TIMEZONE = "America/New_York"
 GITHUB_API_URL = "https://api.github.com/graphql"
 ALLOWED_ORIGIN = "https://autumnsgrove.com"
 
-# Run at 11:59 PM Eastern Time daily
-# Cron is in UTC: 11:59 PM ET = 4:59 AM UTC (EST) or 3:59 AM UTC (EDT)
-# Using 4:59 AM UTC for EST (winter), adjust for DST manually if needed
+# DISABLED — timeline-sync in Lattice handles daily summaries now
+# Was: 11:59 PM Eastern Time daily (4:59 AM UTC)
 [triggers]
-crons = ["59 4 * * *"]
+# crons = ["59 4 * * *"]
 
 # Production environment
 [env.production.vars]
@@ -64,8 +63,9 @@ max_batch_size = 1
 max_batch_timeout = 30
 max_retries = 2
 
+# DISABLED — timeline-sync in Lattice handles daily summaries now
 [env.production.triggers]
-crons = ["59 4 * * *"]
+# crons = ["59 4 * * *"]
 
 # Secrets (set using: wrangler secret put <SECRET_NAME>)
 # GITHUB_TOKEN - GitHub Personal Access Token with repo scope
