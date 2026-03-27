@@ -84,6 +84,11 @@ Security test suite with Vitest. CSRF protection, XSS prevention, input validati
 
 Workflows that test, deploy, review, and sync. Your invisible teammates who never sleep.
 
+### [Autumn's Projects](/archives/exhibits/ProjectCatalog.md)
+*The full catalog*
+
+Every project I've built — Grove ecosystem, published packages, developer tools, creative experiments, CLI utilities, and more. Organized by what it does, with status notes for what's moved into Lattice.
+
 ---
 
 ## The Stack
@@ -169,6 +174,7 @@ Welcome to the museum.
 | [The Foundation](/migrations/EXHIBIT.md) | `migrations/` | Database schema |
 | [The Security Lab](/tests/EXHIBIT.md) | `tests/` | Security tests |
 | [The Automation Wing](/.github/EXHIBIT.md) | `.github/` | GitHub Actions and CI/CD |
+| [Autumn's Projects](/archives/exhibits/ProjectCatalog.md) | `archives/exhibits/` | The full project catalog |
 
 ---
 
