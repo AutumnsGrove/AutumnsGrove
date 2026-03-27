@@ -26,12 +26,23 @@ The Grove is a multi-tenant blogging and community platform. Most of these proje
 | **Forage** | AI-powered domain discovery | In Lattice |
 | **[Nook](https://github.com/AutumnsGrove/Nook)** | Private video sharing for close friends | Standalone (may join Lattice) |
 | **[Solarium](https://github.com/AutumnsGrove/Solarium)** | The Celestial Observatory | Standalone |
-| **[Shade](https://github.com/AutumnsGrove/GroveShade)** | AI crawler protection layer | Standalone |
-| **[Mycelium](https://github.com/AutumnsGrove/Mycelium)** | MCP server for the Grove ecosystem | Standalone |
-| **[Bloom](https://github.com/AutumnsGrove/GroveBloom)** | Serverless coding infrastructure | Standalone |
+| **Shade** | AI crawler protection layer | In Lattice |
+| **Mycelium** | MCP server for the Grove ecosystem | In Lattice (via `gw`) |
+| **[Verge](https://github.com/AutumnsGrove/GroveVerge)** | Brief, brilliant, gone. Serverless remote coding infrastructure | Standalone |
 | **[Outpost](https://github.com/AutumnsGrove/GroveMC)** | On-demand Minecraft server for friends | Standalone |
 | **[Scout](https://github.com/AutumnsGrove/GroveScout)** | Searching for deals, fast | Standalone |
 | **[Aria](https://github.com/AutumnsGrove/GroveMusic)** | Music curation through sonic DNA matching | On hold |
+
+---
+
+## Lattice CLI Tools
+
+Built in Go, these are the command-line backbone of the Lattice monorepo. Both live inside `tools/` in Lattice.
+
+| Tool | What it does |
+|------|-------------|
+| **`gw`** (grove-wrap) | The Swiss army knife — 70+ subcommands covering auth, deploy, git workflows, D1/R2/KV management, secrets, tenants, releases, health checks, metrics, and more |
+| **`gf`** (grove-find) | Monorepo search and exploration — find files, packages, impacts, quality checks, and infrastructure details across the entire Lattice codebase |
 
 ---
 
@@ -93,7 +104,6 @@ The Grove is a multi-tenant blogging and community platform. Most of these proje
 | **[OpenRouterChat](https://github.com/AutumnsGrove/OpenRouterChat)** | OpenRouter chat interface with memory cards |
 | **[Sift](https://github.com/AutumnsGrove/Sift)** | Braindumps → Kanban boards via Telegram bot |
 | **[Seedling](https://github.com/AutumnsGrove/Seedling)** | Automated job searching with daily emails |
-| **[FictionHouseSite](https://github.com/AutumnsGrove/FictionHouseSite)** | Custom site for a publishing house |
 | **[pin-tracker](https://github.com/AutumnsGrove/pin-tracker)** | Pin production tracker with step-by-step UI |
 
 ---
@@ -123,6 +133,13 @@ The Grove is a multi-tenant blogging and community platform. Most of these proje
 |---------|-------------|
 | **[StyleAssistant](https://github.com/AutumnsGrove/StyleAssistant)** | AI styling assistant for shopping |
 | **[LibraryEnhancer](https://github.com/AutumnsGrove/LibraryEnhancer)** | Enhanced library browsing features |
+
+---
+
+## Apps
+
+| Project | What it does |
+|---------|-------------|
 | **[TreasureTrove](https://github.com/AutumnsGrove/TreasureTrove)** | Library book discovery via camera |
 
 ---
@@ -133,6 +150,7 @@ The Grove is a multi-tenant blogging and community platform. Most of these proje
 |---------|------------|
 | **[RecipeGrove](https://github.com/AutumnsGrove/RecipeGrove)** | Smart recipes with EmojiKitchen |
 | **[ProjectReminder](https://github.com/AutumnsGrove/ProjectReminder)** | Personalized reminders app |
+| **[FictionHouseSite](https://github.com/AutumnsGrove/FictionHouseSite)** | Custom site for a publishing house |
 
 ---
 
