@@ -1,65 +1,44 @@
 import { json, error } from "@sveltejs/kit";
 import { validateCSRF } from "@autumnsgrove/lattice/utils";
 import { sanitizeObject } from "@autumnsgrove/lattice/utils";
+import { updateSiteSetting } from "$lib/server/db.js";
 
 export const prerender = false;
 
-/**
- * Admin endpoint to update site settings
- * @type {import('./$types').RequestHandler}
- */
 export async function PUT({ request, platform, locals }) {
-  // Authentication check
   if (!locals.user) {
     throw error(401, "Unauthorized");
   }
-
-  // CSRF check
   if (!validateCSRF(request)) {
     throw error(403, "Invalid origin");
-  }
-
-  const db = platform?.env?.GROVE_DB;
-  if (!db) {
-    throw error(500, "Database not configured");
   }
 
   try {
     const body = sanitizeObject(await request.json());
     const { setting_key, setting_value } = body;
 
-    // Validate required fields
     if (!setting_key || typeof setting_key !== "string") {
       throw error(400, "Missing or invalid setting_key");
     }
-
     if (setting_value === undefined || setting_value === null) {
       throw error(400, "Missing setting_value");
     }
 
-    // Whitelist allowed settings to prevent arbitrary data injection
     const allowedSettings = ["font_family", "ai_assistant_enabled", "ai_model"];
     if (!allowedSettings.includes(setting_key)) {
       throw error(400, "Invalid setting key");
     }
 
-    // Validate font_family value specifically
     if (setting_key === "font_family") {
       const validFonts = [
-        "alagard",
-        "cozette",
-        "atkinson",
-        "opendyslexic",
-        "lexend",
-        "cormorant",
-        "quicksand",
+        "alagard", "cozette", "atkinson", "opendyslexic",
+        "lexend", "cormorant", "quicksand",
       ];
       if (!validFonts.includes(setting_value)) {
         throw error(400, "Invalid font value");
       }
     }
 
-    // Validate AI assistant settings
     if (setting_key === "ai_assistant_enabled") {
       if (!["true", "false"].includes(setting_value)) {
         throw error(400, "Invalid value for ai_assistant_enabled");
@@ -72,27 +51,12 @@ export async function PUT({ request, platform, locals }) {
       }
     }
 
-    const now = Math.floor(Date.now() / 1000);
-
-    // Upsert the setting
-    await db
-      .prepare(
-        `
-      INSERT INTO site_settings (setting_key, setting_value, updated_at)
-      VALUES (?, ?, ?)
-      ON CONFLICT(setting_key) DO UPDATE SET
-        setting_value = excluded.setting_value,
-        updated_at = excluded.updated_at
-    `,
-      )
-      .bind(setting_key, setting_value, now)
-      .run();
+    await updateSiteSetting(platform, setting_key, setting_value);
 
     return json({
       success: true,
       setting_key,
       setting_value,
-      updated_at: now,
     });
   } catch (err) {
     if (err.status) throw err;

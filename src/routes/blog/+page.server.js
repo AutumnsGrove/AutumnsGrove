@@ -1,37 +1,16 @@
-import { getAllPosts } from "$lib/content/markdown";
+import { getPublishedPosts } from "$lib/server/db.js";
 
-// Disable prerendering - posts are fetched from D1 at runtime
-// This also ensures user auth state is available for the admin link
 export const prerender = false;
 
 export async function load({ locals, platform }) {
   let posts = [];
 
-  // Try D1 database first (posts created via admin panel)
   if (platform?.env?.GROVE_DB) {
     try {
-      const result = await platform.env.GROVE_DB.prepare(
-        `SELECT slug, title, date, tags, description
-				 FROM posts
-				 ORDER BY date DESC`,
-      ).all();
-
-      posts = result.results.map((post) => ({
-        slug: post.slug,
-        title: post.title,
-        date: post.date,
-        tags: post.tags ? JSON.parse(post.tags) : [],
-        description: post.description || "",
-      }));
+      posts = await getPublishedPosts(platform);
     } catch (err) {
-      console.error("D1 fetch error for posts list:", err);
-      // Fall through to filesystem fallback
+      console.error("Failed to fetch posts:", err);
     }
-  }
-
-  // If no D1 posts, fall back to filesystem (for local dev or if D1 is empty)
-  if (posts.length === 0) {
-    posts = getAllPosts();
   }
 
   return {

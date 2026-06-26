@@ -5,27 +5,17 @@ import {
   sanitizeObject,
   sanitizeMarkdown,
 } from "@autumnsgrove/lattice/utils";
+import { getPageBySlug, getGroveDb } from "$lib/server/db.js";
 
-/**
- * PUT /api/pages/[slug] - Update an existing page in D1
- */
 export async function PUT({ params, request, platform, locals }) {
-  // Auth check
   if (!locals.user) {
     throw error(401, "Unauthorized");
   }
-
-  // CSRF check
   if (!validateCSRF(request)) {
     throw error(403, "Invalid origin");
   }
 
-  if (!platform?.env?.GROVE_DB) {
-    throw error(500, "Database not configured");
-  }
-
   const { slug } = params;
-
   if (!slug) {
     throw error(400, "Slug is required");
   }
@@ -33,75 +23,55 @@ export async function PUT({ params, request, platform, locals }) {
   try {
     const data = sanitizeObject(await request.json());
 
-    // Validate required fields
     if (!data.title || !data.markdown_content) {
       throw error(400, "Missing required fields: title, markdown_content");
     }
 
-    // Validation constants
     const MAX_TITLE_LENGTH = 200;
     const MAX_DESCRIPTION_LENGTH = 500;
-    const MAX_MARKDOWN_LENGTH = 1024 * 1024; // 1MB
+    const MAX_MARKDOWN_LENGTH = 1024 * 1024;
 
-    // Validate lengths
     if (data.title.length > MAX_TITLE_LENGTH) {
       throw error(400, `Title too long (max ${MAX_TITLE_LENGTH} characters)`);
     }
-
     if (data.description && data.description.length > MAX_DESCRIPTION_LENGTH) {
-      throw error(
-        400,
-        `Description too long (max ${MAX_DESCRIPTION_LENGTH} characters)`,
-      );
+      throw error(400, `Description too long (max ${MAX_DESCRIPTION_LENGTH} characters)`);
     }
-
     if (data.markdown_content.length > MAX_MARKDOWN_LENGTH) {
       throw error(400, "Content too large (max 1MB)");
     }
 
-    // Check if page exists
-    const existing = await platform.env.GROVE_DB.prepare(
-      "SELECT slug FROM pages WHERE slug = ?",
-    )
-      .bind(slug)
-      .first();
-
+    const existing = await getPageBySlug(platform, slug);
     if (!existing) {
       throw error(404, "Page not found");
     }
 
-    // Generate HTML from markdown and sanitize to prevent XSS
+    const { db, tenantId } = getGroveDb(platform);
     const html_content = sanitizeMarkdown(marked.parse(data.markdown_content));
+    const now = Math.floor(Date.now() / 1000);
 
-    const now = new Date().toISOString();
-
-    // Build the update query
-    const updateQuery = `UPDATE pages
-       SET title = ?, description = ?, markdown_content = ?, html_content = ?, hero = ?, updated_at = ?
-       WHERE slug = ?`;
-
-    const params = [
-      data.title,
-      data.description || "",
-      data.markdown_content,
-      html_content,
-      data.hero || null,
-      now,
-      slug,
-    ];
-
-    await platform.env.GROVE_DB.prepare(updateQuery)
-      .bind(...params)
+    await db
+      .prepare(
+        `UPDATE pages
+         SET title = ?, description = ?, markdown_content = ?, html_content = ?, hero = ?, updated_at = ?
+         WHERE tenant_id = ? AND slug = ?`,
+      )
+      .bind(
+        data.title,
+        data.description || "",
+        data.markdown_content,
+        html_content,
+        data.hero || null,
+        now,
+        tenantId,
+        slug,
+      )
       .run();
 
-    return json({
-      success: true,
-      slug,
-      message: "Page updated successfully",
-    });
+    return json({ success: true, slug, message: "Page updated successfully" });
   } catch (err) {
     if (err.status) throw err;
     console.error("Error updating page:", err);
-    throw error(500, err.message || "Failed to update page");
+    throw error(500, "Failed to update page");
   }
 }

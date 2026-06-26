@@ -1,36 +1,19 @@
 import { json } from "@sveltejs/kit";
+import { getSiteSettings } from "$lib/server/db.js";
 
 export const prerender = false;
 
-/**
- * Public endpoint to retrieve site settings
- * @type {import('./$types').RequestHandler}
- */
 export async function GET({ platform }) {
-  const db = platform?.env?.GROVE_DB;
-
-  if (!db) {
-    // Return defaults if database not available
+  if (!platform?.env?.GROVE_DB) {
     return json({ font_family: "alagard" });
   }
 
   try {
-    const result = await db
-      .prepare("SELECT setting_key, setting_value FROM site_settings")
-      .all();
-
-    const settings = {};
-    for (const row of result.results) {
-      settings[row.setting_key] = row.setting_value;
-    }
-
+    const settings = await getSiteSettings(platform);
     return json(settings, {
-      headers: {
-        "Cache-Control": "public, max-age=300", // 5 minute cache
-      },
+      headers: { "Cache-Control": "public, max-age=300" },
     });
-  } catch (error) {
-    console.error("Failed to fetch settings:", error);
+  } catch {
     return json({ font_family: "alagard" });
   }
 }
