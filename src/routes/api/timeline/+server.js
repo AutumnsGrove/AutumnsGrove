@@ -12,10 +12,10 @@
  */
 
 import { json, error } from "@sveltejs/kit";
-import { safeJsonParse } from "@autumnsgrove/groveengine/utils";
+import { safeJsonParse } from "@autumnsgrove/lattice/server";
 
 export async function GET({ url, platform }) {
-  const db = platform?.env?.GIT_STATS_DB;
+  const db = platform?.env?.GROVE_DB;
   const kv = platform?.env?.CACHE_KV;
 
   if (!db) {

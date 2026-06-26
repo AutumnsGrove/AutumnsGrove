@@ -3,7 +3,7 @@
   import { onMount } from "svelte";
   import { browser } from "$app/environment";
   import { MarkdownEditor, GutterManager, Glass, GlassButton } from "$lib/components";
-  import { api } from "@autumnsgrove/groveengine/utils";
+  import { api } from "@autumnsgrove/lattice/utils";
 
   // Form state
   let title = $state("");

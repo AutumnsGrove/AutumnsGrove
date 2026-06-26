@@ -3,8 +3,8 @@
   import { onMount } from "svelte";
   import { browser } from "$app/environment";
   import { MarkdownEditor, GutterManager, Glass, GlassButton, GlassConfirmDialog } from "$lib/components";
-  import { toast } from "@autumnsgrove/groveengine/ui";
-  import { api } from "@autumnsgrove/groveengine/utils";
+  import { toast } from "@autumnsgrove/lattice/ui";
+  import { api } from "@autumnsgrove/lattice/utils";
 
   let { data } = $props();
 

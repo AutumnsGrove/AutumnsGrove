@@ -1,5 +1,5 @@
 import { json, error } from "@sveltejs/kit";
-import { sanitizeObject } from "@autumnsgrove/groveengine/utils";
+import { sanitizeObject } from "@autumnsgrove/lattice/utils";
 
 /**
  * DELETE endpoint for removing images from CDN (R2)
@@ -37,7 +37,7 @@ export async function DELETE({ request, platform, locals }) {
   }
 
   // Check for R2 binding
-  if (!platform?.env?.IMAGES) {
+  if (!platform?.env?.MEDIA) {
     throw error(500, "R2 bucket not configured");
   }
 
@@ -67,13 +67,13 @@ export async function DELETE({ request, platform, locals }) {
     }
 
     // Check if the object exists before attempting deletion
-    const existingObject = await platform.env.IMAGES.head(sanitizedKey);
+    const existingObject = await platform.env.MEDIA.head(sanitizedKey);
     if (!existingObject) {
       throw error(404, "Image not found");
     }
 
     // Delete from R2
-    await platform.env.IMAGES.delete(sanitizedKey);
+    await platform.env.MEDIA.delete(sanitizedKey);
 
     return json({
       success: true,

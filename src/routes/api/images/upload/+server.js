@@ -1,6 +1,6 @@
 import { json, error } from "@sveltejs/kit";
-import { validateCSRF } from "@autumnsgrove/groveengine/utils";
-import { validateFileSignature } from "@autumnsgrove/groveengine/utils";
+import { validateCSRF } from "@autumnsgrove/lattice/utils";
+import { validateFileSignature } from "@autumnsgrove/lattice/utils";
 
 export async function POST({ request, platform, locals }) {
   // Authentication check
@@ -14,7 +14,7 @@ export async function POST({ request, platform, locals }) {
   }
 
   // Check for R2 binding
-  if (!platform?.env?.IMAGES) {
+  if (!platform?.env?.MEDIA) {
     throw error(500, "R2 bucket not configured");
   }
 
@@ -94,7 +94,7 @@ export async function POST({ request, platform, locals }) {
     const key = `${sanitizedFolder}/${sanitizedName}`;
 
     // Upload to R2 with cache headers
-    await platform.env.IMAGES.put(key, arrayBuffer, {
+    await platform.env.MEDIA.put(key, arrayBuffer, {
       httpMetadata: {
         contentType: file.type,
         cacheControl: "public, max-age=31536000, immutable", // 1 year cache for immutable images

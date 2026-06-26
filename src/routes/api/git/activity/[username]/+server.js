@@ -11,7 +11,7 @@ export const prerender = false;
 export async function GET({ params, url, platform }) {
   try {
     const username = validateUsername(params.username);
-    const db = platform?.env?.GIT_STATS_DB;
+    const db = platform?.env?.GROVE_DB;
     const kv = platform?.env?.CACHE_KV;
 
     if (!db) {

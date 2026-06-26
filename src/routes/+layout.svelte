@@ -7,14 +7,14 @@
 
 <script>
 	import '../app.css';
-	import '@autumnsgrove/groveengine/ui/styles/tokens.css';
-	import '@autumnsgrove/groveengine/ui/styles/content.css';
+	import '@autumnsgrove/lattice/styles/tokens.css';
+	import '@autumnsgrove/lattice/styles/content.css';
 	import '$lib/styles/vine-pattern.css';
 	import { page } from '$app/stores';
 	import { fade } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { Button, Input, Logo, Sheet } from '@autumnsgrove/groveengine/ui';
+	import { Button, Input, Logo, Sheet } from '@autumnsgrove/lattice/ui';
 	import Home from 'lucide-svelte/icons/home';
 	import BookOpen from 'lucide-svelte/icons/book-open';
 	import ImageIcon from 'lucide-svelte/icons/image';

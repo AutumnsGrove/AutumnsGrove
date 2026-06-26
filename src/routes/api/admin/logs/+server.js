@@ -4,7 +4,7 @@ import {
   getAllLogs,
   getLogStats,
   subscribe,
-} from "@autumnsgrove/groveengine/server";
+} from "@autumnsgrove/lattice/server";
 
 export const prerender = false;
 

@@ -8,12 +8,15 @@ importers:
 
   .:
     dependencies:
+      '@autumnsgrove/gossamer':
+        specifier: ^0.2.0
+        version: 0.2.0(svelte@5.56.4)
       '@autumnsgrove/grove-markdown':
         specifier: ^0.1.0
         version: 0.1.0
       '@autumnsgrove/lattice':
         specifier: ^1.2.2
-        version: 1.2.2(@cloudflare/workers-types@4.20260626.1)(@floating-ui/dom@1.7.6)(@sveltejs/kit@2.68.0(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(@tiptap/extension-floating-menu@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/extensions@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(svelte@5.56.4)(tailwindcss@3.4.19)
+        version: 1.2.2(@autumnsgrove/gossamer@0.2.0(svelte@5.56.4))(@cloudflare/workers-types@4.20260626.1)(@floating-ui/dom@1.7.6)(@sveltejs/kit@2.68.0(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(@tiptap/extension-floating-menu@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/extensions@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(svelte@5.56.4)(tailwindcss@3.4.19)
       '@autumnsgrove/prism':
         specifier: ^0.1.0
         version: 0.1.0(svelte@5.56.4)
@@ -44,6 +47,9 @@ importers:
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.6.0
+      unist-util-visit:
+        specifier: ^5.1.0
+        version: 5.1.0
     devDependencies:
       '@lucide/svelte':
         specifier: ^0.482.0
@@ -140,6 +146,14 @@ packages:
       '@autumnsgrove/prism': 0.1.0
       markdown-it: '>=14.0.0'
       svelte: ^5.0.0
+
+  '@autumnsgrove/gossamer@0.2.0':
+    resolution: {integrity: sha512-uu00inw1Pem1xiKtHWlunqyh++Nm7CqZO5cfS2oCDggarEW2tPTX6yMn7/9l+JPByl40rctZfPBt3lYUkBOg7A==}
+    peerDependencies:
+      svelte: ^5.0.0
+    peerDependenciesMeta:
+      svelte:
+        optional: true
 
   '@autumnsgrove/grove-crypto@0.1.0':
     resolution: {integrity: sha512-+5mmqgI4eS3MmuXAW1y/0UdgrVY3v+EzsfuL0OZN6K/VWt0zSSPcZ1CvxXt6a0WoE0/25ELS9j1gXOclklCjUQ==}
@@ -1239,6 +1253,9 @@ packages:
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
+
+  '@types/unist@3.0.3':
+    resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
 
   '@types/whatwg-mimetype@3.0.2':
     resolution: {integrity: sha512-c2AKvDT8ToxLIOUlN51gTiHXflsfIFisS4pO7pDPoKouJCESkhZnEy623gwP9laCy5lnLDAw1vAzu2vM2YLOrA==}
@@ -2359,6 +2376,15 @@ packages:
   unenv@2.0.0-rc.24:
     resolution: {integrity: sha512-i7qRCmY42zmCwnYlh9H2SvLEypEFGye5iRmEMKjcGi7zk9UquigRjFtTLz0TYqr0ZGLZhaMHl/foy1bZR+Cwlw==}
 
+  unist-util-is@6.0.1:
+    resolution: {integrity: sha512-LsiILbtBETkDz8I9p1dQ0uyRUWuaQzd/cuEeS1hoRSyW5E5XGmTzlwY1OrNzzakGowI9Dr/I8HVaw4hTtnxy8g==}
+
+  unist-util-visit-parents@6.0.2:
+    resolution: {integrity: sha512-goh1s1TBrqSqukSc8wrjwWhL0hiJxgA8m4kFxGlQ+8FYQ3C/m11FcTs4YYem7V664AhHVvgoQLk890Ssdsr2IQ==}
+
+  unist-util-visit@5.1.0:
+    resolution: {integrity: sha512-m+vIdyeCOpdr/QeQCu2EzxX/ohgS8KbnPDgFni4dQsfSCtpz8UqDyY5GjRru8PDKuYn7Fq19j1CQ+nJSsGKOzg==}
+
   update-browserslist-db@1.2.3:
     resolution: {integrity: sha512-Js0m9cx+qOgDxo0eMiFGEueWztz+d4+M3rGlmKPT+T4IS/jP4ylw3Nwpu6cpTTP8R1MAC1kF4VbdLt3ARf209w==}
     hasBin: true
@@ -2587,13 +2613,17 @@ snapshots:
 
   '@asamuzakjp/nwsapi@2.3.9': {}
 
-  '@autumnsgrove/curios@0.1.1(@autumnsgrove/lattice@1.2.2(@cloudflare/workers-types@4.20260626.1)(@floating-ui/dom@1.7.6)(@sveltejs/kit@2.68.0(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(@tiptap/extension-floating-menu@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/extensions@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(svelte@5.56.4)(tailwindcss@3.4.19))(@autumnsgrove/prism@0.1.0(svelte@5.56.4))(markdown-it@14.2.0)(svelte@5.56.4)':
+  '@autumnsgrove/curios@0.1.1(@autumnsgrove/lattice@1.2.2(@autumnsgrove/gossamer@0.2.0(svelte@5.56.4))(@cloudflare/workers-types@4.20260626.1)(@floating-ui/dom@1.7.6)(@sveltejs/kit@2.68.0(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(@tiptap/extension-floating-menu@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/extensions@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(svelte@5.56.4)(tailwindcss@3.4.19))(@autumnsgrove/prism@0.1.0(svelte@5.56.4))(markdown-it@14.2.0)(svelte@5.56.4)':
     dependencies:
       '@autumnsgrove/grove-crypto': 0.1.0
       '@autumnsgrove/grove-errors': 0.1.0
-      '@autumnsgrove/lattice': 1.2.2(@cloudflare/workers-types@4.20260626.1)(@floating-ui/dom@1.7.6)(@sveltejs/kit@2.68.0(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(@tiptap/extension-floating-menu@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/extensions@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(svelte@5.56.4)(tailwindcss@3.4.19)
+      '@autumnsgrove/lattice': 1.2.2(@autumnsgrove/gossamer@0.2.0(svelte@5.56.4))(@cloudflare/workers-types@4.20260626.1)(@floating-ui/dom@1.7.6)(@sveltejs/kit@2.68.0(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(@tiptap/extension-floating-menu@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/extensions@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(svelte@5.56.4)(tailwindcss@3.4.19)
       '@autumnsgrove/prism': 0.1.0(svelte@5.56.4)
       markdown-it: 14.2.0
+      svelte: 5.56.4
+
+  '@autumnsgrove/gossamer@0.2.0(svelte@5.56.4)':
+    optionalDependencies:
       svelte: 5.56.4
 
   '@autumnsgrove/grove-crypto@0.1.0': {}
@@ -2614,10 +2644,10 @@ snapshots:
       '@autumnsgrove/grove-errors': 0.1.0
       hono: 4.12.27
 
-  '@autumnsgrove/lattice@1.2.2(@cloudflare/workers-types@4.20260626.1)(@floating-ui/dom@1.7.6)(@sveltejs/kit@2.68.0(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(@tiptap/extension-floating-menu@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/extensions@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(svelte@5.56.4)(tailwindcss@3.4.19)':
+  '@autumnsgrove/lattice@1.2.2(@autumnsgrove/gossamer@0.2.0(svelte@5.56.4))(@cloudflare/workers-types@4.20260626.1)(@floating-ui/dom@1.7.6)(@sveltejs/kit@2.68.0(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(@tiptap/extension-floating-menu@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/extensions@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(svelte@5.56.4)(tailwindcss@3.4.19)':
     dependencies:
       '@11ty/gray-matter': 2.1.0
-      '@autumnsgrove/curios': 0.1.1(@autumnsgrove/lattice@1.2.2(@cloudflare/workers-types@4.20260626.1)(@floating-ui/dom@1.7.6)(@sveltejs/kit@2.68.0(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(@tiptap/extension-floating-menu@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/extensions@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(svelte@5.56.4)(tailwindcss@3.4.19))(@autumnsgrove/prism@0.1.0(svelte@5.56.4))(markdown-it@14.2.0)(svelte@5.56.4)
+      '@autumnsgrove/curios': 0.1.1(@autumnsgrove/lattice@1.2.2(@autumnsgrove/gossamer@0.2.0(svelte@5.56.4))(@cloudflare/workers-types@4.20260626.1)(@floating-ui/dom@1.7.6)(@sveltejs/kit@2.68.0(@sveltejs/vite-plugin-svelte@6.2.4(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(svelte@5.56.4)(vite@7.3.6(@types/node@26.0.1)(jiti@1.21.7)))(@tiptap/extension-floating-menu@3.27.1(@floating-ui/dom@1.7.6)(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(@tiptap/extensions@3.27.1(@tiptap/core@3.27.1(@tiptap/pm@3.27.1))(@tiptap/pm@3.27.1))(react-dom@19.2.7(react@19.2.7))(react@19.2.7)(svelte@5.56.4)(tailwindcss@3.4.19))(@autumnsgrove/prism@0.1.0(svelte@5.56.4))(markdown-it@14.2.0)(svelte@5.56.4)
       '@autumnsgrove/grove-crypto': 0.1.0
       '@autumnsgrove/grove-errors': 0.1.0
       '@autumnsgrove/grove-markdown': 0.1.0
@@ -2652,6 +2682,8 @@ snapshots:
       tailwind-merge: 3.6.0
       tailwindcss: 3.4.19
       zod: 4.4.3
+    optionalDependencies:
+      '@autumnsgrove/gossamer': 0.2.0(svelte@5.56.4)
     transitivePeerDependencies:
       - '@aws-sdk/client-rds-data'
       - '@cloudflare/workers-types'
@@ -3527,6 +3559,8 @@ snapshots:
       undici-types: 8.3.0
 
   '@types/trusted-types@2.0.7': {}
+
+  '@types/unist@3.0.3': {}
 
   '@types/whatwg-mimetype@3.0.2': {}
 
@@ -4659,6 +4693,21 @@ snapshots:
   unenv@2.0.0-rc.24:
     dependencies:
       pathe: 2.0.3
+
+  unist-util-is@6.0.1:
+    dependencies:
+      '@types/unist': 3.0.3
+
+  unist-util-visit-parents@6.0.2:
+    dependencies:
+      '@types/unist': 3.0.3
+      unist-util-is: 6.0.1
+
+  unist-util-visit@5.1.0:
+    dependencies:
+      '@types/unist': 3.0.3
+      unist-util-is: 6.0.1
+      unist-util-visit-parents: 6.0.2
 
   update-browserslist-db@1.2.3(browserslist@4.28.4):
     dependencies:

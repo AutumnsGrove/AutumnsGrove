@@ -1,7 +1,7 @@
 <script>
   import { GlassCard, GlassButton, Skeleton } from "$lib/components";
-  import { toast } from "@autumnsgrove/groveengine/ui";
-  import { api } from "@autumnsgrove/groveengine/utils";
+  import { toast } from "@autumnsgrove/lattice/ui";
+  import { api } from "@autumnsgrove/lattice/utils";
 
   let clearingCache = $state(false);
   let cacheMessage = $state('');

@@ -1,8 +1,8 @@
 <script>
   import { Calendar, Play, RefreshCw, Clock, CheckCircle, XCircle, Loader2, AlertTriangle, DollarSign, Cpu, TrendingUp, ChevronDown, Edit3, X, Save, List } from 'lucide-svelte';
-  import { Button, Input, Select, toast } from '@autumnsgrove/groveengine/ui';
+  import { Button, Input, Select, toast } from '@autumnsgrove/lattice/ui';
   import { GlassCard, GlassButton, Glass } from '$lib/components';
-  import { apiRequest } from '@autumnsgrove/groveengine/utils';
+  import { apiRequest } from '@autumnsgrove/lattice/utils';
 
   let triggerLoading = $state(false);
   let backfillLoading = $state(false);

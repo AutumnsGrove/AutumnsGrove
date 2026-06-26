@@ -6,8 +6,8 @@ export async function load({ locals, platform }) {
   // The Cloudflare adapter throws when accessing platform.env during prerendering
   // We wrap everything in try-catch because even checking platform?.env can throw during prerendering
   try {
-    if (platform?.env?.GIT_STATS_DB) {
-      const db = platform.env.GIT_STATS_DB;
+    if (platform?.env?.GROVE_DB) {
+      const db = platform.env.GROVE_DB;
       const result = await db
         .prepare("SELECT setting_key, setting_value FROM site_settings")
         .all();

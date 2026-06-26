@@ -4,7 +4,7 @@ import {
   validateCSRF,
   sanitizeObject,
   sanitizeMarkdown,
-} from "@autumnsgrove/groveengine/utils";
+} from "@autumnsgrove/lattice/utils";
 
 /**
  * PUT /api/pages/[slug] - Update an existing page in D1
@@ -20,7 +20,7 @@ export async function PUT({ params, request, platform, locals }) {
     throw error(403, "Invalid origin");
   }
 
-  if (!platform?.env?.POSTS_DB) {
+  if (!platform?.env?.GROVE_DB) {
     throw error(500, "Database not configured");
   }
 
@@ -60,7 +60,7 @@ export async function PUT({ params, request, platform, locals }) {
     }
 
     // Check if page exists
-    const existing = await platform.env.POSTS_DB.prepare(
+    const existing = await platform.env.GROVE_DB.prepare(
       "SELECT slug FROM pages WHERE slug = ?",
     )
       .bind(slug)
@@ -90,7 +90,7 @@ export async function PUT({ params, request, platform, locals }) {
       slug,
     ];
 
-    await platform.env.POSTS_DB.prepare(updateQuery)
+    await platform.env.GROVE_DB.prepare(updateQuery)
       .bind(...params)
       .run();
 

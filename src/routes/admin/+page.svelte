@@ -1,6 +1,6 @@
 <script>
   import { GlassCard, Skeleton } from '$lib/components';
-  import { api } from "@autumnsgrove/groveengine/utils";
+  import { api } from "@autumnsgrove/lattice/utils";
   import {
     FileText,
     Image,

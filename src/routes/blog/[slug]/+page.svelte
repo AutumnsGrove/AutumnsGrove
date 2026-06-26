@@ -1,6 +1,6 @@
 <script>
 	import { ContentWithGutter } from '$lib/components';
-	import { Button, Badge } from '@autumnsgrove/groveengine/ui';
+	import { Button, Badge } from '@autumnsgrove/lattice/ui';
 
 	let { data } = $props();
 

@@ -4,7 +4,7 @@ import {
   getHeaders,
   GITHUB_API_BASE,
 } from "$lib/utils/github";
-import { sanitizeObject } from "@autumnsgrove/groveengine/utils";
+import { sanitizeObject } from "@autumnsgrove/lattice/utils";
 
 export const prerender = false;
 
@@ -16,7 +16,7 @@ export const prerender = false;
 export async function POST({ request, platform }) {
   try {
     const token = platform?.env?.GITHUB_TOKEN;
-    const db = platform?.env?.GIT_STATS_DB;
+    const db = platform?.env?.GROVE_DB;
 
     if (!token) {
       throw error(401, "GitHub token not configured");
@@ -170,7 +170,7 @@ export async function POST({ request, platform }) {
 
 // Also support GET for manual testing
 export async function GET({ platform }) {
-  const db = platform?.env?.GIT_STATS_DB;
+  const db = platform?.env?.GROVE_DB;
   const token = platform?.env?.GITHUB_TOKEN;
 
   return json({

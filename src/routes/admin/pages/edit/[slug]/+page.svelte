@@ -3,8 +3,8 @@
   import { onMount } from "svelte";
   import { browser } from "$app/environment";
   import { MarkdownEditor } from "$lib/components";
-  import { Input, Textarea, Button, toast } from "@autumnsgrove/groveengine/ui";
-  import { api } from "@autumnsgrove/groveengine/utils";
+  import { Input, Textarea, Button, toast } from "@autumnsgrove/lattice/ui";
+  import { api } from "@autumnsgrove/lattice/utils";
 
   let { data } = $props();
 

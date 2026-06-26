@@ -8,7 +8,7 @@ import {
   getModelId,
   calculateCost,
 } from "$lib/config/ai-models";
-import { validateCSRF } from "@autumnsgrove/groveengine/utils";
+import { validateCSRF } from "@autumnsgrove/lattice/utils";
 
 export const prerender = false;
 
@@ -43,7 +43,7 @@ export async function POST({ request, platform, locals }) {
     return json({ error: "Invalid origin" }, { status: 403 });
   }
 
-  const db = platform?.env?.GIT_STATS_DB;
+  const db = platform?.env?.GROVE_DB;
   const anthropicKey = platform?.env?.ANTHROPIC_API_KEY;
 
   if (!anthropicKey) {
@@ -241,7 +241,7 @@ export async function GET({ platform, locals }) {
     return json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const db = platform?.env?.GIT_STATS_DB;
+  const db = platform?.env?.GROVE_DB;
 
   if (!db) {
     return json({ requests: 0, tokens: 0, cost: 0 });

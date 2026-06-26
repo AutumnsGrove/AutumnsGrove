@@ -1,7 +1,7 @@
 // Component exports for easy importing
 // Usage: import { ImageGallery, IconLegend, Glass, GlassCard } from '$lib/components';
 
-// Re-export all components from GroveEngine main barrel
+// Re-export all components from Lattice main barrel
 export {
   // Gallery components
   ImageGallery,
@@ -18,9 +18,9 @@ export {
   TableOfContents,
   MobileTOC,
   CollapsibleSection,
-} from "@autumnsgrove/groveengine";
+} from "@autumnsgrove/lattice";
 
-// UI components from GroveEngine
+// UI components from Lattice
 export {
   Button,
   Card,
@@ -48,17 +48,17 @@ export {
   GlassLogo,
   // Toast utilities
   toast,
-} from "@autumnsgrove/groveengine/ui";
+} from "@autumnsgrove/lattice/ui";
 
 // Site-specific custom components - keep local
 export { default as IconLegend } from "./custom/IconLegend.svelte";
 export { default as InternalsPostViewer } from "./custom/InternalsPostViewer.svelte";
 export { default as LogViewer } from "./custom/LogViewer.svelte";
 
-// Chart components - now from groveengine
+// Chart components from Lattice
 export {
   Sparkline,
   LOCBar,
   RepoBreakdown,
   ActivityOverview,
-} from "@autumnsgrove/groveengine/ui/charts";
+} from "@autumnsgrove/lattice/ui/charts";

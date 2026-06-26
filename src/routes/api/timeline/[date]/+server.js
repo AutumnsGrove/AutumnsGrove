@@ -6,8 +6,8 @@
  */
 
 import { json, error } from "@sveltejs/kit";
-import { safeJsonParse } from "@autumnsgrove/groveengine/utils";
-import { sanitizeObject } from "@autumnsgrove/groveengine/utils";
+import { safeJsonParse } from "@autumnsgrove/lattice/server";
+import { sanitizeObject } from "@autumnsgrove/lattice/utils";
 
 /**
  * Check if an email is in the allowed admins list
@@ -26,7 +26,7 @@ const MAX_BRIEF_SUMMARY_LENGTH = 500;
 const MAX_DETAILED_TIMELINE_LENGTH = 50000;
 
 export async function GET({ params, platform }) {
-  const db = platform?.env?.GIT_STATS_DB;
+  const db = platform?.env?.GROVE_DB;
   const { date } = params;
 
   if (!db) {
@@ -80,7 +80,7 @@ export async function GET({ params, platform }) {
 }
 
 export async function PUT({ params, request, platform, locals }) {
-  const db = platform?.env?.GIT_STATS_DB;
+  const db = platform?.env?.GROVE_DB;
   const kv = platform?.env?.CACHE_KV;
   const { date } = params;
 

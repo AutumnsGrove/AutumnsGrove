@@ -8,9 +8,9 @@ export async function load({ locals, platform }) {
   let posts = [];
 
   // Try D1 database first (posts created via admin panel)
-  if (platform?.env?.POSTS_DB) {
+  if (platform?.env?.GROVE_DB) {
     try {
-      const result = await platform.env.POSTS_DB.prepare(
+      const result = await platform.env.GROVE_DB.prepare(
         `SELECT slug, title, date, tags, description
 				 FROM posts
 				 ORDER BY date DESC`,

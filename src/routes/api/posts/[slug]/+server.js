@@ -5,7 +5,7 @@ import {
   validateCSRF,
   sanitizeObject,
   sanitizeMarkdown,
-} from "@autumnsgrove/groveengine/utils";
+} from "@autumnsgrove/lattice/utils";
 
 /**
  * GET /api/posts/[slug] - Get a single post
@@ -24,9 +24,9 @@ export async function GET({ params, platform, locals }) {
   }
 
   // Try D1 first
-  if (platform?.env?.POSTS_DB) {
+  if (platform?.env?.GROVE_DB) {
     try {
-      const post = await platform.env.POSTS_DB.prepare(
+      const post = await platform.env.GROVE_DB.prepare(
         `SELECT slug, title, date, tags, description, markdown_content, html_content, gutter_content, font, last_synced, updated_at
          FROM posts
          WHERE slug = ?`,
@@ -92,7 +92,7 @@ export async function PUT({ params, request, platform, locals }) {
     throw error(403, "Invalid origin");
   }
 
-  if (!platform?.env?.POSTS_DB) {
+  if (!platform?.env?.GROVE_DB) {
     throw error(500, "Posts database not configured");
   }
 
@@ -132,7 +132,7 @@ export async function PUT({ params, request, platform, locals }) {
     }
 
     // Check if post exists
-    const existing = await platform.env.POSTS_DB.prepare(
+    const existing = await platform.env.GROVE_DB.prepare(
       "SELECT slug FROM posts WHERE slug = ?",
     )
       .bind(slug)
@@ -176,7 +176,7 @@ export async function PUT({ params, request, platform, locals }) {
       slug,
     ];
 
-    await platform.env.POSTS_DB.prepare(updateQuery)
+    await platform.env.GROVE_DB.prepare(updateQuery)
       .bind(...params)
       .run();
 
@@ -206,7 +206,7 @@ export async function DELETE({ request, params, platform, locals }) {
     throw error(403, "Invalid origin");
   }
 
-  if (!platform?.env?.POSTS_DB) {
+  if (!platform?.env?.GROVE_DB) {
     throw error(500, "Posts database not configured");
   }
 
@@ -218,7 +218,7 @@ export async function DELETE({ request, params, platform, locals }) {
 
   try {
     // Check if post exists
-    const existing = await platform.env.POSTS_DB.prepare(
+    const existing = await platform.env.GROVE_DB.prepare(
       "SELECT slug FROM posts WHERE slug = ?",
     )
       .bind(slug)
@@ -228,7 +228,7 @@ export async function DELETE({ request, params, platform, locals }) {
       throw error(404, "Post not found");
     }
 
-    await platform.env.POSTS_DB.prepare("DELETE FROM posts WHERE slug = ?")
+    await platform.env.GROVE_DB.prepare("DELETE FROM posts WHERE slug = ?")
       .bind(slug)
       .run();
 

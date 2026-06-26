@@ -9,7 +9,7 @@ import {
   logGitHub,
   logCache,
   logError,
-} from "@autumnsgrove/groveengine/server";
+} from "@autumnsgrove/lattice/server";
 
 export const prerender = false;
 

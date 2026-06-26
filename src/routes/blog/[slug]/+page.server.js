@@ -1,5 +1,5 @@
 import { getPostBySlug, processAnchorTags } from "$lib/content/markdown";
-import { sanitizeMarkdown } from "@autumnsgrove/groveengine/utils";
+import { sanitizeMarkdown } from "@autumnsgrove/lattice/utils";
 import { error } from "@sveltejs/kit";
 import { marked } from "marked";
 
@@ -11,9 +11,9 @@ export async function load({ params, platform }) {
 
   try {
     // Try D1 first for posts created via admin panel
-    if (platform?.env?.POSTS_DB) {
+    if (platform?.env?.GROVE_DB) {
       try {
-        const post = await platform.env.POSTS_DB.prepare(
+        const post = await platform.env.GROVE_DB.prepare(
           `SELECT slug, title, date, tags, description, html_content, markdown_content, gutter_content, font
 					 FROM posts WHERE slug = ?`,
         )
@@ -124,9 +124,9 @@ export async function load({ params, platform }) {
 
     // Post not found in D1 or filesystem
     // If we got here without D1 being available, that's a config issue
-    if (!platform?.env?.POSTS_DB) {
+    if (!platform?.env?.GROVE_DB) {
       console.error(
-        "POSTS_DB binding not available - check Cloudflare Pages D1 bindings",
+        "GROVE_DB binding not available - check Cloudflare Pages D1 bindings",
       );
     }
     throw error(404, "Post not found");

@@ -9,7 +9,7 @@ export const prerender = false;
 export async function GET({ url, platform }) {
   const token = platform?.env?.GITHUB_TOKEN;
   const kv = platform?.env?.CACHE_KV;
-  const db = platform?.env?.GIT_STATS_DB;
+  const db = platform?.env?.GROVE_DB;
 
   const result = {
     status: "healthy",

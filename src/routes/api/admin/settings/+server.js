@@ -1,6 +1,6 @@
 import { json, error } from "@sveltejs/kit";
-import { validateCSRF } from "@autumnsgrove/groveengine/utils";
-import { sanitizeObject } from "@autumnsgrove/groveengine/utils";
+import { validateCSRF } from "@autumnsgrove/lattice/utils";
+import { sanitizeObject } from "@autumnsgrove/lattice/utils";
 
 export const prerender = false;
 
@@ -19,7 +19,7 @@ export async function PUT({ request, platform, locals }) {
     throw error(403, "Invalid origin");
   }
 
-  const db = platform?.env?.GIT_STATS_DB;
+  const db = platform?.env?.GROVE_DB;
   if (!db) {
     throw error(500, "Database not configured");
   }

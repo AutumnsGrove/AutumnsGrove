@@ -7,7 +7,7 @@ export const prerender = false;
  * @type {import('./$types').RequestHandler}
  */
 export async function GET({ platform }) {
-  const db = platform?.env?.GIT_STATS_DB;
+  const db = platform?.env?.GROVE_DB;
 
   if (!db) {
     // Return defaults if database not available

@@ -1,12 +1,12 @@
 import { json, error } from "@sveltejs/kit";
-import { parseImageFilename } from "@autumnsgrove/groveengine/utils";
+import { parseImageFilename } from "@autumnsgrove/lattice/utils";
 
 /**
  * GET /api/images/filters
  * Returns available filter options for the gallery
  */
 export async function GET({ platform }) {
-  if (!platform?.env?.IMAGES) {
+  if (!platform?.env?.MEDIA) {
     throw error(500, "R2 bucket not configured");
   }
 
@@ -19,7 +19,7 @@ export async function GET({ platform }) {
     const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif"];
 
     do {
-      const listResult = await platform.env.IMAGES.list({
+      const listResult = await platform.env.MEDIA.list({
         cursor: cursor,
         limit: 500,
       });

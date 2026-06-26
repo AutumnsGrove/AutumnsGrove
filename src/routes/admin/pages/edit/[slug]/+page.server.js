@@ -11,9 +11,9 @@ export async function load({ params, platform }) {
   }
 
   // Try D1 first
-  if (platform?.env?.POSTS_DB) {
+  if (platform?.env?.GROVE_DB) {
     try {
-      const page = await platform.env.POSTS_DB.prepare(
+      const page = await platform.env.GROVE_DB.prepare(
         `SELECT slug, title, description, type, markdown_content, html_content, hero, gutter_content, font, updated_at, created_at
          FROM pages
          WHERE slug = ?`,

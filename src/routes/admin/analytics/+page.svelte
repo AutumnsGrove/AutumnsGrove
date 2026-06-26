@@ -1,5 +1,5 @@
 <script>
-  import { Card, Button, Skeleton, toast } from "@autumnsgrove/groveengine/ui";
+  import { Card, Button, Skeleton, toast } from "@autumnsgrove/lattice/ui";
 
   let stats = $state(null);
   let loading = $state(true);

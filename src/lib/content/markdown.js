@@ -1,6 +1,6 @@
 import { marked } from "marked";
 import matter from "gray-matter";
-import { sanitizeMarkdown } from "@autumnsgrove/groveengine/utils";
+import { sanitizeMarkdown } from "@autumnsgrove/lattice/utils";
 
 // Configure marked renderer for GitHub-style code blocks
 const renderer = new marked.Renderer();

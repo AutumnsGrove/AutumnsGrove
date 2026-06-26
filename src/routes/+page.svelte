@@ -1,7 +1,7 @@
 <script>
 	import InternalsPostViewer from '$lib/components/custom/InternalsPostViewer.svelte';
 	import LeafDivider from '$lib/components/custom/LeafDivider.svelte';
-	import { Button } from '@autumnsgrove/groveengine/ui';
+	import { Button } from '@autumnsgrove/lattice/ui';
 	import { GlassCard } from '$lib/components';
 
 	let { data } = $props();

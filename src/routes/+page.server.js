@@ -3,7 +3,7 @@ import {
   getLatestPost,
   processAnchorTags,
 } from "$lib/content/markdown";
-import { sanitizeMarkdown } from "@autumnsgrove/groveengine/utils";
+import { sanitizeMarkdown } from "@autumnsgrove/lattice/utils";
 import { error } from "@sveltejs/kit";
 import { marked } from "marked";
 
@@ -14,9 +14,9 @@ export async function load({ platform }) {
   let page = null;
 
   // Try D1 first for the home page
-  if (platform?.env?.POSTS_DB) {
+  if (platform?.env?.GROVE_DB) {
     try {
-      const pageData = await platform.env.POSTS_DB.prepare(
+      const pageData = await platform.env.GROVE_DB.prepare(
         `SELECT slug, title, description, markdown_content, html_content, hero, gutter_content, font
          FROM pages
          WHERE slug = ?`,
@@ -100,9 +100,9 @@ export async function load({ platform }) {
   let latestPost = null;
 
   // Try D1 first for the latest post
-  if (platform?.env?.POSTS_DB) {
+  if (platform?.env?.GROVE_DB) {
     try {
-      const post = await platform.env.POSTS_DB.prepare(
+      const post = await platform.env.GROVE_DB.prepare(
         `SELECT slug, title, date, tags, description, html_content, gutter_content, font
          FROM posts
          ORDER BY date DESC

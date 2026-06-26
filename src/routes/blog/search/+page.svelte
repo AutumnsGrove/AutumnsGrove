@@ -1,7 +1,7 @@
 <script>
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { Card, Badge, Button, Input } from '@autumnsgrove/groveengine/ui';
+	import { Card, Badge, Button, Input } from '@autumnsgrove/lattice/ui';
 
 	let { data } = $props();
 

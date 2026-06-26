@@ -1,5 +1,5 @@
 <script>
-  import { Toast, Sheet, Logo, Button } from "@autumnsgrove/groveengine/ui";
+  import { Toast, Sheet, Logo, Button } from "@autumnsgrove/lattice/ui";
   import {
     LayoutDashboard,
     FileText,

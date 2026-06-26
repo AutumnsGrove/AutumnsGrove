@@ -6,7 +6,7 @@ import { json, error } from "@sveltejs/kit";
  */
 export async function GET({ url, platform }) {
   // Check for R2 binding
-  if (!platform?.env?.IMAGES) {
+  if (!platform?.env?.MEDIA) {
     throw error(500, "R2 bucket not configured");
   }
 
@@ -15,7 +15,7 @@ export async function GET({ url, platform }) {
     const limit = parseInt(url.searchParams.get("limit") || "100", 10);
 
     // List objects from R2
-    const listResult = await platform.env.IMAGES.list({
+    const listResult = await platform.env.MEDIA.list({
       cursor: cursor,
       limit: Math.min(limit, 500), // Allow larger batches for gallery
     });

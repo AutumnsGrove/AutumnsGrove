@@ -18,7 +18,7 @@
 		TableRow,
 		TableCell,
 		TableHead
-	} from '@autumnsgrove/groveengine/ui';
+	} from '@autumnsgrove/lattice/ui';
 	import { Glass } from '$lib/components';
 
 	// State for interactive examples

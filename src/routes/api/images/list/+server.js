@@ -1,12 +1,12 @@
 import { json, error } from "@sveltejs/kit";
-import { parseImageFilename } from "@autumnsgrove/groveengine/utils";
+import { parseImageFilename } from "@autumnsgrove/lattice/utils";
 
 export async function GET({ url, platform, locals }) {
   // Authentication check (optional - can make public for gallery)
   const isAdmin = !!locals.user;
 
   // Check for R2 binding
-  if (!platform?.env?.IMAGES) {
+  if (!platform?.env?.MEDIA) {
     throw error(500, "R2 bucket not configured");
   }
 
@@ -23,7 +23,7 @@ export async function GET({ url, platform, locals }) {
     const year = url.searchParams.get("year") || null;
 
     // List objects from R2
-    const listResult = await platform.env.IMAGES.list({
+    const listResult = await platform.env.MEDIA.list({
       prefix: prefix,
       cursor: cursor,
       limit: Math.min(limit, 100), // Cap at 100

@@ -4,7 +4,7 @@ import {
   validateCSRF,
   sanitizeObject,
   sanitizeMarkdown,
-} from "@autumnsgrove/groveengine/utils";
+} from "@autumnsgrove/lattice/utils";
 
 /**
  * GET /api/posts - List all posts from D1
@@ -15,12 +15,12 @@ export async function GET({ platform, locals }) {
     throw error(401, "Unauthorized");
   }
 
-  if (!platform?.env?.POSTS_DB) {
+  if (!platform?.env?.GROVE_DB) {
     throw error(500, "Posts database not configured");
   }
 
   try {
-    const result = await platform.env.POSTS_DB.prepare(
+    const result = await platform.env.GROVE_DB.prepare(
       `SELECT slug, title, date, tags, description, last_synced, updated_at
        FROM posts
        ORDER BY date DESC`,
@@ -52,7 +52,7 @@ export async function POST({ request, platform, locals }) {
     throw error(403, "Invalid origin");
   }
 
-  if (!platform?.env?.POSTS_DB) {
+  if (!platform?.env?.GROVE_DB) {
     throw error(500, "Posts database not configured");
   }
 
@@ -101,7 +101,7 @@ export async function POST({ request, platform, locals }) {
       .replace(/^-|-$/g, "");
 
     // Check if slug already exists
-    const existing = await platform.env.POSTS_DB.prepare(
+    const existing = await platform.env.GROVE_DB.prepare(
       "SELECT slug FROM posts WHERE slug = ?",
     )
       .bind(slug)
@@ -146,7 +146,7 @@ export async function POST({ request, platform, locals }) {
       now,
     ];
 
-    await platform.env.POSTS_DB.prepare(insertQuery)
+    await platform.env.GROVE_DB.prepare(insertQuery)
       .bind(...params)
       .run();
 

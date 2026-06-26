@@ -1,5 +1,5 @@
 import { json, error } from "@sveltejs/kit";
-import { parseImageFilename } from "@autumnsgrove/groveengine/utils";
+import { parseImageFilename } from "@autumnsgrove/lattice/utils";
 
 /**
  * POST /api/admin/gallery/sync
@@ -10,7 +10,7 @@ export async function POST({ platform, locals }) {
     throw error(401, "Unauthorized");
   }
 
-  if (!platform?.env?.IMAGES || !platform?.env?.DB) {
+  if (!platform?.env?.MEDIA || !platform?.env?.DB) {
     throw error(500, "R2 or D1 not configured");
   }
 
@@ -21,7 +21,7 @@ export async function POST({ platform, locals }) {
     const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif"];
 
     do {
-      const listResult = await platform.env.IMAGES.list({
+      const listResult = await platform.env.MEDIA.list({
         cursor: cursor,
         limit: 500,
       });

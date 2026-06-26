@@ -3,7 +3,7 @@ import {
   parseImageFilename,
   getAvailableYears,
   getAvailableCategories,
-} from "@autumnsgrove/groveengine/utils";
+} from "@autumnsgrove/lattice/utils";
 
 /**
  * Server-side loader for the gallery page
@@ -11,7 +11,7 @@ import {
  */
 export async function load({ platform }) {
   // Check for R2 binding
-  if (!platform?.env?.IMAGES) {
+  if (!platform?.env?.MEDIA) {
     // Return empty structure for local dev or if R2 not configured
     return {
       images: [],
@@ -31,7 +31,7 @@ export async function load({ platform }) {
     const imageExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".avif"];
 
     do {
-      const listResult = await platform.env.IMAGES.list({
+      const listResult = await platform.env.MEDIA.list({
         cursor: cursor,
         limit: 500,
       });

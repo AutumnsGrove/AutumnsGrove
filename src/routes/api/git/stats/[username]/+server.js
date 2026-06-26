@@ -6,7 +6,7 @@ import {
   MIN_LIMIT,
   getCacheKey,
 } from "$lib/utils/github";
-import { logAPI, logCache, logError } from "@autumnsgrove/groveengine/server";
+import { logAPI, logCache, logError } from "@autumnsgrove/lattice/server";
 
 export const prerender = false;
 
