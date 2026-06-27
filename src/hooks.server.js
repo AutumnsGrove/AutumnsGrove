@@ -28,6 +28,16 @@ export async function handle({ event, resolve }) {
   // Initialize user as null
   event.locals.user = null;
 
+  // Local dev bypass: auto-authenticate on localhost
+  const hostname = event.url.hostname;
+  if (hostname === "localhost" || hostname === "127.0.0.1") {
+    event.locals.user = {
+      id: "dev-user",
+      email: "dev@localhost",
+      name: "Dev",
+    };
+  }
+
   const cookieHeader = event.request.headers.get("cookie");
   const accessToken = getCookie(cookieHeader, "access_token");
   const refreshToken = getCookie(cookieHeader, "refresh_token");
@@ -191,7 +201,7 @@ export async function handle({ event, resolve }) {
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "img-src 'self' https://cdn.autumnsgrove.com data:",
+    "img-src 'self' https://cdn.autumnsgrove.com https://cdn.grove.place https://grove.place data:",
     "font-src 'self' https://fonts.gstatic.com",
     "connect-src 'self' https://auth-api.grove.place https://heartwood.grove.place https://cloudflareinsights.com",
     "frame-ancestors 'none'",

@@ -18,9 +18,7 @@
 		</div>
 		<p class="copyright">
 			&copy; {year} Autumns Grove
-			{#if user}
-				&middot; <a href="/admin" class="admin-link">Admin</a>
-			{/if}
+			&middot; <a href="/admin" class="admin-link">Admin</a>
 		</p>
 	</div>
 </footer>

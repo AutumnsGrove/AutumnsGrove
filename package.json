@@ -7,6 +7,7 @@
   "scripts": {
     "dev": "vite dev",
     "dev:wrangler": "pnpm build && wrangler dev",
+    "dev:remote": "pnpm build && wrangler dev --remote",
     "build": "vite build",
     "seed": "wrangler d1 execute grove-engine-db --local --file=scripts/seed-local.sql",
     "preview": "vite preview",
