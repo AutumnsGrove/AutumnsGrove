@@ -1,5 +1,6 @@
 <script>
 	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
+	import ContentWithGutter from '$lib/components/vines/ContentWithGutter.svelte';
 
 	let { data } = $props();
 </script>
@@ -12,32 +13,35 @@
 	<meta property="og:type" content="article" />
 </svelte:head>
 
-<article class="post container section">
-	<header class="post-header animate-in">
-		<a href="/blog" class="back-link"><ArrowLeft size={14} /> All posts</a>
-		<h1>{data.title}</h1>
-		<div class="post-meta">
-			{#if data.date}
-				<time datetime={data.date}>{data.date}</time>
-			{/if}
-			{#if data.tags.length > 0}
-				<div class="tags">
-					{#each data.tags as tag}
-						<span class="tag">{tag}</span>
-					{/each}
-				</div>
-			{/if}
-		</div>
-	</header>
-
-	<div class="prose animate-in animate-in-delay-1">
-		{@html data.content}
-	</div>
+<article class="post section">
+	<ContentWithGutter
+		content={data.content}
+		gutterContent={data.gutterContent}
+		headers={data.headers}
+		showTableOfContents={data.headers.length > 0}
+	>
+		<header class="post-header animate-in">
+			<a href="/blog" class="back-link"><ArrowLeft size={14} /> All posts</a>
+			<h1>{data.title}</h1>
+			<div class="post-meta">
+				{#if data.date}
+					<time datetime={data.date}>{data.date}</time>
+				{/if}
+				{#if data.tags.length > 0}
+					<div class="tags">
+						{#each data.tags as tag}
+							<span class="tag">{tag}</span>
+						{/each}
+					</div>
+				{/if}
+			</div>
+		</header>
+	</ContentWithGutter>
 </article>
 
 <style>
 	.post {
-		max-width: 760px;
+		max-width: none;
 	}
 
 	.post-header {

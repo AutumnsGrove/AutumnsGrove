@@ -1,6 +1,7 @@
 import { error } from "@sveltejs/kit";
 import { getPostBySlug } from "$lib/server/db.js";
 import { sanitizeMarkdown } from "$lib/utils/sanitize";
+import { extractHeadersFromHtml } from "$lib/utils/headers";
 import { marked } from "marked";
 
 export const prerender = false;
@@ -21,6 +22,23 @@ export async function load({ params, platform }) {
 		content = sanitizeMarkdown(marked.parse(post.markdown_content));
 	}
 
+	const headers = extractHeadersFromHtml(content || "");
+
+	let gutterContent = [];
+	if (post.gutter_content) {
+		try {
+			const items = JSON.parse(post.gutter_content);
+			gutterContent = items.map((item) => {
+				if ((item.type === "comment" || item.type === "markdown") && item.content) {
+					return { ...item, content: sanitizeMarkdown(marked.parse(item.content)) };
+				}
+				return item;
+			});
+		} catch {
+			gutterContent = [];
+		}
+	}
+
 	return {
 		slug: post.slug,
 		title: post.title,
@@ -28,6 +46,7 @@ export async function load({ params, platform }) {
 		tags: post.tags,
 		description: post.description,
 		content: content || "",
-		gutter_content: post.gutter_content,
+		headers,
+		gutterContent,
 	};
 }
