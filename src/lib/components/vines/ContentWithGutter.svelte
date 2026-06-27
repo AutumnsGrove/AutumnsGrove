@@ -2,7 +2,6 @@
 	import { untrack } from "svelte";
 	import TableOfContents from "./TableOfContents.svelte";
 	import MobileTOC from "./MobileTOC.svelte";
-	import LeftGutter from "./LeftGutter.svelte";
 	import GutterItem from "./GutterItem.svelte";
 	import {
 		getAnchorKey,
@@ -24,11 +23,10 @@
 
 	let contentBodyElement = $state<HTMLElement | undefined>();
 
-	let hasLeftGutter = $derived(gutterContent && gutterContent.length > 0);
+	let hasGutter = $derived(gutterContent && gutterContent.length > 0);
 	let hasRightGutter = $derived(showTableOfContents && headers && headers.length > 0);
 
-	// Mobile: inline gutter refs for DOM insertion
-	let mobileGutterRefs = $state<Record<string, HTMLElement>>({});
+	let gutterRefs = $state<Record<string, HTMLElement>>({});
 	let uniqueAnchors = $derived(getUniqueAnchors(gutterContent));
 	let orphanItems = $derived(getOrphanItems(gutterContent, headers));
 
@@ -68,7 +66,7 @@
 		}).catch(() => {});
 	}
 
-	// Assign IDs to headers in content + position mobile inline gutters
+	// Assign IDs to headers + insert floated gutter items into content flow
 	$effect(() => {
 		const contentEl = contentBodyElement;
 		if (!contentEl) return;
@@ -80,6 +78,7 @@
 		const movedElements: Array<{ element: HTMLElement; originalParent: HTMLElement | null; originalNextSibling: Node | null }> = [];
 
 		untrack(() => {
+			// Assign IDs to headers
 			if (headers && headers.length > 0) {
 				const headerElements = contentEl.querySelectorAll("h1, h2, h3, h4, h5, h6");
 				headerElements.forEach((el: Element) => {
@@ -89,21 +88,21 @@
 				});
 			}
 
-			// Mobile inline gutter positioning
+			// Insert gutter items into content flow at their anchor points
 			for (const anchor of uniqueAnchors) {
 				const anchorKey = getKey(anchor);
-				const mobileGutterEl = mobileGutterRefs[anchorKey];
-				if (!mobileGutterEl || mobileGutterEl.children.length === 0) continue;
+				const gutterEl = gutterRefs[anchorKey];
+				if (!gutterEl || gutterEl.children.length === 0) continue;
 
-				const originalParent = mobileGutterEl.parentElement;
-				const originalNextSibling = mobileGutterEl.nextSibling;
+				const originalParent = gutterEl.parentElement;
+				const originalNextSibling = gutterEl.nextSibling;
 
 				const targetEl = findAnchorElement(anchor, contentEl as HTMLElement, headers);
 
 				if (targetEl) {
 					const isHeading = /^H[1-6]$/.test(targetEl.tagName);
-					targetEl.insertAdjacentElement(isHeading ? "afterend" : "beforebegin", mobileGutterEl);
-					movedElements.push({ element: mobileGutterEl, originalParent, originalNextSibling });
+					targetEl.insertAdjacentElement(isHeading ? "afterend" : "beforebegin", gutterEl);
+					movedElements.push({ element: gutterEl, originalParent, originalNextSibling });
 				}
 			}
 		});
@@ -122,42 +121,28 @@
 	});
 </script>
 
-<div
-	class="content-layout"
-	class:has-left-gutter={hasLeftGutter}
-	class:has-right-gutter={hasRightGutter}
->
-	<!-- Left Gutter — desktop only, positioned annotations -->
-	{#if hasLeftGutter}
-		<div class="left-gutter-container desktop-only">
-			<LeftGutter items={gutterContent} {headers} contentElement={contentBodyElement} />
-		</div>
-	{/if}
-
-	<!-- Main Content -->
+<div class="content-layout" class:has-right-gutter={hasRightGutter}>
 	<article class="content-article">
 		{#if children}
 			{@render children()}
 		{/if}
 
-		<!-- Mobile inline gutter items (hidden on desktop, moved into position via DOM) -->
-		{#if hasLeftGutter}
-			{#if orphanItems.length > 0}
-				<div class="mobile-gutter-content mobile-only">
-					{#each orphanItems as item, index (getItemKey(item, index))}
-						<GutterItem {item} />
-					{/each}
-				</div>
-			{/if}
+		<!-- Orphan items (no anchor) float at the top of content -->
+		{#if hasGutter && orphanItems.length > 0}
+			<div class="vine-float">
+				{#each orphanItems as item, index (getItemKey(item, index))}
+					<GutterItem {item} />
+				{/each}
+			</div>
+		{/if}
 
+		<!-- Anchored gutter items — inserted into content flow via DOM manipulation -->
+		{#if hasGutter}
 			{#each uniqueAnchors as anchor (anchor)}
 				{@const anchorKey = getKey(anchor)}
 				{@const anchorItems = getItems(anchor)}
 				{#if anchorItems.length > 0}
-					<div
-						class="mobile-gutter-content mobile-gutter-inline mobile-only"
-						bind:this={mobileGutterRefs[anchorKey]}
-					>
+					<div class="vine-float" bind:this={gutterRefs[anchorKey]}>
 						{#each anchorItems as item, index (getItemKey(item, index))}
 							<GutterItem {item} />
 						{/each}
@@ -173,7 +158,6 @@
 		</div>
 	</article>
 
-	<!-- Right Gutter — Table of Contents -->
 	{#if hasRightGutter}
 		<div class="right-gutter-container desktop-only">
 			<TableOfContents {headers} />
@@ -195,27 +179,14 @@
 		padding: 0 1.5rem;
 	}
 
-	/* Left gutter only */
-	.content-layout.has-left-gutter:not(.has-right-gutter) {
-		grid-template-columns: 280px 1fr;
-	}
-
-	/* Right gutter only */
-	.content-layout.has-right-gutter:not(.has-left-gutter) {
+	.content-layout.has-right-gutter {
 		grid-template-columns: 1fr 220px;
-	}
-
-	/* Both gutters */
-	.content-layout.has-left-gutter.has-right-gutter {
-		grid-template-columns: 280px 1fr 220px;
-		max-width: 1300px;
 	}
 
 	.content-article {
 		min-width: 0;
 	}
 
-	.left-gutter-container,
 	.right-gutter-container {
 		min-width: 0;
 	}
@@ -224,18 +195,16 @@
 		display: block;
 	}
 
-	.mobile-only {
-		display: none;
-	}
-
-	.mobile-gutter-content {
-		margin: 1.5rem 0;
+	/* Vine floats — gutter items that float left within content */
+	.vine-float {
+		float: left;
+		clear: left;
+		width: 280px;
+		margin: 0.25rem 1.5rem 1rem -2rem;
 	}
 
 	@media (max-width: 1024px) {
-		.content-layout.has-left-gutter:not(.has-right-gutter),
-		.content-layout.has-right-gutter:not(.has-left-gutter),
-		.content-layout.has-left-gutter.has-right-gutter {
+		.content-layout.has-right-gutter {
 			grid-template-columns: 1fr;
 		}
 
@@ -243,8 +212,11 @@
 			display: none;
 		}
 
-		.mobile-only {
-			display: block;
+		/* On smaller screens, don't float — stack normally */
+		.vine-float {
+			float: none;
+			width: 100%;
+			margin: 1rem 0;
 		}
 	}
 </style>
