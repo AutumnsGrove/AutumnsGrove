@@ -2,7 +2,7 @@ import { error } from "@sveltejs/kit";
 import {
   generateCSRFToken,
   validateCSRFToken,
-} from "@autumnsgrove/lattice/utils";
+} from "$lib/utils/csrf";
 import { createClientFromEnv } from "$lib/auth/groveauth";
 import { getCookie } from "$lib/utils/cookies";
 
