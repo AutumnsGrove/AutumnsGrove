@@ -1,1 +1,312 @@
-/* AutumnsGrove — rebuilt standalone, Phase 2 fills this in */
+/* ========================================
+   AutumnsGrove — Design System
+   Palette: warm ambers, deep plums, soft creams
+   Typography: Lora (headings) + Inter (body)
+   The warmth of a midnight tea shop
+   ======================================== */
+
+
+:root {
+	/* ── Light theme (default) ── */
+	--color-bg: oklch(0.978 0.008 75);
+	--color-surface: oklch(0.960 0.012 70);
+	--color-ink: oklch(0.200 0.020 310);
+	--color-primary: oklch(0.420 0.130 310);
+	--color-primary-hover: oklch(0.360 0.140 310);
+	--color-accent: oklch(0.620 0.155 55);
+	--color-accent-hover: oklch(0.560 0.160 55);
+	--color-muted: oklch(0.500 0.015 60);
+	--color-border: oklch(0.880 0.015 70);
+	--color-surface-hover: oklch(0.940 0.015 70);
+
+	--font-body: 'Inter', system-ui, sans-serif;
+	--font-heading: 'Lora', Georgia, serif;
+
+	--max-width: 1100px;
+	--nav-height: 68px;
+	--radius: 6px;
+	--transition: 200ms ease-out;
+	--section-gap: clamp(3rem, 6vw, 5rem);
+	--ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme='dark'] {
+	--color-bg: oklch(0.130 0.018 310);
+	--color-surface: oklch(0.170 0.022 310);
+	--color-ink: oklch(0.910 0.012 70);
+	--color-primary: oklch(0.700 0.120 310);
+	--color-primary-hover: oklch(0.760 0.125 310);
+	--color-accent: oklch(0.720 0.145 55);
+	--color-accent-hover: oklch(0.770 0.150 55);
+	--color-muted: oklch(0.580 0.012 60);
+	--color-border: oklch(0.250 0.020 310);
+	--color-surface-hover: oklch(0.210 0.025 310);
+}
+
+/* ── Reset ── */
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html {
+	font-family: var(--font-body);
+	font-size: 106.25%;
+	color: var(--color-ink);
+	background-color: var(--color-bg);
+	line-height: 1.65;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	transition: background-color var(--transition), color var(--transition);
+}
+
+body {
+	min-height: 100vh;
+}
+
+/* ── Typography ── */
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: var(--font-heading);
+	font-weight: 600;
+	line-height: 1.25;
+	color: var(--color-ink);
+	text-wrap: balance;
+	letter-spacing: -0.015em;
+}
+
+h1 {
+	font-size: clamp(2.1rem, 4vw + 1rem, 3.2rem);
+	font-weight: 700;
+	letter-spacing: -0.025em;
+}
+
+h2 {
+	font-size: clamp(1.5rem, 2.5vw + 0.75rem, 2.2rem);
+}
+
+h3 {
+	font-size: clamp(1.15rem, 1.5vw + 0.55rem, 1.5rem);
+}
+
+p, li, blockquote {
+	max-width: 68ch;
+}
+
+/* ── Links ── */
+
+a {
+	color: var(--color-primary);
+	text-decoration: none;
+	transition: color var(--transition);
+}
+
+a:hover {
+	color: var(--color-primary-hover);
+}
+
+/* ── Images ── */
+
+img {
+	max-width: 100%;
+	height: auto;
+	display: block;
+}
+
+/* ── Utility ── */
+
+.container {
+	max-width: var(--max-width);
+	margin: 0 auto;
+	padding: 0 1.5rem;
+}
+
+.section {
+	padding: var(--section-gap) 0;
+}
+
+/* ── Prose (rendered markdown) ── */
+
+.prose {
+	text-wrap: pretty;
+}
+
+.prose h1 { margin-bottom: 1.25rem; }
+.prose h2 { margin-top: 2.5rem; margin-bottom: 1rem; }
+.prose h3 { margin-top: 2rem; margin-bottom: 0.75rem; }
+.prose h4 { margin-top: 1.5rem; margin-bottom: 0.5rem; }
+.prose p { margin-bottom: 1.1rem; }
+.prose ul, .prose ol { margin-bottom: 1.1rem; padding-left: 1.5rem; }
+.prose li { margin-bottom: 0.35rem; }
+
+.prose a {
+	color: var(--color-primary);
+	text-decoration: underline;
+	text-decoration-color: oklch(0.420 0.130 310 / 0.3);
+	text-underline-offset: 3px;
+	transition: text-decoration-color var(--transition);
+}
+
+.prose a:hover {
+	text-decoration-color: var(--color-primary);
+}
+
+.prose blockquote {
+	border-left: 3px solid var(--color-accent);
+	padding-left: 1.25rem;
+	color: var(--color-muted);
+	margin-bottom: 1.1rem;
+	font-style: italic;
+}
+
+.prose strong {
+	font-weight: 700;
+}
+
+.prose code {
+	font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+	font-size: 0.88em;
+	background: var(--color-surface);
+	padding: 0.15em 0.4em;
+	border-radius: 3px;
+}
+
+.prose pre {
+	background: var(--color-surface);
+	border: 1px solid var(--color-border);
+	border-radius: var(--radius);
+	padding: 1.25rem 1.5rem;
+	overflow-x: auto;
+	margin-bottom: 1.1rem;
+}
+
+.prose pre code {
+	background: none;
+	padding: 0;
+	font-size: 0.85em;
+}
+
+.prose hr {
+	border: none;
+	height: 1px;
+	background: var(--color-border);
+	margin: 2rem 0;
+}
+
+.prose table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-bottom: 1.1rem;
+	font-size: 0.95em;
+}
+
+.prose th, .prose td {
+	padding: 0.6rem 0.75rem;
+	border-bottom: 1px solid var(--color-border);
+	text-align: left;
+}
+
+.prose th {
+	font-weight: 600;
+	color: var(--color-ink);
+}
+
+.prose img {
+	border-radius: var(--radius);
+	margin: 1.5rem 0;
+}
+
+/* ── Kicker ── */
+
+.kicker {
+	font-size: 0.7rem;
+	font-weight: 700;
+	text-transform: uppercase;
+	letter-spacing: 0.2em;
+	color: var(--color-accent);
+	margin-bottom: 0.75rem;
+}
+
+/* ── Tags ── */
+
+.tag {
+	display: inline-block;
+	font-size: 0.78rem;
+	font-weight: 500;
+	padding: 0.25rem 0.75rem;
+	border-radius: 100px;
+	background: var(--color-surface);
+	color: var(--color-primary);
+	border: 1px solid var(--color-border);
+	transition: background var(--transition), color var(--transition);
+}
+
+.tag:hover {
+	background: var(--color-primary);
+	color: var(--color-bg);
+	border-color: var(--color-primary);
+}
+
+.tags {
+	display: flex;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+
+/* ── Skip to content (a11y) ── */
+
+.skip-to-content {
+	position: absolute;
+	top: -100%;
+	left: 1rem;
+	padding: 0.75rem 1.25rem;
+	background: var(--color-primary);
+	color: #fff;
+	font-weight: 600;
+	font-size: 0.85rem;
+	border-radius: var(--radius);
+	z-index: 200;
+	transition: top 200ms ease-out;
+}
+
+.skip-to-content:focus {
+	top: 0.75rem;
+	color: #fff;
+}
+
+/* ── Page entrance ── */
+
+@keyframes fade-up {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.animate-in {
+	animation: fade-up 500ms var(--ease-out-expo) both;
+}
+
+.animate-in-delay-1 { animation-delay: 80ms; }
+.animate-in-delay-2 { animation-delay: 160ms; }
+.animate-in-delay-3 { animation-delay: 240ms; }
+
+/* ── Reduced motion ── */
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		animation-iteration-count: 1 !important;
+		transition-duration: 0.01ms !important;
+	}
+}

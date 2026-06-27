@@ -6,23 +6,10 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="csrf-token" content="%sveltekit.locals.csrfToken%" />
 		<script>
-			// Prevent flash of incorrect theme by setting theme before hydration
 			(function() {
-				const savedTheme = localStorage.getItem('theme');
-				let isDark = false;
-
-				if (savedTheme === 'dark') {
-					isDark = true;
-				} else if (savedTheme === 'light') {
-					isDark = false;
-				} else {
-					// Respect system preference, default to light if no preference
-					isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-				}
-
-				if (isDark) {
-					document.documentElement.classList.add('dark');
-				}
+				var t = localStorage.getItem('theme');
+				if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.setAttribute('data-theme', t);
 			})();
 		</script>
 		%sveltekit.head%
