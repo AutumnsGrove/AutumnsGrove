@@ -52,12 +52,22 @@
 		}
 	}
 
+	function getDocumentOffset(el: HTMLElement): number {
+		let top = 0;
+		let current: HTMLElement | null = el;
+		while (current) {
+			top += current.offsetTop;
+			current = current.offsetParent as HTMLElement | null;
+		}
+		return top;
+	}
+
 	async function updatePositions() {
 		if (!gutterElement || !contentElement) return;
 
 		await tick();
 
-		const gutterTop = gutterElement.offsetTop;
+		const gutterDocTop = getDocumentOffset(gutterElement);
 		const minGap = 16;
 		let lastBottom = 0;
 
@@ -68,18 +78,18 @@
 					anchor,
 					key: getAnchorKey(anchor, headers),
 					element: el,
-					top: el ? el.offsetTop : Infinity,
+					top: el ? getDocumentOffset(el) : Infinity,
 				};
 			})
 			.sort((a, b) => a.top - b.top);
 
 		const newPositions: Record<string, number> = {};
 
-		for (const { key, element } of anchorPositions) {
+		for (const { key, element, top: anchorDocTop } of anchorPositions) {
 			const groupEl = anchorGroupElements[key];
 			if (!element || !groupEl) continue;
 
-			let desiredTop = element.offsetTop - gutterTop;
+			let desiredTop = anchorDocTop - gutterDocTop;
 			const groupHeight = groupEl.offsetHeight;
 
 			if (desiredTop < lastBottom + minGap) {
