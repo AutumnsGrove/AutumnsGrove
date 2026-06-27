@@ -1,5 +1,7 @@
 <script lang="ts">
+	import { tick } from 'svelte';
 	import { sanitizeMarkdown } from '$lib/utils/sanitize';
+	import { processAnchorTags } from '$lib/utils/content';
 	import { marked } from 'marked';
 	import Eye from '@lucide/svelte/icons/eye';
 	import Pencil from '@lucide/svelte/icons/pencil';
@@ -14,11 +16,103 @@
 	let { value = $bindable(''), onchange, onSave }: Props = $props();
 
 	let mode = $state<'write' | 'split' | 'preview'>('write');
-	let preview = $derived(sanitizeMarkdown(marked.parse(value || '')));
+	let textareaRef = $state<HTMLTextAreaElement>();
+
+	// Process directives for visible preview
+	function renderPreview(md: string): string {
+		if (!md) return '';
+		let html = sanitizeMarkdown(marked.parse(md));
+		// Convert anchor directives to visible markers in preview
+		html = html.replace(
+			/<p>\s*::anchor\[([\w-]+)\]::\s*<\/p>/g,
+			(_m, name) => `<div class="anchor-preview-marker"><span class="anchor-icon">⚓</span> anchor:${name}</div>`
+		);
+		html = html.replace(
+			/::anchor\[([\w-]+)\]::/g,
+			(_m, name) => `<span class="anchor-preview-inline"><span class="anchor-icon">⚓</span> ${name}</span>`
+		);
+		html = processAnchorTags(html);
+		return html;
+	}
+
+	let preview = $derived(renderPreview(value || ''));
 
 	let wordCount = $derived(
 		value.trim() ? value.trim().split(/\s+/).length : 0
 	);
+
+	// :: Directive autocomplete
+	let showDirectiveMenu = $state(false);
+	let directiveQuery = $state('');
+	let directiveTriggerPos = $state(0);
+	let menuPos = $state({ top: 0, left: 0 });
+	let selectedDirectiveIndex = $state(0);
+
+	const directives = [
+		{ name: 'anchor', syntax: '::anchor[name]::', description: 'Vine anchor point' },
+		{ name: 'suppress', syntax: '::suppress::', description: 'Hide heading from TOC' },
+	];
+
+	let filteredDirectives = $derived(
+		directives.filter(d => d.name.toLowerCase().includes(directiveQuery.toLowerCase()))
+	);
+
+	function checkDirectiveTrigger() {
+		if (!textareaRef) return;
+		const pos = textareaRef.selectionStart;
+		const textBefore = value.substring(0, pos);
+
+		const lastTrigger = textBefore.lastIndexOf('::');
+		if (lastTrigger === -1) { showDirectiveMenu = false; return; }
+
+		const afterTrigger = textBefore.substring(lastTrigger + 2);
+
+		// If there's a closing :: already, don't show menu
+		if (afterTrigger.includes('::')) { showDirectiveMenu = false; return; }
+		// Only allow word characters in the query
+		if (afterTrigger && !/^[\w-]*$/.test(afterTrigger)) { showDirectiveMenu = false; return; }
+
+		directiveTriggerPos = lastTrigger;
+		directiveQuery = afterTrigger;
+		selectedDirectiveIndex = 0;
+
+		// Position the menu near the cursor
+		const lineHeight = 24;
+		const lines = textBefore.split('\n');
+		const currentLine = lines.length;
+		const rect = textareaRef.getBoundingClientRect();
+		const editorRect = textareaRef.closest('.editor')?.getBoundingClientRect() || rect;
+
+		menuPos = {
+			top: rect.top - editorRect.top + (currentLine * lineHeight) - textareaRef.scrollTop + 4,
+			left: 16,
+		};
+
+		showDirectiveMenu = true;
+	}
+
+	async function selectDirective(directive: typeof directives[0]) {
+		if (!textareaRef) return;
+
+		const pos = textareaRef.selectionStart;
+		const before = value.substring(0, directiveTriggerPos);
+		const after = value.substring(pos);
+
+		if (directive.name === 'anchor') {
+			const name = prompt('Anchor name (e.g., my-note):');
+			if (!name) { showDirectiveMenu = false; return; }
+			const safeName = name.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g, '-');
+			value = before + `::anchor[${safeName}]::\n` + after;
+			onchange?.(value);
+		} else {
+			value = before + directive.syntax + after;
+			onchange?.(value);
+		}
+
+		showDirectiveMenu = false;
+		await tick();
+		textareaRef.focus();
+	}
 
 	// Extract available anchors for GutterManager
 	export function getAvailableAnchors(): string[] {
@@ -45,14 +139,15 @@
 	}
 
 	function insertAtCursor(text: string) {
-		const textarea = document.querySelector('.editor-textarea') as HTMLTextAreaElement;
-		if (!textarea) return;
-		const start = textarea.selectionStart;
+		if (!textareaRef) return;
+		const start = textareaRef.selectionStart;
 		value = value.substring(0, start) + text + value.substring(start);
 		onchange?.(value);
 		requestAnimationFrame(() => {
-			textarea.selectionStart = textarea.selectionEnd = start + text.length;
-			textarea.focus();
+			if (textareaRef) {
+				textareaRef.selectionStart = textareaRef.selectionEnd = start + text.length;
+				textareaRef.focus();
+			}
 		});
 	}
 
@@ -60,18 +155,44 @@
 		const target = e.target as HTMLTextAreaElement;
 		value = target.value;
 		onchange?.(value);
+		checkDirectiveTrigger();
 	}
 
 	function handleKeydown(e: KeyboardEvent) {
-		if (e.key === 'Tab') {
+		// Directive menu navigation
+		if (showDirectiveMenu && filteredDirectives.length > 0) {
+			if (e.key === 'ArrowDown') {
+				e.preventDefault();
+				selectedDirectiveIndex = (selectedDirectiveIndex + 1) % filteredDirectives.length;
+				return;
+			}
+			if (e.key === 'ArrowUp') {
+				e.preventDefault();
+				selectedDirectiveIndex = (selectedDirectiveIndex - 1 + filteredDirectives.length) % filteredDirectives.length;
+				return;
+			}
+			if (e.key === 'Enter' || e.key === 'Tab') {
+				e.preventDefault();
+				selectDirective(filteredDirectives[selectedDirectiveIndex]);
+				return;
+			}
+			if (e.key === 'Escape') {
+				e.preventDefault();
+				showDirectiveMenu = false;
+				return;
+			}
+		}
+
+		if (e.key === 'Tab' && textareaRef) {
 			e.preventDefault();
-			const target = e.target as HTMLTextAreaElement;
-			const start = target.selectionStart;
-			const end = target.selectionEnd;
+			const start = textareaRef.selectionStart;
+			const end = textareaRef.selectionEnd;
 			value = value.substring(0, start) + '\t' + value.substring(end);
 			onchange?.(value);
 			requestAnimationFrame(() => {
-				target.selectionStart = target.selectionEnd = start + 1;
+				if (textareaRef) {
+					textareaRef.selectionStart = textareaRef.selectionEnd = start + 1;
+				}
 			});
 		}
 
@@ -89,21 +210,26 @@
 		}
 	}
 
-	function wrapSelection(wrapper: string) {
-		const textarea = document.querySelector('.editor-textarea') as HTMLTextAreaElement;
-		if (!textarea) return;
+	function handleClick() {
+		if (showDirectiveMenu) checkDirectiveTrigger();
+	}
 
-		const start = textarea.selectionStart;
-		const end = textarea.selectionEnd;
+	function wrapSelection(wrapper: string) {
+		if (!textareaRef) return;
+
+		const start = textareaRef.selectionStart;
+		const end = textareaRef.selectionEnd;
 		const selected = value.substring(start, end);
 
 		value = value.substring(0, start) + wrapper + selected + wrapper + value.substring(end);
 		onchange?.(value);
 
 		requestAnimationFrame(() => {
-			textarea.selectionStart = start + wrapper.length;
-			textarea.selectionEnd = end + wrapper.length;
-			textarea.focus();
+			if (textareaRef) {
+				textareaRef.selectionStart = start + wrapper.length;
+				textareaRef.selectionEnd = end + wrapper.length;
+				textareaRef.focus();
+			}
 		});
 	}
 </script>
@@ -126,14 +252,35 @@
 
 	<div class="editor-body" class:split={mode === 'split'}>
 		{#if mode !== 'preview'}
-			<textarea
-				class="editor-textarea admin-input"
-				value={value}
-				oninput={handleInput}
-				onkeydown={handleKeydown}
-				placeholder="Write your post in markdown..."
-				spellcheck="true"
-			></textarea>
+			<div class="textarea-wrapper">
+				<textarea
+					class="editor-textarea admin-input"
+					bind:this={textareaRef}
+					value={value}
+					oninput={handleInput}
+					onkeydown={handleKeydown}
+					onclick={handleClick}
+					placeholder="Write your post in markdown... Type :: for directives"
+					spellcheck="true"
+				></textarea>
+
+				<!-- :: Directive autocomplete -->
+				{#if showDirectiveMenu && filteredDirectives.length > 0}
+					<div class="directive-menu" style="top: {menuPos.top}px; left: {menuPos.left}px">
+						{#each filteredDirectives as dir, i (dir.name)}
+							<button
+								type="button"
+								class="directive-option"
+								class:selected={i === selectedDirectiveIndex}
+								onclick={() => selectDirective(dir)}
+							>
+								<span class="directive-name">::{dir.name}</span>
+								<span class="directive-desc">{dir.description}</span>
+							</button>
+						{/each}
+					</div>
+				{/if}
+			</div>
 		{/if}
 		{#if mode !== 'write'}
 			<div class="editor-preview prose">
@@ -179,14 +326,8 @@
 		transition: color var(--transition), background var(--transition);
 	}
 
-	.mode-buttons button:hover {
-		color: var(--color-ink);
-	}
-
-	.mode-buttons button.active {
-		color: var(--color-primary);
-		background: var(--color-bg);
-	}
+	.mode-buttons button:hover { color: var(--color-ink); }
+	.mode-buttons button.active { color: var(--color-primary); background: var(--color-bg); }
 
 	.word-count {
 		font-size: 0.72rem;
@@ -203,6 +344,12 @@
 		grid-template-columns: 1fr 1fr;
 	}
 
+	.textarea-wrapper {
+		position: relative;
+		flex: 1;
+		display: flex;
+	}
+
 	.editor-textarea {
 		flex: 1;
 		border: none;
@@ -216,9 +363,7 @@
 		tab-size: 4;
 	}
 
-	.editor-textarea:focus {
-		box-shadow: none;
-	}
+	.editor-textarea:focus { box-shadow: none; }
 
 	.editor-preview {
 		flex: 1;
@@ -226,6 +371,83 @@
 		overflow-y: auto;
 		border-left: 1px solid var(--color-border);
 		background: var(--color-bg);
+	}
+
+	/* Anchor markers in preview */
+	.editor-preview :global(.anchor-preview-marker) {
+		display: flex;
+		align-items: center;
+		gap: 0.4rem;
+		padding: 0.35rem 0.75rem;
+		margin: 0.75rem 0;
+		background: var(--color-surface);
+		border: 1px dashed var(--color-primary);
+		border-radius: var(--radius);
+		font-size: 0.78rem;
+		font-family: 'JetBrains Mono', ui-monospace, monospace;
+		color: var(--color-primary);
+	}
+
+	.editor-preview :global(.anchor-preview-inline) {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+		padding: 0.1rem 0.5rem;
+		background: var(--color-surface);
+		border: 1px dashed var(--color-primary);
+		border-radius: 3px;
+		font-size: 0.72rem;
+		font-family: 'JetBrains Mono', ui-monospace, monospace;
+		color: var(--color-primary);
+	}
+
+	.editor-preview :global(.anchor-icon) {
+		font-size: 0.75rem;
+	}
+
+	/* :: Directive autocomplete menu */
+	.directive-menu {
+		position: absolute;
+		z-index: 50;
+		min-width: 240px;
+		background: var(--color-bg);
+		border: 1px solid var(--color-border);
+		border-radius: var(--radius);
+		box-shadow: 0 8px 24px oklch(0.1 0 0 / 0.15);
+		overflow: hidden;
+	}
+
+	.directive-option {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 1rem;
+		width: 100%;
+		padding: 0.55rem 0.75rem;
+		background: none;
+		border: none;
+		border-bottom: 1px solid var(--color-border);
+		color: var(--color-ink);
+		cursor: pointer;
+		text-align: left;
+		font-family: inherit;
+		font-size: 0.85rem;
+		transition: background var(--transition);
+	}
+
+	.directive-option:last-child { border-bottom: none; }
+	.directive-option:hover, .directive-option.selected { background: var(--color-surface); }
+
+	.directive-name {
+		font-family: 'JetBrains Mono', ui-monospace, monospace;
+		font-weight: 600;
+		color: var(--color-primary);
+		font-size: 0.82rem;
+	}
+
+	.directive-desc {
+		font-size: 0.75rem;
+		color: var(--color-muted);
 	}
 
 	@media (max-width: 768px) {
