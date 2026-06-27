@@ -1,6 +1,7 @@
 <script>
 	import { goto } from '$app/navigation';
 	import MarkdownEditor from '$lib/components/admin/MarkdownEditor.svelte';
+	import GutterManager from '$lib/components/admin/GutterManager.svelte';
 	import Save from '@lucide/svelte/icons/save';
 
 	let title = $state('');
@@ -8,8 +9,13 @@
 	let description = $state('');
 	let tags = $state('');
 	let markdownContent = $state('');
+	let gutterItems = $state([]);
 	let saving = $state(false);
 	let error = $state('');
+
+	let editorRef = $state();
+
+	let availableAnchors = $derived(editorRef?.getAvailableAnchors?.() ?? []);
 
 	function generateSlug() {
 		slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -39,6 +45,7 @@
 					description,
 					tags: tags.split(',').map(t => t.trim()).filter(Boolean),
 					markdown_content: markdownContent,
+					gutter_content: JSON.stringify(gutterItems),
 					status: 'published',
 				}),
 			});
@@ -62,7 +69,7 @@
 	<title>New Post - Admin</title>
 </svelte:head>
 
-<div class="editor-page" style="padding: 2rem; max-width: 1000px;">
+<div class="editor-page">
 	<h1>New Post</h1>
 
 	{#if error}
@@ -90,21 +97,32 @@
 		<input class="admin-input" id="tags" bind:value={tags} placeholder="svelte, web, thoughts" />
 	</div>
 
-	<div class="admin-field" style="margin-bottom: 1.5rem;">
-		<span class="admin-field-label">Content</span>
-		<MarkdownEditor bind:value={markdownContent} />
+	<div class="editor-grid">
+		<div class="admin-field">
+			<span class="admin-field-label">Content</span>
+			<MarkdownEditor bind:this={editorRef} bind:value={markdownContent} onSave={save} />
+		</div>
+
+		<div class="admin-field">
+			<GutterManager bind:gutterItems availableAnchors={availableAnchors} />
+		</div>
 	</div>
 
-	<button class="admin-btn-primary" onclick={save} disabled={saving}>
-		<Save size={16} />
-		{saving ? 'Saving...' : 'Publish'}
-	</button>
+	<div class="save-bar">
+		<button class="admin-btn-primary" onclick={save} disabled={saving}>
+			<Save size={16} />
+			{saving ? 'Saving...' : 'Publish'}
+		</button>
+	</div>
 </div>
 
 <style>
-	h1 {
-		margin-bottom: 1.5rem;
+	.editor-page {
+		padding: 2rem;
+		max-width: 1200px;
 	}
+
+	h1 { margin-bottom: 1.5rem; }
 
 	.error-msg {
 		padding: 0.75rem 1rem;
@@ -113,5 +131,23 @@
 		border-radius: var(--radius);
 		font-size: 0.9rem;
 		margin-bottom: 1rem;
+	}
+
+	.editor-grid {
+		display: grid;
+		grid-template-columns: 1fr 340px;
+		gap: 1.5rem;
+		margin-bottom: 1.5rem;
+	}
+
+	@media (max-width: 1024px) {
+		.editor-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.save-bar {
+		display: flex;
+		gap: 0.5rem;
 	}
 </style>

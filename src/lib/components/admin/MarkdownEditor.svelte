@@ -8,9 +8,10 @@
 	interface Props {
 		value?: string;
 		onchange?: (value: string) => void;
+		onSave?: () => void;
 	}
 
-	let { value = $bindable(''), onchange }: Props = $props();
+	let { value = $bindable(''), onchange, onSave }: Props = $props();
 
 	let mode = $state<'write' | 'split' | 'preview'>('write');
 	let preview = $derived(sanitizeMarkdown(marked.parse(value || '')));
@@ -18,6 +19,42 @@
 	let wordCount = $derived(
 		value.trim() ? value.trim().split(/\s+/).length : 0
 	);
+
+	// Extract available anchors for GutterManager
+	export function getAvailableAnchors(): string[] {
+		const anchors: string[] = [];
+		const headingRegex = /^(#{1,6})\s+(.+)$/gm;
+		let match;
+		const content = value || '';
+		while ((match = headingRegex.exec(content)) !== null) {
+			anchors.push(match[0].trim());
+		}
+		const anchorRegex = /::anchor\[([\w-]+)\]::/g;
+		while ((match = anchorRegex.exec(content)) !== null) {
+			anchors.push(`anchor:${match[1]}`);
+		}
+		const commentRegex = /<!--\s*anchor:([\w-]+)\s*-->/g;
+		while ((match = commentRegex.exec(content)) !== null) {
+			anchors.push(`anchor:${match[1]}`);
+		}
+		return anchors;
+	}
+
+	export function insertAnchor(name: string) {
+		insertAtCursor(`::anchor[${name}]::\n`);
+	}
+
+	function insertAtCursor(text: string) {
+		const textarea = document.querySelector('.editor-textarea') as HTMLTextAreaElement;
+		if (!textarea) return;
+		const start = textarea.selectionStart;
+		value = value.substring(0, start) + text + value.substring(start);
+		onchange?.(value);
+		requestAnimationFrame(() => {
+			textarea.selectionStart = textarea.selectionEnd = start + text.length;
+			textarea.focus();
+		});
+	}
 
 	function handleInput(e: Event) {
 		const target = e.target as HTMLTextAreaElement;
@@ -39,7 +76,10 @@
 		}
 
 		if (e.metaKey || e.ctrlKey) {
-			if (e.key === 'b') {
+			if (e.key === 's') {
+				e.preventDefault();
+				onSave?.();
+			} else if (e.key === 'b') {
 				e.preventDefault();
 				wrapSelection('**');
 			} else if (e.key === 'i') {

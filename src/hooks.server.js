@@ -108,9 +108,10 @@ export async function handle({ event, resolve }) {
   event.locals.csrfToken = csrfToken;
 
   // Auto-validate CSRF on state-changing methods
+  const isLocalhost = hostname === "localhost" || hostname === "127.0.0.1";
   if (["POST", "PUT", "DELETE", "PATCH"].includes(event.request.method)) {
-    // Skip CSRF validation for auth endpoints (they have their own protection)
-    if (!event.url.pathname.startsWith("/auth/")) {
+    // Skip CSRF validation for auth endpoints and localhost dev
+    if (!event.url.pathname.startsWith("/auth/") && !isLocalhost) {
       if (!validateCSRFToken(event.request, csrfToken)) {
         console.error("[HOOKS] CSRF token validation failed", {
           path: event.url.pathname,
