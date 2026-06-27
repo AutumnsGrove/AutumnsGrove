@@ -8,7 +8,7 @@
 	const year = new Date().getFullYear();
 </script>
 
-<footer class="footer grain wash-bg">
+<footer class="footer grain wash-bg scroll-reveal">
 	<div class="container footer-inner">
 		<p class="footer-tagline">Thanks for wandering through the grove.</p>
 		<a href="/contact" class="footer-cta">Say hello &rarr;</a>

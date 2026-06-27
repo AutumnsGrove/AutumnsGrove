@@ -21,7 +21,7 @@
 	{:else}
 		<ul class="post-list">
 			{#each data.posts as post, i}
-				<li class="post-item animate-in" style="animation-delay: {260 + i * 80}ms">
+				<li class="post-item scroll-reveal">
 					<a href="/blog/{post.slug}" class="post-link">
 						<div class="post-meta">
 							<time datetime={post.date}>{post.date}</time>
@@ -33,7 +33,7 @@
 								</div>
 							{/if}
 						</div>
-						<h2 class="post-title">{post.title}</h2>
+						<h2 class="post-title" style="view-transition-name: post-title-{post.slug}">{post.title}</h2>
 						{#if post.description}
 							<p class="post-desc">{post.description}</p>
 						{/if}

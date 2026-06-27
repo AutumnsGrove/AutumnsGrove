@@ -1,8 +1,10 @@
 <script>
 	import ArrowLeft from '@lucide/svelte/icons/arrow-left';
 	import ContentWithGutter from '$lib/components/vines/ContentWithGutter.svelte';
+	import { page } from '$app/state';
 
 	let { data } = $props();
+	const slug = $derived(page.params.slug);
 </script>
 
 <svelte:head>
@@ -22,7 +24,7 @@
 	>
 		<header class="post-header animate-in">
 			<a href="/blog" class="back-link"><ArrowLeft size={14} /> All posts</a>
-			<h1>{data.title}</h1>
+			<h1 style="view-transition-name: post-title-{slug}">{data.title}</h1>
 			<div class="post-meta">
 				{#if data.date}
 					<time datetime={data.date}>{data.date}</time>

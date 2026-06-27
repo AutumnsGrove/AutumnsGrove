@@ -30,7 +30,7 @@
 	}
 </script>
 
-<div class="gutter-item" data-anchor={item.anchor || ""}>
+<div class="gutter-item scroll-reveal" data-anchor={item.anchor || ""}>
 	{#if item.type === "comment" || item.type === "markdown"}
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div

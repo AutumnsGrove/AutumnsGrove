@@ -4,10 +4,22 @@
 	import Footer from '$lib/components/Footer.svelte';
 	import { theme } from '$lib/stores/theme';
 	import { page } from '$app/state';
+	import { onNavigate } from '$app/navigation';
 
 	let { data, children } = $props();
 
 	const isAdmin = $derived(page.url.pathname.startsWith('/admin'));
+
+	onNavigate((navigation) => {
+		if (!document.startViewTransition) return;
+
+		return new Promise((resolve) => {
+			document.startViewTransition(async () => {
+				resolve();
+				await navigation.complete;
+			});
+		});
+	});
 </script>
 
 <svelte:head>

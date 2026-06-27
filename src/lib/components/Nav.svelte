@@ -87,6 +87,21 @@
 		opacity: 0.6;
 	}
 
+	/* Scroll progress overlay */
+	.nav::before {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 2px;
+		background: linear-gradient(to right, var(--color-accent), var(--color-primary));
+		transform-origin: left;
+		transform: scaleX(var(--scroll-progress, 0));
+		z-index: 1;
+		opacity: 0.9;
+	}
+
 	.nav-inner {
 		display: flex;
 		align-items: center;
@@ -189,6 +204,12 @@
 			cursor: default;
 		}
 
+		@starting-style {
+			.backdrop.visible {
+				opacity: 0;
+			}
+		}
+
 		.backdrop.visible {
 			opacity: 1;
 		}
@@ -208,6 +229,12 @@
 			gap: 1.5rem;
 			transform: translateX(100%);
 			transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+		}
+
+		@starting-style {
+			.nav-links.open {
+				transform: translateX(100%);
+			}
 		}
 
 		.nav-links.open {

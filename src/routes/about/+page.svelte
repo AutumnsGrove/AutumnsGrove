@@ -14,11 +14,11 @@
 	</header>
 
 	{#if data.content}
-		<div class="prose animate-in animate-in-delay-1">
+		<div class="prose scroll-reveal">
 			{@html data.content}
 		</div>
 	{:else}
-		<div class="prose animate-in animate-in-delay-1">
+		<div class="prose scroll-reveal">
 			<p>This page hasn't been written yet. Check back soon.</p>
 		</div>
 	{/if}

@@ -24,11 +24,15 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		transition: color var(--transition), border-color var(--transition);
+		transition: color var(--transition), border-color var(--transition), transform 500ms cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.theme-toggle:hover {
 		color: var(--color-ink);
 		border-color: var(--color-muted);
+	}
+
+	.theme-toggle:active {
+		transform: rotate(180deg) scale(0.9);
 	}
 </style>

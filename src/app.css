@@ -1,10 +1,29 @@
 /* ========================================
    AutumnsGrove — Design System
    Palette: warm ambers, deep plums, soft creams
-   Typography: Lora (headings) + Inter (body)
+   Typography: Asimovian (headings) + Atkinson Hyperlegible Next (body)
    The warmth of a midnight tea shop
    ======================================== */
 
+/* ── Registered custom properties (animatable) ── */
+
+@property --scroll-progress {
+	syntax: '<number>';
+	inherits: true;
+	initial-value: 0;
+}
+
+@property --ambient-hue {
+	syntax: '<number>';
+	inherits: false;
+	initial-value: 310;
+}
+
+@property --ambient-chroma {
+	syntax: '<number>';
+	inherits: false;
+	initial-value: 0.008;
+}
 
 :root {
 	/* ── Light theme (default) ── */
@@ -361,6 +380,72 @@ img {
 .animate-in-delay-3 { animation-delay: 420ms; }
 .animate-in-delay-4 { animation-delay: 580ms; }
 
+/* ── Scroll-driven animations ── */
+
+@keyframes track-scroll {
+	to { --scroll-progress: 1; }
+}
+
+html {
+	animation: track-scroll linear;
+	animation-timeline: scroll();
+}
+
+@keyframes scroll-reveal {
+	from {
+		opacity: 0;
+		transform: translateY(2rem);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@supports (animation-timeline: view()) {
+	.scroll-reveal {
+		animation: scroll-reveal linear both;
+		animation-timeline: view();
+		animation-range: entry 0% entry 35%;
+	}
+}
+
+/* ── Ambient hero gradient drift ── */
+
+@keyframes ambient-drift {
+	0%   { --ambient-hue: 310; --ambient-chroma: 0.008; }
+	33%  { --ambient-hue: 340; --ambient-chroma: 0.012; }
+	66%  { --ambient-hue: 55;  --ambient-chroma: 0.010; }
+	100% { --ambient-hue: 310; --ambient-chroma: 0.008; }
+}
+
+.ambient-bg {
+	animation: ambient-drift 25s ease-in-out infinite;
+	background-color: oklch(0.978 var(--ambient-chroma) var(--ambient-hue));
+}
+
+[data-theme='dark'] .ambient-bg {
+	background-color: oklch(0.130 var(--ambient-chroma) var(--ambient-hue));
+}
+
+/* ── View Transitions ── */
+
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation-duration: 250ms;
+	animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+::view-transition-old(post-title) {
+	animation: none;
+	mix-blend-mode: normal;
+}
+
+::view-transition-new(post-title) {
+	animation: none;
+	mix-blend-mode: normal;
+}
+
 /* ── Reduced motion ── */
 
 @media (prefers-reduced-motion: reduce) {
@@ -370,5 +455,16 @@ img {
 		animation-duration: 0.01ms !important;
 		animation-iteration-count: 1 !important;
 		transition-duration: 0.01ms !important;
+	}
+
+	.ambient-bg {
+		animation: none;
+		background-color: var(--color-wash);
+	}
+
+	.scroll-reveal {
+		animation: none;
+		opacity: 1;
+		transform: none;
 	}
 }

@@ -1,5 +1,6 @@
 <script>
 	import ArrowRight from '@lucide/svelte/icons/arrow-right';
+	import FloatingMotes from '$lib/components/FloatingMotes.svelte';
 
 	let { data } = $props();
 </script>
@@ -9,7 +10,8 @@
 	<meta name="description" content={data.hero.subtitle} />
 </svelte:head>
 
-<section class="hero-wrap grain wash-bg">
+<section class="hero-wrap grain ambient-bg">
+	<FloatingMotes />
 	<div class="container hero">
 		<p class="kicker animate-in">Welcome</p>
 		<h1 class="hero-title animate-in animate-in-delay-1">{data.hero.title}</h1>
@@ -28,12 +30,12 @@
 	{/if}
 
 	{#if data.recentPosts.length > 0}
-		<section class="recent animate-in animate-in-delay-3">
+		<section class="recent scroll-reveal">
 			<h2 class="section-heading">Recent writing</h2>
 			<hr class="divider" />
 			<ul class="post-list">
 				{#each data.recentPosts as post, i}
-					<li class="animate-in" style="animation-delay: {420 + i * 100}ms">
+					<li class="scroll-reveal" style="--reveal-delay: {i * 60}ms">
 						<a href="/blog/{post.slug}" class="post-link">
 							<span class="post-title">{post.title}</span>
 							<span class="post-date">{post.date}</span>
