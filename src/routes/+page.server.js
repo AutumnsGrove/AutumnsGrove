@@ -1,5 +1,6 @@
 import { getPublishedPosts, getPageBySlug } from "$lib/server/db.js";
 import { sanitizeMarkdown } from "$lib/utils/sanitize";
+import { processAnchorTags } from "$lib/utils/content";
 import { marked } from "marked";
 
 export const prerender = false;
@@ -17,7 +18,9 @@ export async function load({ platform }) {
 				}
 				content = page.html_content;
 				if (!content && page.markdown_content) {
-					content = sanitizeMarkdown(marked.parse(page.markdown_content));
+					content = processAnchorTags(sanitizeMarkdown(marked.parse(page.markdown_content)));
+				} else if (content) {
+					content = processAnchorTags(content);
 				}
 			}
 		} catch (err) {

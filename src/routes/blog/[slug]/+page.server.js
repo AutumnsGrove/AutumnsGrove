@@ -2,6 +2,7 @@ import { error } from "@sveltejs/kit";
 import { getPostBySlug } from "$lib/server/db.js";
 import { sanitizeMarkdown } from "$lib/utils/sanitize";
 import { extractHeadersFromHtml } from "$lib/utils/headers";
+import { processAnchorTags, extractHeadersFromMarkdown } from "$lib/utils/content";
 import { marked } from "marked";
 
 export const prerender = false;
@@ -17,13 +18,21 @@ export async function load({ params, platform }) {
 		throw error(404, "Post not found");
 	}
 
+	// Build HTML content: use pre-rendered html_content, or parse markdown
 	let content = post.html_content;
-	if (!content && post.markdown_content) {
-		content = sanitizeMarkdown(marked.parse(post.markdown_content));
+	let headers = [];
+
+	if (content) {
+		content = processAnchorTags(content);
+		headers = extractHeadersFromHtml(content);
+	} else if (post.markdown_content) {
+		headers = extractHeadersFromMarkdown(post.markdown_content);
+		content = processAnchorTags(
+			sanitizeMarkdown(marked.parse(post.markdown_content))
+		);
 	}
 
-	const headers = extractHeadersFromHtml(content || "");
-
+	// Parse and render gutter content
 	let gutterContent = [];
 	if (post.gutter_content) {
 		try {
