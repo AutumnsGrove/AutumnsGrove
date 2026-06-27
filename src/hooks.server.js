@@ -187,14 +187,13 @@ export async function handle({ event, resolve }) {
     "geolocation=(), microphone=(), camera=()",
   );
 
-  // Content-Security-Policy - include Heartwood for OAuth
   const csp = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://static.cloudflareinsights.com",
-    "style-src 'self' 'unsafe-inline'",
+    "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com",
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
     "img-src 'self' https://cdn.autumnsgrove.com data:",
-    "font-src 'self'",
-    "connect-src 'self' https://api.github.com https://auth-api.grove.place https://heartwood.grove.place https://autumnsgrove-sync-posts.m7jv4v7npb.workers.dev https://autumnsgrove-daily-summary.m7jv4v7npb.workers.dev https://cloudflareinsights.com",
+    "font-src 'self' https://fonts.gstatic.com",
+    "connect-src 'self' https://auth-api.grove.place https://heartwood.grove.place https://cloudflareinsights.com",
     "frame-ancestors 'none'",
   ].join("; ");
 
