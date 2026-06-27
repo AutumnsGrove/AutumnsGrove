@@ -11,14 +11,17 @@
 	<header class="page-header animate-in">
 		<p class="kicker">Writing</p>
 		<h1>Blog</h1>
+		<p class="page-desc animate-in animate-in-delay-1">Code, creativity, and building things that matter.</p>
 	</header>
 
+	<hr class="divider animate-in animate-in-delay-1" />
+
 	{#if data.posts.length === 0}
-		<p class="empty animate-in animate-in-delay-1">No posts yet. Check back soon.</p>
+		<p class="empty animate-in animate-in-delay-2">No posts yet. Check back soon.</p>
 	{:else}
-		<ul class="post-list animate-in animate-in-delay-1">
-			{#each data.posts as post}
-				<li class="post-item">
+		<ul class="post-list">
+			{#each data.posts as post, i}
+				<li class="post-item animate-in" style="animation-delay: {260 + i * 80}ms">
 					<a href="/blog/{post.slug}" class="post-link">
 						<div class="post-meta">
 							<time datetime={post.date}>{post.date}</time>
@@ -43,11 +46,22 @@
 
 <style>
 	.page-header {
-		margin-bottom: 2.5rem;
+		margin-bottom: 1.5rem;
 	}
 
 	.page-header h1 {
 		margin: 0;
+	}
+
+	.page-desc {
+		color: var(--color-muted);
+		font-style: italic;
+		margin-top: 0.5rem;
+		font-size: 1.05rem;
+	}
+
+	.blog-page .divider {
+		margin-bottom: 2rem;
 	}
 
 	.empty {
@@ -60,7 +74,7 @@
 		padding: 0;
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
+		gap: 0;
 	}
 
 	.post-item {
@@ -73,40 +87,50 @@
 
 	.post-link {
 		display: block;
-		padding: 1.25rem 0;
+		padding: 1.5rem 0;
 		text-decoration: none;
 		color: var(--color-ink);
-		transition: color var(--transition);
+		transition: color var(--transition), padding-left var(--transition);
 	}
 
 	.post-link:hover {
 		color: var(--color-primary);
+		padding-left: 0.75rem;
 	}
 
 	.post-meta {
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-		margin-bottom: 0.4rem;
+		margin-bottom: 0.5rem;
 	}
 
 	time {
-		font-size: 0.82rem;
+		font-size: 0.78rem;
 		color: var(--color-muted);
 		font-variant-numeric: tabular-nums;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
 	}
 
 	.post-title {
-		font-size: 1.25rem;
-		font-weight: 600;
+		font-size: 1.35rem;
+		font-weight: 700;
 		margin: 0;
-		line-height: 1.3;
+		line-height: 1.25;
+		transition: font-size 200ms var(--ease-out-expo);
+	}
+
+	.post-link:hover .post-title {
+		font-size: 1.45rem;
 	}
 
 	.post-desc {
 		font-size: 0.9rem;
 		color: var(--color-muted);
-		margin-top: 0.35rem;
+		margin-top: 0.4rem;
 		max-width: 60ch;
+		line-height: 1.5;
 	}
 </style>

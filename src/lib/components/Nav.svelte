@@ -70,11 +70,21 @@
 		top: 0;
 		z-index: 100;
 		background: var(--color-bg);
-		border-bottom: 1px solid var(--color-border);
 		height: var(--nav-height);
 		display: flex;
 		align-items: center;
 		transition: background-color var(--transition);
+	}
+
+	.nav::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		height: 2px;
+		background: linear-gradient(to right, var(--color-primary), var(--color-accent), transparent 80%);
+		opacity: 0.6;
 	}
 
 	.nav-inner {
@@ -87,13 +97,14 @@
 	.nav-brand {
 		font-family: var(--font-heading);
 		font-weight: 700;
-		font-size: 1.3rem;
+		font-size: 1.35rem;
 		color: var(--color-ink);
 		text-decoration: none;
 		letter-spacing: -0.02em;
 		display: flex;
 		align-items: center;
-		gap: 0.4rem;
+		gap: 0.45rem;
+		transition: color var(--transition);
 	}
 
 	.nav-brand:hover {
@@ -111,12 +122,13 @@
 	}
 
 	.nav-link {
-		font-size: 0.88rem;
-		font-weight: 400;
+		font-size: 0.82rem;
+		font-weight: 500;
 		color: var(--color-muted);
 		text-transform: uppercase;
-		letter-spacing: 0.06em;
+		letter-spacing: 0.08em;
 		transition: color var(--transition);
+		position: relative;
 	}
 
 	.nav-link:hover {
@@ -125,7 +137,18 @@
 
 	.nav-link.active {
 		color: var(--color-primary);
-		font-weight: 600;
+		font-weight: 700;
+	}
+
+	.nav-link.active::after {
+		content: '';
+		position: absolute;
+		bottom: -0.45rem;
+		left: 0;
+		right: 0;
+		height: 2px;
+		background: var(--color-primary);
+		border-radius: 1px;
 	}
 
 	.nav-mobile-toggle {
