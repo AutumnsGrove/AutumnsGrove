@@ -6,40 +6,53 @@
         .     .  *        *
 ```
 
-# Hi, I'm Autumn 👋
+<h1 align="center">Autumn</h1>
 
-[![Support me on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/autumnsgrove)
+<p align="center">
+  <em>Building quiet, private, well-made software — and writing about it along the way.</em>
+</p>
 
-Building things, learning in public, and exploring ideas.
+<p align="center">
+  <a href="https://autumn.grove.place"><img src="https://img.shields.io/badge/blog-autumn.grove.place-2d6a4f?style=flat-square" alt="Blog"></a>
+  <a href="https://grove.place"><img src="https://img.shields.io/badge/grove.place-e76f51?style=flat-square" alt="Grove"></a>
+  <a href="https://www.npmjs.com/package/@autumnsgrove/lattice"><img src="https://img.shields.io/npm/v/@autumnsgrove/lattice?label=lattice&style=flat-square&color=cb3837" alt="npm"></a>
+  <a href="https://ko-fi.com/autumnsgrove"><img src="https://img.shields.io/badge/ko--fi-support-ff5e5b?style=flat-square&logo=ko-fi&logoColor=white" alt="Ko-fi"></a>
+</p>
 
-> **[Enter the Museum](/MUSEUM.md)** — This codebase is a living archive. Explore exhibits on architecture, content flow, API design, and more.
+## What I'm building
 
-## What I'm Building
+<table>
+<tr>
+<td width="50%" valign="top">
 
-🌲 **[Lattice](https://github.com/AutumnsGrove/Lattice)** — Writing and community tools for a quieter corner of the internet.
+### 🌲 [Lattice](https://github.com/AutumnsGrove/Lattice)
+The platform behind [Grove](https://grove.place): blogs, community, auth, storage, and theming for a quieter corner of the internet. A TypeScript monorepo on Cloudflare's edge.
 
-The core platform powering every Grove site. A monorepo containing the full ecosystem: UI engine, Glass design system, theming (Foliage), ASCII effects (Gossamer), authentication (Heartwood), storage (Amber), mail (Ivy), and more — all on Cloudflare's edge platform.
+</td>
+<td width="50%" valign="top">
 
-## Packages
+### ⭐ [Polaris](https://github.com/AutumnsGrove/Polaris)
+A private, self-hosted AI assistant that searches the web through your own SearXNG instance. One Go binary, cited answers, no per-query cost.
 
-[![npm](https://img.shields.io/npm/v/@autumnsgrove/lattice?label=lattice)](https://www.npmjs.com/package/@autumnsgrove/lattice) [![npm](https://img.shields.io/npm/v/@autumnsgrove/gossamer?label=gossamer)](https://www.npmjs.com/package/@autumnsgrove/gossamer) [![npm](https://img.shields.io/npm/v/@groveengine/foliage?label=foliage)](https://www.npmjs.com/package/@groveengine/foliage) [![PyPI](https://img.shields.io/pypi/v/grove-shutter?label=shutter)](https://pypi.org/project/grove-shutter/) [![PyPI](https://img.shields.io/pypi/v/yt-thumbs?label=yt-thumbs)](https://pypi.org/project/yt-thumbs/)
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
 
-## Projects
+### 💬 [her-go](https://github.com/AutumnsGrove/her-go)
+A privacy-first AI companion with multi-agent memory, mood tracking, and an evolving personality. Inspired by *Her*, built in Go.
 
-| Project | Description |
-|---------|-------------|
-| **[her-go](https://github.com/AutumnsGrove/her-go)** | Personal companion chatbot built in Go |
-| **[Nook](https://github.com/AutumnsGrove/Nook)** | Private video sharing for close friends |
-| **[Fern](https://github.com/AutumnsGrove/Fern)** | Voice training tool |
-| **[ClaudeCodeSounds](https://github.com/AutumnsGrove/ClaudeCodeSounds)** | Audio library for Claude Code |
-| **[BaseProject](https://github.com/AutumnsGrove/BaseProject)** | Claude Code project template with best practices |
-| **[Hooks](https://github.com/AutumnsGrove/Hooks)** | Shell utility hooks for Claude Code |
-| **[ASCIIClock](https://github.com/AutumnsGrove/ASCIIClock)** | Beautiful ASCII analog clock for the terminal |
-| **[ElementaryCAVisualizer](https://github.com/AutumnsGrove/ElementaryCAVisualizer)** | Cellular automata visualizer with cyberpunk aesthetic |
-| **[Pixelsorting](https://github.com/AutumnsGrove/Pixelsorting)** | Pixel sorting image effects |
-| **[CodeQuest](https://github.com/AutumnsGrove/CodeQuest)** | Terminal RPG that gamifies coding productivity |
+</td>
+<td width="50%" valign="top">
 
-> **[Browse the full project catalog →](/archives/exhibits/ProjectCatalog.md)**
+### 🎨 [Pixelsorting](https://github.com/AutumnsGrove/Pixelsorting)
+A modern pixel-sorting app for making glitch art, with a clean web interface and a modular core.
+
+</td>
+</tr>
+</table>
+
+**Also:** [Forage](https://domains.grove.place) (fast domain discovery) · [AmberSync](https://github.com/AutumnsGrove/AmberSync) (Obsidian-style sync on Cloudflare primitives) · [Mycelium](https://github.com/AutumnsGrove/Mycelium) (an MCP server for the Grove ecosystem) · [tavern](https://github.com/AutumnsGrove/tavern) (a D&D-flavored story engine in Telegram)
 
 ---
 
@@ -58,4 +71,4 @@ The core platform powering every Grove site. A monorepo containing the full ecos
 --------------------/ ,  . \--------._
 ```
 
-*More coming soon.*
+<sub>This repo also holds the source of my old personal site, kept as a small [museum](MUSEUM.md) for anyone who likes reading real code.</sub>
