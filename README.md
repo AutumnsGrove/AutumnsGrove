@@ -1,6 +1,10 @@
-<p align="center">
-  <img src="Assets/aurora.gif" alt="An aurora rippling over a spruce treeline under twinkling stars, drawn in ASCII" width="640">
-</p>
+```
+    *  .  *       .             *
+                         *
+ *   .        *       .       .       *
+    .     *                   .
+        .     .  *        *
+```
 
 <h1 align="center">Autumn</h1>
 
