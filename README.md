@@ -1,9 +1,24 @@
 ```
-    *  .  *       .             *
-                         *
- *   .        *       .       .       *
-    .     *                   .
-        .     .  *        *
+          .              .       .            .  .         . .
+                                                   .   *
+     *                 .     .             *     .
+.   + .                                        .             .
+.                          .
+     ..              .         .
+                ..  ..         . . .   ..   .              .
+*            .  .:  ..  .      : :..   .:.  :   .          ..
+       .  . ... ::  ::  .      ! :.:   :::  :   .      .   :
+       .  . ::: !!  !!. :      ! !:!...!!!. !   :.  .. .  .:
+       :. :.!|!.|||||||||!!!:!!||||||||II|:.|   !:  :: :  .!
+:.     :: !:|IIIIII||||||||||||||||:::!|IIIII!..|!  !! |..:|:::.
+IIII|::!!:|IIIII!:................... ...::IIIIII|!!|IIIIIII|III
+:|IIII|||IIII!:...  ..  .      . .     .....:.|IIIIIIIII|!:▗▖..:
+..▗▖...::▗▖.:....                           ....::..▗▖.:...▟▙
+  ▟▙  ...▟▙...    ▗▖           ▗▖        ▗▖     ..  ▟▙ .  ▗██▖
+ ▗██▖   ▗██▖      ▟▙    ▗▖     ▟▙   ▗▖   ▟▙   ▗▖   ▗██▖   ▟██▙
+ ▟██▙   ▟██▙     ▗██▖   ▟▙    ▗██▖  ▟▙  ▗██▖  ▟▙   ▟██▙  ▗████▖
+███████████████▄▄████▄▄████▄▄▄████▄████▄███████████████████████▄
+████████████████████████████████████████████████████████████████
 ```
 
 <h1 align="center">Autumn</h1>
@@ -50,6 +65,14 @@ A modern pixel-sorting app for making glitch art, with a clean web interface and
 
 </td>
 </tr>
+<tr>
+<td colspan="2" valign="top">
+
+### 🌿 [Ivy](https://github.com/AutumnsGrove/Ivy)
+A self-hosted web mail client for one person. A single Go binary with an embedded SvelteKit frontend that mirrors your IMAP/SMTP mailbox into SQLite, then adds fast search, tags, rules, and careful LLM features on top. It never erases anything, treats email as hostile, and is built to run on a small board and be reached from your phone over Tailscale.
+
+</td>
+</tr>
 </table>
 
 **Also:** [Forage](https://domains.grove.place) (fast domain discovery) · [AmberSync](https://github.com/AutumnsGrove/AmberSync) (Obsidian-style sync on Cloudflare primitives) · [Mycelium](https://github.com/AutumnsGrove/Mycelium) (an MCP server for the Grove ecosystem) · [tavern](https://github.com/AutumnsGrove/tavern) (a D&D-flavored story engine in Telegram)
@@ -57,18 +80,18 @@ A modern pixel-sorting app for making glitch art, with a clean web interface and
 ---
 
 ```
-              v .   ._, |_  .,
-           `-._\/  .  \ /    |/_
-               \\  _\, y | \//
-         _\_.___\\, \\/ -.\||
-           `7-,--.`._||  / / ,
-           /'     `-. `./ / |/_.'
-                     |    |//
-                     |_    /
-                     |-   |
-                     |   =|
-                     |    |
---------------------/ ,  . \--------._
+                                                   Z
+                                    /\      /\  z
+               _..-------.._       /  `----'  \
+           _.-'   )   )   ) `-.   /            \
+         .'     )   )   )   )  `-|  `-'    `-'  |
+        /      )   )   )   )     |       v      |
+       |                          \    `-'-'   /
+       |          _.--._           `-._____.-'
+   _    \       .'      `.         _(__)  (__)_
+  ( `.   `.   /          \_______.'            `.
+   `. `-._ `-(______.---.___________________________)
+     `-.__`---'
 ```
 
 <sub>This repo also holds the source of my old personal site, kept as a small [museum](MUSEUM.md) for anyone who likes reading real code.</sub>
