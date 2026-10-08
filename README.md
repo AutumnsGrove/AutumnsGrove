@@ -1,25 +1,6 @@
-```
-          .              .       .            .  .         . .
-                                                   .   *
-     *                 .     .             *     .
-.   + .                                        .             .
-.                          .
-     ..              .         .
-                ..  ..         . . .   ..   .              .
-*            .  .:  ..  .      : :..   .:.  :   .          ..
-       .  . ... ::  ::  .      ! :.:   :::  :   .      .   :
-       .  . ::: !!  !!. :      ! !:!...!!!. !   :.  .. .  .:
-       :. :.!|!.|||||||||!!!:!!||||||||II|:.|   !:  :: :  .!
-:.     :: !:|IIIIII||||||||||||||||:::!|IIIII!..|!  !! |..:|:::.
-IIII|::!!:|IIIII!:................... ...::IIIIII|!!|IIIIIII|III
-:|IIII|||IIII!:...  ..  .      . .     .....:.|IIIIIIIII|!:▗▖..:
-..▗▖...::▗▖.:....                           ....::..▗▖.:...▟▙
-  ▟▙  ...▟▙...    ▗▖           ▗▖        ▗▖     ..  ▟▙ .  ▗██▖
- ▗██▖   ▗██▖      ▟▙    ▗▖     ▟▙   ▗▖   ▟▙   ▗▖   ▗██▖   ▟██▙
- ▟██▙   ▟██▙     ▗██▖   ▟▙    ▗██▖  ▟▙  ▗██▖  ▟▙   ▟██▙  ▗████▖
-███████████████▄▄████▄▄████▄▄▄████▄████▄███████████████████████▄
-████████████████████████████████████████████████████████████████
-```
+<p align="center">
+  <img src="Assets/aurora.gif" alt="An aurora rippling over a spruce treeline under twinkling stars, drawn in ASCII" width="640">
+</p>
 
 <h1 align="center">Autumn</h1>
 
@@ -79,19 +60,8 @@ A self-hosted web mail client for one person. A single Go binary with an embedde
 
 ---
 
-```
-                                                   Z
-                                    /\      /\  z
-               _..-------.._       /  `----'  \
-           _.-'   )   )   ) `-.   /            \
-         .'     )   )   )   )  `-|  `-'    `-'  |
-        /      )   )   )   )     |       v      |
-       |                          \    `-'-'   /
-       |          _.--._           `-._____.-'
-   _    \       .'      `.         _(__)  (__)_
-  ( `.   `.   /          \_______.'            `.
-   `. `-._ `-(______.---.___________________________)
-     `-.__`---'
-```
+<p align="center">
+  <img src="Assets/cat.gif" alt="A tabby cat asleep on its paws, breathing slowly, drawn in ASCII" width="560">
+</p>
 
 <sub>This repo also holds the source of my old personal site, kept as a small [museum](MUSEUM.md) for anyone who likes reading real code.</sub>
