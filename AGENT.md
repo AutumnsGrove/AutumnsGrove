@@ -46,10 +46,12 @@ Static website with dynamic content via Cloudflare Workers. Organized around blo
 
 <optional body>
 
-🤖 Generated with [Claude Code](https://claude.ai/code)
+🤖 Generated with <the agent you are running> (<link to it>)
 
-Co-Authored-By: Claude <noreply@anthropic.com>
+Co-Authored-By: <that agent's model> <agent@localhost>
 ```
+
+**Attribution:** sign the commit as the agent *actually* running the session — e.g. pi with `deepseek-v4.1-flash`, Nova, crush, or Claude Code with `claude-opus`. Fill in your real tool and model; never copy another agent's name or leave a stale default behind.
 
 **Common Types:** `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `perf`
 
