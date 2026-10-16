@@ -51,18 +51,16 @@ A modern pixel-sorting app for making glitch art, with a clean web interface and
 </td>
 </tr>
 <tr>
-<td colspan="2" valign="top">
+<td width="50%" valign="top">
 
 ### 💫 [Nova](https://github.com/AutumnsGrove/nova)
 A minimal, pi-inspired agent harness in Go. One binary that runs as a coding agent in the terminal, a headless tool for scripts and CI, a GitHub Action, an HTTP backend, or a library you can embed — the quiet core behind her-go, Polaris, and Ivy.
 
 </td>
-</tr>
-<tr>
-<td colspan="2" valign="top">
+<td width="50%" valign="top">
 
 ### 🌿 [Ivy](https://github.com/AutumnsGrove/Ivy)
-A self-hosted web mail client for one person. A single Go binary with an embedded SvelteKit frontend that mirrors your IMAP/SMTP mailbox into SQLite, then adds fast search, tags, rules, and careful LLM features on top. It never erases anything, treats email as hostile, and is built to run on a small board and be reached from your phone over Tailscale.
+A self-hosted web mail client for one person: a single Go binary with an embedded SvelteKit frontend that mirrors your IMAP/SMTP mailbox into SQLite for fast search, tags, rules, and careful LLM features. It treats email as hostile, never erases anything, and runs on a small board you reach from your phone over Tailscale.
 
 </td>
 </tr>
