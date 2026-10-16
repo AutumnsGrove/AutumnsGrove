@@ -194,11 +194,9 @@ git commit -m "add JWT authentication"
 # Hook automatically prepends ticket number:
 # [ABC-123] add JWT authentication
 #
-# 🤖 Generated with Claude Code
-# via Happy
+# 🤖 Generated with <the agent you are running> (<link to it>)
 #
-# Co-Authored-By: [Model Name] <agent@localhost>
-# Co-Authored-By: Happy <yesreply@happy.engineering>
+# Co-Authored-By: <that agent's model> <agent@localhost>
 ```
 
 #### post-commit

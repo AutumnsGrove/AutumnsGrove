@@ -198,7 +198,7 @@ Auto-updates dependencies when switching branches:
 Adds context to commit messages automatically:
 - Extracts ticket number from branch name (ABC-123, #456)
 - Adds branch context to commits
-- Includes Claude co-authorship attribution
+- Includes agent co-authorship attribution
 - **Optional but useful for ticket-based workflows**
 
 #### post-commit

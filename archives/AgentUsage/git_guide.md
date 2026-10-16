@@ -52,9 +52,9 @@ git reset HEAD~1                # Undo last commit (keep changes)
 
 <optional body with details>
 
-🤖 Generated with [Claude Code](https://claude.ai/code)
+🤖 Generated with <the agent you are running> (<link to it>)
 
-Co-Authored-By: [Model Name] <agent@localhost>
+Co-Authored-By: <that agent's model> <agent@localhost>
 ```
 
 ### Common Commit Types
@@ -156,9 +156,9 @@ git commit -m "chore: initialize repository
 - Add initial project structure
 - Configure .gitignore for common patterns
 
-🤖 Generated with [Claude Code](https://claude.ai/code)
+🤖 Generated with <the agent you are running> (<link to it>)
 
-Co-Authored-By: [Model Name] <agent@localhost>"
+Co-Authored-By: <that agent's model> <agent@localhost>"
 ```
 
 #### Step 3: Clean Up Backup
@@ -192,9 +192,9 @@ git commit -m "feat: add new feature
 - Specific implementation detail 1
 - Specific implementation detail 2
 
-🤖 Generated with [Claude Code](https://claude.ai/code)
+🤖 Generated with <the agent you are running> (<link to it>)
 
-Co-Authored-By: [Model Name] <agent@localhost>"
+Co-Authored-By: <that agent's model> <agent@localhost>"
 
 # Verify
 git status
@@ -220,9 +220,9 @@ documentation projects.
 - Implements content hash verification
 - Adds cache invalidation on manual refresh
 
-🤖 Generated with [Claude Code](https://claude.ai/code)
+🤖 Generated with <the agent you are running> (<link to it>)
 
-Co-Authored-By: [Model Name] <agent@localhost>
+Co-Authored-By: <that agent's model> <agent@localhost>
 ```
 
 **Triggers**: Minor version bump (1.0.0 → 1.1.0)
@@ -243,9 +243,9 @@ in error messages when processing multi-line code blocks.
 
 Closes #123
 
-🤖 Generated with [Claude Code](https://claude.ai/code)
+🤖 Generated with <the agent you are running> (<link to it>)
 
-Co-Authored-By: [Model Name] <agent@localhost>
+Co-Authored-By: <that agent's model> <agent@localhost>
 ```
 
 **Triggers**: Patch version bump (1.0.0 → 1.0.1)
@@ -261,9 +261,9 @@ docs: Add API documentation for file_handler module
 - Include usage examples
 - Update README with new module information
 
-🤖 Generated with [Claude Code](https://claude.ai/code)
+🤖 Generated with <the agent you are running> (<link to it>)
 
-Co-Authored-By: [Model Name] <agent@localhost>
+Co-Authored-By: <that agent's model> <agent@localhost>
 ```
 
 **No version bump**
@@ -282,9 +282,9 @@ makes the validator reusable across modules.
 - Update all callers to use new function
 - Add type hints for better IDE support
 
-🤖 Generated with [Claude Code](https://claude.ai/code)
+🤖 Generated with <the agent you are running> (<link to it>)
 
-Co-Authored-By: [Model Name] <agent@localhost>
+Co-Authored-By: <that agent's model> <agent@localhost>
 ```
 
 **No version bump**
@@ -303,9 +303,9 @@ Benchmarks:
 - Before: 2.3s for 1000 files
 - After: 0.7s for 1000 files
 
-🤖 Generated with [Claude Code](https://claude.ai/code)
+🤖 Generated with <the agent you are running> (<link to it>)
 
-Co-Authored-By: [Model Name] <agent@localhost>
+Co-Authored-By: <that agent's model> <agent@localhost>
 ```
 
 **Triggers**: Patch version bump (1.0.0 → 1.0.1)
@@ -325,9 +325,9 @@ Covers:
 
 Test coverage increased from 67% to 94%
 
-🤖 Generated with [Claude Code](https://claude.ai/code)
+🤖 Generated with <the agent you are running> (<link to it>)
 
-Co-Authored-By: [Model Name] <agent@localhost>
+Co-Authored-By: <that agent's model> <agent@localhost>
 ```
 
 **No version bump**
@@ -343,9 +343,9 @@ chore: Update Python dependencies
 - Update black to 24.1.0
 - Pin anthropic SDK to 0.8.0
 
-🤖 Generated with [Claude Code](https://claude.ai/code)
+🤖 Generated with <the agent you are running> (<link to it>)
 
-Co-Authored-By: [Model Name] <agent@localhost>
+Co-Authored-By: <that agent's model> <agent@localhost>
 ```
 
 **No version bump**
@@ -368,9 +368,9 @@ Migration:
   Old: --output "diagrams/*.png"
   New: --output "diagrams" --format png
 
-🤖 Generated with [Claude Code](https://claude.ai/code)
+🤖 Generated with <the agent you are running> (<link to it>)
 
-Co-Authored-By: [Model Name] <agent@localhost>
+Co-Authored-By: <that agent's model> <agent@localhost>
 ```
 
 ### Method 2: Exclamation Mark
@@ -383,9 +383,9 @@ files must be migrated to YAML format.
 
 See migration guide in docs/migration/xml-to-yaml.md
 
-🤖 Generated with [Claude Code](https://claude.ai/code)
+🤖 Generated with <the agent you are running> (<link to it>)
 
-Co-Authored-By: [Model Name] <agent@localhost>
+Co-Authored-By: <that agent's model> <agent@localhost>
 ```
 
 **Triggers**: Major version bump (1.0.0 → 2.0.0)
@@ -750,9 +750,9 @@ Add configurable rate limiting to prevent API abuse:
 
 Resolves #456
 
-🤖 Generated with [Claude Code](https://claude.ai/code)
+🤖 Generated with <the agent you are running> (<link to it>)
 
-Co-Authored-By: [Model Name] <agent@localhost>
+Co-Authored-By: <that agent's model> <agent@localhost>
 ```
 
 ### Footer (Optional)
@@ -841,9 +841,9 @@ refactor(db): Update connection pooling configuration
 - Add connection timeout of 30 seconds
 - Enable connection recycling to prevent leaks
 
-🤖 Generated with [Claude Code](https://claude.ai/code)
+🤖 Generated with <the agent you are running> (<link to it>)
 
-Co-Authored-By: [Model Name] <agent@localhost>
+Co-Authored-By: <that agent's model> <agent@localhost>
 ```
 
 ---
@@ -964,7 +964,7 @@ npm run release
 
 ## Repository Publishing
 
-**Note**: The user handles `git push` operations. Claude focuses on local commits and version control.
+**Note**: The user handles `git push` operations. The agent focuses on local commits and version control.
 
 ```bash
 # Typical push workflow (user-managed)
@@ -992,7 +992,7 @@ git push --tags
 5. ✅ **Don't end subject with period**
 6. ✅ **Add body for complex changes**
 7. ✅ **Be specific, not vague**
-8. ✅ **Include Claude Code attribution**
+8. ✅ **Attribute the commit to the agent actually running**
 9. ✅ **Mark breaking changes explicitly**
 10. ✅ **Reference issues in footer**
 

@@ -79,24 +79,24 @@ if [ -n "$PREFIX" ]; then
 fi
 
 # ============================================================================
-# ADD CLAUDE CO-AUTHORSHIP (if not already present)
+# ADD AGENT CO-AUTHORSHIP PLACEHOLDER (if not already present)
 # ============================================================================
 # Only add if this looks like an AI-assisted commit
 # (Skip for manual commits)
 
-# Check if agent attribution already exists
-if ! grep -q "Co-Authored-By: \[Model Name\]" "$COMMIT_MSG_FILE"; then
+# Check if any agent attribution already exists
+if ! grep -q "^Co-Authored-By:" "$COMMIT_MSG_FILE"; then
     # Check if message is substantive (not just a default message)
     if [ -s "$COMMIT_MSG_FILE" ] && ! grep -q "^#" "$COMMIT_MSG_FILE"; then
-        # Add co-authorship footer
+        # Add a co-authorship footer with placeholders. The agent running this
+        # commit must replace them with its own name, link, and model — the hook
+        # cannot know which agent (pi, Nova, crush, Claude, ...) is at the wheel.
         echo "" >> "$COMMIT_MSG_FILE"
-        echo "🤖 Generated with [Claude Code](https://claude.ai/code)" >> "$COMMIT_MSG_FILE"
-        echo "via [Happy](https://happy.engineering)" >> "$COMMIT_MSG_FILE"
+        echo "🤖 Generated with <the agent you are running> (<link to it>)" >> "$COMMIT_MSG_FILE"
         echo "" >> "$COMMIT_MSG_FILE"
-        echo "Co-Authored-By: [Model Name] <agent@localhost>" >> "$COMMIT_MSG_FILE"
-        echo "Co-Authored-By: Happy <yesreply@happy.engineering>" >> "$COMMIT_MSG_FILE"
+        echo "Co-Authored-By: <that agent's model> <agent@localhost>" >> "$COMMIT_MSG_FILE"
 
-        echo -e "${GREEN}✓ Added AI agent co-authorship${NC}" >&2
+        echo -e "${GREEN}✓ Added agent co-authorship placeholders — fill in the agent that is actually running${NC}" >&2
     fi
 fi
 
