@@ -1,6 +1,9 @@
 # NOTE: This workflow is DISABLED - AutumnsGrove repo is a personal profile only
 # and doesn't actually deploy anything. Keeping the file for reference.
 # To re-enable deployment: remove all "if: false" conditions from jobs below
+#
+# If it is ever re-enabled: the Cloudflare Pages project (autumns-grove) was deleted
+# on 2026-11-23, so this repo deploys as a Worker via `wrangler deploy`, not Pages.
 
 name: Deploy to Cloudflare Pages
 
@@ -81,18 +84,18 @@ jobs:
         id: commit
         run: echo "title=$(git log -1 --format=%s | head -c 100)" >> $GITHUB_OUTPUT
 
-      - name: Deploy to Cloudflare Pages (Production)
+      - name: Deploy with wrangler (Production)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy .svelte-kit/cloudflare --project-name=autumns-grove --commit-dirty=true --commit-message="${{ steps.commit.outputs.title }}"
+          command: deploy
 
-      - name: Deploy to Cloudflare Pages (Preview)
+      - name: Deploy with wrangler (Preview)
         if: github.event_name == 'pull_request'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy .svelte-kit/cloudflare --project-name=autumns-grove --branch=${{ github.head_ref }} --commit-dirty=true --commit-message="${{ github.event.pull_request.title }}"
+          command: versions upload
