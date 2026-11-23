@@ -26,20 +26,6 @@
 <tr>
 <td width="50%" valign="top">
 
-### 💫 [Nova](https://github.com/AutumnsGrove/nova)
-A minimal, pi-inspired agent harness in Go. One binary that runs as a coding agent in the terminal, a headless tool for scripts and CI, a GitHub Action, an HTTP backend, or a library you can embed — the quiet core behind her-go, Polaris, and Ivy.
-
-</td>
-<td width="50%" valign="top">
-
-### 🌟 [Lyra](https://github.com/AutumnsGrove/lyra)
-A small, portable agent core, sister to Nova: ask the model what to do, run a tool, hand the result back, repeat until the job is done. It keeps an append-only record so an interrupted run resumes where it stopped, runs inside a Cloudflare Worker, and ships as one npm package for any agent application that needs a runtime.
-
-</td>
-</tr>
-<tr>
-<td width="50%" valign="top">
-
 ### 🌲 [Lattice](https://github.com/AutumnsGrove/Lattice)
 The platform behind [Grove](https://grove.place): blogs, community, auth, storage, and theming for a quieter corner of the internet. A TypeScript monorepo on Cloudflare's edge.
 
@@ -48,6 +34,20 @@ The platform behind [Grove](https://grove.place): blogs, community, auth, storag
 
 ### ⭐ [Polaris](https://github.com/AutumnsGrove/Polaris)
 A private, self-hosted AI assistant that searches the web through your own SearXNG instance. One Go binary, cited answers, no per-query cost.
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
+### 💫 [Nova](https://github.com/AutumnsGrove/nova)
+A minimal, pi-inspired agent harness in Go. One binary that runs as a coding agent in the terminal, a headless tool for scripts and CI, a GitHub Action, an HTTP backend, or a library you can embed — the quiet core behind her-go, Polaris, and Ivy.
+
+</td>
+<td width="50%" valign="top">
+
+### 🌟 [Lyra](https://github.com/AutumnsGrove/lyra)
+A small, portable agent core, sister to Nova: ask the model what to do, run a tool, hand the result back, repeat until the job is done. It keeps an append-only record so an interrupted run resumes where it stopped, runs inside a Cloudflare Worker, and ships as one npm package for any agent application that needs a runtime.
 
 </td>
 </tr>
