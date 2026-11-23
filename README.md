@@ -26,6 +26,20 @@
 <tr>
 <td width="50%" valign="top">
 
+### 💫 [Nova](https://github.com/AutumnsGrove/nova)
+A minimal, pi-inspired agent harness in Go. One binary that runs as a coding agent in the terminal, a headless tool for scripts and CI, a GitHub Action, an HTTP backend, or a library you can embed — the quiet core behind her-go, Polaris, and Ivy.
+
+</td>
+<td width="50%" valign="top">
+
+### 🌟 [Lyra](https://github.com/AutumnsGrove/lyra)
+A small, portable agent core, sister to Nova: ask the model what to do, run a tool, hand the result back, repeat until the job is done. It keeps an append-only record so an interrupted run resumes where it stopped, runs inside a Cloudflare Worker, and ships as one npm package for any agent application that needs a runtime.
+
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+
 ### 🌲 [Lattice](https://github.com/AutumnsGrove/Lattice)
 The platform behind [Grove](https://grove.place): blogs, community, auth, storage, and theming for a quieter corner of the internet. A TypeScript monorepo on Cloudflare's edge.
 
@@ -40,50 +54,36 @@ A private, self-hosted AI assistant that searches the web through your own SearX
 <tr>
 <td width="50%" valign="top">
 
-### 🌟 [Lyra](https://github.com/AutumnsGrove/lyra)
-A small, portable agent core, sister to Nova: ask the model what to do, run a tool, hand the result back, repeat until the job is done. It keeps an append-only record so an interrupted run resumes where it stopped, runs inside a Cloudflare Worker, and ships as one npm package for any agent application that needs a runtime.
-
-</td>
-<td width="50%" valign="top">
-
 ### 🚪 [Meridian](https://github.com/AutumnsGrove/Meridian)
 The front door to the homelab: one page that links to every self-hosted service, shows whether each one is up, and restarts, updates or stops it from a phone. A Go binary with an embedded SvelteKit front end, a second root-owned binary on the host, and no auth — the tailnet is the access control.
 
 </td>
-</tr>
-<tr>
 <td width="50%" valign="top">
 
 ### ⚓ [Harbor](https://github.com/AutumnsGrove/Harbor)
 A save-anything library for one person, built to replace a Raindrop Pro and mymind subscription with something owned outright. The save path must never fail; everything else is enrichment an agent can add later. Go, embedded SvelteKit, SQLite, and all AI through Nova.
 
 </td>
+</tr>
+<tr>
 <td width="50%" valign="top">
 
 ### 🖋️ [Sepia](https://github.com/AutumnsGrove/Sepia)
 One private place to review any medium — films, TV, books, games, albums, podcasts, theatre. Type what you thought the way you actually talk, and an agent pulls the title, the year, the creators, and the cover, then asks the handful of questions that turn a paragraph of enthusiasm into a review worth keeping.
 
 </td>
-</tr>
-<tr>
 <td width="50%" valign="top">
 
 ### 💬 [her-go](https://github.com/AutumnsGrove/her-go)
 A privacy-first AI companion with multi-agent memory, mood tracking, and an evolving personality. Inspired by *Her*, built in Go.
 
 </td>
-<td width="50%" valign="top">
-
-### 🎨 [pixelsort-go](https://github.com/AutumnsGrove/pixelsort-go)
-A pixel sorter you can watch, live in the browser and along any angle. The engine is Go compiled to WebAssembly, with a SvelteKit studio that exports the process as a GIF, APNG, MP4 or WebM. A ground-up rewrite of the [original Python Pixelsorting](https://github.com/AutumnsGrove/Pixelsorting), which stays as an archive.
-
-</td>
 </tr>
 <tr>
 <td width="50%" valign="top">
 
-### 💫 [Nova](https://github.com/AutumnsGrove/nova)
-A minimal, pi-inspired agent harness in Go. One binary that runs as a coding agent in the terminal, a headless tool for scripts and CI, a GitHub Action, an HTTP backend, or a library you can embed — the quiet core behind her-go, Polaris, and Ivy.
+### 🎨 [pixelsort-go](https://github.com/AutumnsGrove/pixelsort-go)
+A pixel sorter you can watch, live in the browser and along any angle. The engine is Go compiled to WebAssembly, with a SvelteKit studio that exports the process as a GIF, APNG, MP4 or WebM. A ground-up rewrite of the [original Python Pixelsorting](https://github.com/AutumnsGrove/Pixelsorting), which stays as an archive.
 
 </td>
 <td width="50%" valign="top">
