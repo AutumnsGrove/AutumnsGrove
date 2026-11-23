@@ -41,7 +41,7 @@ A private, self-hosted AI assistant that searches the web through your own SearX
 <td width="50%" valign="top">
 
 ### 💫 [Nova](https://github.com/AutumnsGrove/nova)
-A minimal, pi-inspired agent harness in Go. One binary that runs as a coding agent in the terminal, a headless tool for scripts and CI, a GitHub Action, an HTTP backend, or a library you can embed — the quiet core behind her-go, Polaris, and Ivy.
+A minimal, pi-inspired agent harness in Go. One binary that runs as a coding agent in the terminal, a headless tool for scripts and CI, a GitHub Action, an HTTP backend, or a library you can embed — the quiet core behind her-go, Polaris, Ivy, Harbor, and Sepia.
 
 </td>
 <td width="50%" valign="top">
@@ -69,7 +69,7 @@ A save-anything library for one person, built to replace a Raindrop Pro and mymi
 <td width="50%" valign="top">
 
 ### 🖋️ [Sepia](https://github.com/AutumnsGrove/Sepia)
-One private place to review any medium — films, TV, books, games, albums, podcasts, theatre. Type what you thought the way you actually talk, and an agent pulls the title, the year, the creators, and the cover, then asks the handful of questions that turn a paragraph of enthusiasm into a review worth keeping.
+One private place to review any medium — films, TV, books, games, albums, podcasts, theatre. Type what you thought the way you actually talk, and an agent — through Nova — pulls the title, the year, the creators, and the cover, then asks the handful of questions that turn a paragraph of enthusiasm into a review worth keeping.
 
 </td>
 <td width="50%" valign="top">
